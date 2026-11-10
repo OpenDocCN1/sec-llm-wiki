@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Windows任意文件读取漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Windows任意文件读取漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI4MDE5ODExNQ==&amp;mid=2652901485&amp;idx=1&amp;sn=ccf88a58759e6550789468f87c4b7dd7&amp;chksm=f0689ee1c71f17f76b99ef1bc7e637367e898ca31b51c6e6dedba9e63a90dcff686dde96a182&amp;scene=126&amp;sessionid=1681399982#rd">http://mp.weixin.qq.com/s?__biz=MzI4MDE5ODExNQ==&amp;mid=2652901485&amp;idx=1&amp;sn=ccf88a58759e6550789468f87c4b7dd7&amp;chksm=f0689ee1c71f17f76b99ef1bc7e637367e898ca31b51c6e6dedba9e63a90dcff686dde96a182&amp;scene=126&amp;sessionid=1681399982#rd</a></blockquote><p>最近有点忙，未及时更新知乎文章。</p><p><br/></p><p><strong>复现环境：</strong></p><p>Windows 7 x64</p><h2><strong>影响系统：</strong></h2><p>已知复现Windows 7</p><h2><strong>参考内容：</strong></h2><p><span class="invisible">https://</span><span class="visible">thehackernews.com/2018/</span><span class="invisible">12/windows-zero-day-exploit.html?tdsourcetag=s_pcqq_aiomsg</span></p><p><span class="invisible">https://</span><span class="visible">ufile.io/er5g3</span></p><h2><strong>复现过程：</strong></h2><p>1 创建2个用户  wind 和 test</p><p>2 利用test用户去读取wind用户桌面上的1.txt文件内容</p><p><strong>0x01 </strong></p><p>在wind用户桌面创建1.txt文件</p><p style="text-align: center;"><img class="" data-copyright="0" data-ratio="0.5125" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/D41hvNKuWTlH5XFmqP2xgwM35Muibbv49s7RsWW4zuuS9icsqgsFFoZNDYCXayibJu1WnnJI5wkMvjIFaiaAKldAPA/640?wx_fmt=jpeg" data-type="jpeg" data-w="720" style="" src="../Images/2b1817582ddfdca9df51ebb1e497089e.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/D41hvNKuWTlH5XFmqP2xgwM35Muibbv49s7RsWW4zuuS9icsqgsFFoZNDYCXayibJu1WnnJI5wkMvjIFaiaAKldAPA/640?wx_fmt=jpeg"/></p><p>使用test用户去读取wind用户桌面文件</p><p style="text-align: center;"><img class="" data-copyright="0" data-ratio="0.25416666666666665" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/D41hvNKuWTlH5XFmqP2xgwM35Muibbv49JXhr2xfdcsycDNJ9uBIPgQ9VibsZGpYaEdJPQJY8otRLPzypcnppdbA/640?wx_fmt=jpeg" data-type="jpeg" data-w="720" style="" src="../Images/daa97d051640a78eea13fc40cfbdcd19.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/D41hvNKuWTlH5XFmqP2xgwM35Muibbv49JXhr2xfdcsycDNJ9uBIPgQ9VibsZGpYaEdJPQJY8otRLPzypcnppdbA/640?wx_fmt=jpeg"/></p><p>poc：</p><p>坐等更新补丁。。。</p><p><br/></p><p><strong>半残篇子复现文章，待完善（#手动滑稽）。。。</strong></p><p><br/></p>
+        
+</body>
+</html>

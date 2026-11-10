@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>ChatGPT对OpenSSH公私钥登录流程的简述</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>ChatGPT对OpenSSH公私钥登录流程的简述</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUzMjQyMDE3Ng==&amp;mid=2247486508&amp;idx=1&amp;sn=bb75d3f9f0890316e0c25ee539740b76&amp;chksm=fab2cf13cdc546053593e4cf002178ede817e548d82cbfbb51ee20533a67a33c930cebed6d87&amp;scene=126&amp;sessionid=1681666408#rd">http://mp.weixin.qq.com/s?__biz=MzUzMjQyMDE3Ng==&amp;mid=2247486508&amp;idx=1&amp;sn=bb75d3f9f0890316e0c25ee539740b76&amp;chksm=fab2cf13cdc546053593e4cf002178ede817e548d82cbfbb51ee20533a67a33c930cebed6d87&amp;scene=126&amp;sessionid=1681666408#rd</a></blockquote><span style="color: rgb(51, 51, 51);font-size: 17px;letter-spacing: normal;text-decoration: none;">我没看过OpenSSH源码，也不了解公私钥登录流程，索性让ChatGPT忽悠忽悠我，粗看了两眼，答得不算离谱，有一定可信度。<br/><br/>Q: scz<br/><br/>OpenSSH公私钥登录认证时，大致流程是什么？<br/><br/>A: ChatGPT<br/><br/>1. 用户生成一对公私钥，私钥存储在本地计算机上，公钥复制到远程服务器上<br/>2. 上传公钥到服务器，将公钥复制~/.ssh/authorized_keys<br/>3. SSH客户端连接服务器，客户端将本地公钥发送到服务器<br/>4. 服务器收到客户端发送的公钥，与authorized_keys中的公钥列表进行匹配<br/>5. 若服务器成功验证了公钥，会用该公钥加密一个随机数，并将其发送给客户端<br/>6. 客户端收到服务器发送的加密随机数，用本地私钥对其解密<br/>7. 客户端和服务器拥有同一随机数，它们用之作种子，利用密钥协商算法生成对称加密密钥<br/>8. 客户端和服务器用前述对称加密密钥进行后续通信<br/>9. 公私钥只用于登录认证阶段，一旦认证通过，客户端和服务器之间的通信使用对称加密通信<br/><br/>Q: scz<br/><br/>在此过程中，signature algorithm 体现在哪里？<br/><br/>A: ChatGPT<br/><br/>客户端向服务器发送本地公钥，并使用私钥生成一个数字签名(signature)。服务器收到客户端发送的公钥和数字签名，与authorized_keys中的公钥进行匹配，并校验数字签名，若果验证通过，认为客户端合法，可以继续。<br/><br/>Q: scz<br/><br/>假设公私钥保持不变，新版OpenSSH服务端需要"PubkeyAcceptedAlgorithms +ssh-rsa"，否则某些旧版客户端公私钥登录失败，某些新版客户端公私钥登录成功，请从算法角度简述造成这种现象的原因<br/><br/>A: ChatGPT<br/><br/>造成这种现象的原因是OpenSSH公私钥登录认证过程中涉及的算法版本升级导致的不兼容。OpenSSH公私钥登录认证涉及到多种算法，包括加密算法、HASH算法和签名算法等，这些算法可能随时间推移而发生改变，例如在某个版本的OpenSSH中，可能使用SHA-1来计算数字签名，但在新版中，可能改为更安全的算法，例如SHA-256。为了确保兼容性，需要使用相同的算法，通过适当的参数配置来确保新旧版本之间可以正常通信。<br/><br/>Q: scz<br/><br/>Linux命令行ssh公私钥登录时，如何指定用哪种 signature algorithm<br/><br/>A: ChatGPT<br/><br/>ssh -i &lt;private_key&gt; -o HostKeyAlgorithms=&lt;signature algorithm&gt; &lt;user&gt;@&lt;host&gt;<br/><br/>可将参数添加到 ~/.ssh/config 中，可以避免每次都输入相同的参数。<br/><br/>Q: scz<br/><br/>你不是一般的牛逼<br/><br/>A: ChatGPT<br/><br/>感谢夸奖！我只是一个机器人。</span><p style="display: none;"><mp-style-type data-value="3"/></p>
+        
+</body>
+</html>

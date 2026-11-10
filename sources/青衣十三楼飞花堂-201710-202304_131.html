@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Larry Osterman系列--关于比尔·盖茨的回忆</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Larry Osterman系列--关于比尔·盖茨的回忆</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUzMjQyMDE3Ng==&amp;mid=2247485985&amp;idx=1&amp;sn=7db643375f562c77b9e145e779862217&amp;chksm=fab2c91ecdc540082f28af2ac1b8e38be2c64100cd90520d77d04520d9aa9f4af01e93aaccbb&amp;scene=126&amp;sessionid=1681666464#rd">http://mp.weixin.qq.com/s?__biz=MzUzMjQyMDE3Ng==&amp;mid=2247485985&amp;idx=1&amp;sn=7db643375f562c77b9e145e779862217&amp;chksm=fab2c91ecdc540082f28af2ac1b8e38be2c64100cd90520d77d04520d9aa9f4af01e93aaccbb&amp;scene=126&amp;sessionid=1681666464#rd</a></blockquote><p>2008.5.13<br/><br/>两年前，有人用Valgrind发现Debian的OpenSSL包存在安全问题，Debian团队决定自行"修补"之，而不是等OpenSSL团队做这事。Debian团队错误地从OpenSSL随机数生成器中删除了所有的熵，这意味着在过去两年中，在Debian、Ubuntu上生成的每一份加密密钥都需要撤回，因为它们采用了弱随机数。<br/><br/>Bruce Schneier早就说过：“密码学太重要了，不能留给业余爱好者。这点适用于密码学的方方面面，包括随机数生成器。即使算法的微小变化也会对算法的安全性产生深远的影响。”我不记得原话了，大意如此，他说得对。<br/><br/>scz:<br/><br/>有很多"山寨"程序员热衷于自己实现密码学相关的组件，对自己的技术能力有种迷之自信。<br/><br/>2008.6.3<br/><br/>LO在使用一个内部系统时遭遇了一个问题。他发现使用自己的user:pass时，该系统总是报告无效参数。但他使用测试工程师的user:pass时，该系统工作正常。LO排查了后台实际执行的命令行，类似这样<br/><br/>testtool.exe -u &lt;username&gt; &lt;password&gt;<br/><br/>LO的pass类似这样<br/><br/>The rain in Spain falls mainly on the plain<br/><br/>于是最终的命令行类似这样<br/><br/>testtool.exe -u LO The rain in Spain falls mainly on the plain<br/><br/>然后testtool.exe报无效参数。LO单独测试testtool.exe，用双引号将pass包起来，一切都正常了。显然testtool.exe没有考虑到pass中含有空格的可能性。<br/><br/>LO去找了testtool.exe的开发维护人员，后者十分惊讶：“我从不知道密码中可以有空格！哇，我甚至从未想过这种可能。”<br/><br/>唉，在微软操作系统中，1982年MS-DOS 2.0支持文件名中出现空格，1984年MS-NET 1.0支持密码中出现空格，LO很惊讶25年后的2008年，还有人不知道这一点。<br/><br/>scz:<br/><br/>2008年的某个微软程序员不知道密码中可以出现空格，这点再次表明，有人的地方就有弱人，有弱人的地方就有BUG。<br/><br/>2008.7.1<br/><br/>比尔还差几天就要退休了，LO回顾了他与比尔为数不多的一些互动经历。这篇很有意思，建议直接看英文原文。<br/><br/>对于DOS LM 1.0，重定向器占用了64K内存。比尔听到此处时，开始发彪：“64K是什么鬼？我们写BASIC时，只占了8K内存。你特么是白痴吗？这东西真地是特么的8个BASIC吗？”<br/><br/>我们能给他的唯一答案是"是"。直到今天，我有时还在想，他是否抱怨XP是特么的16000个BASIC。但我们没有忽视比尔的抱怨，你永远不想那样做。首先我们将数据移入"扩展内存"，然后将代码移入"扩充内存"，LAN Manager 2.1最终留在640K低端内存的代码只有128字节。这需要做很多努力，需要非常高超的编程技巧，但最终确实做到了。<br/><br/>有天我收到一份比尔的家庭晚宴邀请，那天去的是所有服务超过15周年的微软老员工，这是一群相当精英的组合，大约有100人，而我刚刚进入这个精英组合。毫不奇怪，比尔被人团团围住，晚宴进行到一半时，比尔的女儿在睡前和她的保姆出来玩秋千。比尔立即从人群中挤出来，走到秋千边，推着女儿玩了大约20分钟秋千。他本来可以不这么做，让保姆推好了，他可以给女儿一个晚安吻即可，但他没有，他与女儿共度了20分钟睡前时光。那时我才意识到，为人父母使比尔变得像个人了。</p>
+        
+</body>
+</html>

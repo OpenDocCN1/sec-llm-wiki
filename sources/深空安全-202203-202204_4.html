@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Spring Core RCE 0day｜文末报告附件</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Spring Core RCE 0day｜文末报告附件</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzkyNDMzODAwNw==&amp;mid=2247483665&amp;idx=1&amp;sn=1a743608665847993495de225ba6a1cf&amp;chksm=c1d61329f6a19a3f38c805fb0d455d401b0c93f6f602f4aae732671fdff53f83c97475542148&amp;scene=126&amp;sessionid=1681657160#rd">http://mp.weixin.qq.com/s?__biz=MzkyNDMzODAwNw==&amp;mid=2247483665&amp;idx=1&amp;sn=1a743608665847993495de225ba6a1cf&amp;chksm=c1d61329f6a19a3f38c805fb0d455d401b0c93f6f602f4aae732671fdff53f83c97475542148&amp;scene=126&amp;sessionid=1681657160#rd</a></blockquote><p><br/></p><p>利用方法与与CVE-2010-1622类似。</p><p><br/></p><p><img class="rich_pages wxw-img" data-galleryid="" data-ratio="0.22141296431172613" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/F7B1FYWRFOcysibvxOBvegVWqs3F5yHq0VicpRVOaxVniay9icicwibYqzKhLwicicJUdvNS6L414yEN3r593uM7901k3A/640?wx_fmt=jpeg" data-type="jpeg" data-w="1373" style="text-align: center;white-space: normal;" src="../Images/bb70eae50a4054d43cf0d91d54419c99.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/F7B1FYWRFOcysibvxOBvegVWqs3F5yHq0VicpRVOaxVniay9icicwibYqzKhLwicicJUdvNS6L414yEN3r593uM7901k3A/640?wx_fmt=jpeg"/></p><p>关于Spring Core 未知RCE0day 判断是否存在利用条件：</p><p>1、JDK 9.0 + </p><p>2、Spring 框架以及衍生的框架</p><p>spring-beans-*.jar 文件 或者 存在 CachedIntrospectionResults.class</p><p><br/></p><p>防御1：WAF</p><p>1、WAF中实现对 class.*， Class.*， *.class.*， *.Class.* 字符串的规则过滤，【参数名中出现】</p><p><br/></p><p>临时修复:</p><p><br/></p><p>全局搜索 @InitBinder注解，判断方法体内是否有dataBinder.setDisallowedFields方法，</p><p>如果有使用则在原来的黑名单中添加：</p><p>{"class.*","Class.*","*.class.*","*.Class.*"}</p><p><br/></p><p>关注公众号回复spring core获取报告详情</p><p><br/></p><p>感觉又要忙起来了。。。<br/></p><p style="text-align: center;"><img class="rich_pages wxw-img" data-galleryid="" data-ratio="1.724074074074074" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/F7B1FYWRFOcysibvxOBvegVWqs3F5yHq0TpHkkCtDZZ4lgunWeS8icREGhcCeFrI6UcI2ey9kmBgtFxicLSLuic6WQ/640?wx_fmt=png" data-type="png" data-w="1080" style="" src="../Images/b7baf4a12cc3a5163e1d4ac382c3078b.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/F7B1FYWRFOcysibvxOBvegVWqs3F5yHq0TpHkkCtDZZ4lgunWeS8icREGhcCeFrI6UcI2ey9kmBgtFxicLSLuic6WQ/640?wx_fmt=png"/></p><p><br/></p>
+        
+</body>
+</html>

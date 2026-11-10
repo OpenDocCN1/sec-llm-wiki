@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>看懂网上流出的spring R-C-E利用手法</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>看懂网上流出的spring R-C-E利用手法</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzkzODI1NjMyNQ==&amp;mid=2247483884&amp;idx=1&amp;sn=fdeb02e2c6827afc600dbd5f92b89876&amp;chksm=c283b346f5f43a50e2f8a0f069ade1b346b7694410606ee01ecc6620854ad8831b0ca3823045&amp;scene=126&amp;sessionid=1681665287#rd">http://mp.weixin.qq.com/s?__biz=MzkzODI1NjMyNQ==&amp;mid=2247483884&amp;idx=1&amp;sn=fdeb02e2c6827afc600dbd5f92b89876&amp;chksm=c283b346f5f43a50e2f8a0f069ade1b346b7694410606ee01ecc6620854ad8831b0ca3823045&amp;scene=126&amp;sessionid=1681665287#rd</a></blockquote><p>从泄露文章看来就叫他任意Bean修改导致rce漏洞吧<br/></p><p><br/></p><p>猜测结论：<br/></p><ol class="list-paddingleft-1" style="list-style-type: decimal;"><li><p>jdk9才有对传入的键去找对应的Bean的.class(因为都说jdk9有影响)</p></li></ol><p><br/></p><p>2.当访问</p><p style="">http://127.0.0.1:8080?class['classLoader'].resources.context.parent.pipeline.first.directory=webapps/ROOT  ，</p><p style="">会找到到  class['classLoader'].resources.context.parent.pipeline.first.directory的Bean的.class，并修改directory属性为webapps/ROOT </p><p style=""><br/></p><p>3.看图吧</p><p style="text-align: center;"><img class="rich_pages wxw-img" data-galleryid="" data-ratio="0.45513654096228867" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/IlaldYjze3WTM5wiaSS8dD41RT7foDjXMQwXONlOBBSPuScE5ibO7cACiclYk6Ia5ZuYAavBhuNdMCUFicXgCMaEfw/640?wx_fmt=png" data-type="png" data-w="1538" style="" src="../Images/4fceaa09cbc89eede871ddac3833b072.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/IlaldYjze3WTM5wiaSS8dD41RT7foDjXMQwXONlOBBSPuScE5ibO7cACiclYk6Ia5ZuYAavBhuNdMCUFicXgCMaEfw/640?wx_fmt=png"/></p><p><br/></p><p><span style="text-align: center;"><br/></span></p><p><span style="text-align: center;"><br/></span></p><p><span style="text-align: center;">4.影响好像不大，我们都用jdk1.8。<img data-ratio="1" data-src="https://mmbiz.qpic.cn/mmbiz_png/IlaldYjze3WTM5wiaSS8dD41RT7foDjXMFh9MvRed18ibotIjx1bBWbjndw80GiaHJU6Zua0RCfhkBEcwOY5Mpbzw/640?wx_fmt=png" data-type="png" data-w="20" style="display:inline-block;width:20px;vertical-align:text-bottom;" src="../Images/29271d981b8c32ae509a4b95af2ae641.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/IlaldYjze3WTM5wiaSS8dD41RT7foDjXMFh9MvRed18ibotIjx1bBWbjndw80GiaHJU6Zua0RCfhkBEcwOY5Mpbzw/640?wx_fmt=png"/></span></p><p><span style="text-align: center;"><br/></span></p><p><span style="text-align: center;">5.codeql横空出世，导致java漏洞一直被爆。<br/></span></p>
+        
+</body>
+</html>

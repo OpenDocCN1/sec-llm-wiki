@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Larry Osterman系列--为什么Windows要提供默认共享</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Larry Osterman系列--为什么Windows要提供默认共享</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUzMjQyMDE3Ng==&amp;mid=2247485271&amp;idx=1&amp;sn=cfdd0f503be62da6483916de270f27a5&amp;chksm=fab2c468cdc54d7ed1ef8fe004b7b96bddb17ffff1ad6b3c2381fb2923db97e44026d099577a&amp;scene=126&amp;sessionid=1681666519#rd">http://mp.weixin.qq.com/s?__biz=MzUzMjQyMDE3Ng==&amp;mid=2247485271&amp;idx=1&amp;sn=cfdd0f503be62da6483916de270f27a5&amp;chksm=fab2c468cdc54d7ed1ef8fe004b7b96bddb17ffff1ad6b3c2381fb2923db97e44026d099577a&amp;scene=126&amp;sessionid=1681666519#rd</a></blockquote><p style="font-size: 16px;">2005.5.26<br/><br/>Windows默认有形如&lt;drive&gt;$的共享，比如C$、D$。底层API可以看到它们，但UI对$结尾的共享名做了隐藏。<br/><br/>有人问为什么Windows要提供这些默认共享，这要追溯到Lan Manager 1.0时代。<br/><br/>Lan Manager是微软与Novell竞争的第一次尝试，在此之前微软只有一款OEM的MS-NET。我现在还有一份MS-NET 1.1，这是我在微软交付的第一个产品。Lan Manager的主要功能是远程管理。<br/><br/>有天，Lan Manager的开发主管Russ (Ralph) Ryan需要更改托管Lan Manager源码的主机上的配置文件，他意识到已有共享都访问不到服务器的根目录。他无法远程添加新的共享，因为添加共享的UI要求操作者导航至根目录才能完成此操作。所以他只好从他的办公室跋涉到实验室完成这次配置更改。<br/><br/>于是一项新特性诞生了，Lan Manager以及迄今为止所有的微软网络产品默认共享驱动器的根目录，以确保远程管理员能够访问整个驱动器。我们必须使用自己的产品，否则可能永远不会注意到这个问题。<br/><br/>现在有了RDP及其他更强大的远程管理工具，默认共享不再那么重要，但还是有不少产品依赖这个特性。默认共享可以通过安全配置予以禁用。<br/><br/>Lan Manager的测试主管是名新员工，刚从Intel过来，他的名字是Henry (Brian) Valentine。<br/><br/>scz: 这段八卦太有趣了，为此我嘟囔了多年，原来如彼。<br/></p>
+        
+</body>
+</html>

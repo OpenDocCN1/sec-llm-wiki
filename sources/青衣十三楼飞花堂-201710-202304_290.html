@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Larry Osterman系列--没有什么修补措施是真正安全的</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Larry Osterman系列--没有什么修补措施是真正安全的</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUzMjQyMDE3Ng==&amp;mid=2247485017&amp;idx=1&amp;sn=b1514aca8df33d535f51bfb65f94c059&amp;chksm=fab2c566cdc54c7094868e40921063b764a3cd54b5a37f308e433327436b4bfbac27ecf831a9&amp;scene=126&amp;sessionid=1681666545#rd">http://mp.weixin.qq.com/s?__biz=MzUzMjQyMDE3Ng==&amp;mid=2247485017&amp;idx=1&amp;sn=b1514aca8df33d535f51bfb65f94c059&amp;chksm=fab2c566cdc54c7094868e40921063b764a3cd54b5a37f308e433327436b4bfbac27ecf831a9&amp;scene=126&amp;sessionid=1681666545#rd</a></blockquote><p>So why didn't the Windows guys just remove the AARD code from the system - [2004-08-13]<br/><br/>Chris Pratley讲了一则轶事，LO转录之。<br/><br/>几年前，我们正在开发亚洲语言版本的Word97。我们以为已经完成了，于是做了最后一次优化。微软有一些技术可以分析代码使用情况，重新安排代码块的位置，以便它们以最佳顺序出现在PE中，从而以最快速度启动。优化过程只涉及链接，不涉及编译，通常认为不会有什么问题。但测试人员发现，在某些特定机型上使用某个特性时，优化后的版本会崩，而优化前的版本没这幺蛾子。我们又测试了调试版，同样没事儿。我们开始调试优化后的版本，Watson的未来发明者之一也停下手头的工作参与其中。但只要一挂调试器，优化后的版本就不崩了。我们只好上硬件调试器ICE。这下注意到，崩溃只会在150MHz或更低频率的奔腾CPU上发生，另有一些150MHz的奔腾CPU却没这怪事。我们有种预感，于是在英特尔网站上搜索"勘误表"。果然，奔腾芯片有个BUG，在某些不为人知的情况下可能会导致故障。触发条件是这样的，有条JMP指令对齐在页边界(4096)上，其后偏移0x21处有条分支转移指令。新的150MHz奔腾CPU已经修正了该BUG。<br/><br/>事实上CPU芯片经常有BUG，有一两个甚至非常著名，毕竟其内部逻辑包含软件部分。一般当这些BUG暴露出来时，芯片厂商会通知开发编译器的人，后者会修改编译器实现以确保不会生成触发前述芯片级BUG的代码。对大多数人来说，相当于透明地解决了BUG。但我们那次恰好用了一个不够新的编译器，该版编译器没有针对前述BUG做过特别处理。Intel派驻在微软的人确认了这个BUG。后来我们没敢冒险做其他尝试或修改，而是精心调整了触发芯片BUG的机器码，让JMP与其后的分支转移指令间隔0x22字节，规避了该BUG。现在如果有人告诉我某个修补措施是安全的，我会告诉他们，没有什么修补措施是真正安全的，你永远不会知道安全与否。<br/><br/>LO在Exchange 5.5开发中就碰上了Chris Pratley所述的BUG。<br/><br/>我们有一版在一台测试机上始终崩溃，而且只在这台测试机上。花了几天时间试图找出问题所在，用了很多仪器，都不管事。软件层面稍微做些改动，这个BUG就会消失，一撤销改动，BUG就会卷土重来。最终我们偶然发现了Chris提到的"勘误表"，原来我们倒了同一个霉。与Chris他们不同，我们没有手工调整机器码，因为我们的编译器有规避这个BUG的编译开关，启用它就可以了。<br/></p>
+        
+</body>
+</html>

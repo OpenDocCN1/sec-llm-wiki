@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>针对裁减版U-Boot进行逆向工程完成Flash读写的一般思路</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>针对裁减版U-Boot进行逆向工程完成Flash读写的一般思路</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUzMjQyMDE3Ng==&amp;mid=2247483925&amp;idx=1&amp;sn=d0dccd602a54690281eb32c13dfe0b0b&amp;chksm=fab2c12acdc5483c7100ab556a00ea2a3088a090d4a22af64ab26f171a1c7d3b445447b8f1b3&amp;scene=126&amp;sessionid=1681666625#rd">http://mp.weixin.qq.com/s?__biz=MzUzMjQyMDE3Ng==&amp;mid=2247483925&amp;idx=1&amp;sn=d0dccd602a54690281eb32c13dfe0b0b&amp;chksm=fab2c12acdc5483c7100ab556a00ea2a3088a090d4a22af64ab26f171a1c7d3b445447b8f1b3&amp;scene=126&amp;sessionid=1681666625#rd</a></blockquote><p style="text-align: center;"><img class="" data-ratio="0.3675925925925926" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/VbJOzZqovPOJkbFtzaW8U0XAkB8mNqX99QPribAP0jYWjliaLu5w4KBibibAG7W46LkMaozYEcOO0KEfU5qNuRc9sA/640?wx_fmt=jpeg" data-type="jpeg" data-w="1080" style="" src="../Images/155a2718218a8b101fb4f2bdd0a68243.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/VbJOzZqovPOJkbFtzaW8U0XAkB8mNqX99QPribAP0jYWjliaLu5w4KBibibAG7W46LkMaozYEcOO0KEfU5qNuRc9sA/640?wx_fmt=jpeg"/></p><p>为了读写固件，传统搞法是将Flash焊下来，放到编程器上，插电脑上读写。编程器是芯片相关的，不同的Flash芯片需要不同编程器。有时可能想修改固件，就得焊来焊去。这次由于各种原因，未能给目标设备实现拔插式外接Flash基座，每次只能进行吃果果(居然是敏感字，也不提示一下)的焊接操作，使得修改固件极不方便。<br/><br/>把串口接出来，一般有提示按某组合键进入U-Boot。U-Boot提示符下很多命令不一定都能用，而且碰上裁减版U-Boot，很可能没有读写Flash的命令。<br/><br/>U-Boot有自己的环境变量，也叫U-Boot参数，有相应命令查看、修改、保存之。注意到保存环境变量时会在串口上显示其正在擦写Flash，这说明U-Boot包含了擦写Flash的代码，只是没有通过可用命令的形式提供这种能力，厂商有想法呗。<br/><br/>我开了个脑洞，利用U-Boot已有命令动态Patch U-Boot，弄一段shellcode进去，完成擦写Flash。下面说一下基本思路:<br/><br/><span style="color: rgb(0, 82, 255);">1) 定位U-Boot在内存中的加载基址，IDA逆向分析U-Boot，修改基址<br/>2) 在IDA中识别C运行时库函数，比如memcpy、strcmp、printf等等<br/>3) 定位现有U-Boot命令对应的函数，确保执行A命令时必经A函数<br/>4) 定位U-Boot中完成Flash擦写的内部函数<br/>5) 编写shellcode，调用U-Boot内部函数实现Flash擦写<br/>6) 按组合键进入U-Boot，利用现有U-Boot命令在内存中准备好待写入固件<br/>7) 利用现有U-Boot命令动态Patch A函数，注入shellcode<br/>8) 在U-Boot提示符下执行A命令，触发Patch过的A函数，完成Flash擦写</span><br/><br/>其中第5步借助bluerust提供的kstoolex，参看:<br/><br/>《利用Keystone快速汇编并提取机器码》<br/>http://scz.617.cn:8/misc/201811071803.txt<br/><br/>事实上其原始需求正是本文第5步。好了，就这么多，思路很简单，说穿后一钱不值。<br/><br/></p>
+        
+</body>
+</html>

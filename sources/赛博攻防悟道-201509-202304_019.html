@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>安全有效性验证方法论</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>安全有效性验证方法论</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI1MDA1MjcxMw==&amp;mid=2649907915&amp;idx=1&amp;sn=f2dc1d89d173f1f711b93ba74cfe79a7&amp;chksm=f18eebcdc6f962db3c6a16dbd92081eeda3d78877fbc6496868b81179b3b9df8cd1761396571&amp;scene=126&amp;sessionid=1681278172#rd">http://mp.weixin.qq.com/s?__biz=MzI1MDA1MjcxMw==&amp;mid=2649907915&amp;idx=1&amp;sn=f2dc1d89d173f1f711b93ba74cfe79a7&amp;chksm=f18eebcdc6f962db3c6a16dbd92081eeda3d78877fbc6496868b81179b3b9df8cd1761396571&amp;scene=126&amp;sessionid=1681278172#rd</a></blockquote><p>今天在社群讨论了下BAS，吸收了一些意见，学习了一些行业资料，思考了很多，得出了一些方法论和理念，简单记录分享一下。</p><p><br/></p><p>Security Validation（安全有效性验证）是一种持续的自动化安全测试方法，针对组织机构的安全控制能力和安全防护能力，以模拟真实的攻击行为和恶意软件的方式进行安全测试。</p><p><br/></p><p>安全有效性验证包括BAS（攻击模拟）等，BAS关注的是攻击过程的模拟，以及安全防护的结果，而安全验证既关心结果，也关心攻击模拟过程，更关心过程中捕获的安全观测数据，借可量化的安全测试过程，持续评估改进组织机构的安全管理能力…</p><p><br/></p><p>首先，应该评估组织机构是否具备安全遥测能力，企业通过实时收集安全事件日志和扩展安全数据，对安全数据持续分析进行检测响应，这是企业的现代安全运营模式，安全有效性验证的目的是帮助组织机构调整优化现代安全运营的能力。</p><p><br/></p><p>然后，尽量模拟真实攻击而不是红队攻击，真实的攻击需要有威胁情报的支撑，每一个BAS模拟最好是对在野攻击进行还原，漏洞攻击的模拟多贴近CISA KEV列表，恶意样本的模拟多基于真实样本的逆向分析，完整的技战术过程最好有对手的情报作为支撑。</p><p><br/></p><p>最后，关键是需要捕获攻击过程中的可观测安全数据，安全数据必须来自于企业的真实遥测能力，最好<span style="caret-color: var(--weui-BRAND);letter-spacing: 0.034em;">完全覆盖端点和网络两个维度，测试最终通过安全专家所预期的安全检测响应方法，对捕获的安全数据进行有效性评估。</span></p><p><span style="caret-color: var(--weui-BRAND);letter-spacing: 0.034em;"><br/></span></p><p><span style="letter-spacing: 0.578px;">PS：安全有效性验证需要安全运营进入成熟阶段进行，目前看成本太高，大部分企业的安全基础设施和人员素质还远远未达到需要验证的水平。</span></p><p style="display: none;"><mp-style-type data-value="10000"/></p>
+        
+</body>
+</html>

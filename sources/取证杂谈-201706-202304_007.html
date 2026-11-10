@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>压缩包炸弹</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>压缩包炸弹</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI3Mjc0MjkwMQ==&amp;mid=2247484044&amp;idx=1&amp;sn=14da19acd075021a3f1111b5005747b7&amp;chksm=eb2ca216dc5b2b0027ac908554a1cb34222c3cb62850d6749ca41654d514a1e7ae3dd8273938&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI3Mjc0MjkwMQ==&amp;mid=2247484044&amp;idx=1&amp;sn=14da19acd075021a3f1111b5005747b7&amp;chksm=eb2ca216dc5b2b0027ac908554a1cb34222c3cb62850d6749ca41654d514a1e7ae3dd8273938&amp;scene=27#wechat_redirect</a></blockquote><p style="text-indent: 2em;text-align: justify;margin-bottom: 10px;">今天在使用X-Ways处理工作的时候，不经意间注意到X-Ways提示框弹出了Archive bomb的相关提示，内容大致如下：</p><p style="text-align: center;"><img data-ratio="0.2997711670480549" data-src="https://mmbiz.qpic.cn/mmbiz_png/XzPGfNichNcznTgNSb5BlBaArmoFqDkxTicncwibqSia2TQdCXBOoZklibFIT9ZJ5G09hBP0wibJOduCJsjhNXa3ibBJQ/640?wx_fmt=png" data-type="png" data-w="437" height="131px" style="width: 437px;height: 131px;" width="437" src="../Images/d1c6d18d6d282e9721e1635e95faaf3c.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/XzPGfNichNcznTgNSb5BlBaArmoFqDkxTicncwibqSia2TQdCXBOoZklibFIT9ZJ5G09hBP0wibJOduCJsjhNXa3ibBJQ/640?wx_fmt=png"/></p><p style="text-indent: 2em;margin-bottom: 15px;">仔细回想，貌似前几天就出现过类似的提示，只是太忙直接忽略了。</p><p style="text-indent: 2em;margin-bottom: 15px;">Archive bomb是什么？根据经验，推测是X-Ways遇到了处理不了的文件。个人猜测应该是这个压缩包里面有逻辑错误，导致软件无法解析。什么错误会被称为“bomb”呢？好奇心让我忍不住打开谷歌一探究竟。</p><p style="text-indent: 2em;margin-bottom: 15px;"><span style="text-indent: 34px;">压缩包炸弹</span>是指让解压软件（或其他处理软件）处理时会崩溃或无法正常处理的压缩包，大致原理是这类文件解压需要极大的资源（例如时间、磁盘空间或内容）。早期压缩包炸弹被用来过隐藏恶意代码，杀毒扫描时会崩溃或自动跳过检查。</p><p style="text-indent: 2em;margin-bottom: 15px;">一个比较经典的<span style="text-indent: 34px;">压缩包炸弹</span>是“42.zip”，该文件仅42KB大小，但打开后发现里面又有16个压缩包，继续打开任意一个压缩包，会发现里面又有16个压缩包……，一共有5层嵌套，最终的压缩包里面是一个4.3G的压缩包。</p><p style="text-indent: 2em;margin-bottom: 15px;">那么这个42.zip完全解压有多大呢？最内层，4.3G×16=68GB；到倒数第二层，68G×16=1TB；到倒数第三层，16GB×16=17TB；到倒数第四层，17TB×16=281TB；到第五层（最外层），281×16=4.5PB。一个小小的压缩包，处理起来估计没有哪台电脑的内存或硬盘够用。</p><section style="text-indent: 2em;margin-bottom: 15px;">上面这个文件可以从网站“42.zip”（域名https://unforgettable.dk/）下载得到，解压密码为42。压缩包炸弹除了42.zip，还有很多，大家可以网上搜搜看。</section><section style="text-indent: 2em;">这个例子让我再次意识到取证工作中人才是最重要的，软件不是万能的，如果条件允许最好使用多种工具进行交叉验证，必要的话，直接手工分析！据我了解，对于这种压缩包炸弹，X-Ways会弹出提示，而其他大部分无法解析却没有任何警示信息！</section>
+        
+</body>
+</html>

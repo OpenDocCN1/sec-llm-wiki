@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>kerberos中的spn详解</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>kerberos中的spn详解</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzU5ODMzMzc5MQ==&amp;mid=2247483658&amp;idx=1&amp;sn=66b0120339dac408336b19ed357171c3&amp;chksm=fe44813ac933082c3a0970d760eef7dbfd056fd71b04098081244aea264884d3d8992ec700f6&amp;scene=126&amp;sessionid=1681654536#rd">http://mp.weixin.qq.com/s?__biz=MzU5ODMzMzc5MQ==&amp;mid=2247483658&amp;idx=1&amp;sn=66b0120339dac408336b19ed357171c3&amp;chksm=fe44813ac933082c3a0970d760eef7dbfd056fd71b04098081244aea264884d3d8992ec700f6&amp;scene=126&amp;sessionid=1681654536#rd</a></blockquote><h3 style="margin-top: 10px;margin-bottom: 10px;font-weight: bold;line-height: 1.5;font-family: Verdana, Arial, Helvetica, sans-serif;white-space: normal;background-color: rgb(254, 254, 242);">0x01 SPN定义</h3><p><img data-s="300,640" data-type="png" data-src="https://mmbiz.qpic.cn/mmbiz_png/MxP6iaibG3fZNxjdjWD1u9H8DS9I6wHiaabvzBuVjEk57uAzzMxicNzBS6aNuNyXducJuib8nWkiaOD7oh6sRMXib3V5Q/0?wx_fmt=png" data-copyright="0" style="" class="" data-ratio="0.589171974522293" data-w="628" src="../Images/7a180c6d20301e3c79ef12151e69e36b.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/MxP6iaibG3fZNxjdjWD1u9H8DS9I6wHiaabvzBuVjEk57uAzzMxicNzBS6aNuNyXducJuib8nWkiaOD7oh6sRMXib3V5Q/0?wx_fmt=png"/></p><p style="margin: 10px auto;line-height: 1.5;font-size: 13px;font-family: Verdana, Arial, Helvetica, sans-serif;white-space: normal;background-color: rgb(254, 254, 242);"><strong> </strong><span style="color: rgb(0, 209, 0);"><strong> </strong><strong> </strong>服务主体名称（SPN）是Kerberos客户端用于唯一标识给特定Kerberos目标计算机的服务实例名称。Kerberos身份验证使用SPN将服务实例与服务登录帐户相关联。如果在整个林中的计算机上安装多个服务实例，则每个实例都必须具有自己的SPN。如果客户端可能使用多个名称进行身份验证，则给定的服务实例可以具有多个SPN。例如，SPN总是包含运行服务实例的主机名称，所以服务实例可以为其主机的每个名称或别名注册一个SPN。</span></p><h3 style="margin-top: 10px;margin-bottom: 10px;font-weight: bold;line-height: 1.5;font-family: Verdana, Arial, Helvetica, sans-serif;white-space: normal;background-color: rgb(254, 254, 242);">0x02 SPN扫描</h3><p style="margin: 10px auto;line-height: 1.5;font-size: 13px;font-family: Verdana, Arial, Helvetica, sans-serif;white-space: normal;background-color: rgb(254, 254, 242);">spn扫描也可以叫扫描Kerberos服务实例名称，在Active Directory环境中发现服务的最佳方法是通过“SPN扫描”。通过请求特定SPN类型的服务主体名称来查找服务，SPN扫描攻击者通过网络端口扫描的主要好处是SPN扫描不需要连接到网络上的每个IP来检查服务端口。SPN扫描通过LDAP查询向域控制器执行服务发现。由于SPN查询是普通Kerberos票据的一部分，因此如果不能被查询，但可以用网络端口扫描来确认。</p><p><br/></p>
+        
+</body>
+</html>

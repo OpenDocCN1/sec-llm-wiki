@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Larry Osterman系列--代码跟人一样，也会变老</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Larry Osterman系列--代码跟人一样，也会变老</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUzMjQyMDE3Ng==&amp;mid=2247485066&amp;idx=1&amp;sn=55c386e67375f314e0883ce0dda5efe7&amp;chksm=fab2c5b5cdc54ca3e68746230d073bdd80eda2ae9da93e2979fb72367f40e758f9e1303ade14&amp;scene=126&amp;sessionid=1681666540#rd">http://mp.weixin.qq.com/s?__biz=MzUzMjQyMDE3Ng==&amp;mid=2247485066&amp;idx=1&amp;sn=55c386e67375f314e0883ce0dda5efe7&amp;chksm=fab2c5b5cdc54ca3e68746230d073bdd80eda2ae9da93e2979fb72367f40e758f9e1303ade14&amp;scene=126&amp;sessionid=1681666540#rd</a></blockquote><p>Software archaeology - [2004-05-20]<br/><br/>有时我觉自己就像一个考古学家。<br/><br/>代码跟人一样，也会变老。而且，就像老年人一样，老代码往往非常脆弱。当代码交由LMT团队维护后，情况日渐恶化。他们不了解原始实现细节，不愿意改动既有代码，以防破坏现有稳定性。他们最多就是增加新功能、修补BUG啥的。他们倾向于尽可能小地影响组件，但这些小改动日积月累，使得代码益发脆弱。我审查这种代码时，感觉自己像一个考古学家，在一座古城中进行挖掘探索。如果你仔细观察，可以分辨出某段代码由谁开发。<br/><br/>线索之一是TAB风格，不同的开发人员使用不同的TAB风格，这很有指向性。类似的，花括号、变量命名的风格各不相同。<br/><br/>过去几个月我一直在审查winmm.dll的源码，它有十五年的历史了，最早是为Windows 3.1开发的。过去这些年里，它被移植到Win95、WinNT、Win64上。代码做过增强，以支持诸如WDM、PnP之类的新技术。有些功能被改动过，现在的操纵杆(joystick)逻辑完全不同于当年。所以，winmm.dll源码中增加了很多东西，但都是零零散散地加进来的。<br/><br/>此外，自从winmm.dll开发以来，微软软件开发规范有了长足的进步，现在看自己写的这些旧代码很痛苦。1980年代内存很贵，代码大小为王，开发软件时会牺牲可读性以换取尽可能小的代码尺寸。<br/><br/>顺便说一句，不只是winmm.dll或微软产品有这些现象，任何足够老的代码都具有这些特征。我相信，当你审查任何陈旧的代码时，都会发现我所描述的现象。<br/><br/>scz: 代码老去的时候，就是大洞出场的时候。微软、苹果这些世界级的软件厂商，在考量向后兼容性时，绝对不会像国产手机厂商那样，重构、完全替换、blahblah，啥？不兼容了？关我P事，谁让你买我家手机的，活该！另一方面，微软、苹果的大洞出场时，历史一般很"悠久"。</p>
+        
+</body>
+</html>

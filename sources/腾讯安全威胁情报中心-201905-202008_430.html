@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>威胁情报日报（2019.8.12）：数码相机存在的安全漏洞可能导致勒索病毒攻击</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>威胁情报日报（2019.8.12）：数码相机存在的安全漏洞可能导致勒索病毒攻击</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI5ODk3OTM1Ng==&amp;mid=2247491349&amp;idx=1&amp;sn=a37c61e4c3f98c893978bc7fe3e8cc65&amp;chksm=ec9cc666dbeb4f7013d9edf29aefd1631b3e863c1effadd66926063a6f05f4646db3afe140e8&amp;scene=126&amp;sessionid=1681278516#rd">http://mp.weixin.qq.com/s?__biz=MzI5ODk3OTM1Ng==&amp;mid=2247491349&amp;idx=1&amp;sn=a37c61e4c3f98c893978bc7fe3e8cc65&amp;chksm=ec9cc666dbeb4f7013d9edf29aefd1631b3e863c1effadd66926063a6f05f4646db3afe140e8&amp;scene=126&amp;sessionid=1681278516#rd</a></blockquote><p>数码相机中使用的图像传输协议（PTP）漏洞使安全研究人员能够通过恶意WiFi连接感染勒索软件，加密存储卡的照片文件，研究人员测试了佳能EOS 80D数码单反相机。<br/><br/>在佳能相机中实现图片传输协议（PTP）时发现了六个漏洞，其中一些漏洞为各种攻击提供了漏洞利用选项。<br/><br/>攻击的最后阶段是完全接管设备，允许黑客在相机上部署任何类型的恶意软件。<br/></p><p style="text-align: center;"><img class="rich_pages" data-ratio="0.5721040189125296" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/6AoQM3RKCWVULib4sFFzKYib58Hm7TgbMmDuDSno8VRKv7u1xOdXtNnDfNicIZ8p6YQMJRJZtzfbcLCFlibSFwTHnA/640?wx_fmt=png" data-type="png" data-w="846" style="" src="../Images/05dbdc2d73ee6f6c31c5d3e9b0fba6c1.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/6AoQM3RKCWVULib4sFFzKYib58Hm7TgbMmDuDSno8VRKv7u1xOdXtNnDfNicIZ8p6YQMJRJZtzfbcLCFlibSFwTHnA/640?wx_fmt=png"/></p><p><br/></p><p>在跳过一些环节以获得非加密形式的固件后，安全研究员Eyal Itkin能够分析佳能相机中PTP的实现方式。<br/><br/>他们扫描了所有148个支持的命令，并将列表缩小到38个接收输入缓冲区的列表。<br/><br/>下面列出了易受攻击的命令及其唯一的数字操作码。但是，并非所有这些都是未经授权访问相机所必需的。<br/><br/>CVE-2019-5994 - SendObjectInfo中的缓冲区溢出（操作码0x100C）<br/>CVE-2019-5998 - NotifyBtStatus中的缓冲区溢出（操作码0x91F9）<br/>CVE-2019-5999- BLERequest中的缓冲区溢出（操作码0x914C）<br/>CVE-2019-6000- SendHostInfo中的缓冲区溢出（opcode0x91E4）<br/>CVE-2019-6001- SetAdapterBatteryReport中的缓冲区溢出（操作码0x91FD）<br/>CVE-2019-5995 - 无提示的恶意固件更新<br/><br/>第二个和第三个错误在与蓝牙相关的命令中，尽管目标相机模块不支持这种类型的连接。<br/></p><p><br/></p><p><strong>情报来源：</strong><br/>https://www.bleepingcomputer.com/news/security/canon-dslr-camera-infected-with-ransomware-over-the-air/<br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>安全研究员通过JavaScript攻击破解了ASLR技术</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>安全研究员通过JavaScript攻击破解了ASLR技术</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485583&amp;idx=4&amp;sn=d22c3a08b8211d6c116625f976a54c3a&amp;chksm=ea9739e5dde0b0f3e301d8acbc83b26a37d03a5b0fbaa1b58d63f616e38c4e71b0459612fa5a&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485583&amp;idx=4&amp;sn=d22c3a08b8211d6c116625f976a54c3a&amp;chksm=ea9739e5dde0b0f3e301d8acbc83b26a37d03a5b0fbaa1b58d63f616e38c4e71b0459612fa5a&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKialuKoWpT5bn0p4Q5bK4Y4uceMmSRNBkicKy6oLUcswmVowogqA5fAPg3L4nSlAj6qVxAzb976xXlUw/0?wx_fmt=jpeg" data-ratio="0.9971181556195965" data-w="347" src="../Images/6688768f0cf752a7b28adabdeb5b2d6d.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKialuKoWpT5bn0p4Q5bK4Y4uceMmSRNBkicKy6oLUcswmVowogqA5fAPg3L4nSlAj6qVxAzb976xXlUw/0?wx_fmt=jpeg"/></p><p><br/></p><p><a><strong>一篇论文</strong></a><strong>指出，地址空间布局随机化 (ASLR)保护技术可通过JavaScript攻击被破解，且无需任何特别的指令或软件功能。</strong></p><p><br/></p><p>来自荷兰阿姆斯特丹自由大学的研究团队指出，ASLR在基于缓存的基础架构上从根本上讲是不安全的，尽管它被用于抵御内存损坏攻击的主要防御线。尽管针对ASLR的现有攻击依靠的是软件漏洞或重复的内存侦探，但其实更简单的攻击也可以办到。</p><p><br/></p><p>他们在论文中指出，研究人员详述了一种新的针对现代处理器的内存管理单元 (MMU)执行的虚拟地址变换的EVICT+TIME 缓存攻击。</p><p><br/></p><p>这种攻击被称作ASLR⊕Cache或 AnC，它能让攻击者将受害者的代码和数据的虚拟地址去随机化。因为攻击仅依靠基本的内存访问，因此可在JavaScript中实现，研究人员也演示了这种实现是如何在Linux系统中的两大主要浏览器（Chrome和火狐）破解代码并堆积ASLR的。</p><p><br/></p><p>研究人员表示，在从虚拟转换到物理地址的过程中，攻击依赖MMU和缓存之间的相互作用，这种行为对在CPU上有效地执行代码很关键。他们表示，这个问题就在于当前的基础架构能让具有相关知识的攻击者编制能够展示时间性差异的内存访问披露内存访问并推断出组成地址的位。这些时间性差异起着根本作用，反映了缓存在分级存储器体系中优化访问权限的方式。</p><p><br/></p><p>AnC攻击适用于当前广泛的基础架构，包括Intel、ARM 和AMD，而如果不禁用缓存，缓解是很难的，因为攻击针对的是MMU的底层操作。研究人员表示攻击可在被测试的基础架构上实施，且除了ARMv7外，所有的基础架构都会导致ASLR被完全去匿名化。</p><p><br/></p><p>研究人员表示可通过性能计数器检测正在实施过程中的攻击，但这种防御措施易产生误报。另外可使用将共享LLC分区的方式，不过性能会受影响，而降低计数器的转强度让攻击者很难区分缓存和内存访问的方式部署起来又很昂贵。<span style="line-height: 1.6;">另外，还可通过将</span><span style="line-height: 1.6;">PT</span><span style="line-height: 1.6;">条目缓存到单独的缓存而不是数据缓存的方法进行缓解。</span></p>
+        
+</body>
+</html>

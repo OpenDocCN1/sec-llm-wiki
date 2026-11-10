@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Linux下MySQL编译安装及初始化</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Linux下MySQL编译安装及初始化</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5MTYxNjQxOA==&amp;mid=2652839824&amp;idx=3&amp;sn=a549211a035226789db1c79f44dfcaf8&amp;chksm=bd59635d8a2eea4b139e5a045e6ffcbaf244d2416d38607da24cf09fe3237793b0c9b37d36ec&amp;scene=126&amp;sessionid=1681574200#rd">http://mp.weixin.qq.com/s?__biz=MjM5MTYxNjQxOA==&amp;mid=2652839824&amp;idx=3&amp;sn=a549211a035226789db1c79f44dfcaf8&amp;chksm=bd59635d8a2eea4b139e5a045e6ffcbaf244d2416d38607da24cf09fe3237793b0c9b37d36ec&amp;scene=126&amp;sessionid=1681574200#rd</a></blockquote><h2><strong><span style="font-size: 20px;">环境</span></strong></h2><hr/><h2><br/></h2><h2><span style="font-size: 14px;">操作系统：CentoOS 6.7 x64<br/>御马安装包：/opt/mysql-5.6.29.tar.gz<br/>MySQL安装目录：/opt/yliyun/mysql</span><strong><span style="font-size: 20px;"/></strong><br/></h2><p><br/></p><h2><strong><span style="font-size: 20px;">第一步 安装编译所需依赖</span></strong></h2><hr/><p><br/></p><pre class="hljs sql"><code><span style="font-size: 14px;">yum -y install wget bison gcc gcc-c++ autoconf automake zlib* libxml* ncurses-devel libtool-ltdl-devel* cmake make</span></code></pre><h2><br/></h2><h2><strong><span style="font-size: 20px;">第二步 解压</span></strong></h2><hr/><pre class="hljs nginx"><code><span style="font-size: 14px;">cd /opt
+tar zxf mysql-5.6.29.tar.gz</span></code></pre><p><br/></p><h2><strong><span style="font-size: 20px;">第三步 编译安装</span></strong></h2><hr/><p><br/></p><pre class="hljs ruby"><code><span style="font-size: 14px;">cd /opt/mysql-5.6.29cmake . \
+-DCMAKE_INSTALL_PREFIX=/opt/yliyun/mysql \
+-DMYSQL_DATADIR=/opt/yliyun/mysql/data \
+-DINSTALL_LIBDIR=/opt/yliyun/mysql/lib \
+-DINSTALL_PLUGINDIR=/opt/yliyun/mysql/plugin \
+-DMYSQL_UNIX_ADDR=/opt/yliyun/mysql/data/mysql.sock \
+-DSYSCONFDIR=/opt/yliyun/mysql/etc \
+-DMYSQL_USER=root \
+-DMYSQL_TCP_PORT=3306 \
+-DDEFAULT_CHARSET=utf8 \
+-DDEFAULT_COLLATION=utf8_general_ci \
+-DWITH_INNOBASE_STORAGE_ENGINE=1 make</span><span style="font-size: 14px;">make install</span></code></pre><h2><br/><strong><span style="font-size: 20px;"/></strong></h2><h2><strong><span style="font-size: 20px;">第四步 初始化数据库</span></strong></h2><hr/><p><br/></p><pre class="hljs ruby"><code><span style="font-size: 14px;">cd /opt/yliyun/mysql
+scripts/mysql_install_db --user=root --datadir=/opt/yliyun/mysql/data</span></code></pre><p><br/></p><h2><strong><span style="font-size: 20px;">第五步 默认配置文件my.cnf</span></strong></h2><hr/><p><br/></p><pre class="hljs perl"><code><span style="font-size: 14px;">mkdir -pv /opt/yliyun/mysql/etc
+cp -f /opt/yliyun/mysql/support-files/my-default.cnf /opt/yliyun/mysql/etc/my.cnf</span></code></pre><p>修改 /opt/yliyun/mysql/etc/my.cnf内容，部分修改如下：</p><p><span data-original-title="全选" class="selectCode code-tool" data-toggle="tooltip" data-placement="top" title=""/><br/></p><pre class="hljs sql"><code><span style="font-size: 14px;">[mysqld]
+
+ innodb_buffer_pool_size = 128M
+
+ log_bin=mysql-bin
+
+ expire-logs-days=30
+ binlog-do-db=yliyun binlog-do-db=yliyun_log binlog-ignore-db=test
+
+ basedir = /opt/yliyun/mysql
+ datadir = /opt/yliyun/mysql/data
+ port = 3306
+ server_id = 1
+ socket = /opt/yliyun/mysql/data/mysql.sock user = root
+
+ join_buffer_size = 128M</span><span style="font-size: 14px;" class="hljs-operator">sort_buffer_size = 2M
+ read_rnd_buffer_size = 2M 
+
+ key_buffer_size = 16M
+ max_allowed_packet = 8M
+ table_open_cache = 64
+ skip-name-resolve<br/></span></code></pre><pre class="hljs sql"><code><span style="font-size: 14px;">innodb_file_per_table = 1
+
+ innodb_log_file_size = 16M
+ innodb_log_buffer_size = 4M
+
+ slow_query_log_file = /opt/yliyun/mysql/logs/slowquery.log
+ slow_query_log = 1
+ long_query_time = 1sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES
+
+[mysqld_safe]log-error=/opt/yliyun/mysql/logs/mysql-error.log</span></code></pre><h2><br/><strong><span style="font-size: 20px;"/></strong></h2><h2><strong><span style="font-size: 20px;">第六步 配置开机启动</span></strong></h2><hr/><p><br/></p><pre class="hljs cs"><code><span style="font-size: 14px;">mkdir -pv /var/lock/subsys/mysql
+cp -f /opt/yliyun/mysql/support-files/mysql.server /etc/rc.d/init.d/mysqld</span></code></pre><p>修改/etc/rc.d/init.d/mysqld中如下内容：</p><pre class="hljs ini"><code><span style="font-size: 14px;">basedir=/opt/yliyun/mysqldatadir=$basedir/datamysqld_pid_file_path="$datadir/mysql.pid"</span></code></pre><p>配置开机启动</p><pre class="hljs sql"><code><span style="font-size: 14px;">chmod 755 /etc/rc.d/init.d/mysqld
+chkconfig --add mysqldservice mysqld start</span></code></pre><h2><br/><strong><span style="font-size: 20px;"/></strong></h2><h2><strong><span style="font-size: 20px;">第七步 设置root管理员密码</span></strong></h2><hr/><p><br/></p><pre class="hljs coffeescript"><code><span style="font-size: 14px;">/opt/yliyun/mysql/bin/mysqladmin -u root password "root密码"</span></code></pre><h2><br/><strong><span style="font-size: 20px;"/></strong></h2><h2><strong><span style="font-size: 20px;">第八步 删除空密码账户</span></strong></h2><hr/><h2><br/></h2><pre class="hljs sql"><code><span style="font-size: 14px;">mysql/bin/mysql -uroot -p -e "use mysql; delete from user where password='';"</span></code></pre><p><br/></p><section class="wx96Diy" data-source="bj.96weixin.com">
+			<section class="96wxDiy" style="clear: both; width: 100%; margin: 0px auto; overflow: hidden;"><section style="margin: 0.5em 0px;"><section class="96wx-bdc" style="border-width: 2px; border-style: solid dotted; padding: 0px; margin: 0px; border-color: rgb(0, 176, 80);"><section style="padding: 20px;"><p style="text-align: center;"><strong>推荐实验：</strong></p><p class="pro-name" style="float: left; text-align: right;">                           Linux进阶</p><p style="text-align: center;"><img data-w="279" data-ratio="0.5376344086021505" data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz/3RhuVysG9Lcd86IjYRfxnxS17FicicgjdEL2sndn8sQ6MXdrPyO7McGF3rHjMJW5RrHPCYMP2dcHCKgQzTf4LePA/0?wx_fmt=jpeg" src="../Images/3927b3ea68dfa240533cdc3a0ff62c3c.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3RhuVysG9Lcd86IjYRfxnxS17FicicgjdEL2sndn8sQ6MXdrPyO7McGF3rHjMJW5RrHPCYMP2dcHCKgQzTf4LePA/0?wx_fmt=jpeg"/><br/></p></section></section></section></section>
+		</section><section class="wx96Diy cur" data-source="bj.96weixin.com">
+			<section class="96wxDiy" style="clear: both; width: 100%; margin: 0px auto; overflow: hidden;"><section class="96wx-bdc" style="margin: 0.5em 0px; border-width: 1px; border-style: solid; border-color: rgb(0, 176, 80); -moz-border-top-colors: none; -moz-border-right-colors: none; -moz-border-bottom-colors: none; -moz-border-left-colors: none; padding: 10px 5px; min-height: 60px;"><p class="96wx-bgc" style="float: left; padding-right: 0.1em; font-size: 2.7em; line-height: 1em; font-family: inherit; font-weight: inherit; text-align: inherit; text-decoration: inherit; color: rgb(252, 252, 252); margin-right: 5px; background-color: rgb(0, 176, 80);">转<br/></p><p style="font-size: 1em; line-height: 1.4; font-family: inherit; font-weight: inherit; text-align: left; text-decoration: inherit; display: inline;"> </p><p style="font-size: 1em; line-height: 1.4; font-family: inherit; font-weight: inherit; text-align: left; text-decoration: inherit; display: inline;">分享是一种美德！<br/></p><p style="font-size: 1em; line-height: 1.4; font-family: inherit; font-weight: inherit; text-align: left; text-decoration: inherit; display: inline;"><span style="color: rgb(122, 79, 214);">为了那些和你一样需要这些知识的人，请转发！</span></p></section></section>
+		</section><p style="line-height: 2em; white-space: normal;">注：<span style="font-size: 14px;">分享此文章积赞15个，合天就会送大家20个合式币，还会随机抽取一名幸运者，奉上   小米LED随身灯一个。</span><span style="font-size: 14px; color: rgb(255, 76, 65);">要发截屏给小编，空口无凭嘛，</span><span style="font-size: 14px;"/><span style="font-size: 14px; color: rgb(255, 76, 65);">每人每天一次机会！</span></p><p><br/></p>
+        
+</body>
+</html>

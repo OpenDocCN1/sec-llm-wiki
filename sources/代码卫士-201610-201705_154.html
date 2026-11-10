@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>使用错误工具反而会削弱网络安全</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>使用错误工具反而会削弱网络安全</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485563&amp;idx=4&amp;sn=1eae1ed97665dc7744922d4089a29750&amp;chksm=ea973911dde0b00741ab6bbb495e394079a4c70ffb799e325c182869ed15d5e9ec6d8f4afb3d&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485563&amp;idx=4&amp;sn=1eae1ed97665dc7744922d4089a29750&amp;chksm=ea973911dde0b00741ab6bbb495e394079a4c70ffb799e325c182869ed15d5e9ec6d8f4afb3d&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKianMfHLevicTQFE4heoTXrYOyuq256wvia8C3VuF2kuJo1icQvyNrshYSEn0Jic96VgLQ402Nu40pibfmyw/0?wx_fmt=jpeg" data-ratio="0.5370370370370371" data-w="648" src="../Images/4fa84ba77510bb6db3f2dd04a67063d7.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKianMfHLevicTQFE4heoTXrYOyuq256wvia8C3VuF2kuJo1icQvyNrshYSEn0Jic96VgLQ402Nu40pibfmyw/0?wx_fmt=jpeg"/></p><p><br/></p><p><strong>研究人员发表论文称，有些杀毒和网络防御工具实际上在削弱网络安全。这是HTTPS拦截中间设备和网络监控产品存在的问题。</strong></p><p><br/></p><p>这类产品很常见，用于检查是否存在可疑活动。然而，这些设备因为通过SSL、TLS等协议而绕开了网络流量加密，从而导致网络易受中间人攻击。研究人员在名为<a>《HTTPS拦截产生的安全影响》论文</a>中指出，对最常见的TLS拦截中间设备和客户端拦截软件进行测试后发现它们多数都会引入安全漏洞。</p><p><br/></p><p>研究人员指出，“虽然对于某些老旧客户端来说，代理增强了连接的安全性，但对于所引入的漏洞来说这些改进不足为道：97%的火狐连接、32%的电商连接和54%的Cloudflare连接被拦截后安全性会变弱”，而且“这些被严重损坏的多数连接是由基于网络的中间设备而非客户端安全软件引发的：62%的中间设备连接安全性变弱，而58%的中间设备连接存在严重漏洞从而启动后续拦截”。</p><p><br/></p><p>在研究人员所测试的12款中间设备中（包括Checkpoint、Juniper、Sophos产品），只有一款达到A级。5款设备被评为F级即不合格也就是说它们会引发严重漏洞；其余4款产品是C级即合格水平。换句话说，如果网络上存在中间设备但不是Blue Coat ProxySG 6642，那么趁早删除吧。</p><p><br/></p><p>同样，在来自12家公司的20款客户端软件产品中，只有两款获得A级水平：Avast的 AV 11 Windows版本而非Mac版本，以及Bullguard的Internet Security 16。10款产品是F级，余下的8款是C级。</p><p><br/></p><p>为什么说一些错误工具会削弱网络安全呢？客户端和服务器在互联网上的TLS和SSL加密通信是通过使用数字证书来创建身份链来完成。证书由受信任的第三方提供并且它会验证你的连接是否跟受信任服务器连接。</p><p><br/></p><p>因此为了运行，一台拦截设备需要将自己受信任的证书发布给客户端设备或者用户需要不断看到告警信息提示连接不安全。</p><p><br/></p><p>浏览器和其它应用程序使用这个证书来验证加密连接，但这就产生两个问题。首先，验证网络服务器的证书是不可能实现的，其次也是更重要的一点是，监督产品跟网络服务器通信的方式对于用户来讲是不可见的。换句话说，用户只能确保自己跟拦截产品的连接是合法的，但无法知道其余的通信也就是跟网络服务器的通信是否安全或者是否被攻陷。</p><p><br/></p><p>结果，很多这种中间设备和拦截软件组件本身的安全性很差，它们很多都没有在重新加密并发送客户端数据时没有验证服务器证书链。其中很多中间设备和拦截软件组件在发送证书链验证错误时不力，导致用户对于可能存在的攻击不明就里。</p><p><br/></p><p>换句话说，检查安全系统的工作削弱了它本应该去检查的安全性。就像有人把你家门敞开而在检查钥匙合不合适。那么解决方案是什么？CERT指出可以到badssl.com网站上验证你的监督产品的验证工作是否有效。当然，也可以查看SSL论文并确保不再使用被标记为安全性差的产品。</p><p><br/></p><p><br/></p><p><strong style="white-space: normal;">本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。</strong></p>
+        
+</body>
+</html>

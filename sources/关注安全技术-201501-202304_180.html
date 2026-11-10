@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>ImageMagick popen_utf8命令注入 漏洞报告</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>ImageMagick popen_utf8命令注入 漏洞报告</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA4MDMwMjQ3Mg==&amp;mid=2651864901&amp;idx=1&amp;sn=f8ef6d363ff98551edd46f790901e25a&amp;chksm=8442c7a2b3354eb4d76af000ae1144cfc8efa0c2c9ade35511cd1bfcc7291adaaca3ad7b9d16&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA4MDMwMjQ3Mg==&amp;mid=2651864901&amp;idx=1&amp;sn=f8ef6d363ff98551edd46f790901e25a&amp;chksm=8442c7a2b3354eb4d76af000ae1144cfc8efa0c2c9ade35511cd1bfcc7291adaaca3ad7b9d16&amp;scene=27#wechat_redirect</a></blockquote><h3>from:http://blog.knownsec.com/2016/05/imagemagick-popen-remote-command-execution-vulnerability/</h3><h3>一、漏洞概要</h3><h4>i. 漏洞描述</h4><p>ImageMagick是一款使用量很广的图片处理程序，很多厂商都调用了这个程序进行图片处理，包括图片的伸缩、切割、水印、格式转换等等。我发现当用户传入一个包含|竖线的文件名的时候，就有可能触发命令注入漏洞。</p><h4>ii. 漏洞影响</h4><p>测试：ImageMagick-7.0.1-2.tar.bz2</p><h4>iii. 漏洞分析</h4><p>ImageMagick在处理文件名时会调用OpenBlob()函数，在OpenBlob()函数中，代码2484行，判断文件名是否以|竖线开头，如果是，那么他会调用popoen_utf8()函数处理文件名，代码如图：</p><p><img data-w="" data-ratio="0.39748201438848924" data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IHpicsAMJcgkrgdhxCfuESZzicZdxwSAkiag3eaogD53rVLI9wRGViaMGmnRHhGxVbccVQbydEiaTJoukQ/0?wx_fmt=png" src="../Images/2f497c61059d5d3d32cc7b8c760a160f.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IHpicsAMJcgkrgdhxCfuESZzicZdxwSAkiag3eaogD53rVLI9wRGViaMGmnRHhGxVbccVQbydEiaTJoukQ/0?wx_fmt=png"/><br/>来到popoen_utf8()函数，popen_utf8()函数调用会调用popen()函数打开文件，这样就导致我们可以注入系统命令，代码如图：</p><p><img data-w="" data-ratio="0.3129496402877698" data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IHpicsAMJcgkrgdhxCfuESZzzL4Xt55Vvb6AB8eYN5ja76MNC10SBmf5kh82YymIgjfNYzIz5t3beA/0?wx_fmt=png" src="../Images/9200f3c6b283852ed6a61f3b59e7016d.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IHpicsAMJcgkrgdhxCfuESZzzL4Xt55Vvb6AB8eYN5ja76MNC10SBmf5kh82YymIgjfNYzIz5t3beA/0?wx_fmt=png"/><br/></p><h1>ImageMagick popen_utf8命令注入 漏洞报告</h1><p>
+				</p><p>2016-05-30</p><p>
+				</p><p><strong>Author: niubl（知道创宇404安全实验室）</strong></p><p><strong>Date: 2016-05-07</strong></p><h3>一、漏洞概要</h3><h4>i. 漏洞描述</h4><p>ImageMagick是一款使用量很广的图片处理程序，很多厂商都调用了这个程序进行图片处理，包括图片的伸缩、切割、水印、格式转换等等。我发现当用户传入一个包含|竖线的文件名的时候，就有可能触发命令注入漏洞。</p><h4>ii. 漏洞影响</h4><p>测试：ImageMagick-7.0.1-2.tar.bz2</p><h4>iii. 漏洞分析</h4><p>ImageMagick在处理文件名时会调用OpenBlob()函数，在OpenBlob()函数中，代码2484行，判断文件名是否以|竖线开头，如果是，那么他会调用popoen_utf8()函数处理文件名，代码如图：</p><p><img data-w="" data-ratio="0.39748201438848924" data-type="png" class="alignnone wp-image-3474" data-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IHpicsAMJcgkrgdhxCfuESZzlpPt3aLmM0Aic81WVfrI42jjBibib7ibFXt6XN2qmsm7JL1ZPk3bXSfCqw/0?wx_fmt=png" height="255" width="640" src="../Images/6541a58917351854517123f2dc09a973.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IHpicsAMJcgkrgdhxCfuESZzlpPt3aLmM0Aic81WVfrI42jjBibib7ibFXt6XN2qmsm7JL1ZPk3bXSfCqw/0?wx_fmt=png"/></p><p>来到popoen_utf8()函数，popen_utf8()函数调用会调用popen()函数打开文件，这样就导致我们可以注入系统命令，代码如图：</p><p><img data-w="" data-ratio="0.3129496402877698" data-type="png" class="alignnone wp-image-3475" data-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IHpicsAMJcgkrgdhxCfuESZzU7FicwJ5X02xV7MDBt7FicRdcTDib0Fia45F4uh6XWwv2vVuyibQhEkv5ag/0?wx_fmt=png" height="201" width="640" src="../Images/3a20b4c2733fb5cfbaf5a560e20ba3e2.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IHpicsAMJcgkrgdhxCfuESZzU7FicwJ5X02xV7MDBt7FicRdcTDib0Fia45F4uh6XWwv2vVuyibQhEkv5ag/0?wx_fmt=png"/></p><h4>iv. 漏洞利用（PHP）</h4><p>在PHP禁用执行系统命令函数的时候，我们可以用他来绕过disable_funtion，PHP编写如下代码：</p><p>
+
+		</p><p>
+		
+			</p><p><span class="crayon-title"/>
+			</p><p><span class="crayon-mixed-highlight" title="含多种语言"/></p><p>
+			
+			</p><p/><p>
+			</p><p>
+				</p><table class="crayon-table">
+					<tbody><tr class="crayon-row">
+				<td class="crayon-nums" data-settings="show">
+					<p>1</p><p>2</p><p>3</p>
+				</td>
+						<td class="crayon-code"><p><span class="crayon-ta">&lt;?php</span></p><p><span class="crayon-r">new</span><span class="crayon-h"> </span><span class="crayon-e">Imagick</span><span class="crayon-sy">(</span><span class="crayon-s">'|touch /tmp/niubl'</span><span class="crayon-sy">)</span><span class="crayon-sy">;</span></p><p><span class="crayon-ta">?&gt;</span></p></td>
+					</tr>
+				</tbody></table><p>
+			</p><p>
+		</p><p>使用PHP执行，结果如图：</p><p><img data-w="" data-ratio="0.7482014388489209" data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IHpicsAMJcgkrgdhxCfuESZz61iaMuqecUy5ewn4LOL7g88lvDy5Wkf1KQRuPCWAZE8E8mrlky2H7wA/0?wx_fmt=png" src="../Images/ce7171e4a457a5d80173bcfe0352dcbe.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IHpicsAMJcgkrgdhxCfuESZz61iaMuqecUy5ewn4LOL7g88lvDy5Wkf1KQRuPCWAZE8E8mrlky2H7wA/0?wx_fmt=png"/><br/></p>
+        
+</body>
+</html>

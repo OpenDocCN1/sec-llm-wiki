@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>黑客利用Portmap增强DDoS攻击</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>黑客利用Portmap增强DDoS攻击</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485900&amp;idx=4&amp;sn=7c3027813ab80475927e3f66f88a1e87&amp;chksm=ea9738a6dde0b1b0a81c641b32eab802faafabc15b3108f68e59aff69a6591a55a64c875a770&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485900&amp;idx=4&amp;sn=7c3027813ab80475927e3f66f88a1e87&amp;chksm=ea9738a6dde0b1b0a81c641b32eab802faafabc15b3108f68e59aff69a6591a55a64c875a770&amp;scene=27#wechat_redirect</a></blockquote><p>安全观察人员告警称一种新型DDoS增强攻击威胁出现，原因是太多用户没有遵照基本的安全规则行事。</p><p><br/></p><p>过去几年来，配置不当的服务如DNS或NTP被利用发动DDoS攻击。而最近几周以来Portmap（端口映射器）已变成DDoS的攻击向量。攻击者主要针对游戏、托管及互联网垂直基础架构。</p><p><br/></p><p>Portmap与DNS和NTP不同，它在面向互联网的系统上并没有企业可暴露。禁用或拦截面向互联网的Portmap服务并不复杂，但太多网络管理员忽视了这个人人皆知的实践从而可黑客带来可趁之机。</p><p><br/></p><p>一名安全工程经历指出，Portmap（端口111/UDP）在许多UNIX分布上当做常见服务使用，包括Linux以及Solaris。其实Portmap并非新型攻击。</p><p><br/></p><p>Portmap依然可在私密的内部网络中使用，但这项技术是明文形式而且未经验证。全球Portmap流量在过去两个月中增长了22%，但与其他
+UDP服务相比增长依然不大，但服务流量点的增长成为攻击的新宠。在面向互联网连接中支持Portmap的主机会沦为DDoS反射/增强攻击的共犯。</p><p><br/></p><p>其他没有在面向互联网系统上暴露企业的服务如SSDP最近被用于DDoS增强攻击中。不安全的Portmap安装正冒着相同的UDP增强攻击风险。</p><p>相关安全专家指出，虽然问题容易修复但短期内不会很快解决。禁用或拦截面向互联网的RPCbind/Portmap服务在每个单独系统中都是琐碎的工作，但对于互联网数百万可能受影响的系统来说并非如此。</p><p> </p>本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。
+        
+</body>
+</html>

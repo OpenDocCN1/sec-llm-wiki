@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>IRCTelnet：一种新型的物联网恶意软件</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>IRCTelnet：一种新型的物联网恶意软件</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485652&amp;idx=3&amp;sn=bcdfdecbfd46e140ee228dc26d2b6f22&amp;chksm=ea9739bedde0b0a80551f909fcf54882a1ba1983eac60888c252773bae51f3083f9a2e89d1fb&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485652&amp;idx=3&amp;sn=bcdfdecbfd46e140ee228dc26d2b6f22&amp;chksm=ea9739bedde0b0a80551f909fcf54882a1ba1983eac60888c252773bae51f3083f9a2e89d1fb&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKianQ0Ncq5KtdkuMIvXBvtb0DwuoDQkZFrWO0mf773Qpso2skbRODW0T2MIIWicdjHpIw6VWlTlICGicA/0?wx_fmt=jpeg" data-ratio="0.5294117647058824" data-w="340" src="../Images/ca22e852bf2700b872b06e33cf25c8be.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKianQ0Ncq5KtdkuMIvXBvtb0DwuoDQkZFrWO0mf773Qpso2skbRODW0T2MIIWicdjHpIw6VWlTlICGicA/0?wx_fmt=jpeg"/></p><p><br/></p><p><strong>一款新型的恶意软件家族出现，目标是基于Linux的物联网设备，主要目的是将这些设备添加进一个僵尸网络中并实行拒绝服务攻击。</strong></p><p><br/></p><p>这款恶意软件由安全研究人员MalwareMustDie发现，名为Linux/IRCTelnet，使用C++编写。</p><p><br/></p><p>研究人员表示，这款恶意软件主要感染基于Linux的设备，并且这些设备的Telnet端口都向互联网开放且使用弱密码。</p><p><br/></p><p><strong>IRCTelnet借鉴其他物联网恶意软件</strong></p><p><br/></p><p>IRCTelnet暴力破解设备的Telnet端口，感染设备的操作系统，并将其添加进通过IRC（Internet Relay Chat ，互联网中继聊天）控制的僵尸网络中。这意味着每个受感染的设备都连接到IRC频道，并读取贴在主聊天室的命令。</p><p><br/></p><p>很多物联网、Linux、Windows恶意软件都以这样的方式操作。</p><p><br/></p><p>MalwareMustDie表示IRCTelnet从其他物联网恶意软件中获取到很多灵感。使用IRC管理僵尸机器显然是从最成功的恶意软件Kaiten借鉴来的。</p><p><br/></p><p>相似的，Telnet扫描器和暴力破解系统是从GafGyt（也被称为Torlus、 Lizkebab、Bashlite、Bashdoor）借鉴来的。而默认的远程登录凭据列表是从最近的Mirai恶意软件借鉴的。</p><p><br/></p><p><strong>IRCTelnet支持IPv6泛洪攻击</strong></p><p><br/></p><p>MalwareMustDie表示这款恶意软件能够感染任何运行有Linux Kernel 2.6.32及以上版本的设备。</p><p><br/></p><p>能够针对IPv4 and IPv6地址实行泛洪攻击，但Telnet扫描器只能找到并针对IPv4实行攻击。</p><p><br/></p><p><strong>目前仅有3,400个僵尸机器</strong></p><p><br/></p><p>MalwareMustDie表示该恶意软件的初始扫描IP地址位于土耳其、摩尔多瓦和菲律宾。</p><p><br/></p><p>当他连接到僵尸网络的IRC频道，发现约有3,400台僵尸机器。</p>
+        
+</body>
+</html>

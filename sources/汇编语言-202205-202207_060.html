@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>QOpenglWidget 与QGLWidget的选择</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>QOpenglWidget 与QGLWidget的选择</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzIxNDcwOTcwOQ==&amp;mid=2247493751&amp;idx=1&amp;sn=40dd1b767e67e395bfb0fe4cc65b3b81&amp;chksm=97a1ccd5a0d645c3967b74d6d9bc0e2279496fbde24a7ac11b352c03e2ac7d4ca1cfd05176b8&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzIxNDcwOTcwOQ==&amp;mid=2247493751&amp;idx=1&amp;sn=40dd1b767e67e395bfb0fe4cc65b3b81&amp;chksm=97a1ccd5a0d645c3967b74d6d9bc0e2279496fbde24a7ac11b352c03e2ac7d4ca1cfd05176b8&amp;scene=27#wechat_redirect</a></blockquote><section style="text-align: left;line-height: 2em;"><span style="font-size: 14px;">1. QGLWidget 是Qt OpenGL模块，但是从其官方说明，推荐在Qt5.4 之后，使用QOpenglWidget版本，具体说明如下：</span></section><section style="text-align: left;line-height: 2em;"><span style="font-size: 14px;">　　Note: This class is part of the legacy </span><span style="font-size: 14px;">Qt OpenGL</span><span style="font-size: 14px;"> module and, like the other QGL classes, should be avoided in the new applications. Instead, starting from Qt 5.4, prefer using </span><span style="font-size: 14px;">QOpenGLWidget</span><span style="font-size: 14px;"> and the QOpenGL classes.</span></section><section style="text-align: left;line-height: 2em;"><span style="font-size: 14px;">2.目前Qt的版本是Qt5.9，如果对于新软件新平台的开发，则按照官方推荐版本，则使用QtOpenglWidget版本</span></section><section style="text-align: left;line-height: 2em;"><span style="font-size: 14px;"> </span></section><section style="text-align: left;line-height: 2em;"><span style="font-size: 14px;">但是，基于下述几点原因，往往还要使用QGlWidget版本。</span></section><section style="text-align: left;line-height: 2em;"><span style="font-size: 14px;">（1）开发Qt应用适应于XP平台，其中兼容性问题，Qt5.4（不含）之后的QtOpenglWidget 则不兼容，有些功能效果显示异常，已经测试。</span></section><section style="text-align: left;line-height: 2em;"><span style="font-size: 14px;">（2）当前开源版本的软件，由于并未对及时对新版本Qt5.4（不含）之后的QtOpenglWidget进行新修改，并且还是采用QGlwidget的写法，</span></section><section style="text-align: left;line-height: 2em;"><span style="font-size: 14px;">因此还需要使用QGlWidget的版本，目前QGlWidget的支持最高到Qt5.4.2.</span></section><p style="text-align: center;margin-bottom: 0em;"><img class="rich_pages wxw-img" data-galleryid="" data-ratio="0.6675" data-s="300,640" data-type="jpeg" data-w="800" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/fAG5BYsI9fXHaNAeJq5qc6DzpJSTmiaZuDr7icxbqQvuGN6VvFUoDcpwOQazGn4Ha4nAj7RsMZYDm9H8fXU7Tn0A/640?wx_fmt=jpeg" style="" src="../Images/7593f185d51dd5767c0b7bd47879db95.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/fAG5BYsI9fXHaNAeJq5qc6DzpJSTmiaZuDr7icxbqQvuGN6VvFUoDcpwOQazGn4Ha4nAj7RsMZYDm9H8fXU7Tn0A/640?wx_fmt=jpeg"/></p><section style="text-align: left;line-height: 2em;"><br/></section>
+        
+</body>
+</html>

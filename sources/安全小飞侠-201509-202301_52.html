@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>WebDAV本地提权漏洞（CVE-2016-0051）之交互式提权EXP</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>WebDAV本地提权漏洞（CVE-2016-0051）之交互式提权EXP</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAwMzAwOTQ5Nw==&amp;mid=403122961&amp;idx=1&amp;sn=da5427e65e751e0141f7f8dd738cd6af&amp;chksm=073235a73045bcb1a8d084e3903bb963bf22e546572ebfeff941602f93e7cb4ba749cf79f761&amp;scene=126&amp;sessionid=1681663704#rd">http://mp.weixin.qq.com/s?__biz=MzAwMzAwOTQ5Nw==&amp;mid=403122961&amp;idx=1&amp;sn=da5427e65e751e0141f7f8dd738cd6af&amp;chksm=073235a73045bcb1a8d084e3903bb963bf22e546572ebfeff941602f93e7cb4ba749cf79f761&amp;scene=126&amp;sessionid=1681663704#rd</a></blockquote><h1>0x00 背景<br/></h1><p>
+	WebDAV本地提权漏洞存在于Microsoft Web 分布式创作和版本管理 (WebDAV)中，如果 Microsoft Web 
+分布式创作和版本管理 (WebDAV) 客户端验证输入不当，那么其中就会存在特权提升漏洞。成功利用此漏洞的攻击者可以使用提升的特权执行任意代码。</p><h1><br/></h1><h1>
+	0x01 利用<br/></h1><p>
+	2016年2月10日，有人在exploit-db上公开了一个提权的EXP，该EXP是由C#编写的.</p><p><br/></p><p>但是简单测试了这个EXP之后发现其在运行完之后会弹出一个提权后的cmd窗口。而在实战中，通常我们的提权exp是在命令行下运行的，因而我们需要得到一个交互式的提权shell，而该exp似乎并不满足我们的实战需求。</p><p>
+	<img data-src="http://mmbiz.qpic.cn/mmbiz/4WwicSnkicVGeYlzsqkaicSzdue4Qnm8lcP5YSBLaMOPQQfWCL8yEQUvCqt5Iqicb3sicMsvI4icOJ6S3iaibYVd42CqqA/0?wx_fmt=png" class="" data-type="png" data-ratio="0.43345323741007197" data-w="" src="../Images/121d4e87cee356ba4969f21a6b5ac8f4.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/4WwicSnkicVGeYlzsqkaicSzdue4Qnm8lcP5YSBLaMOPQQfWCL8yEQUvCqt5Iqicb3sicMsvI4icOJ6S3iaibYVd42CqqA/0?wx_fmt=png"/></p><p><br/></p><p>仔细分析了exp源码发现，原作者在执行了shellcode特权提升之后通过Process.Start(“cmd”)获得了shell，这实际上是另起了一个cmd.exe进程，也就产生了一个新的cmd窗口。</p><pre class="prettyprint lang-cs"><span class="pln">                </span><span class="kwd">var</span><span class="pln"> identity </span><span class="pun">=</span><span class="pln"> </span><span class="typ">WindowsIdentity</span><span class="pun">.</span><span class="typ">GetCurrent</span><span class="pun">();</span><span class="pln">
+                </span><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">identity</span><span class="pun">?.</span><span class="typ">IsSystem</span><span class="pln"> </span><span class="pun">==</span><span class="pln"> </span><span class="kwd">true</span><span class="pun">)</span><span class="pln">
+                </span><span class="pun">{</span><span class="pln">
+                    </span><span class="typ">Console</span><span class="pun">.</span><span class="typ">WriteLine</span><span class="pun">(</span><span class="str">"[+] Got SYSTEM! Spawning a shell..."</span><span class="pun">);</span><span class="pln">
+                    </span><span class="typ">Process</span><span class="pun">.</span><span class="typ">Start</span><span class="pun">(</span><span class="str">"cmd"</span><span class="pun">);</span><span class="pln">
+                </span><span class="pun">}</span></pre><p>为了获得一个交互式的提权shell，我对源代码进行了一些修改。编译之后，一个交互式的提权EXP便产生了，执行效果如下：</p><p>
+	<img data-src="http://mmbiz.qpic.cn/mmbiz/4WwicSnkicVGeYlzsqkaicSzdue4Qnm8lcPYnsc0b9s8lnSC98eH4RsDPibrhuEHaIib4cpLFMFDic7lLnibdU1QX8VWg/0?wx_fmt=png" class="" data-type="png" data-ratio="1.0737410071942446" data-w="" src="../Images/57193ec73d423e8acbbd106db9280dda.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/4WwicSnkicVGeYlzsqkaicSzdue4Qnm8lcPYnsc0b9s8lnSC98eH4RsDPibrhuEHaIib4cpLFMFDic7lLnibdU1QX8VWg/0?wx_fmt=png"/></p><p><br/></p><p>MS16-016交互式提权shell下载地址： https://github.com/brianwrf/CVE-2016-0051/blob/master/EoP_avfisher.zip</p><p>
+	<strong><span style="color:#E53333;">声明： 本文所涉及工具仅作学习交流，请勿用于非法目的，否则后果自负！</span></strong></p><p>
+	<strong><span style="color:#E53333;"><br/></span></strong></p><p>
+	相关链接：</p><p>
+	https://github.com/koczkatamas/CVE-2016-0051/</p><p>
+	https://www.exploit-db.com/exploits/39432/</p><p>
+	http://www.secpulse.com/archives/42404.html</p><p style="margin-top: 5px; margin-bottom: 5px; white-space: normal; font-family: sans-serif; line-height: normal;"><br/></p><p style="margin-top: 5px; margin-bottom: 5px; white-space: normal; font-family: sans-serif; line-height: normal;">---<br/></p><p style="margin-top: 5px; margin-bottom: 5px; white-space: normal; font-family: sans-serif; line-height: normal;">查询和订阅最新安全事件，请关注”安全小飞侠“吧！</p><p style="margin-top: 5px; margin-bottom: 5px; white-space: normal; font-family: sans-serif; line-height: normal;"><img data-w="" data-ratio="1" data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz/4WwicSnkicVGcA2LKqs7rVATosYQJcXIts04XvpPGd1rUPVx81kTliaGkBcv1cNmzKdcEfoYKeY6SRIYUZlpgnFvA/0?wx_fmt=jpeg" src="../Images/c978ac3c90ff4cfb11cee8a135dbf6fa.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/4WwicSnkicVGcA2LKqs7rVATosYQJcXIts04XvpPGd1rUPVx81kTliaGkBcv1cNmzKdcEfoYKeY6SRIYUZlpgnFvA/0?wx_fmt=jpeg"/></p>
+        
+</body>
+</html>

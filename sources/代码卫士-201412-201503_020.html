@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>PDF文件中的JEPG黑白图像可能存在恶意脚本</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>PDF文件中的JEPG黑白图像可能存在恶意脚本</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247486013&amp;idx=5&amp;sn=cb170ab9b594f42df1fedd86721778a6&amp;chksm=ea973b57dde0b241c899137734e06c6a4ea3232442e7fc6899b2b0b4bacd0060012f5d200520&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247486013&amp;idx=5&amp;sn=cb170ab9b594f42df1fedd86721778a6&amp;chksm=ea973b57dde0b241c899137734e06c6a4ea3232442e7fc6899b2b0b4bacd0060012f5d200520&amp;scene=27#wechat_redirect</a></blockquote><p>一名研究人员指出，恶意代码可能会隐藏在PDF文件的灰度（黑白）JPEG图像中，并且会在不丢失信息的情况下在目标计算机上解码。</p><p><br/></p><p>尽管防病毒产品包含对有缺陷PDF文件的检测，但它们并没有验证通过有损压缩器如DCTDecode（一种JPEG兼容过滤器）等压缩过的数据。</p><p><br/></p><p><span style="color: rgb(0, 176, 80); ">安全专家低估了有损压缩器</span></p><p>由于性能的原因，以及一般认为信息会在解压缩时丢失并且恶意有效负载不会在进程中存活；所以，简言之，生成的文件近似于原始文件。</p><p><br/></p><p>当使用DCTDecode时，RGB颜色空间中的JEPG图像会被向下取样，因此会丢弃一些不会影响PDF文件整体效果的信息（高频分量）。</p><p><br/></p><p>然而，在黑白图像中并非如此。丹麦安全公司CSIS的研究人员Dénes Óvári在POC中阐述了这一点。在黑白图像中，像素仅仅承载了强度信息即黑色最强烈而白色最微弱。</p><p><br/></p><p>Dénes Óvári将短脚本进行了编码作为JPEG灰度图像，并且使用了最高品质设置。恶意代码以0×00字节填充直至下一个像素块（MCU），并多次重复了这一进程。</p><p><br/></p><p>Dénes Óvári在一篇名为《有损流中的脚本》论文中指出，代码被集成在由JavaScript动作引用、通过DCTDecode过滤的图像中。</p><p><br/></p><p><span style="color: rgb(0, 176, 80); ">Adobe Reader XI需要进行一些调整</span></p><p>在实验中，Dénes Óvári发现代码在没有丢失任何信息的情况下在Adobe Reader 9中进行了解压。然而在PDF阅读器的第XI版本中，一些信息在解压过程中进行了修改，而原始文件被损坏。</p><p><br/></p><p>他设法做出了一些调整，通过更改每个流像素块的一些字符使得文件可被再次使用。以这种方式隐藏恶意代码将导致有缺陷PDF文件分析中的一些标准工具变得不可见。</p><p><br/></p><p>Dénes Óvári表示，虽然POC演示的是在PDF文件中存储数据的一种新方法，但要执行恶意活动依然需要对漏洞进行利用。他的研究只是为了表明，将DCTDecode排除在潜在攻击途径之外可能会愚弄防病毒产品。</p><p><br/></p><p>Dénes Óvári指出，“我们或许应该重新审视对其它文件格式的处理。在其它文件格式中，JPEG格式的数据总是被认为进行了有损压缩，而灰度模式依然可行。”</p><p><br/></p><p>本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。</p><p><br/></p>
+        
+</body>
+</html>

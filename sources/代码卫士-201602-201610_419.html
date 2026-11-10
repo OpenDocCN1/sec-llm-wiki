@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>台湾广达路由器出现多个漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>台湾广达路由器出现多个漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485784&amp;idx=1&amp;sn=928bb336b2d9effb19f6c8a660b8face&amp;chksm=ea973832dde0b1246616ee208631c46d267122572391e7c6fda109fca6397de6efd70ece9a4a&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485784&amp;idx=1&amp;sn=928bb336b2d9effb19f6c8a660b8face&amp;chksm=ea973832dde0b1246616ee208631c46d267122572391e7c6fda109fca6397de6efd70ece9a4a&amp;scene=27#wechat_redirect</a></blockquote><p style="text-indent: 2em;"><strong>研究员Pierre Kim在台湾广达路由器中发现多个严重漏洞。台湾广达公司是全球最大的原始设备制造商。</strong></p><p style="text-indent: 2em;"><strong><br/></strong></p><p style="text-indent: 2em;">Kim在广达LTE QDH路由器中发现的漏洞数量超过了20个，并表示他只是在安全公告中列出了最为严重的漏洞，实际漏洞要更多。这些漏洞出现在固件版本01.00.05_1210中，不过其它设备中也有出现如QDH、UNE、Mobily和YooMee 4G路由器。这些路由器被销往全球各地。</p><p><br/></p><p style="text-indent: 2em;">Kim发现一个硬编码SSH服务器秘钥，可被用来解密流向路由器的SSH流量。此外，他还发现了几个默认根账户和管理员账户，这些账户可以绕过HTTP验证并且通过以太网和SSHd服务获得路由器的访问权限。Samba本地存储共享功能中和/bin/appmgr程序中也出现了后门。</p><p><br/></p><p style="text-indent: 2em;">/bin/appmgr程序还包括WPS系统的硬编码PIN码。此外，路由器还允许用户生成可被攻击者轻易暴力攻破的临时WPS PIN码。而默认无线密码非常弱也可被轻易暴力攻破。</p><p><br/></p><p style="text-indent: 2em;">Kim表示，攻击者能够获取敏感信息包括凭证和配置数据，他们甚至能够利用该设备的网络界面漏洞而无需进行获得验证。此外，Kim还在广达的LTE QDH路由器中发现了远程代码执行漏洞、任意文件访问漏洞以及拒绝服务漏洞。</p><p><br/></p><p style="text-indent: 2em;">广达表示LTE QDH路由器将要退出市场，并且不会修复Kim发现的问题。公司表示将会在未来的产品开发中考虑Kim的研究成果。</p><p><br/></p><p style="text-indent: 2em;">Kim对广达公司甚至不会提供权变措施的做法表示不满。Kim此前曾在127 ip TIME路由器型号中发现了一个远程代码执行漏洞。</p><p><br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>ESET杀毒软件出现严重漏洞 Mac用户可遭远程入侵</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>ESET杀毒软件出现严重漏洞 Mac用户可遭远程入侵</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485575&amp;idx=2&amp;sn=fbb9fbfd2e05f08aa1baf43d7335ef83&amp;chksm=ea9739eddde0b0fbf47436f8f9ede07ec4b971824d1bdba9bcde109f06a9cab1f9884c62d591&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485575&amp;idx=2&amp;sn=fbb9fbfd2e05f08aa1baf43d7335ef83&amp;chksm=ea9739eddde0b0fbf47436f8f9ede07ec4b971824d1bdba9bcde109f06a9cab1f9884c62d591&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKiakSjL2KMKib0XZB7bmY3oc6tTrU3ychzsOz7QVNwZJD2zZ76HYxL8qlrJSSSZo4LsOXwDHB1BxujhA/0?wx_fmt=png" data-ratio="0.521978021978022" data-w="728" src="../Images/ce049a4e96bb7844115261ccc576353e.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKiakSjL2KMKib0XZB7bmY3oc6tTrU3ychzsOz7QVNwZJD2zZ76HYxL8qlrJSSSZo4LsOXwDHB1BxujhA/0?wx_fmt=png"/></p><p><br/></p><p><strong>有什么会比毫不费吹灰之力就能够利用流行软件中的漏洞更让黑客感到兴奋呢？</strong></p><p><br/></p><p>这种易于利用但严重的漏洞发现于ESET的杀毒软件，它能让任何未经验证的攻击者以根权限在Mac系统上执行任意代码。漏洞编号为CVE-2016-9892，存在于ESET终端杀毒6的macOS中，由谷歌安全团队的研究人员Jason Geffner和Jan Bee在2016年11月月初发现。</p><p><br/></p><p>攻击者需要做的就是通过自签名的HTTPS证书拦截ESET杀毒软件数据包跟其后端服务器的连接，也就是处于中间人攻击者的位置并利用一个XML库漏洞。问题跟一个名为esets_daemon且当根运行的服务有关。该服务跟POCO XML解析器库的过时版本1.4.6p1静态连接在一起。该版本发布于2013年三月。这个POCO版本基于Expat XML解析器库版本2.0.1，它遭受一个公开已知的XML解析漏洞（CVE-2016-0718）的影响。该漏洞能让攻击者通过恶意XML内容执行任意代码。</p><p><br/></p><p>当esets_daemon在激活ESET终端杀毒产品时向<a>https://edf.eset.com/edf</a> 发送一个请求时，中间人攻击者就能够拦截该请求并通过自签名的HTTPS证书传输恶意XML文档。这样就会触发攻击。由于ESET杀毒产品并未验证网络服务器的证书，因此这种攻击是有可能发生的。</p><p><br/></p><p>谷歌研究人员还发布了PoC利用代码，演示ESET杀毒app如何可引发崩溃。ESET在2月21日更新了POCO解析库并配置产品以验证SSL证书，从而解决了这个漏洞问题。ESET通过发布ESET终端杀毒的macOS版本6.4.168.0的方式推出补丁。</p>
+        
+</body>
+</html>

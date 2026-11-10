@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Samba 发现重大漏洞【极危】</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Samba 发现重大漏洞【极危】</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxMjE3ODU3MQ==&amp;mid=203182058&amp;idx=3&amp;sn=419af969f471a380ce7e8d088995cc5b&amp;chksm=125d2a0e252aa318a251b9f0f835a05f01d9dfb035a0dce896874dacc0bf7a2c7f5d407b2847&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzAxMjE3ODU3MQ==&amp;mid=203182058&amp;idx=3&amp;sn=419af969f471a380ce7e8d088995cc5b&amp;chksm=125d2a0e252aa318a251b9f0f835a05f01d9dfb035a0dce896874dacc0bf7a2c7f5d407b2847&amp;scene=27#wechat_redirect</a></blockquote><p><strong>0x01 前言</strong> <br/>     
+在大家欢天喜地度春节时，安全界近日又爆出Samba被发现存在远程命令执行漏洞(CVE-2015-0240)。 
+<br/>原因是在Samba的守护进程smbd中发现一个未初始化的指针使用缺陷；允许一个恶意的Samba客户端发送特定的netlogon数据包给smbd获得smbd运行的权限，而smbd的默认权限是root。 
+<br/>Samba是在Linux和Unix系统上实现SMB协议的一个免费软件，由服务器及客户端程序构成。SMB       
+（Server Messages Block，信息服务块）是一种在局域网上共享文件和打印机的一种通信协议，它为局域网内的不同计算机之间提供文件及打印机等资源的共享服务。SMB协议是客户机/服务器型协议，客户机通过该协议可以访问服务器上的共享文件系统、打印机及其他资源。通过设置“NetBIOS over TCP/IP”使得Samba不但能与局域网络主机分享资源，还能与全世界的电脑分享资源。 
+<br/>这个漏洞影响范围从Samba 3.5.0到最新的开发版4.2.0 Release Candidate (RC) 4，主流的GNU/Linux发行版也受到了影响，RedHat官方公告确认Red Hat Enterprise Linux 5至7受到影响；而Red Hat Enterprise Linux 4系列samba (3.0.x) 不受影响，可谓不幸中万幸。（这么古老版本估计也就学校和运营商里还有吧~） 
+<br/>目前Debian\Ubuntu\RedHat等主流发行版本均已经修复，攻击POC也未正式公布出来。 <br/> <br/><strong>0x02 检测是否存在该漏洞</strong> <br/>RedHat系列检查: 
+<br/>               rpm -qa|grep samba <br/></p><p>  <img border="0" data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLibQPa88JpibrOXBp3qNgmbeHOgR6ukysTAzXawvQ0HOK3D8KgB3iacHafneUufTSjSRW7IZicaZVkBzg/0" width="339" height="124" class="" id="c1424945890887" data-type="jpeg" data-ratio="0.36578171091445427" data-w="339" src="../Images/4a31dbd92975eacb0fba109e95e1b4ff.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLibQPa88JpibrOXBp3qNgmbeHOgR6ukysTAzXawvQ0HOK3D8KgB3iacHafneUufTSjSRW7IZicaZVkBzg/0"/> <br/>Debian\Ubuntu系列检查: <br/>               dpkg -l|grep samba 
+<br/><br/><img border="0" data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLibQPa88JpibrOXBp3qNgmbeHfWPicibzZDDzkMrFChIHYNSj6nibsMqsCF50rQ0QeMWs59qRmWbFzXw9g/0" width="600" height="278" class="" id="c1424945890888" data-type="jpeg" data-ratio="0.43280632411067194" data-w="506" src="../Images/597b249931bd9026e4c82820e989a2d7.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLibQPa88JpibrOXBp3qNgmbeHfWPicibzZDDzkMrFChIHYNSj6nibsMqsCF50rQ0QeMWs59qRmWbFzXw9g/0"/> <br/><strong>0x03临时修复方案 
+<br/></strong>如果因为生产环境无法直连外网或是变更配置管理等原因而不便更新补丁，可以采取以下临时修复方法: 
+<br/>                  vi /etc/samba/smb.conf <br/>找到[global]后下面添加: 
+<br/>           [global] <br/>rpc_server:netlogon=disabled <br/><img border="0" data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLibQPa88JpibrOXBp3qNgmbeHg5l3cWjz6eaKuGZ2Qug1OZxt9CibicFcCcErhMOnn20twW77UKcd8N8A/0" width="560" height="163" class="" id="c1424945890889" data-type="png" data-ratio="0.29051383399209485" data-w="506" src="../Images/5a7f389b6ecda94ae27c379530744d2f.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLibQPa88JpibrOXBp3qNgmbeHg5l3cWjz6eaKuGZ2Qug1OZxt9CibicFcCcErhMOnn20twW77UKcd8N8A/0"/> <br/>          /etc/init.d/smb restart <br/><img border="0" data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLibQPa88JpibrOXBp3qNgmbeHAGo5E82hk5UYyKlt29gYx3Sqw18WXz0ic8SSEFX61X6DZD4UmuMFnSg/0" width="501" height="128" class="" id="c1424945890890" data-type="jpeg" data-ratio="0.2554890219560878" data-w="501" src="../Images/8574417bb6748c44b49d94b65db0411b.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLibQPa88JpibrOXBp3qNgmbeHAGo5E82hk5UYyKlt29gYx3Sqw18WXz0ic8SSEFX61X6DZD4UmuMFnSg/0"/> <br/>PS：注意该临时解决方案只在Samba versions 4.0.0以上才有效，而在3.6.x和更早的版本上无效。 
+<br/><br/><strong>0x04在线修复方案</strong> <br/>CentOS， Red Hat， Fedora等系列衍生版本(RHN建议)： 
+<br/>              yum update samba <br/><img border="0" data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLibQPa88JpibrOXBp3qNgmbeH0yQAwbaEBWztgDJ2uTichhAicsuRxAv35bKiceiaHc9dbh8d3QYm5xnbgQ/0" width="600" height="258" class="" id="c1424945890891" data-type="jpeg" data-ratio="0.4051383399209486" data-w="506" src="../Images/b32acd38cc79ceb2300ce88ba00b477d.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLibQPa88JpibrOXBp3qNgmbeH0yQAwbaEBWztgDJ2uTichhAicsuRxAv35bKiceiaHc9dbh8d3QYm5xnbgQ/0"/><br/>如果你使用RHEL 5和samba3x包： <br/>       yum update samba3x 
+<br/>如果你使用RHEL 6和samba4包： <br/>     yum update samba4 <br/>补丁更新完毕后需要重启smbd守护进程 
+<br/>RHEL 5 or 6环境下重启服务: <br/>     service smb restart <br/>RHEL 7环境下重启服务: 
+<br/>      systemctl restart smb.service <br/>Debian， Ubuntu等系列衍生版本： 
+<br/>       sudo apt-get update &amp;&amp; sudo apt-get install samba 
+<br/>service samba restart</p><p><br/><strong>0x05 离线修复方案 <br/></strong>Centos6.5离线补丁修复方案: 
+<br/>先检查本地samba包安装了哪些相关包 <br/>      rpm -qa|grep samba <br/>  <img border="0" data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLibQPa88JpibrOXBp3qNgmbeHkrIebTXFqVP0W82pMJRJbLsLUuCCwvnL48IrKQp6VnsFSUAcUTBlyg/0" width="351" height="113" class="" id="c1424945890892" data-type="jpeg" data-ratio="0.32193732193732194" data-w="351" src="../Images/daf60ae33468ca7c8405918c66246f54.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLibQPa88JpibrOXBp3qNgmbeHkrIebTXFqVP0W82pMJRJbLsLUuCCwvnL48IrKQp6VnsFSUAcUTBlyg/0"/> 然后，到阿里源下载对应版本 <br/>           cat &gt; update.txt &lt;&lt; EOF 
+<br/>http://mirrors.aliyun.com/centos/6.6/updates/x86_64/Packages/libsmbclient-3.6.23-14.el6_6.x86_64.rpm 
+<br/>http://mirrors.aliyun.com/centos/6.6/updates/x86_64/Packages/samba-3.6.23-14.el6_6.x86_64.rpm 
+<br/>http://mirrors.aliyun.com/centos/6.6/updates/x86_64/Packages/samba-client-3.6.23-14.el6_6.x86_64.rpm 
+<br/>http://mirrors.aliyun.com/centos/6.6/updates/x86_64/Packages/samba-common-3.6.23-14.el6_6.x86_64.rpm 
+<br/>http://mirrors.aliyun.com/centos/6.6/updates/x86_64/Packages/samba-winbind-3.6.23-14.el6_6.x86_64.rpm 
+<br/>http://mirrors.aliyun.com/centos/6.6/updates/x86_64/Packages/samba-winbind-clients-3.6.23-14.el6_6.x86_64.rpm 
+<br/>EOF <br/>进行后台断点下载补丁包 <br/>         wget -b -i update.txt -c <br/>使用yum本地安装 
+<br/>         yum localinstall libsmbclient-* samba-* <br/>或是rpm安装 
+<br/>       rpm -ivUh libsmbclient-* samba-* <br/>Red Had系列衍生版本 
+<br/>      使用方法参考上文【Centos6.5离线补丁】的修补方法 <br/></p><p><strong>0x06 参考来源 <br/></strong>https://access.redhat.com/articles/1346913 
+<br/>https://access.redhat.com/security/cve/CVE-2015-0240 
+<br/>https://www.samba.org/samba/security/CVE-2015-0240 
+<br/>http://www.ubuntu.com/usn/usn-2508-1/ 
+<br/>https://security-tracker.debian.org/tracker/CVE-2015-0240 <br/><br/></p><p><br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Linux账户如何完整迁移至其它Server？</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Linux账户如何完整迁移至其它Server？</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI5MTM4NzYwNw==&amp;mid=2247483850&amp;idx=1&amp;sn=0f13b8b4343e17a517f32911ee2404aa&amp;chksm=ec102072db67a964200cf0603994ac3217def090aa5b2f8623319e7c2d533ab7d8dd936a4127&amp;scene=126&amp;sessionid=1681663731#rd">http://mp.weixin.qq.com/s?__biz=MzI5MTM4NzYwNw==&amp;mid=2247483850&amp;idx=1&amp;sn=0f13b8b4343e17a517f32911ee2404aa&amp;chksm=ec102072db67a964200cf0603994ac3217def090aa5b2f8623319e7c2d533ab7d8dd936a4127&amp;scene=126&amp;sessionid=1681663731#rd</a></blockquote><p>Linux 作为我们实际中最常用的服务系统，虽然其相对 windows 
+更加可靠稳定与高效！但是在运行过程中，难免出现一些意想不到的情况。例如服务器奔溃，内存空间不足，性能过低，损坏等。那么此时我们就需要将服务器，进行迁移！但是，我们又不能将服务器内保存的账户信息完造成破坏！那么对于系统保存的账户信息该如何进行迁移呢？这就好比数据库信息的备份转储一样。好了，说了一大堆下面我们来看操作。</p><p>在此之前，我们有必要先来了解一下 linux 系统用户信息会被用到的几个目录及文件位置。</p><p>/home: 所有用户数据都被保存在这个家目录下。</p><p>/var/spool/mail: <strong>保存了用户的 Email 信息。</strong></p><p>/etc/passwd: <strong>保存着所有用户的账户信息。</strong></p><p>/etc/shadow: <strong>保存着所有账户的加密密码信息。</strong></p><p>/etc/gshadow:<strong> 保存所有组的加密密码信息。</strong></p><p>/etc/group：<strong>定义用户所属组信息。</strong></p><p>在简单了解了以上信息后，下面我们就可以开始进行系统账户的迁移工作了！</p><p>首先我们创建一个名为 <strong>old</strong> 的目录：</p><pre class="lang:default decode:true">mkdir /root/old/</pre><p><span class="crayon-v">设置 UID 过滤限制条件：<br/> </span></p><p><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">注：RHEL/CentOS/Fedora : 默认为500，最大为65534<br/> </span></p><p><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">Debian 和 Ubuntu Linux : 默认为1000，最大为29999<br/> </span></p><pre class="lang:default decode:true "><span style="color: rgb(0, 0, 0);" data-mce-style="color: #000000;">export UGIDLIMIT=500</span></pre><p><span class="crayon-e">现在我们通过 awk 命令，通过过滤 UID 的方式。将 <strong>/etc/passwd</strong> 下的账户信息拷贝到 <strong>/root/old/passwd.mov</strong><br/> </span></p><pre class="lang:default decode:true ">$ awk -v LIMIT=$UGIDLIMIT -F: '($3&gt;=LIMIT) &amp;&amp; ($3!=65534)' /etc/passwd &gt; /root/old/passwd.mov</pre><p>接着我们拷贝 /etc/group 文件：</p><pre class="lang:default decode:true "> awk -v LIMIT=$UGIDLIMIT -F: '($3&gt;=LIMIT) &amp;&amp; ($3!=65534)' /etc/group &gt; /root/old/group.mov</pre><p>拷贝 /etc/shadow 下的文件：</p><pre class="lang:default decode:true ">awk -v LIMIT=$UGIDLIMIT -F: '($3&gt;=LIMIT) &amp;&amp; ($3!=65534) {print $1}' /etc/passwd | tee - |egrep -f - /etc/shadow &gt; /root/old/shadow.mov</pre><p>拷贝 /etc/gshadow 下的文件：</p><pre class="lang:default decode:true ">cp /etc/gshadow /root/old/gshadow.mov</pre><p>备份 /home 和 /var/spool/mail 目录：</p><pre class="lang:default decode:true ">tar -zcvpf /root/old/home.tar.gz /home
+tar -zcvpf /root/old/mail.tar.gz /var/spool/mai</pre><p>下面我们就可以通过 USB 或者 SCP 命令，将我们生成的 /root/old 文件拷贝到新的 linux 系统上了：</p><pre class="lang:default decode:true">scp -r /root/old/* user@www.secist.com:/path/to/location</pre><p>在接下来的操作之前，首先最重要的当然是备份我们当前的账户信息：</p><pre class="lang:default decode:true ">mkdir /root/newuser.bac</pre><pre class="lang:default decode:true ">cp /etc/passwd /etc/shadow /etc/group /etc/gshadow /root/newuser.bac</pre><p>现在，我们就可以覆盖我们的账户信息啦！</p><pre class="lang:default decode:true ">cd /path/to/location
+ 
+cat passwd.mov &gt;&gt; /etc/passwd
+ 
+cat group.mov &gt;&gt; /etc/group
+ 
+cat shadow.mov &gt;&gt; /etc/shadow
+ 
+/bin/cp gshadow.mov /etc/gshadow</pre><p>接着我们复制提取 home.tar.gz 到新的 Server /home 下：</p><pre class="lang:default decode:true ">cd /
+ 
+tar -zxvf /path/to/location/home.tar.gz</pre><p>我们再提取 mail.tar.gz 到新的 Server /var/spool/mail 下：</p><pre class="lang:default decode:true">cd /
+ 
+tar -zxvf /path/to/location/mail.tar.gz</pre><p>最后我们只要重启系统，你会发现我们可以使用之前的账户登录及操作啦！</p><pre class="lang:default decode:true ">reboot</pre><p><br/></p><p><br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>PHP生成随机密码的4种方法及性能对比</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>PHP生成随机密码的4种方法及性能对比</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzkwODM4NDM5OA==&amp;mid=2247503987&amp;idx=2&amp;sn=6fdb876d0b03611d771e178f87466363&amp;chksm=c0c85192f7bfd884bf2615ca0402c1b0005cef17c16415685dfa6fadea2aba93e45efc95e5f0&amp;scene=126&amp;sessionid=1681309775#rd">http://mp.weixin.qq.com/s?__biz=MzkwODM4NDM5OA==&amp;mid=2247503987&amp;idx=2&amp;sn=6fdb876d0b03611d771e178f87466363&amp;chksm=c0c85192f7bfd884bf2615ca0402c1b0005cef17c16415685dfa6fadea2aba93e45efc95e5f0&amp;scene=126&amp;sessionid=1681309775#rd</a></blockquote><section class="yead_editor" label="Copyright &#xA9; 2015 Yead All Rights Reserved." style="border:none;border-style:none;margin: 5px auto;text-align: center;"><p><img data-src="http://mmbiz.qpic.cn/mmbiz/bLmy0N4HIacJPVr4THDcpxs0tjbCR0ibjwLpG7JwQTbgv4V0vTwsec2lSib0tn5h94QaNicAhcdU2kMlvKXicIiaeWw/0?wx_fmt=gif" data-type="gif" data-ratio="0.14568345323741008" data-w="" src="../Images/ec33c4123b478d4900e595bcd81ad283.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/bLmy0N4HIacJPVr4THDcpxs0tjbCR0ibjwLpG7JwQTbgv4V0vTwsec2lSib0tn5h94QaNicAhcdU2kMlvKXicIiaeWw/0?wx_fmt=gif"/></p></section><p><span style="line-height: 1.6;">使用PHP开发应用程序，尤其是网站程序，常常需要生成随机密码，如用户注册生成随机密码，用户重置密码也需要生成一个随机的密码。随机密码也就是一串固定长度的字符串，这里我收集整理了几种生成随机字符串的方法，以供大家参考。</span><br/></p><p><br/></p><h2><span style="color: rgb(255, 104, 39);"><strong>方法一：</strong></span></h2><hr/><p><br/></p><ul class=" list-paddingleft-2" style="list-style-type: circle;"><li><p>1、在 33 – 126 中生成一个随机整数，如 35，</p></li><li><p>2、将 35 转换成对应的ASCII码字符，如 35 对应 #</p></li><li><p>3、重复以上 1、2 步骤 n 次，连接成 n 位的密码</p></li></ul><p><br/></p><p>该算法主要用到了两个函数，<span style="color: rgb(0, 122, 170);">mt_rand ( int $min , int $max )</span>函数用于生成随机整数，其中<span style="color: rgb(0, 122, 170);"> $min – $max </span>为 ASCII 码的范围，这里取 33 -126 ，可以根据需要调整范围，如ASCII码表中 97 – 122 位对应 a – z 的英文字母，具体可参考 ASCII码表；<span style="color: rgb(0, 122, 170);"> chr ( int $ascii )</span>函数用于将对应整数 $ascii 转换成对应的字符。</p><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">function create_password($pw_length = 8)
+{
+    $randpwd = '';
+    for ($i = 0; $i &lt; $pw_length; $i++) 
+    {
+        $randpwd .= chr(mt_rand(33, 126));
+    }
+    return $randpwd;
+}
+
+// 调用该函数，传递长度参数$pw_length = 6
+echo create_password(6);</span></pre></blockquote><h2><br/></h2><h2><span style="color: rgb(255, 104, 39);"><strong>方法二：</strong></span></h2><hr/><p><br/></p><ul class=" list-paddingleft-2" style="list-style-type: circle;"><li><p>1、预置一个的字符串 $chars ，包括 a – z，A – Z，0 – 9，以及一些特殊字符</p></li><li><p>2、在 $chars 字符串中随机取一个字符</p></li><li><p>3、重复第二步 n 次，可得长度为 n 的密码</p></li></ul><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">function generate_password( $length = 8 ) {
+    // 密码字符集，可任意添加你需要的字符
+    $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&amp;*()-_ []{}&lt;&gt;~`+=,.;:/?|';
+
+    $password = '';
+    for ( $i = 0; $i &lt; $length; $i++ ) 
+    {
+        // 这里提供两种字符获取方式
+        // 第一种是使用 substr 截取$chars中的任意一位字符；
+        // 第二种是取字符数组 $chars 的任意元素
+        // $password .= substr($chars, mt_rand(0, strlen($chars) - 1), 1);
+        $password .= $chars[ mt_rand(0, strlen($chars) - 1) ];
+    }
+
+    return $password;
+}</span></pre></blockquote><h2><br/></h2><h2><span style="color: rgb(255, 104, 39);"><strong>方法三：</strong></span></h2><hr/><p><br/></p><ul class=" list-paddingleft-2" style="list-style-type: circle;"><li><p>1、预置一个的字符数组 $chars ，包括 a – z，A – Z，0 – 9，以及一些特殊字符</p></li><li><p>2、通过array_rand()从数组 $chars 中随机选出 $length 个元素</p></li><li><p>3、根据已获取的键名数组 $keys，从数组 $chars 取出字符拼接字符串。该方法的缺点是相同的字符不会重复取。</p></li></ul><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">function make_password( $length = 8 )
+{
+    // 密码字符集，可任意添加你需要的字符
+    $chars = array('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 
+    'i', 'j', 'k', 'l','m', 'n', 'o', 'p', 'q', 'r', 's', 
+    't', 'u', 'v', 'w', 'x', 'y','z', 'A', 'B', 'C', 'D', 
+    'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L','M', 'N', 'O', 
+    'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y','Z', 
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '!', 
+    '@','#', '$', '%', '^', '&amp;', '*', '(', ')', '-', '_', 
+    '[', ']', '{', '}', '&lt;', '&gt;', '~', '`', '+', '=', ',', 
+    '.', ';', ':', '/', '?', '|');
+
+    // 在 $chars 中随机取 $length 个数组元素键名
+    $keys = array_rand($chars, $length); 
+
+    $password = '';
+    for($i = 0; $i &lt; $length; $i++)
+    {
+        // 将 $length 个数组元素连接成字符串
+        $password .= $chars[$keys[$i]];
+    }
+
+    return $password;
+}</span></pre></blockquote><h2><br/></h2><h2><span style="color: rgb(255, 104, 39);"><strong>方法四：</strong></span></h2><hr/><p><br/></p><p>本方法是本文被蓝色理想转载后，一名网友提供的一个新方法，算法简单，代码简短，只是因为md5()函数的返回值的缘故，生成的密码只包括字母和数字，不过也算是一个不错的方法。</p><p><br/></p><p>算法思想：</p><p><br/></p><ul class=" list-paddingleft-2" style="list-style-type: circle;"><li><p>1、time() 获取当前的 Unix 时间戳</p></li><li><p>2、将第一步获取的时间戳进行 md5() 加密</p></li><li><p>3、将第二步加密的结果，截取 n 位即得想要的密码</p></li></ul><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">function get_password( $length = 8 ) 
+{
+    $str = substr(md5(time()), 0, 6);
+    return $str;
+}</span></pre></blockquote><h2><br/></h2><h2><span style="color: rgb(255, 104, 39);"><strong>时间效率对比</strong></span></h2><hr/><p><br/></p><p>我们使用以下PHP代码，计算上面的 4 个随机密码生成函数生成 6 位密码的运行时间，进而对他们的时间效率进行一个简单的对比。</p><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">&lt;?php
+function getmicrotime()
+{
+    list($usec, $sec) = explode(" ",microtime());
+    return ((float)$usec + (float)$sec);
+}
+
+// 记录开始时间
+$time_start = getmicrotime();
+
+// 这里放要执行的PHP代码，如:
+// echo create_password(6);
+
+// 记录结束时间
+$time_end = getmicrotime();
+$time = $time_end - $time_start;
+
+ // 输出运行总时间 
+echo "执行时间 $time seconds";
+?&gt;</span></pre></blockquote><p><br/></p><p><strong>最终得出的结果是：</strong></p><p><br/></p><ul class=" list-paddingleft-2" style="list-style-type: circle;"><li><p>方法一：9.8943710327148E-5 秒</p></li><li><p>方法二：9.6797943115234E-5 秒</p></li><li><p>方法三：0.00017499923706055 秒</p></li><li><p>方法四：3.4093856811523E-5 秒</p></li></ul><p><br/></p><p>可以看出方法一和方法二的执行时间都差不多，方法四运行时间最短，而方法三的运行时间稍微长点。</p><p><br/></p><p><span style="font-size: 14px; color: rgb(136, 136, 136);">文章转载自：露兜博客<br/></span></p><p><span style="font-size: 14px; color: rgb(136, 136, 136);">文章地址：http://www.ludou.org/how-to-create-a-password-generator-using-php.html</span></p><p><span style="font-size: 14px; color: rgb(136, 136, 136);"/></p><section class="yead_editor" label="Copyright &#xA9; 2015 Yead All Rights Reserved." style=""><blockquote class="main" style="padding: 15px; border-top-width: 3px; border-right-width: 3px; border-bottom-width: 3px; border-style: dashed; border-color: rgb(153, 153, 153); border-radius: 10px;"><p class="ue_t"><span style="color: rgb(255, 104, 39);"><strong><span style="font-size: 16px;">热文推荐：</span></strong></span></p><p class="ue_t"><span style="font-size: 16px;">[1]<a href="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=208958731&amp;idx=2&amp;sn=98aff78dabee792b4f60ad1ec9fab8e7&amp;scene=21#wechat_redirect" target="_blank" data_ue_src="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=208958731&amp;idx=2&amp;sn=98aff78dabee792b4f60ad1ec9fab8e7&amp;scene=21#wechat_redirect"><span style="font-size: 16px; line-height: 1.6;">PHP 四种基本排序算法的代码实现</span></a></span></p><p class="ue_t"><span style="font-size: 16px;">[2]<a href="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=211368867&amp;idx=3&amp;sn=f119fdcec88bdd130ac6e187d5defd51&amp;scene=21#wechat_redirect" target="_blank" data_ue_src="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=211368867&amp;idx=3&amp;sn=f119fdcec88bdd130ac6e187d5defd51&amp;scene=21#wechat_redirect"><span style="font-size: 16px; line-height: 1.6;">PHP 判断数组是否为空的5大方法</span></a></span></p><p class="ue_t"><span style="font-size: 16px;">[3]<a href="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=402220132&amp;idx=2&amp;sn=2660b8e28daf3cdb7e8cebe98116024f&amp;scene=21#wechat_redirect" target="_blank" data_ue_src="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=402220132&amp;idx=2&amp;sn=2660b8e28daf3cdb7e8cebe98116024f&amp;scene=21#wechat_redirect"><span style="font-size: 16px; line-height: 1.6;">PHP 底层的运行机制与原理解析</span></a></span></p><p class="ue_t"><span style="font-size: 16px;">[4]<a href="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=223063121&amp;idx=2&amp;sn=57fe4bfecb41cfbc52968110faaeee9c&amp;scene=21#wechat_redirect" target="_blank" data_ue_src="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=223063121&amp;idx=2&amp;sn=57fe4bfecb41cfbc52968110faaeee9c&amp;scene=21#wechat_redirect"><span style="font-size: 16px; line-height: 1.6;">PHP会话处理相关函数介绍</span></a></span></p><p class="ue_t"><span style="font-size: 16px; line-height: 1.6;">点击即可阅读~</span></p></blockquote></section><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz/bLmy0N4HIaca48FuHSCnx3UhxA7x43zRC0ictOGM1e6wP43RUssmxM5Dtly2dSV423XZNOY2Qx6pDGoLpqibPn5Q/0?wx_fmt=jpeg" data-ratio="0.6672661870503597" data-w="" src="../Images/5be9cad5a12e5977c988df5721cb95dc.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/bLmy0N4HIaca48FuHSCnx3UhxA7x43zRC0ictOGM1e6wP43RUssmxM5Dtly2dSV423XZNOY2Qx6pDGoLpqibPn5Q/0?wx_fmt=jpeg"/><br/></p>
+        
+</body>
+</html>

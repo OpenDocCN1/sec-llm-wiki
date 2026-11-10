@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>关于WEB敏感文件探测的一点思考</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>关于WEB敏感文件探测的一点思考</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA3NTMyNDg3OQ==&amp;mid=2652519151&amp;idx=1&amp;sn=a1d99c58e6c7b22bd134a8c37e3a3631&amp;chksm=849cd64fb3eb5f59fef97fa40cbe7fea06d69684ca168d301c4afcea40683a900b02c2fc82f5&amp;scene=126&amp;sessionid=1681322364#rd">http://mp.weixin.qq.com/s?__biz=MzA3NTMyNDg3OQ==&amp;mid=2652519151&amp;idx=1&amp;sn=a1d99c58e6c7b22bd134a8c37e3a3631&amp;chksm=849cd64fb3eb5f59fef97fa40cbe7fea06d69684ca168d301c4afcea40683a900b02c2fc82f5&amp;scene=126&amp;sessionid=1681322364#rd</a></blockquote><h2><span style="font-size: 20px;">场景</span></h2><hr/><p><br/></p><p>目录/文件fuzz是渗透测试中的重要部分，各SRC中因为<code>.svn/.git</code>文件泄露源码而被攻破的案例很常见，同时也是CTF中经常出现的需求。</p><p><br/></p><blockquote><p>“据我长期观察，50%的CTF题目打开都是一个登陆页面，而其中又有60%的可以用各种方式拿到源码。” ——P神</p></blockquote><h2><br/></h2><h2><span style="font-size: 20px;">枚举类工具</span></h2><hr/><p><br/></p><p>用过的一些相关工具</p><ul class=" list-paddingleft-2"><li><p>https://github.com/lijiejie/BBScan</p></li><li><p>https://github.com/ring04h/dirfuzz</p></li><li><p>https://github.com/maurosoria/dirsearch</p></li></ul><h3><br/></h3><h3><span style="font-size: 18px;">字典复用</span></h3><p>字典复用是枚举类工具的一个特性，把存在变化的字段（如文件后缀名）交给用户来指定，为爆破节约了工作量。</p><p><br/></p><p>如：字典里写的是</p><p><br/></p><pre><code>index.[EXT]</code></pre><p><br/></p><p>如果用户输入的extension是<code>-e php,jsp,asp</code>，那么<code>[EXT]</code>部分最终会被替换为以下三种情况。</p><p><br/></p><pre><code>index.php
+index.jsp
+index.asp</code></pre><h3><br/></h3><h3><span style="font-size: 18px;">递归枚举</span></h3><p>当工具爆破出<code>/admin/</code>目录时，应当以该目录为起点继续向下探测二级目录，dirsearch已经实现了这个功能，不过二级目录的字典没必要向一级目录那样仔细，有待改进。</p><p><br/></p><h3><span style="font-size: 18px;">处理自定义404页面</span></h3><p>一些网站定制了404页面，当用户访问不存在的URL时仍然会返回200，此时我们的fuzz工具会产生大量误报，应提供解决方案。</p><h3><br/></h3><h3><span style="font-size: 18px;">其他需求</span></h3><p>如过滤HTTP响应码、定制HTTP请求、代理、处理重定向、结果的后续操作等框架类功能，可参考这个工具。</p><ul class=" list-paddingleft-2"><li><p>https://github.com/deibit/cansina</p></li></ul><h2><br/></h2><h2><br/></h2><h2><span style="font-size: 20px;">爬虫类工具</span></h2><hr/><p><br/></p><p>之前遇到的问题之前用上述枚举类工具都能解决，直到前些天的ZCTF的第一道WEB题。</p><p><br/></p><p>那个突破口是fuzz到这个文件:</p><p><br/></p><pre><code>.index.php.swp</code></pre><p><br/></p><p>这个是vim编辑器在非正常退出时产生的临时文件，当时用上述工具均未跑出结果。</p><p><br/></p><p>这个问题如果字典够好是可以跑出来的，但以下情况就是枚举类工具难以胜任的了：</p><p><br/></p><pre><code>.zctf.php.swp
+zctf.php.bak</code></pre><p><br/></p><p>还有，我在更改配置文件之后也会习惯性的在旧文件的结尾加一个下划线作备份。</p><p><br/></p><pre><code>xxx.conf_</code></pre><p><br/></p><p>这种情况下基于字典枚举的fuzz工具是无法猜到<code>zctf</code>这种特征性很强的路径的，而爬虫可以。</p><p><br/></p><p>当爬虫爬取到<code>&lt;a href=zctf.php&gt;</code>时，基于这个已知信息来构造探测向量，即可完成该任务。</p><p><br/></p><pre><code>zctf.php.bak
+zctf.php.old
+.zctf.php.swp
+zctf.php~
+...</code></pre><p><br/></p><p>这种对文件的动态fuzz方法在猪猪侠前辈的工具里已有体现</p><p>https://github.com/ring04h/weakfilescan</p><h3><br/></h3><h3><span style="font-size: 18px;">FileSensor</span></h3><p><br/></p><p>针对这个需求我简单写了个动态fuzz工具。</p><ul class=" list-paddingleft-2"><li><p>https://github.com/Xyntax/FileSensor</p></li></ul><p><br/></p><p>基于Scrapy构建，全部请求由<code>scrapy.Request</code>完成，保证了并发的稳定性，同时HTTP请求细节可通过scrapy的项目配置文件直接定制，省了不少代码量。此外还可操控请求速度等细节，毕竟Scrapy配置在。</p><p><br/></p><p>思路就是通过爬虫获取资源，在其基础上根据字典生成探测向量。</p><p><br/></p><p>用户输入localhost -&gt; 爬虫发现localhost/test.php -&gt; 探测localhost/test.php.bak</p><p><br/></p><p><img data-src="http://mmbiz.qpic.cn/mmbiz_png/WdJky8oWwZx1III7mwscwOBbXDw3J9VibOp05AQYCkUA4DMBBLYKSLOjfsiauEVxCH3nUhHiaBnxq5yMupo7eGjuw/0?wx_fmt=png" data-type="png" data-ratio="0.47577092511013214" data-w="681" src="../Images/78a9c066769ae6f7617c21e830e992c0.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/WdJky8oWwZx1III7mwscwOBbXDw3J9VibOp05AQYCkUA4DMBBLYKSLOjfsiauEVxCH3nUhHiaBnxq5yMupo7eGjuw/0?wx_fmt=png"/></p><h3><br/></h3><h3><span style="font-size: 18px;">加入扫描器</span></h3><p><br/></p><p>枚举工具无法发现含有特征的文件，爬虫工具无法探测未知情况，利用扫描器可将二者的优点结合起来。</p><p><br/></p><p>在扫描器中针对每个爬取的链接调用一个简单的爆破模块，如爬取到<code>http://xxx.com/zctf/</code>，交给爆破模块跑出<code>/zctf/config.php</code>，再针对<code>config.php</code>生成<code>config.php~</code>进行探测。</p><p><br/></p>
+        
+</body>
+</html>

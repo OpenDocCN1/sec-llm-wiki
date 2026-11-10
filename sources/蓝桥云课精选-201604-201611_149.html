@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>算法：如何使用C++实现一个简单的集合类</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>算法：如何使用C++实现一个简单的集合类</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzkwODM4NDM5OA==&amp;mid=2247504165&amp;idx=2&amp;sn=88542e834b0167608e5b5fbb4aadf106&amp;chksm=c0c850c4f7bfd9d2aadb9e396720233fe002a5b4d1017698546a3508891b4eccc9bd7fd3b5c4&amp;scene=126&amp;sessionid=1681309755#rd">http://mp.weixin.qq.com/s?__biz=MzkwODM4NDM5OA==&amp;mid=2247504165&amp;idx=2&amp;sn=88542e834b0167608e5b5fbb4aadf106&amp;chksm=c0c850c4f7bfd9d2aadb9e396720233fe002a5b4d1017698546a3508891b4eccc9bd7fd3b5c4&amp;scene=126&amp;sessionid=1681309755#rd</a></blockquote><p><img class="wx-img" data-ratio="0.10344827586206896" data-src="http://mmbiz.qpic.cn/mmbiz/ianq03UUWGmKBiaFRAtInJGYgEuY433yBFoSMut9dugxNpzeoLObtnibs2uxuc0mMHltqB5fRfp1ecICCFteKstJQ/0?wx_fmt=gif" data-w="580" style="margin-right: auto; margin-left: auto; line-height: 25.6px; white-space: normal; display: block; clear: both; width: 100%; height: auto;" src="../Images/9dbc1fb976502c0c122ade4bb656d0c5.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/ianq03UUWGmKBiaFRAtInJGYgEuY433yBFoSMut9dugxNpzeoLObtnibs2uxuc0mMHltqB5fRfp1ecICCFteKstJQ/0?wx_fmt=gif"/></p><p><br/></p><p>来自于C++程序设计的一个题目。实现一个集合类，要求实现以下4个操作。</p><ul class=" list-paddingleft-2" style="list-style-type: circle;"><li><p>向集合中添加元素，如果集合中已存在元素则不添加</p></li><li><p>从集合中移除元素，移除之前需要先判断集合中元素是否存在</p></li><li><p>重载+运算符，用以实现集合的求并集运算</p></li><li><p>重载*运算符，用以实现集合的求交集运算</p></li></ul><h2><br/></h2><h2><span style="color: rgb(255, 104, 39);"><strong>1.类的整体设计</strong></span></h2><hr/><p><br/></p><p>该问题需要模拟实现集合类，我们可以使用数组来模拟集合，于是使用int items[100]用来存放集合中的数据。<span style="line-height: 1.6;">为了实现数组的遍历，这就需要一个整数用来表示数组中元素的个数，于是使用int number来表示数组中元素的个数；</span></p><p><span style="line-height: 1.6;"><br/></span></p><p><span style="line-height: 1.6;">此外，为了实现题目的需求，设计以下四个函数：</span></p><ul class=" list-paddingleft-2" style="list-style-type: circle;"><li><p>使用add_item(int item)成员函数向数组中添加元素</p></li><li><p>使用remove_item(int item)成员函数向数组中移除元素</p></li><li><p>重载operator+表示集合的求并集运算</p></li><li><p>重载operator*表示集合的求交集运算</p></li></ul><p><br/></p><p>由于向集合添加元素之前，必须确保集合中不存在该元素；在从集合中移除元素之前，必须确保集合中存在该元素，因此添加is_exist(int item)方法用以判断集合中是否存在这个元素；此外为了显示集合，添加display()方法, 基本设计如下:</p><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">class Set
+{<br/>public:    <br/>    int items[100]; //定义一个数组作为容器存放100个集合元素
+    int number; //定义数字i表示集合中元素的个数
+    //构造函数和析构函数
+    Set() { <br/>       this-&gt;number = 0;<br/>       memset(this-&gt;items,0,sizeof(items));
+    }    //初始化方法
+    int init(int items[], int num);    //添加元素
+    bool add_item(int item);    //删除元素
+    bool remove_item(int item);    //求集合的并集
+    Set operator+ (Set set2);    //求集合的交集
+    Set operator* (Set set2);    //显示集合元素
+    int display();    //判断集合当中是否存在item,返回元素在集合中的位置，不存在返回-1
+    int is_exist(int item);
+};</span></pre></blockquote><h2><br/></h2><h2><span style="color: rgb(255, 104, 39);"><strong>2.构造函数</strong></span></h2><hr/><p><br/></p><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">Set() {<br/>    this-&gt;number = 0;<br/>    memset(this-&gt;items,0,sizeof(items));
+}</span></pre></blockquote><p><br/></p><p>在构造函数中，我们对数组进行初始化，声明完数组之后，如果不进行初始化，数组元素是随机值，在C语言中，变量不进行初始化都会被分配随机值。</p><p><br/></p><p>为了避免这种情况，我们使用memset函数对数组items所有元素全部赋值为0；同时，由于此时数组中没有元素，即元素个数为0，我们的number也应当赋值为0.</p><p><br/></p><h2><span style="color: rgb(255, 104, 39);"><strong>3.判断数组中是否包含元素 item</strong></span></h2><hr/><p><br/></p><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">int Set::is_exist(int item)
+{    <br/>   for(int i=0; i&lt; this-&gt;number; i++) {<br/>       if(this-&gt;items[i] == item) { <br/>                  return i;
+        }
+    }   <br/>       return -1;
+}</span></pre></blockquote><p><br/></p><p>该函数用于判断数组中是否存在item元素，如果存在就返回item元素的位置，如果不存在就返回-1. 判断方法非常简单，写一个for循环从items[0]-items[number-1]一个一个进行遍历。</p><p><br/></p><p>如果相等，直接返回i，此时i就是数组中item元素的位置；如果遍历完整个数组之后，都没有发现与item相等的数组元素，说明数组中不存在item这个元素，于是返回-1.</p><p><br/></p><h2><span style="color: rgb(255, 104, 39);"><strong>4.向数组中添加元素</strong></span></h2><hr/><p><br/></p><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">bool Set::add_item(int item)
+{<br/>    if(is_exist(item) &gt;= 0 || this-&gt;number &gt;= 100) {<br/>            return false;
+    }    <br/>    this-&gt;items[this-&gt;number] = item;<br/>    this-&gt;number++;    <br/>    return true;
+}</span></pre></blockquote><p><br/></p><p>首先判断数组中是否存在该元素，如果存在则不能再向集合中添加元素，直接返回false，如果不存在，则向数组中的number所指向的那个位置添加该元素，然后number作为数组元素个数的指示器+1，这样就完成了添加元素。</p><p><br/></p><h2><span style="color: rgb(255, 104, 39);"><strong>5.保护数组元素不被修改</strong></span></h2><hr/><p><br/></p><p>写到这里，我们发现，数组元素个数指示器this-&gt;number，对于该问题的几个算法都起到了核心的作用，首先，我们依赖于数组元素个数指示器遍历数组，如果number值遭到修改，会导致无法遍历数组。</p><p><br/></p><p>举个例子来说，当我们调用下列语句以后:</p><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">Set set1;<br/>set1.add_item(1);<br/>set1.add_item(2);<br/>set1.add_item(3);</span></pre></blockquote><p><br/></p><p>集合set1中的数组items变为[1,2,3]，数组元素个数指示器number=3，此时，如果我们还想向集合set1中添加元素20，我们需要利用number=3这个指示器，让set1.items[number]=20,并且让number+1以指向下一个位置,即number=4。</p><p><br/></p><p>但是如果用户手动修改number值，比如set1.number=50;此时，我们的number就不再能指示数组元素的正确位置，从而导致以上所有算法所依赖的number失效，因此，我们需要对数组本身，以及数组元素个数指示器number进行私有化，以避免用户随意篡改。</p><p><br/></p><p>于是:</p><blockquote><pre><span style="color: rgb(0, 122, 170); font-size: 12px;">class Set
+{<br/>public:    //构造函数和析构函数
+    Set() {        <br/>        this-&gt;number = 0;        <br/>        memset(this-&gt;items,0,sizeof(items));
+    }    <br/>    //初始化方法
+    int init(int items[], int num);<br/>    //添加元素
+    bool add_item(int item);    <br/>    //删除元素
+    int remove_item(int item);    <br/>    //求集合的并集
+    Set operator+ (Set set2);    <br/>    //求集合的交集
+    Set operator* (Set set2);    <br/>    //显示集合元素
+    int display();    <br/>    //判断集合当中是否存在item,返回元素在集合中的位置，不存在返回-1
+    int is_exist(int item);<br/>private:    <br/>    int items[100]; //定义一个数组作为容器存放100个集合元素
+    int number; //定义数字i表示集合中元素的个数<br/>};</span></pre></blockquote><h2><br/></h2><h2><span style="color: rgb(255, 104, 39);"><strong>6. 从集合中移除元素</strong></span></h2><hr/><p><br/></p><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">bool Set::remove_item(int item)
+{    <br/>    int pos = is_exist(item);    <br/>    if(pos == -1) return false;    <br/>    for(int i=pos; i&lt; this-&gt;number-1; i++) {        <br/>         this-&gt;items[i] = this-&gt;items[i+1];
+    }    <br/>    this-&gt;number--;    <br/>    return true;
+}</span></pre></blockquote><p><br/></p><p>首先检查要移除的元素在结合中是否存在，如果不存在，则直接返回false;其次，定位到集合中元素的位置，然后从这个位置开始将集合中剩余的元素逐个前移，最后集合元素指示器-1，并返回true.</p><p><br/></p><h2><span style="color: rgb(255, 104, 39);"><strong>7. 求两个集合的交集</strong></span></h2><hr/><p><br/></p><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">Set Set::operator* (Set set2)
+{    <br/>      Set result;    <br/>      for(int i=0; i&lt; this-&gt;number; i++) {        <br/>         if(set2.is_exist(this-&gt;items[i]) &gt;= 0) {
+            result.items[result.number] = this-&gt;items[i];
+            result.number++;
+        }
+    }    <br/>     return result;
+}</span></pre></blockquote><p><br/></p><p>算法很简单，遍历集合A中的元素，对于A中的每一个元素判断在集合B中是否存在，如果存在就加入到集合C当中，最后返回集合C</p><p><br/></p><h2><span style="color: rgb(255, 104, 39);"><strong>8. 求两个集合的并集</strong></span></h2><hr/><p><br/></p><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">Set Set::operator+ (Set set2)
+{    <br/>    Set result;    <br/>    for(int i=0; i&lt;this-&gt;number; i++) {
+        result.items[result.number] = this-&gt;items[i];
+        result.number++;
+    }    <br/>    for(int j=0; j&lt;set2.number; j++) {        <br/>        if(result.is_exist(set2.items[j]) == -1) {
+            result.items[result.number] = set2.items[j];
+            result.number++;
+        }
+    }    <br/>    return result;
+}</span></pre></blockquote><p><br/></p><p>首先遍历集合A，将集合A中的元素全部加到集合C当中，然后遍历集合B，对于B中的每一个元素，首先判断是否在A中存在，如果不存在则将其加入到集合C中，最终返回集合C</p><p><br/></p><p><span style="font-size: 14px; color: rgb(136, 136, 136);">转载自：segmentfault</span></p><p><span style="font-size: 14px; color: rgb(136, 136, 136);">文章地址：https://segmentfault.com/a/1190000005053016</span></p><p><span style="font-size: 14px; color: rgb(136, 136, 136);">作者：kirineko</span></p><p><span style="font-size: 14px; color: rgb(136, 136, 136);"/></p><section class="yead_editor" style="margin:5px auto;white-space: normal;" title="327&#xFF0C;&#x66F4;&#x65B0;&#x4E8E;2015-09-25 10:02"><blockquote class="yead_bdc" style="margin-top: 5px; margin-bottom: 5px; padding-right: 10px; max-width: 100%; border: 2px dashed rgb(153, 153, 153); color: rgb(62, 62, 62); font-size: 14px; line-height: 30px; box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);"><p><strong><span style="font-size: 14px;">推荐阅读：</span></strong></p><ul class=" list-paddingleft-2" style="list-style-type: square;"><li><h2><a href="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=2655932199&amp;idx=2&amp;sn=4f60435b273adbd6c0a03e78d9f2171f&amp;scene=21#wechat_redirect" target="_blank" data_ue_src="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=2655932199&amp;idx=2&amp;sn=4f60435b273adbd6c0a03e78d9f2171f&amp;scene=21#wechat_redirect"><span style="font-size: 14px; text-decoration: underline;">一个C++ bug引入的许多知识</span></a></h2></li><li><h2><a href="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=2655931943&amp;idx=2&amp;sn=828be4d1827aafd6b60d078231351f32&amp;scene=21#wechat_redirect" target="_blank" data_ue_src="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=2655931943&amp;idx=2&amp;sn=828be4d1827aafd6b60d078231351f32&amp;scene=21#wechat_redirect"><span style="font-size: 14px; text-decoration: underline;">易被遗忘的C/C++要点总结</span></a></h2></li><li><h2><a href="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=2655931963&amp;idx=2&amp;sn=6c5f43a2b087ab17ca2a48ecf256063b&amp;scene=21#wechat_redirect" target="_blank" data_ue_src="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=2655931963&amp;idx=2&amp;sn=6c5f43a2b087ab17ca2a48ecf256063b&amp;scene=21#wechat_redirect"><span style="font-size: 14px; text-decoration: underline;">C++中引用和匿名对象的理解和本质剖析</span></a></h2></li><li><h2><a href="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=406641780&amp;idx=2&amp;sn=9fe090085484802aa0f68aa66b0bb8f2&amp;scene=21#wechat_redirect" target="_blank" data_ue_src="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=406641780&amp;idx=2&amp;sn=9fe090085484802aa0f68aa66b0bb8f2&amp;scene=21#wechat_redirect"><span style="font-size: 14px; text-decoration: underline;">C++虚函数表剖析</span></a></h2></li></ul></blockquote></section><section class="yead_editor yead-selected" style="margin:5px auto;white-space: normal;" title="812&#xFF0C;&#x66F4;&#x65B0;&#x4E8E;2016-08-04 22:48"><section class="wx-bg" style="border-style: solid; -webkit-border-image: url(&quot;http://mmbiz.qpic.cn/mmbiz/ianq03UUWGmIpwAQC8PpNCD8pUpQqmshV4Q5wrbETPaZtT8Uu4se1m48yjbFuVx1c7icEtiaERuKiaNlAwF8iafFdFg/0?wx_fmt=png&quot;) 60 140 115 63 fill repeat; border-width: 30px 70px 68px 32px;"><section style="margin-bottom:-35px;font-size:14px;line-height:30px"><p>点击菜单【技术教程】，超多技术教程随便看，学习啊，反正有大把时光~</p></section></section></section><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz/bLmy0N4HIaeKSsczbv1d2CjQRlQia15npPjq0B2m5ScmUcopIk45pp21quj2Tv6w6JjH77GMiaL5VIHP1A6aZlGQ/0?wx_fmt=jpeg" data-ratio="0.6666666666666666" data-w="720" style="width: 100%; height: auto;" src="../Images/503a1eeff49a08ff9e5afab24251e9cb.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/bLmy0N4HIaeKSsczbv1d2CjQRlQia15npPjq0B2m5ScmUcopIk45pp21quj2Tv6w6JjH77GMiaL5VIHP1A6aZlGQ/0?wx_fmt=jpeg"/><br/></p>
+        
+</body>
+</html>

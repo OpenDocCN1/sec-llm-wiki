@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>高通安全执行环境高危漏洞影响全球六成安卓设备</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>高通安全执行环境高危漏洞影响全球六成安卓设备</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5Njc3NjM4MA==&amp;mid=2651066970&amp;idx=2&amp;sn=2676e27f8ab0a195abd342d9bb5f0130&amp;chksm=bd14a2898a632b9f2ffeabe42c1b49f326acb585db62ebc8f58de9804687cf5b6bef08f47439&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5Njc3NjM4MA==&amp;mid=2651066970&amp;idx=2&amp;sn=2676e27f8ab0a195abd342d9bb5f0130&amp;chksm=bd14a2898a632b9f2ffeabe42c1b49f326acb585db62ebc8f58de9804687cf5b6bef08f47439&amp;scene=27#wechat_redirect</a></blockquote><p>高通安全执行环境 (Qualcomm Secure Execution Environment, QSEE) 中的一个关键提权漏洞 (Elevation of Privilege, EOP) 仍影响全世界大约六成的安卓设备。而该漏洞早些时候曾得到过一次修复。<br/></p><p><br/></p><p>问题的根源在于 Widevine QSEE TrustZone 应用中的一个关键提权漏洞CVE-2015-6639，而该漏洞在今年一月已经被谷歌发布的包含12个安卓漏洞补丁的补丁包修复。该漏洞可能让黑客控制的、拥有特权的应用访问QSEECOM，在TrustZone环境下执行任意代码。<br/><br/>该漏洞的原理可以大致归纳如下：QSEECOM是一种Linux内核设备，可让mediaserver（它在正常的操作系统中运行，也即“正常世界”）等通常的用户空间进程与安全操作系统下受信任的应用（也被称为trustlet，管理着受保护的服务和硬件，后者也被称为“安全世界”）进行通信。因此，“正常世界”中运行的恶意软件可以调用trustlet，利用其中的漏洞入侵设备。</p><p><br/></p><p><img data-w="" data-ratio="0.7737881508078994" data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz/kuIKKC9tNkBPju7t2zSOFPqMlXfYNDfbdVKwym9moFydnO8c1ZtI1ibm8WV8RS7d0WAvciaPtMjA2785XCENkE7g/0?wx_fmt=jpeg" src="../Images/03b9e17bcb05914b59189b62fe39105a.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/kuIKKC9tNkBPju7t2zSOFPqMlXfYNDfbdVKwym9moFydnO8c1ZtI1ibm8WV8RS7d0WAvciaPtMjA2785XCENkE7g/0?wx_fmt=jpeg"/></p><p>TrustZone内核运行在“安全世界”中，而QSEECOM则在“正常世界”中。不过，两者都是内核模式的一部分。在特定的情况下，能够在mediaserver下运行恶意代码的攻击者能够利用运行在“安全世界”中的应用 (Widevine的DRM软件) 的漏洞，并通过更改“正常世界”的Linux内核获得受害设备的完整控制权限。<br/><br/>Gal Beniamini 在最近发布的一篇博文中解释称，QSEE拥有相当高的权限，它能够直接与TrustZone内核进行互动，并访问硬件安全保护着的TrustZone文件系统。此外，它还能够直接访问系统内存，因此黑客可以劫持Linux内核，而不需要找到并利用某种内核漏洞。<br/><br/>不过，攻击者仍旧需要利用mediaserver中的某个漏洞，但这些漏洞显然并不难找。2015年年中，Stagefright漏洞得到曝光，谷歌在那段时间每周都会发布针对mediaserver的补丁，而2016年5月对Nexus设备发布的升级更新也包含了此类补丁。<br/><br/>Gal Beniamini 在去年发现了这一问题，Duo Security 公司称，它影响运行高通处理器的安卓设备中的75%。Duo公司还表示，80%的安卓设备使用的是高通处理器，但只有25%的用户安装了补丁，这意味着还有60%的设备仍存在漏洞。<br/><br/>尽管存在问题的设备已经收到了2016年1月的安全更新，仍有大量设备没有打补丁。该补丁的唯一作用就是修补该漏洞，但生产生必须将它适配到自家设备上并推送给运营商，而运营商则需要审批并进行部署。这个过程十分缓慢，老旧的设备经常会在这一升级周期中被落下，这意味着数百万用户永远不会收到这一更新。<br/><br/>Duo Security公司研究人员表示，他们通过分析拥有50万台企业级设备的数据集，发现大约27%的安卓设备仍存在该漏洞。要想解决这一问题，生产商和运营商必须针对受影响的安卓版本设备设计并推送该补丁。<br/><br/>今年3月，火眼公司的研究人员发布了关于一个严重的信息泄露漏洞的详细信息，该漏洞影响数百种安卓机型使用的高通软件包。具体来看，该问题存在于高通网络共享控制器中，漏洞号为CVE-2016-2060，恶意应用可以使用它访问用户数据。<br/><br/>同样在3月，在研究人员发现一些Root应用正在滥用内核中的一个本地提权漏洞之后，谷歌发布了针对安卓设备的紧急安全补丁。<br/><br/></p>
+        
+</body>
+</html>

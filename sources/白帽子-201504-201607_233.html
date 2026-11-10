@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>同步网络时间的NTP协议被发现存在8个漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>同步网络时间的NTP协议被发现存在8个漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAwMDQwNTE5MA==&amp;mid=400098848&amp;idx=2&amp;sn=c19723bd97093f2a67bc61fc5ba759ea&amp;chksm=08c4dd893fb3549f330400f55cbf6190583ab649ab006ca9f837c6220e690e7dedc915a3cac4&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzAwMDQwNTE5MA==&amp;mid=400098848&amp;idx=2&amp;sn=c19723bd97093f2a67bc61fc5ba759ea&amp;chksm=08c4dd893fb3549f330400f55cbf6190583ab649ab006ca9f837c6220e690e7dedc915a3cac4&amp;scene=27#wechat_redirect</a></blockquote><p><span style="">最近，思科研究人员在NTP（Network Time Protocol，网络时间协议）中发现了8个安全漏洞，目前Linux、Mac和BSD操作系统都在使用该协议。这些漏洞发现的时间恰巧是2015年10月21日，就 是Michael J. Fox在电影《回到未来2》中穿越所至的时间。</span></p><p><span style=""/></p><p style=""><img data-src="http://mmbiz.qpic.cn/mmbiz/2dMzopbOicL8RzBW0R8GtvN6hiciaacQ5FX47uliaDRrDg6Fs3qsaGxdX8umwyQRNGa0wERBf5As8XxMtS2WJqjLnA/0?wx_fmt=jpeg" title="security-flaws-discovered-in-ntp-protocol-used-for-synchronizing-clocks-495077-2.jpg" original="http://static.cnbetacdn.com/thumb/article/2015/1022/88df9084526ecdb.jpg_600x600.jpg" style="border: 0px; display: block; margin: 0px auto; max-width: 630px;" class="" data-type="jpeg" data-ratio="0.5333333333333333" data-w="600" src="../Images/4f19b05e73d5d7a95ebbd0e32d974365.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/2dMzopbOicL8RzBW0R8GtvN6hiciaacQ5FX47uliaDRrDg6Fs3qsaGxdX8umwyQRNGa0wERBf5As8XxMtS2WJqjLnA/0?wx_fmt=jpeg"/></p><p style="">8个安全漏洞的其中一个能够让黑客操纵目标的时钟，让受到影响的人相信，他们已经穿越到了未来（果然是有点儿典故啊）。</p><p style="">这些漏洞影响的就是NTP协议守护进程，这是个负责在整个计算机网络中进行时间同步的协议（这里的计算机网络可以是互联网、内连网或者更小的LAN）。</p><p style="">公布的这些漏洞包含了一则处理逻辑错误，能够绕过证书，让黑客修改本地系统时间；内存崩溃问题启用协议致缓冲区溢出或释放后使用（use-after-free）攻击；通过破坏守护进程或令其进入死循环导致DoS状态；目录穿越以及文件覆盖，令黑客能够覆盖NTPD配置。</p><p style="">NTP 4.2.5p186至4.2.8p3版本都受到影响，不过昨天NTP协议开发者已经发布了新版，修复了上述问题。</p><p><span style=""><br/></span><br/></p>
+        
+</body>
+</html>

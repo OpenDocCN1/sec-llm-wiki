@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>谷歌将删除安卓N版本中的弱加密</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>谷歌将删除安卓N版本中的弱加密</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485743&amp;idx=2&amp;sn=773562297932e2a6fd6914277f9d908b&amp;chksm=ea973845dde0b153e39327a332255538056fd46930ebbd64e3a1452b1ffb065991880919073a&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485743&amp;idx=2&amp;sn=773562297932e2a6fd6914277f9d908b&amp;chksm=ea973845dde0b153e39327a332255538056fd46930ebbd64e3a1452b1ffb065991880919073a&amp;scene=27#wechat_redirect</a></blockquote><p style="text-indent: 32px;line-height: 150%"><strong><span style="font-size:16px;line-height:150%;font-family:宋体">谷歌刚刚宣布将从将在今年秋天发布的安卓N版本中删除弱加密。</span></strong></p><p style="text-indent: 32px;line-height: 150%"><span style="font-size:16px;line-height:150%;font-family:宋体">安卓是一款基于Java之上的操作系统，通过Java加密基础架构(JCA)让开发人员在代码中写入并管理加密。JCA是Java平台的主要组成部分，可与多种类型的算法兼容。</span></p><p style="text-indent: 32px;line-height: 150%"><span style="font-size:16px;line-height:150%;font-family:宋体">当开发人员想要运行加密时，就会通过加载Provider（可将其想象为一种类型）的方式来调用其中一个算法，随后再选择想要的加密算法。安卓支持多数JCAProvider如OpenSSL、BC、HarmonyJSSE、DRL CertFactory等等。在安卓N版本之前，其中的一个Provider便是Crypto，它支持很多算法如SHA1PRNG、SHA1withDSA、DSA以及SHA-1。从中可看出，以今天的加密标准来看，其中的很多算法都是弱加密而且不安全。</span></p><p style="text-indent: 32px;line-height: 150%"><span style="font-family: 宋体; line-height: 1.6;">谷歌建议，如果开发人员使用的是Crypto Provider，那么最好重写app，尤其如果使用的是SHA1PRNG算法的话。很多开发人员都使用该算法创建加密密钥衍生物。SHA1PRNG能够让开发人员使用一个用户密码并能够将小型密钥扩充为大型密钥。安全研究人员建议如果开发人员需要创建加密密钥衍生物时，可以使用更加强大的算法如AES。</span></p><p><br/></p>
+        
+</body>
+</html>

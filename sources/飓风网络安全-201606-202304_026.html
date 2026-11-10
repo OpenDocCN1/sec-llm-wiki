@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Apache Spark 存在XSS漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Apache Spark 存在XSS漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI3NzMzNzE5Ng==&amp;mid=2247485634&amp;idx=2&amp;sn=f999a0ace25571af83c465933b766b90&amp;chksm=eb668dc1dc1104d70792483ef68ab1d31a0fb4a7a27bd0549b770c9675b3a004260ac86b3725&amp;scene=126&amp;sessionid=1681407223#rd">http://mp.weixin.qq.com/s?__biz=MzI3NzMzNzE5Ng==&amp;mid=2247485634&amp;idx=2&amp;sn=f999a0ace25571af83c465933b766b90&amp;chksm=eb668dc1dc1104d70792483ef68ab1d31a0fb4a7a27bd0549b770c9675b3a004260ac86b3725&amp;scene=126&amp;sessionid=1681407223#rd</a></blockquote><p>基本信息
+    </p><p>风险等级:<span style="color: #ffc445;">中危             </span>
+        </p><p>漏洞类型 : XSS 
+        <br/></p><p>漏洞描述
+    
+        
+            
+                </p><p>近日，飓风应急团队监测到Apache发布安全公告，修复了一个存在于Spark中的存储跨站脚本(XSS)漏洞，该漏洞允许远程攻击者在用户的web浏览器中执行任意JavaScript代码，通过将恶意JavaScript代码包含到日志中，在UI展示日志时恶意JavaScript代码将会被执行。</p><p><strong>【受影响版本】</strong></p><ul class="list-paddingleft-1"><li><p>Apache Spark &lt;= 3.2.1</p></li><li><p>Apache Spark = 3.3.0</p></li></ul><p><strong>【安全版本】</strong></p><ul class="list-paddingleft-1"><li><p>Apache Spark &gt;= 3.2.2</p></li><li><p>Apache Spark &gt;= 3.3.1</p></li></ul><p><br/></p><p style="text-align: center;"><img class="rich_pages wxw-img" data-galleryid="" data-ratio="0.5232198142414861" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/ibhQpAia4xu03DomjGiadMnhrQJnDynSryXaCG1p2OGiaJ7xXrnSfM0gNibjUKRicNkO2ykdlfibAYnT0VhZqk0KE4Z5A/640?wx_fmt=png" data-type="png" data-w="646" style="" src="../Images/53c5da4e0c15dcdc096c4678eec0f483.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/ibhQpAia4xu03DomjGiadMnhrQJnDynSryXaCG1p2OGiaJ7xXrnSfM0gNibjUKRicNkO2ykdlfibAYnT0VhZqk0KE4Z5A/640?wx_fmt=png"/></p><p>Apache Spark 是专为大规模数据处理而设计的快速通用的计算引擎。</p><p>影响范围
+        </p><p>Apache Spark &lt;= 3.2.1、Apache Spark = 3.3.0</p><p><br/></p><p>解决方案
+    </p><p><span style="font-weight: 600;border-bottom: 1px solid #002664;color: #002664;">修复建议</span>
+            </p><p><strong>临时修复建议：</strong></p><ul class="list-paddingleft-1"><li><p>如果目前无法升级，若业务环境允许，使用白名单限制相关端口的访问来降低风险。</p></li></ul><p><strong>通用修复建议：</strong></p><p>官方已经针对漏洞发布了版本更新，下载地址如下：</p><ul class="list-paddingleft-1"><li><p>https://spark.apache.org/downloads.html</p></li></ul><p><br/></p><p style="display: none;"><mp-style-type data-value="3"/></p>
+        
+</body>
+</html>

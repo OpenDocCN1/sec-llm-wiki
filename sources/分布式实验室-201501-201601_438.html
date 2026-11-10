@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>【PPT】深入Docker存储驱动</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>【PPT】深入Docker存储驱动</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=Mzg5Mjc3MjIyMA==&amp;mid=2247542051&amp;idx=1&amp;sn=377cceef3641d6345c2c9184d6b3f109&amp;chksm=c03b6f30f74ce62622ca272216ac15a28569aa2ce6ddff030ebb7514235a65c2ce1891ff7256&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=Mzg5Mjc3MjIyMA==&amp;mid=2247542051&amp;idx=1&amp;sn=377cceef3641d6345c2c9184d6b3f109&amp;chksm=c03b6f30f74ce62622ca272216ac15a28569aa2ce6ddff030ebb7514235a65c2ce1891ff7256&amp;scene=27#wechat_redirect</a></blockquote><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; line-height: 40px; color: rgb(102, 102, 102); font-family: Arial, Helvetica, sans-serif; white-space: normal;">这个PPT来自Docker伦敦大会上，Jérôme Petazzoni分享的「深入Docker存储驱动」的演讲，在PPT中，作者对Docker存储驱动进行了比较全面的介绍，作者从Docker存储驱动的历史开始讲起，从copy-on-write机制入手，之后分别从AUFS、Device Mapper、BTRFS、Overlay、VFS几个方面进行了具体的介绍。</p><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; line-height: 40px; color: rgb(102, 102, 102); font-family: Arial, Helvetica, sans-serif; white-space: normal;">对于copy-on-write机制，作者从RAM和硬盘存储两个角度，对其工作机制进行了介绍，并说明了CoW机制对于Docker的重要作用。Docker最初使用的是AUFS，之后随着Docker的不断发展，针对不同的使用场景，逐渐开始支持不同的文件系统。比如在操作较大文件的时候，BTRFS和Device Mapper会比AUFS有更好的效果。</p><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; line-height: 40px; color: rgb(102, 102, 102); font-family: Arial, Helvetica, sans-serif; white-space: normal;">对于每一种具体存储机制，作者又从基本原理、实际操作、高级选项、以及性能调优几个方面进行了进一步分析。读者可以将其作为一个提纲，来对Docker的存储驱动有一个大致的了解，具体在使用中可以按图索骥，针对性地进行具体了解。</p><hr/><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; line-height: 40px; color: rgb(102, 102, 102); font-family: Arial, Helvetica, sans-serif; white-space: normal;"><span style="color: rgb(0, 0, 0);">DockerOne第一时间对PPT进行了翻译，阅读PPT请点击左下角的<span style="color: rgb(31, 73, 125);">阅读原文</span>链接。</span></p>
+        
+</body>
+</html>

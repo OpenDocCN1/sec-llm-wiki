@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Memcached漏洞竟然还有一个Kill Switch</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Memcached漏洞竟然还有一个Kill Switch</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5Njc3NjM4MA==&amp;mid=2651076181&amp;idx=2&amp;sn=b4c5f86d08182d9bcca6dcb74f26a8c6&amp;chksm=bd1486868a630f90ef40ae5964d9e95e5a5f9460fe56f005a93335b4240f562aa5886a6fd0fe&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5Njc3NjM4MA==&amp;mid=2651076181&amp;idx=2&amp;sn=b4c5f86d08182d9bcca6dcb74f26a8c6&amp;chksm=bd1486868a630f90ef40ae5964d9e95e5a5f9460fe56f005a93335b4240f562aa5886a6fd0fe&amp;scene=27#wechat_redirect</a></blockquote><p>安全人员刚刚发现针对Memcached拒绝服务攻击的Kill Switch，同时还发现这个漏洞远比之前报告的更具危害性，攻击者可以利用从含有此漏洞的服务器上盗取数据。</p><p><br/></p><p style="text-align: center;"><img class="" data-copyright="0" data-ratio="0.7669172932330827" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/kuIKKC9tNkBBNIyFj4XMxuDjGJygID0BRCC9RJAVgibCxcnaRdR30uS1FYAPsrMzxNr5F6DaztuK8r4F6zMCA6Q/640?wx_fmt=jpeg" data-type="jpeg" data-w="399" style="" src="../Images/7e1eb471f4f9de9bef168fb6de6712f2.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/kuIKKC9tNkBBNIyFj4XMxuDjGJygID0BRCC9RJAVgibCxcnaRdR30uS1FYAPsrMzxNr5F6DaztuK8r4F6zMCA6Q/640?wx_fmt=jpeg"/></p><p style="text-align: center;"><span style="font-size: 16px;color: rgb(136, 136, 136);">Memcached的全球分布情况（Shodan）</span></p><p><br/></p><p>Memcached是一个在RAM中存储数据的开源内存缓冲系统，目的是加快用户的访问时间。起初的设计是不能从互联网访问，因为无需认证。攻击者利用漏洞可以把DDoS攻击放大到5万倍，近段时间以来，利用此Memcached漏洞的攻击接连创历史记录，到骇人的1.7T。</p><p><br/></p><p>全球目前有超过9.5万台的服务器会应答TCP/UDP的11211端口，可被攻击者利用来发动DDoS攻击或是暴露客户数据。由于Memcached协议无需登录或认证，意味着任何放到服务器上的数据都有可能被盗走或篡改，一个简单的debug命令就可以做到。</p><p><br/></p><p><strong>Kill Switch</strong></p><p><br/></p><p>发送一个命令给攻击中的服务器，即可压制DDoS，令服务器的cache和攻击者植入的恶意载荷失效，这个反制措施已经披露给国家安全部门。</p><p><br/></p><p>该反制措施已经在有漏洞的服务器上经过实际测试，100%有效，并且没有发现任何附带破坏。</p><p><br/></p><p>讽刺的是，Memcached本来是用于缓存经常被使用的web页面和数据，以合法增加服务性能。现在却被当成网络武器，用于非常目的。</p><p><br/></p><p><strong>相关阅读：</strong></p><p><br/></p><p><a href="https://mp.weixin.qq.com/s?__biz=MzI4MjA1MzkyNA==&amp;mid=2655297955&amp;idx=3&amp;sn=0d00be903caeb748fcd43ebced4ee840&amp;scene=21#wechat_redirect" target="_blank">1.7 Tbps！Memcached DDoS攻击刷新纪录！</a></p><p><br/></p><p><img class="" data-ratio="0.3457142857142857" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/kuIKKC9tNkCPWGHca5CXGMn5H5Don6YbaY4DiauVRribcsvrpcVh9dDwwKzzxZWeC8XD1ug2kMxKjlicszOy7icgzA/640?wx_fmt=jpeg" data-type="jpeg" data-w="700" width="auto" style="text-align: center;white-space: normal;font-size: 15px;background-color: rgb(255, 255, 255);visibility: visible !important;width: auto !important;" src="../Images/3cc17606a4d3a9c778b7686127f8048b.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/kuIKKC9tNkCPWGHca5CXGMn5H5Don6YbaY4DiauVRribcsvrpcVh9dDwwKzzxZWeC8XD1ug2kMxKjlicszOy7icgzA/640?wx_fmt=jpeg"/></p>
+        
+</body>
+</html>

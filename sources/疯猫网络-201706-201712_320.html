@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>XShell后门DNS Tunnel编码分析</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>XShell后门DNS Tunnel编码分析</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzIyMzE5NTQ3Ng==&amp;mid=2650589463&amp;idx=2&amp;sn=d61fdbc47f0b075f8dcd6b29a43909d6&amp;chksm=f029912cc75e183a5d8285cfcaeddb568c9ed54c8d5c3177e50a892c65e7a83ee66ce285fbbe&amp;scene=126&amp;sessionid=1681370441#rd">http://mp.weixin.qq.com/s?__biz=MzIyMzE5NTQ3Ng==&amp;mid=2650589463&amp;idx=2&amp;sn=d61fdbc47f0b075f8dcd6b29a43909d6&amp;chksm=f029912cc75e183a5d8285cfcaeddb568c9ed54c8d5c3177e50a892c65e7a83ee66ce285fbbe&amp;scene=126&amp;sessionid=1681370441#rd</a></blockquote><p><span style="color: rgb(123, 12, 0);"/></p><p><img data-type="gif" data-src="http://mmbiz.qpic.cn/mmbiz_gif/5ZACCn1bWEwrm1niax0xWl6tFwyaPqCHRyskxXGvZQgOFTCFaUiaU6PSmdmwSdb3JEAuZwPx0lPWsHf2xuib8Asew/0?wx_fmt=gif" class="" data-ratio="0.15625" data-w="640" src="../Images/bd12d37e5b6d2b5b81389d88a9cef40a.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_gif/5ZACCn1bWEwrm1niax0xWl6tFwyaPqCHRyskxXGvZQgOFTCFaUiaU6PSmdmwSdb3JEAuZwPx0lPWsHf2xuib8Asew/0?wx_fmt=gif"/></p><p><span style="color: rgb(123, 12, 0);"/><br/></p><p><span style="color: rgb(123, 12, 0);">XShellGhost 通过 DNS Tunnel 把打点的数据传上去，分析了下编码算法，对数据进行了解密。</span><span style="box-sizing: border-box; word-wrap: break-word; word-break: break-word; color: rgb(0, 176, 80);"> </span></p><h2 style="box-sizing: border-box; font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; font-weight: bold; line-height: 1.1; color: rgb(55, 56, 56); margin-top: 30px; margin-bottom: 15px; font-size: 18px; white-space: normal; background-color: rgb(255, 255, 255);"><span style="box-sizing: border-box;">编码分析</span><span style="box-sizing: border-box;"/></h2><p>DNS Tunnel的编码算法是先经过下图的算法1编码;如图：</p><p><br/></p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzGEKOI90rHGPdJSk4WiaURuKuG2HQhPsH6tz1ibjUCWMTStuXVicQknR4BTpxDuicFAyeNpVRWBCNLrA/0?wx_fmt=jpeg" class="" data-ratio="0.8420289855072464" data-w="690" src="../Images/fed1d916c5d5504352187d1453d86e83.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzGEKOI90rHGPdJSk4WiaURuKuG2HQhPsH6tz1ibjUCWMTStuXVicQknR4BTpxDuicFAyeNpVRWBCNLrA/0?wx_fmt=jpeg"/></p><p><br/></p><p>待编码的数据单字节和一个每4次运算一次的DWORD常量的1,2,3,4字节进行单字节运算来编码，如下：</p><p><br/></p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzGEKOI90rHGPdJSk4WiaURuC3w6rjdLw4ibmpjSKDx6bIAYDGI6e26XBDN2pj7tD7ibxBHfsWicuiaobw/0?wx_fmt=jpeg" class="" data-ratio="0.3902439024390244" data-w="656" src="../Images/2bbf8e344431a37dba2bedcec1384924.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzGEKOI90rHGPdJSk4WiaURuC3w6rjdLw4ibmpjSKDx6bIAYDGI6e26XBDN2pj7tD7ibxBHfsWicuiaobw/0?wx_fmt=jpeg"/></p><p><br/></p><p>算法1编码后的数据如下：</p><p><br/></p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzGEKOI90rHGPdJSk4WiaURuQibJ8llibnHz5Ly6f1SeDrbnvlmBkVOukkEA078wIDkG7lU4qtjibBWeA/0?wx_fmt=jpeg" class="" data-ratio="0.2621035058430718" data-w="599" src="../Images/5f5baef20cf8226174095e217ef24122.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzGEKOI90rHGPdJSk4WiaURuQibJ8llibnHz5Ly6f1SeDrbnvlmBkVOukkEA078wIDkG7lU4qtjibBWeA/0?wx_fmt=jpeg"/></p><p><br/></p><p><br/></p><p>然后把结果转换成可见的字符转换方法是通过每个字节的高位加‘j’低位加‘a’，把1个字节拆分成2个字节的可见字符，这样就浪费了一个字节：<br/></p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzGEKOI90rHGPdJSk4WiaURur5YFhZB9vlQ2psVMmMlDwe96C4ibcXywoGDAPTS3IicDzl0JHdibD1GaA/0?wx_fmt=jpeg" class="" data-ratio="0.2898550724637681" data-w="690" src="../Images/f3f5b9f940e5a1c4dbe33cb7c8a321b5.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzGEKOI90rHGPdJSk4WiaURur5YFhZB9vlQ2psVMmMlDwe96C4ibcXywoGDAPTS3IicDzl0JHdibD1GaA/0?wx_fmt=jpeg"/></p><p><br/></p><p><br/></p><p>解密算法是加密算法的逆运算，解密算法流程入下图：</p><p><br/></p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzGEKOI90rHGPdJSk4WiaURuSII0Q76UFg5r7hiaD9icCWBRYhY7ZMI9WrWuEhtxF22lIiaEC8BNpbDjg/0?wx_fmt=jpeg" class="" data-ratio="1.2665148063781322" data-w="439" src="../Images/e4e259c89492f89bcbe2db6f9876dadb.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzGEKOI90rHGPdJSk4WiaURuSII0Q76UFg5r7hiaD9icCWBRYhY7ZMI9WrWuEhtxF22lIiaEC8BNpbDjg/0?wx_fmt=jpeg"/></p><p><br/></p><p>解密的单条数据的HEX如下：</p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzGEKOI90rHGPdJSk4WiaURusWxu0Qv8E6LKbShzDpdGg6czPHt3dPJbxp02XtNgvb88CiaibYzjA6mQ/0?wx_fmt=jpeg" class="" data-ratio="0.17680608365019013" data-w="526" src="../Images/d2e075eb690bf3fc66aae8f11c8d45bf.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzGEKOI90rHGPdJSk4WiaURusWxu0Qv8E6LKbShzDpdGg6czPHt3dPJbxp02XtNgvb88CiaibYzjA6mQ/0?wx_fmt=jpeg"/></p><p><br/></p><p><br/></p><p>根据网上的一些公开的流量数据，</p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzGEKOI90rHGPdJSk4WiaURuYuOJhghEOEibRFy7p0Mebyv6Pr1dspbszUgicDw9Kwucvg9PTVd1Rkow/0?wx_fmt=jpeg" class="" data-ratio="0.30869565217391304" data-w="690" src="../Images/4e5abdc12a0d9bba3cb6c7d9c3157514.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzGEKOI90rHGPdJSk4WiaURuYuOJhghEOEibRFy7p0Mebyv6Pr1dspbszUgicDw9Kwucvg9PTVd1Rkow/0?wx_fmt=jpeg"/></p><p><br/></p><p>解密出的一些上传的数据：</p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzGEKOI90rHGPdJSk4WiaURulmnN3V1NI0icMU9Sa3kJdnVax6SOwS0HUC0xibYSHlZEWa7530P5qPFw/0?wx_fmt=jpeg" class="" data-ratio="1.338862559241706" data-w="422" style="width: 100%; height: auto;" src="../Images/e0aee194afb1aac64d7d8cab688bfab5.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzGEKOI90rHGPdJSk4WiaURulmnN3V1NI0icMU9Sa3kJdnVax6SOwS0HUC0xibYSHlZEWa7530P5qPFw/0?wx_fmt=jpeg"/></p><p><br/></p><h2>解密代码如下： <br style="box-sizing: border-box;"/></h2><p style="box-sizing: border-box; margin-bottom: 10px; font-size: 15px; line-height: 26px; word-wrap: break-word; word-break: break-word; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; white-space: normal; background-color: rgb(255, 255, 255);"><br/></p><blockquote><pre style="box-sizing: border-box; overflow: auto; font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 13px; padding: 9.5px; margin-top: 0px; margin-bottom: 15px; line-height: 1.42857; color: rgb(51, 51, 51); word-break: break-all; word-wrap: break-word; border: 1px solid rgb(228, 228, 228); border-radius: 4px; background-color: rgb(243, 243, 243);"><code class="hljs cpp">int DecodeSecond(int a1, unsigned char* a2, int a3, int a4, unsigned char* szOut){char v4; // cl@1int v5; // esi@1unsigned char* v6; // edi@2byte v7[1024]= {0}; // eax@11char v8; // dl@11int v10; // [sp+4h] [bp-10h]@1int v11; // [sp+8h] [bp-Ch]@1int v12; // [sp+Ch] [bp-8h]@1int v13; // [sp+10h] [bp-4h]@1v4 = 0;
+v5 = 0;
+v10 = a1;
+v11 = a1;
+v12 = a1;
+v13 = a1;int i = 0;if ( a3 &gt; 0 )
+{
+v6 = a2 - a4;do{if ( v5 &amp; 3 )
+{switch ( v5 &amp; 3 )
+{case 1:
+v11 = 0xBFD7681A - 0x7DB1F70F * v11;
+v4 = (*((byte *)&amp;v11  + 2) ^ (*((byte *)&amp;v11 + 1)
++ (*((byte *)&amp;v11) ^ v4)))
+- *((byte *)&amp;v11 + 3);
+v8 = v4 ^ *(byte *)(v6 + v5++ + a4);
+v7[i] = v8;
+i++;break;case 2:
+v12 = 0xE03A30FA - 0x3035D0D6 * v12;
+v4 = (*((byte *)&amp;v12  + 2) ^ (*((byte *)&amp;v12 + 1)
++ (*((byte *)&amp;v12) ^ v4)))
+- *((byte *)&amp;v12 + 3);
+v8 = v4 ^ *(byte *)(v6 + v5++ + a4);
+v7[i] = v8;
+i++;break;case 3:
+v13 = 0xB1BF5581 - 0x11C208F * v13;
+v4 = (*((byte *)&amp;v13  + 2) ^ (*((byte *)&amp;v13 + 1)
++ (*((byte *)&amp;v13) ^ v4)))
+- *((byte *)&amp;v13 + 3);
+v8 = v4 ^ *(byte *)(v6 + v5++ + a4);
+v7[i] = v8;
+i++;break;
+}
+}else{
+v10 = 0x9F248E8A - 0x2F8FCE7E * v10;
+v4 = (*((byte *)&amp;v10 + 2) ^ (*((byte *)&amp;v10 + 1)
++ (*((byte *)&amp;v10 ) ^ v4)))
+- *((byte *)&amp;v10 + 3);
+v8 = v4 ^ *(byte *)(v6 + v5++ + a4);
+v7[i] = v8;
+i++;
+}
+}while ( v5 &lt; a3 );memcpy(szOut, v7, a3);
+}return 0;
+}void DecodeFirst(unsigned char* szText){int iLength = strlen((char*)szText);int iSubLength = iLength/2;unsigned char* szXXX = new unsigned char[iSubLength+1];memset(szXXX, 0, iSubLength+1);for (int i=0; i&lt;iSubLength; i++)
+{unsigned char One = szText[2*i] - 'a';unsigned char Two = szText[2*i+1] -'j';unsigned char Total = One+Two*16;
+szXXX[i] = Total;
+}unsigned char* szOutData = new unsigned char[iSubLength+1];memset(szOutData, 0, iSubLength+1);
+DecodeSecond(0, szXXX, iSubLength, 0, szOutData);printf(" --------------------Decode Data--------------------------------\r\n");
+hexdump(szOutData, iSubLength); delete [] szOutData;return;
+}void hexdump(void *pAddressIn, long  lSize){char szBuf[100];long lIndent = 1;long lOutLen, lIndex, lIndex2, lOutLen2;long lRelPos;struct { char *pData; unsigned long lSize; } buf;unsigned char *pTmp,ucTmp;unsigned char *pAddress = (unsigned char *)pAddressIn;
+buf.pData   = (char *)pAddress;
+buf.lSize   = lSize;while (buf.lSize &gt; 0)
+{
+pTmp     = (unsigned char *)buf.pData;
+lOutLen  = (int)buf.lSize;if (lOutLen &gt; 16)
+lOutLen = 16;sprintf(szBuf, " |                            ""                      ""    %08lX", pTmp-pAddress);
+lOutLen2 = lOutLen;for(lIndex = 1+lIndent, lIndex2 = 53-15+lIndent, lRelPos = 0;
+lOutLen2;
+lOutLen2--, lIndex += 2, lIndex2++
+)
+{
+ucTmp = *pTmp++;sprintf(szBuf + lIndex, "%02X ", (unsigned short)ucTmp);if(!isprint(ucTmp))  ucTmp = '.'; // nonprintable charszBuf[lIndex2] = ucTmp;if (!(++lRelPos &amp; 3))     // extra blank after 4 bytes{  lIndex++; szBuf[lIndex+2] = ' '; }
+}if (!(lRelPos &amp; 3)) lIndex--;
+szBuf[lIndex  ]   = '|';
+szBuf[lIndex+1]   = ' ';printf("%s\n", szBuf);
+buf.pData   += lOutLen;
+buf.lSize   -= lOutLen;
+}
+}</code></pre></blockquote><p><br/></p><p><img data-type="gif" data-src="http://mmbiz.qpic.cn/mmbiz_gif/5ZACCn1bWEwrm1niax0xWl6tFwyaPqCHRL7zA6G4OWxgibRsJT9lLafJppjibev1TUxHYEia92BiaAtlc7u0BcOmUvA/0?wx_fmt=gif" class="" data-ratio="0.7" data-w="500" src="../Images/e8c1330a4ae95198ebdb17e4f3bb4cbb.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_gif/5ZACCn1bWEwrm1niax0xWl6tFwyaPqCHRL7zA6G4OWxgibRsJT9lLafJppjibev1TUxHYEia92BiaAtlc7u0BcOmUvA/0?wx_fmt=gif"/></p><p><br/></p>
+        
+</body>
+</html>

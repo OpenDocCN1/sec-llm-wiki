@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>“暗影掮客”泄露的文件中包含Solaris系统攻击工具</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>“暗影掮客”泄露的文件中包含Solaris系统攻击工具</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485547&amp;idx=3&amp;sn=7390dd8c3da143135c5b09d4c93d7b43&amp;chksm=ea973901dde0b01759b05d21c538ebcfd4b22d8cd03f1ac8ef95f4b2186527fd159c451be730&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485547&amp;idx=3&amp;sn=7390dd8c3da143135c5b09d4c93d7b43&amp;chksm=ea973901dde0b01759b05d21c538ebcfd4b22d8cd03f1ac8ef95f4b2186527fd159c451be730&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKiakgOfSpcibYicHLtnoOdHcnJxlibW2O6CN74YlGAmKzzUKotGvrplXwibOFdsUNII3Nb3q6yKdee905Ww/0?wx_fmt=png" data-ratio="0.7568208778173191" data-w="843" src="../Images/b403446bc4c6dfcff302e18833f676d5.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKiakgOfSpcibYicHLtnoOdHcnJxlibW2O6CN74YlGAmKzzUKotGvrplXwibOFdsUNII3Nb3q6yKdee905Ww/0?wx_fmt=png"/></p><p><br/></p><p><strong>安全研究员Matthew Hickey从“暗影掮客”黑客组织发布的NSA入侵工具中发现了两款专门针对甲骨文Solaris系统的工具EXTREMEPARR和EBBISLAND。</strong></p><p><br/></p><p>Hickey是英国安全公司Hacker House的联合创始人，他指出登录用户都可以使用这两款工具升级到根权限并远程获取根访问权限。这些工具可在x86和Sparc尚运行6到10版本的Solaris系统上起作用，而且他认为他也会在最新的版本11上起作用。</p><p><br/></p><p>EXTREMEPARR工具会将登录实体（用户或脚本）升级为根权限，方法是滥用dtapppgather、文件权限和setuid二进制。EBBISLAND工具可针对任何开放的RPC服务奖远程根shell置于有缺陷的Solaris上。它会在Solaris的XDR代码上触发一个缓冲溢出漏洞。</p><p><br/></p><p>鉴于NSA能够在任何Solaris系统上开放一个根shell，因此专家注意到使用这些利用代码无需任何具体技巧。Hickey在互联网上通过扫描寻找易受攻击的联网设备，通过Shodan.io引擎找到了数千个易受攻击的系统。不过，他指出真正的威胁是很多此类机器会在防火墙的保护下在内部运行，一旦攻击者进入某个组织机构，这个利用代码就可以root这些设备。攻击者可以使用以上提到的利用代码攻陷目标网络。</p><p><br/></p><p><strong style="white-space: normal;">本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。</strong></p>
+        
+</body>
+</html>

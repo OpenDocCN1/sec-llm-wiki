@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Let’s Encrypt颁发1.5万个欺诈性PayPal证书</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Let’s Encrypt颁发1.5万个欺诈性PayPal证书</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485556&amp;idx=3&amp;sn=58c037bb3fdfc501db0d81c5d331172c&amp;chksm=ea97391edde0b00807fbec3e7c01c25839c4ac9284a7f519cd94441e625d75528503ca921938&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485556&amp;idx=3&amp;sn=58c037bb3fdfc501db0d81c5d331172c&amp;chksm=ea97391edde0b00807fbec3e7c01c25839c4ac9284a7f519cd94441e625d75528503ca921938&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiamGWwXbFo8SMJNicfmGBjRD08UVzsAcjDj4eVGAsYfL8icVKGxFN53iaJVfKI9rSOvDkkwiaNMPjFLDsA/0?wx_fmt=jpeg" data-ratio="0.6289308176100629" data-w="477" src="../Images/10b8747947176c174919db418bda4ea5.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiamGWwXbFo8SMJNicfmGBjRD08UVzsAcjDj4eVGAsYfL8icVKGxFN53iaJVfKI9rSOvDkkwiaNMPjFLDsA/0?wx_fmt=jpeg"/></p><p><br/></p><p><strong>一名研究人员指出，免费开放的证书机构Let’s Encrypt迄今为止已经为钓鱼站点颁发了近1.5万个包含 “PayPal” 这个词的证书。</strong></p><p><br/></p><p>加密专家Vincent Lynch表示，这些证书中有96.7%的证书从去年3月份起颁给了钓鱼站点。多数证书是从2016年11月份颁发的。</p><p><br/></p><p>Let’s Encrypt在2015年12月份公开启动，在2016年4月份完成测试期，它通过TLS为站点加密从而保护用户数据。这个证书机构的证书免费且颁发和维护流程是自动化完成的，以便于网站所有者更加容易地获得证书。</p><p><br/></p><p>在公开启动之前，人们就担心Let’s Encrypt会被犯罪分子所利用。另外，它声称阻止恶意站点使用其证书并非它的工作，也就是说钓鱼站点能利用Let’s Encrypt颁发的证书而不必担心会被禁止。</p><p><br/></p><p>去年3月初，Lynch就因钓鱼用途督促Let’s Encrypt停止颁发PayPal证书。当时他预计该机构已颁发了998个包含PayPal词语的证书，而其中99.5%的证书并用于钓鱼目的。而就目前数据来看，之前的预测大大低估了实际数量，Let’s Encrypt实际颁发了15,270个此类证书。它在2016年12月份颁发了2530个PayPal钓鱼证书，在2017年1月颁发了3995个，而2017年2月份颁发了5101个。Lynch表示这种增长趋势并没有特别的原因，不过似乎这个颁发频率在这个月有所下降。即便如此，Let’s Encrypt将在今年年底颁发另外2万个PayPal证书。</p><p><br/></p><p>钓鱼站点的生命周期通常都很短，主要原因就是它们很快会被标记并拦截，这也就解释了网络犯罪分子为何尽可能地多注册这些证书。让证书看起来越合法，网站存在的时间就越长。</p><p><br/></p><p>Lynch表示，多种推广HTTPS的措施也很容易引来钓鱼者。很多性能优势仅针对使用HTTPS的网站。另外，使用有效SSL证书的站点会被浏览厂商给予可被信任的UI指示符（如所有浏览器中的挂锁以及Chrome中的 ”Secure” 标识），这样钓鱼站点看起来就更加合法。</p><p><br/></p><p>不过也有人认为证书机构不应该为拦截恶意站点获取安全证书负责。网络安全公司High-Tech Bridge的首席执行官Ilia Kolochenko认为应该把HTTP流量加密和网站身份验证问题分开。Let’s Encrypt的任务是将全球范围内的明文HTTP流量转换为加密的HTTPS流量，而且它完成得很好。不过他们本应该预见犯罪分子也会利用证书这一点，而且至少应当执行一些基本的安全验证措施如拒绝包含流行品牌名称的域名SSL证书。</p><p><br/></p><p>Kolochenko认为网络浏览器将HTTPS网站标记为受信任网站实际上是一个更大的问题，因为这些网站鼓励用户盲目信任网站。因此他认为很难判断是哪个因素对钓鱼网站增多的事实所起的作用更大。不过他也表达了对加密所有网站流量会导致恶意软件更加有效地绕过安全机制理念的担忧。</p><p><br/></p><p>Let’s Encrypt项目的创造者Linux基金会尚未对此做出任何评论。</p><p><br/></p><p><br/></p><p><strong style="white-space: normal;">本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。</strong></p>
+        
+</body>
+</html>

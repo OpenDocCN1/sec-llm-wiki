@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>开源虚拟软件QEMU现潜伏十多年的0day漏洞 补丁已发布</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>开源虚拟软件QEMU现潜伏十多年的0day漏洞 补丁已发布</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485965&amp;idx=1&amp;sn=47caf76c94d7bb66205b6cfe2318c802&amp;chksm=ea973b67dde0b271481a1b4680379049eb678b39365dd9e88deadac6a08f68023e37fe94be3e&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485965&amp;idx=1&amp;sn=47caf76c94d7bb66205b6cfe2318c802&amp;chksm=ea973b67dde0b271481a1b4680379049eb678b39365dd9e88deadac6a08f68023e37fe94be3e&amp;scene=27#wechat_redirect</a></blockquote><p>终端安全公司Crowdstrike在广泛应用的虚拟软件QEMU中发现一个0day漏洞，其危害性或许甚于“心脏出血”漏洞。</p><p><br/></p><p><span style="color: rgb(0, 176, 80);"><strong>0day</strong><strong>漏洞</strong><strong>Venom</strong><strong>影响全球多数数据中心</strong></span></p><p>如今多数数据中心包括主要的科技企业及小型公司都将客户压缩至虚拟机或一台服务器运行的多个操作系统中。这些虚拟系统旨在分享资源但在驱动虚拟机的
+主机系统管理程序中仍然是单独实体。黑客可利用0day漏洞Venom（虚拟环境忽略的操作处理）获取访问整个管理程序、及所有数据中心的联网设备权限。</p><p><br/></p><p><span style="color: rgb(0, 176, 80);"><strong>Venom</strong><strong>漏洞起因是软盘驱动器</strong></span></p><p>Venom漏洞最早可追溯至2004年，虽然已出现十多年却未被发现，是因为没有人会关心遗留的但恰好每个虚拟软件都拥有的磁盘驱动器。如果驱动器收到精心编制的代码可让整个管理程序崩溃。黑客可离开自己的虚拟器、访问由其他人或其他公司所有的机器。</p><p><br/></p><p><span style="color: rgb(0, 176, 80);"><strong>多个虚拟平台受影响，危害或堪比“心脏出血”漏洞</strong></span></p><p>许多虚拟平台包括Xen、KVM及甲骨文VirtualBox都含有这个有漏洞的代码。不过VMware、微软Hyper-V、以及Bochs管理程序不在受影响之列。</p><p><br/></p><p>安全专家表示，该漏洞堪比“心脏出血”漏洞，“就像心脏出血漏洞允许敌人透过窗户看房子的陈设并基于所见收集信息，而Venom不但允许别人闯入自
+己的房子，周边社区的房子也未能幸免。”不过也有一些不同意见指出，该漏洞并不能被远程利用而且在一次攻击者并不能同时利用多台设备中的漏洞。</p><p><br/></p><p><span style="color: rgb(0, 176, 80);"><strong>攻击者如何利用漏洞</strong></span></p><p>要想利用这一漏洞，攻击者必须获得访问拥有对系统的高级或“root”权限。然而，安全专家指出，从云计算服务商租赁一台虚拟机并利用管理程序并非
+难事。攻击者的所作所为依赖于网络布局，也就是说可能会控制数据中心。不过虽然攻击并非难事，但安全专家表示，编写恶意代码“工程浩大”。</p><p><br/></p><p><span style="color: rgb(0, 176, 80);"><strong>修复方案</strong></span></p><p>自四月末发现这个漏洞以来，多家企业花费了约两周的时间开始修复受影响的系统。</p><p><br/></p><p>QEMU在源代码中公布了修复方案。Red Hat上周便已开始着手修复。由于所有运行x86VM的Xen系统均受影响，因此Xen发布了Xen 4.2.x及其他版本，用户可予以更新。</p><p><br/></p><p>Red Hat Enterprise Linux（RHEL）的所有版本都被包括QEMU并可能被攻击。Red 
+Hat因此建议管理员通过"yum update" 或 "yum update qemu-kvm"命令更新系统。之后必须“关闭”所有VM 
+客户端以安装更新。重启客户操作系统不足以修复该问题，因为它还会继续使用旧的QEMU二进制。所有运行安装有QEMU 
+Linux服务器的用户都应当按照Red Hat的指导进行修复。</p><p><br/></p><p>SUSE Linux同样易受攻击，但SUSE 
+Cloud不在影响之列。虽然SUSE依然在准备修复方案，但建议用户可通过libvirt管理自己的VM修复SUSE Linux 
+Enterprise Server (SLES) 
+11及12。它是VM工具包支持KVM/QEMU、Xen及Virtualbox。它可通过“nodefaults”自动开启VM免受攻击。</p><p><br/></p><p>甲骨文还未为VirtualBox提供修复方案，但表示不久将发布VirtualBox 4.3维护方案。</p><p><br/></p><p>一言以蔽之，用户需要迅速修复系统并关闭、重启VM以确保不受影响。</p><p><br/></p><p>本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。</p>
+        
+</body>
+</html>

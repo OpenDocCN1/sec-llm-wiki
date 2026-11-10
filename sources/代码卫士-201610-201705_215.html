@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CloudFlare泄露敏感的消费者数据</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>CloudFlare泄露敏感的消费者数据</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485577&amp;idx=1&amp;sn=7dfd8b9e4b2a5e183448ce4f754ced4d&amp;chksm=ea9739e3dde0b0f5b8da3fc0c76ea76109fa5aa2279272b0f88a0d33215b853a18d479c6be73&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485577&amp;idx=1&amp;sn=7dfd8b9e4b2a5e183448ce4f754ced4d&amp;chksm=ea9739e3dde0b0f5b8da3fc0c76ea76109fa5aa2279272b0f88a0d33215b853a18d479c6be73&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiakScH0FGXfogprSibfspBlf3Offgna6icdLsMWo19VRQibZRyGQuqcibjOBNZhBJIkVmUtF7aZYnBbZDw/0?wx_fmt=jpeg" data-ratio="0.6" data-w="1200" src="../Images/dceb31c9e9b5f6d27e16e71d1b885091.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiakScH0FGXfogprSibfspBlf3Offgna6icdLsMWo19VRQibZRyGQuqcibjOBNZhBJIkVmUtF7aZYnBbZDw/0?wx_fmt=jpeg"/></p><p><br/></p><p><strong>CloudFlare最近几天在夜以继日地解决一个严重的安全漏洞问题，它能导致敏感消费者数据遭泄露并被搜索引擎缓存。</strong></p><p><br/></p><p>这种未初始化的内存泄露问题是由谷歌Project Zero的研究员Tavis Ormandy发现的，他将该漏洞称之为“云出血 (Cloudbleed)”，原因是它跟“心脏出血”OpenSSL漏洞存在相似指出。</p><p><br/></p><p>Ormandy在2月17日发现了泄露事件，当时他正在参与一个模糊类项目。他马上告知CloudFlare，一小时后CloudFlare和CDN就发布了缓解措施。然而，这个清理行动持续了几天的时间，因为谷歌、雅虎、必应和其它搜索引擎至少在161个唯一域名中缓存了包含泄露内存的770个URI。</p><p><br/></p><p>Ormandy指出，被泄露的数据包括密码、cookies、加密密钥、来自约会网站的私人信息、聊天信息、IP地址，甚至还包括HTTPS请求。</p><p><br/></p><p>研究人员Nick Sweeting已编译出<a>一份潜在受影响的域名列表</a>，其中包括大型服务商如Coinbase、DigitalOcean、Medium、4Chan、Yelp、优步、Zendesk、OKCupid和Namecheap。Ormandy还提到了密码管理器1Password，但后者向用户保证称数据并不存在风险。</p><p><br/></p><p>NowSecure<a>已发布一篇博文详细说明了“云出血”漏洞是如何影响移动应用程序</a>的。</p><p><br/></p><p>CloudFlare首席信息官John Graham-Cumming在一篇描述该事件的博文中指出，公司的边缘服务器当时正在运行到一个缓冲区的末端并且正在返回包含敏感信息的内存。</p><p><br/></p><p>CloudFlare表示内存泄露可能首次出现于2016年9月，当时公司启用了自动化的HTTP重写，随后在几个功能即服务器端排除和邮件混淆在今年被迁到新的解析器后，事情变得更糟糕。CloudFlare认为影响最大的时间是2月13日至18日期间，当时每330万个经过CloudFlare的HTTP请求中就有一个可能会导致内存泄露。</p><p><br/></p><p>Graham-Cumming指出，消费者的SSL私钥并未被泄露，但证实称用于加密公司自身设备之间连接的私钥被攻陷。</p><p><br/></p><p>CloudFlare表示目前尚未有证据表明出现了恶意利用代码或信息被泄露到Pastebin或其它此类网站上。谷歌安全团队指出已销毁了分析时所收集的数据样本。Ormandy对CloudFlare对此事的处理方式及其详细的事件报告很满意。不过他认为CND的博客“严重低估了给消费者带来的风险”。</p>
+        
+</body>
+</html>

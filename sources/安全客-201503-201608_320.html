@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>谷歌Project Zero放出15个远程代码执行漏洞 其中1个几乎影响Reader、Windows所有版本</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>谷歌Project Zero放出15个远程代码执行漏洞 其中1个几乎影响Reader、Windows所有版本</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA5ODA0NDE2MA==&amp;mid=206007408&amp;idx=1&amp;sn=8bf64d6fc30b93cab2a0be059224d037&amp;chksm=19245c1f2e53d5095eb8152bb9b3530f7881b07ba6fb5ac938e552201668bd5023ae72dca82e&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA5ODA0NDE2MA==&amp;mid=206007408&amp;idx=1&amp;sn=8bf64d6fc30b93cab2a0be059224d037&amp;chksm=19245c1f2e53d5095eb8152bb9b3530f7881b07ba6fb5ac938e552201668bd5023ae72dca82e&amp;scene=27#wechat_redirect</a></blockquote><p style="text-indent: 2em; text-align: left;"><strong><span style="font-family: 微软雅黑,Microsoft YaHei; font-size: 14px; color: rgb(255, 0, 0);">谷歌“零点项目”黑客Mateusz Jurczyk（@j00ru）一次性放出15个远程代码执行漏洞，其中包含一个严重漏洞影响几乎所有的Adobe Reader以及Windows版本而且会打败所有防御措施。</span></strong></p><p style="text-indent: 2em; text-align: left;"><span style="font-family: 微软雅黑,Microsoft YaHei; font-size: 14px;">Jurczyk在本月举行的Recon安全会议上发表了题为《</span><span style="font-family: 微软雅黑,Microsoft YaHei; font-size: 14px;">掌
+控一切的一个字体漏洞：一个关于交叉软件防守、共享代码库以及高级利用的故事》（One font vulnerability to rule 
+them all: A story of cross-software ownage, shared codebases and 
+advanced exploitation）</span><span style="font-family: 微软雅黑,Microsoft YaHei; font-size: 14px;">的纯干货研究成果，并且一夜之间公布了利用的演示视频。PDF地址：http://j00ru.vexillium.org/dump/recon2015.pdf </span></p><p style="text-indent: 2em; text-align: left;"><span style="">其
+中最为严重的漏洞存在于Adobe Type Manager Font Driver 
+(ATMFD.dll)模块中的32位（CVE-2015-3052）及64位（CVE-2015-0093）系统。这个模块支持自Windows NT
+ 4.0以来Windows内核中的Type 1及Type 2字体。</span><br/></p><p style="text-indent: 2em; text-align: left;"><span style="font-family: 微软雅黑,Microsoft YaHei; font-size: 14px;">Jurczyk表示他“完全可靠”的BLEND指南利用与负责以特定点大小画出每个图像字符形状的CharStrings处理有关。</span></p><p style="text-align:center"><img data-w="" data-ratio="0.15187376725838264" data-type="jpeg" class="" style="visibility: visible;" data-src="http://mmbiz.qpic.cn/mmbiz/Ok4fxxCpBb6wdvhLiaHnNkokX2c5nOyPibCGnM5H7tnrKTZ3Mkmnc3MXZkGmcr69XlnBB9rubO9ER8Bribtpkfhzw/0?wx_fmt=jpeg" title="t01f287497555c863a5.jpg" src="../Images/87debb547bd9c2b9965716b3e08aa961.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/Ok4fxxCpBb6wdvhLiaHnNkokX2c5nOyPibCGnM5H7tnrKTZ3Mkmnc3MXZkGmcr69XlnBB9rubO9ER8Bribtpkfhzw/0?wx_fmt=jpeg"/><img data-w="1" data-ratio="1" data-type="gif" class="" style="visibility: visible;" data-src="http://mmbiz.qpic.cn/mmbiz/Ok4fxxCpBb6wdvhLiaHnNkokX2c5nOyPibUk6ZRutJPbm0zytc7PgbHbqyqk8WxTQJDtdoboCe4O1Mp5oltWrIRQ/0?wx_fmt=gif" title="正在上传..." src="../Images/cabbb856df075348620fa210a565d20f.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/Ok4fxxCpBb6wdvhLiaHnNkokX2c5nOyPibUk6ZRutJPbm0zytc7PgbHbqyqk8WxTQJDtdoboCe4O1Mp5oltWrIRQ/0?wx_fmt=gif"/></p><p style="text-indent: 2em; text-align: left;"><span style="font-family: 微软雅黑,Microsoft YaHei; font-size: 14px;">微软及Adobe在三个更新中发布了补丁。</span></p><p style="text-indent: 2em; text-align: left;"><span style="font-family: 微软雅黑,Microsoft YaHei; font-size: 14px;">Jruczyk从老旧但似乎未经探索领域中所发现的所有15个漏洞可在Adobe Reader或Windows内核中触发远程代码执行或权限升级。</span></p><p style="text-align:center"><img data-w="499" data-ratio="0.3727454909819639" data-type="png" class="" style="visibility: visible;" data-src="http://mmbiz.qpic.cn/mmbiz/Ok4fxxCpBb6wdvhLiaHnNkokX2c5nOyPibgeBGt8nEFLE8h371iaMnLJBicCv7Hk9LziclCYJR8zhibZAta7umlPmYCg/0?wx_fmt=png" title="t019feae2181b8885a5.png" src="../Images/84634df3d250909059b4c327d767b828.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/Ok4fxxCpBb6wdvhLiaHnNkokX2c5nOyPibgeBGt8nEFLE8h371iaMnLJBicCv7Hk9LziclCYJR8zhibZAta7umlPmYCg/0?wx_fmt=png"/></p><p style="text-indent: 2em; text-align: left;"><span style="font-family: 微软雅黑,Microsoft YaHei; font-size: 14px; color: rgb(0, 176, 80);">BLEND
+利用之所以成为Jurczyk职业生涯中最为有趣的一个发现，是因为它允许攻击者生成一个与返回相关的程序编制链，从而导致所有版本的Adobe 
+Reader以及Windows系统全部被攻陷。由于另外一个CharString漏洞（CVE-2015-0090）的帮忙，对64位架构的入侵得以成
+功。</span></p><p><span style="font-family: 微软雅黑,Microsoft YaHei; font-size: 14px; color: rgb(0, 176, 80);"> 该漏洞的补丁地址： </span></p><p><span style="font-family: 微软雅黑,Microsoft YaHei; font-size: 14px; color: rgb(0, 176, 80);">        https://technet.microsoft.com/library/security/MS15-044</span></p><p><span style="font-family: 微软雅黑,Microsoft YaHei; font-size: 14px; color: rgb(0, 176, 80);">         https://helpx.adobe.com/security/products/acrobat/apsb15-10.html</span></p><p><span style="">        </span><span style="">https://technet.microsoft.com/library/security/MS15-021</span></p><p><span style="">    </span><span style="">    请大家及时更新补丁。</span></p><p><br/></p>
+        
+</body>
+</html>

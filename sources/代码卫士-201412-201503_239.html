@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>关于“Grinch”Linux漏洞的疑问</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>关于“Grinch”Linux漏洞的疑问</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247486057&amp;idx=3&amp;sn=c5ae17da21e1189ca4b495baf11c7d15&amp;chksm=ea973b03dde0b21574ae064e7622a81be2c4ee4f05aea245981c9c6d461db29f9ba5537a4a11&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247486057&amp;idx=3&amp;sn=c5ae17da21e1189ca4b495baf11c7d15&amp;chksm=ea973b03dde0b21574ae064e7622a81be2c4ee4f05aea245981c9c6d461db29f9ba5537a4a11&amp;scene=27#wechat_redirect</a></blockquote><p>        安全研究人员公布了一个名为Grinch的Linux新“漏洞”，它允许针对Linux版本发动权限升级攻击，而这一攻击使用了polkit（polkit是一个应用程序级工具包，是一个用来定义及处理允许非特权进程对话特权进程的工具包，即它是将决策流程集中化的一种框架，赋予非特权应用程序访问特权操作的权限）工具包作为权限授权。然而，这一漏洞产生的真正威胁却十分有限。</p><p>        这一漏洞是随节日季以及苏斯博士创造的小说形象命名的，因此一些人认为这个漏洞可能会毁掉网络管理员的节日季。一名独立研究员在一个月之前首先公布了这个漏洞，并将其称为PackageKit特权升级。</p><p>        这个漏洞是否真实还有待讨论。SANS在博客中对这个漏洞进行了讨论，将其描述为一个“许多Linux系统中常见的过度随意配置。”红帽子甚至将其描述为“预期行为”。</p><p>        漏洞范围非常有限。Grinch并不支持远程利用；它要求攻击者能够在物理上访问他们想要攻击的服务器。此外，攻击者必须已经获得访问wheel组账户的权限（即已经拥有了本地管理员的升级权限），必须安装polkit，以及PackageKit包管理系统必须处于使用状态。利用漏洞的阻碍重重，要真正对这个漏洞加以利用，必须已经拥有非常高级别的访问权限，这让对“漏洞”的利用变得没有必要。</p><p>        虽然直接利用Grinch漏洞不太可能，但它确实提醒我们需对管理员组的成员身份进行仔细检查以确保只有必要的用户拥有这个访问权限，并且清理不安全的polkit配置。</p><p><br/></p>
+        
+</body>
+</html>

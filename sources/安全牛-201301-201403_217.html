@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>安全小站：Android中的防缓冲区溢出技术</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>安全小站：Android中的防缓冲区溢出技术</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/mp/appmsg/show?__biz=MjM5Njc3NjM4MA==&amp;appmsgid=10000401&amp;itemidx=1&amp;sign=a900a80d8adb3d3897bcaea4cb0743da&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/mp/appmsg/show?__biz=MjM5Njc3NjM4MA==&amp;appmsgid=10000401&amp;itemidx=1&amp;sign=a900a80d8adb3d3897bcaea4cb0743da&amp;scene=27#wechat_redirect</a></blockquote><p style="margin-bottom:8px;"><span style=""> </span></p><p style="margin-bottom:8px;"><span style="">Android</span><span style="">系统提供了非常严格的多层次的安全保护措施，包括代码。为了防止恶意用户采用恶意软件进行缓冲区溢出攻击或者进行“越狱”操作，自Android 4.0版本之后，内核就引入了ASLR技术来对代码进行保护，至于防缓冲区溢出技术的来龙去脉，请看下文。</span></p><p style="margin-bottom:8px;"><span style=""> </span></p><p style="margin-bottom:8px;"><span style="">什么是ASLR？ASLR（Address space layout randomization）是一种针对缓冲区溢出的安全保护技术，通过对堆、栈、共享库映射等线性区布局的随机化，通过增加攻击者预测目的地址的难度，防止攻击者直接定位攻击代码位置，达到阻止溢出攻击的目的。</span></p><p style="margin-bottom:8px;"><span style=""> </span></p><p style="margin-bottom:8px;"><span style="">通常情况下，黑客会利用某个特定函数或库驻存在特定内存位置的这一事实，通过在操纵堆或其他内存错误时调用该函数来发动攻击。ASLR则能够避免这种情况，因为它能确保系统和应用程序的代码每次被加载时不会出现在同一个存储位置。</span></p><p style="margin-bottom:8px;"><span style=""> </span></p><p style="margin-bottom:8px;"><span style="">苹果的iOS系统自iOS 4.3以后就支持ASLR技术；虽然Comex在7月份发布的“iPhone越狱”软件就已攻克这一防御措施。而Android已经在4.0中应用了ASLR技术。据研究表明ASLR可以有效的降低缓冲区溢出攻击的成功率，如今Linux、FreeBSD、Windows等主流操作系统都已采用了该技术。</span></p><p style="margin-bottom:8px;"><span style=""> </span></p><p style="margin-bottom:8px;"><span style="">缓冲区溢出是一种非常普遍、非常危险的漏洞，在各种操作系统、应用软件中广泛存在。利用缓冲区溢出攻击，可以导致程序运行失败、系统当机、重新启动等后果。更为严重的是，可以利用它执行非授权指令，甚至可以取得系统特权，进而进行各种非法操作。</span></p><p style="margin-bottom:8px;"><span style=""> </span></p><p style="margin-bottom:8px;"><span style="">缓冲区溢出是指当计算机向缓冲区内填充数据位数时超过了缓冲区本身的容量溢出的数据覆盖在合法数据上，理想的情况是程序检查数据长度并不允许输入超过缓冲区长度的字符，但是绝大多数程序都会假设数据长度总是与所分配的储存空间相匹配，这就为缓冲区溢出埋下隐患。操作系统所使用的缓冲区又被称为“堆栈”。在各个操作进程之间,指令会被临时储存在“堆栈”当中,“堆栈”也会出现缓冲区溢出。</span></p><p style="margin-bottom:8px;"><span style=""> </span></p><p style="margin-bottom:8px;"><span style="">在当前网络与分布式系统安全中，被广泛利用的50%以上都是缓冲区溢出，其中最著名的例子是1988年利用fingerd漏洞的蠕虫。而缓冲区溢出中，最为危险的是堆栈溢出，因为入侵者可以利用堆栈溢出，在函数返回时改变返回程序的地址，让其跳转到任意地址，带来的危害一种是程序崩溃导致拒绝服务，另外一种就是跳转并且执行一段恶意代码，比如得到shell，然后为所欲为。总的来说，ASLR技术能够很好地保证Android代码及运行安全。</span></p><p style="margin-bottom:8px;"><span style=""> </span></p><p style="margin-bottom:8px;"><span style="">——如果大家觉得不错，就点击右上角分享吧</span></p><p style="margin-bottom:8px;"><span style="">信息安全知识，微信ID：gooann-sectv</span></p><p><br/></p>
+        
+</body>
+</html>

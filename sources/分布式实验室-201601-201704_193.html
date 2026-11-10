@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>深入解析DC/OS 1.8——高可靠的微服务及大数据管理平台（二）</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>深入解析DC/OS 1.8——高可靠的微服务及大数据管理平台（二）</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=Mzg5Mjc3MjIyMA==&amp;mid=2247542631&amp;idx=2&amp;sn=62da9bc5289c6d8027e7e47522af6c3c&amp;chksm=c03b6d74f74ce462046e0ce2d10f59f0cc5619c596a5123fac5fedb9c97a4b6d1470c7cffeac&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=Mzg5Mjc3MjIyMA==&amp;mid=2247542631&amp;idx=2&amp;sn=62da9bc5289c6d8027e7e47522af6c3c&amp;chksm=c03b6d74f74ce462046e0ce2d10f59f0cc5619c596a5123fac5fedb9c97a4b6d1470c7cffeac&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/A1HKVXsfHNnK23xicswlRpQGcPjzDic7IRVXNibTK7qEZDalnzhkuKHmibhU3hV2oy5JhMZWZnzaiaZJAOMjF59v26Q/0?wx_fmt=jpeg" data-ratio="0.3671875" data-w="640" src="../Images/10e880b193604af2d3b850b28067dfab.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/A1HKVXsfHNnK23xicswlRpQGcPjzDic7IRVXNibTK7qEZDalnzhkuKHmibhU3hV2oy5JhMZWZnzaiaZJAOMjF59v26Q/0?wx_fmt=jpeg"/><br/></p><p style="margin-top: -2px; max-width: 100%; min-height: 1em; white-space: normal; font-size: 16px; line-height: 25.6px; color: rgb(51, 51, 51); width: 670px; overflow: hidden; text-align: center; background-color: rgb(255, 255, 255); box-sizing: border-box !important; word-wrap: break-word !important;"><br/></p><p style="margin-top: -2px; max-width: 100%; min-height: 1em; white-space: normal; font-size: 16px; line-height: 25.6px; color: rgb(51, 51, 51); width: 670px; overflow: hidden; text-align: center; background-color: rgb(255, 255, 255); box-sizing: border-box !important; word-wrap: break-word !important;"><img class="" data-ratio="0.046875" data-src="http://mmbiz.qpic.cn/mmbiz/dyDu14T9ZVDsBZJmPGhibNvDxPWibRB3shyzUeRCFXHQ8wYznFhPGiaEKAqBNOl7PGKw9e9ZFWvlckteVAaOWqNKQ/640?wx_fmt=png" data-type="png" data-w="640" style="display: block; box-sizing: border-box !important; word-wrap: break-word !important; visibility: visible !important; width: 670px !important;" width="670px" src="../Images/012972ae036968155329ba4bf0391f18.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/dyDu14T9ZVDsBZJmPGhibNvDxPWibRB3shyzUeRCFXHQ8wYznFhPGiaEKAqBNOl7PGKw9e9ZFWvlckteVAaOWqNKQ/640?wx_fmt=png"/></p><section style="margin: 30px 5px 20px; max-width: 100%; white-space: normal; color: rgb(51, 51, 51); text-align: justify; font-weight: 700; font-size: 20px; line-height: 1.5; background-color: rgb(255, 255, 255); box-sizing: border-box !important; word-wrap: break-word !important;">DC/OS 1.8的新功能</section><p style="margin: 32px 5px; color: rgb(62, 62, 62); font-size: 16px; line-height: 28px; white-space: normal;">对于最新的DC/OS 1.8，有一个博客《Introducing DC/OS 1.8 GA!》（https://dcos.io/blog/2016/introducing-dc-os-1-8-ga/index.html）描述了最新的功能。</p><p style="margin: 32px 5px; color: rgb(62, 62, 62); font-size: 16px; line-height: 28px; white-space: normal;">其中第一个重要的功能为Mesos 1.0 and the Universal Container Runtime，也即可以使用mesos-containerizer来运行Docker的镜像了。这也是DC/OS对于容器的管理越来越独立的体现。</p><p style="margin: 32px 5px; color: rgb(62, 62, 62); font-size: 16px; line-height: 28px; white-space: normal;">我们在mesos-agent所在的机器上可以查看</p><pre style="border-width: 1px; border-style: solid; border-color: rgb(204, 204, 204); background-color: rgb(250, 250, 250); padding: 10px 20px; margin-top: 0px; margin-bottom: 1em; line-height: 32px; overflow: auto; border-radius: 5px; font-size: 16px;">ip-10-0-1-78 dcos.target.wants_slave # ps aux | grep mesos-agent
+root 1824 0.6 0.3 1069204 46948 ? Ssl Oct03 9:57 /opt/mesosphere/packages/mesos--19a545facb66e57dfe2bb905a001a58b7eaf6004/bin/mesos-agent</pre><p style="margin: 32px 5px; color: rgb(62, 62, 62); font-size: 16px; line-height: 28px; white-space: normal;">mesos-agent的配置在路径/opt/mesosphere/packages/mesos–19a545facb66e57dfe2bb905a001a58b7eaf6004下面，在/opt/mesosphere/packages/mesos–19a545facb66e57dfe2bb905a001a58b7eaf6004/dcos.target.wants_slave/dcos-mesos-slave.service里面是mesos-slave的启动参数的设置，通过Mesos的文档，我们知道对于Mesos的参数可以使用环境变量进行设置。</p><pre style="border-width: 1px; border-style: solid; border-color: rgb(204, 204, 204); background-color: rgb(250, 250, 250); padding: 10px 20px; margin-top: 0px; margin-bottom: 1em; line-height: 32px; overflow: auto; border-radius: 5px; font-size: 16px;">ip-10-0-1-78 dcos.target.wants_slave # cat dcos-mesos-slave.service
+[Unit]
+Description=Mesos Agent: DC/OS Mesos Agent Service
+
+[Service]
+Restart=always
+StartLimitInterval=0
+RestartSec=5
+KillMode=control-group
+Delegate=true
+LimitNOFILE=infinity
+TasksMax=infinity
+EnvironmentFile=/opt/mesosphere/environment
+EnvironmentFile=/opt/mesosphere/etc/mesos-slave-common
+EnvironmentFile=/opt/mesosphere/etc/mesos-slave
+EnvironmentFile=/opt/mesosphere/etc/proxy.env
+EnvironmentFile=-/opt/mesosphere/etc/mesos-slave-common-extras
+EnvironmentFile=-/var/lib/dcos/mesos-slave-common
+EnvironmentFile=-/var/lib/dcos/mesos-resources
+EnvironmentFile=-/run/dcos/etc/mesos-slave
+ExecStartPre=/bin/ping -c1 ready.spartan
+ExecStartPre=/bin/ping -c1 leader.mesos
+ExecStartPre=/opt/mesosphere/bin/bootstrap dcos-mesos-slave
+ExecStartPre=/opt/mesosphere/bin/make_disk_resources.py /var/lib/dcos/mesos-resources
+ExecStartPre=/bin/bash -c 'for i in /proc/sys/net/ipv4/conf/*/rp_filter; do echo 2 &gt; $i; echo -n "$i: "; cat $i; done'
+ExecStart=/opt/mesosphere/packages/mesos--19a545facb66e57dfe2bb905a001a58b7eaf6004/bin/mesos-agent</pre><p style="margin: 32px 5px; color: rgb(62, 62, 62); font-size: 16px; line-height: 28px; white-space: normal;">在文件/opt/mesosphere/etc/mesos-slave-common中配置了大量的mesos-agent的参数，</p><pre style="border-width: 1px; border-style: solid; border-color: rgb(204, 204, 204); background-color: rgb(250, 250, 250); padding: 10px 20px; margin-top: 0px; margin-bottom: 1em; line-height: 32px; overflow: auto; border-radius: 5px; font-size: 16px;">MESOS_MASTER=zk://zk-1.zk:2181,zk-2.zk:2181,zk-3.zk:2181,zk-4.zk:2181,zk-5.zk:2181/mesos
+MESOS_CONTAINERIZERS=docker,mesos
+MESOS_LOG_DIR=/var/log/mesos
+MESOS_MODULES_DIR=/opt/mesosphere/etc/mesos-slave-modules
+MESOS_CONTAINER_LOGGER=org_apache_mesos_LogrotateContainerLogger
+MESOS_ISOLATION=cgroups/cpu,cgroups/mem,disk/du,network/cni,filesystem/linux,docker/runtime,docker/volume
+MESOS_DOCKER_VOLUME_CHECKPOINT_DIR=/var/lib/mesos/isolators/docker/volume
+MESOS_IMAGE_PROVIDERS=docker
+MESOS_NETWORK_CNI_CONFIG_DIR=/opt/mesosphere/etc/dcos/network/cni
+MESOS_NETWORK_CNI_PLUGINS_DIR=/opt/mesosphere/active/cni/
+MESOS_WORK_DIR=/var/lib/mesos/slave
+MESOS_SLAVE_SUBSYSTEMS=cpu,memory
+MESOS_EXECUTOR_ENVIRONMENT_VARIABLES=file:///opt/mesosphere/etc/mesos-executor-environment.json
+MESOS_EXECUTOR_REGISTRATION_TIMEOUT=10mins
+MESOS_CGROUPS_ENABLE_CFS=true
+MESOS_CGROUPS_LIMIT_SWAP=false
+MESOS_DOCKER_REMOVE_DELAY=1hrs
+MESOS_DOCKER_STOP_TIMEOUT=20secs
+MESOS_DOCKER_STORE_DIR=/var/lib/mesos/slave/store/docker
+MESOS_GC_DELAY=2days
+MESOS_HOSTNAME_LOOKUP=false
+GLOG_drop_log_memory=false</pre><p style="margin: 32px 5px; color: rgb(62, 62, 62); font-size: 16px; line-height: 28px; white-space: normal;">默认的mesos-containerizer的隔离只包括CPU和memory，然而在最新的Mesos版本里面，多了Provisioner这一层，在上面的配置里面隔离了MESOS_ISOLATION=cgroups/cpu,cgroups/mem,disk/du,network/cni,filesystem/linux,docker/runtime,docker/volume，从而可以启动Docker的镜像了。</p><p style="margin: 32px 5px; color: rgb(62, 62, 62); font-size: 16px; line-height: 28px; white-space: normal;">第二个最重要的功能是CNI，container network interface。</p><p><a rel="lightbox" target="_blank" data-fancybox-group="thumb" style="text-decoration: underline; outline: none; color: rgb(0, 161, 158);"><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/A1HKVXsfHNnK23xicswlRpQGcPjzDic7IR9SUEtVxSI3J3NvxmcTTJaprgjDvw0tL6iamiaX1LBHwRbic1Imucicibdrw/0?wx_fmt=png" data-ratio="0.4981949458483754" data-w="554" src="../Images/9b70db5228d25d8bf01ea213b788d3a8.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/A1HKVXsfHNnK23xicswlRpQGcPjzDic7IR9SUEtVxSI3J3NvxmcTTJaprgjDvw0tL6iamiaX1LBHwRbic1Imucicibdrw/0?wx_fmt=png"/><br/></a></p><p style="margin: 32px 5px; color: rgb(62, 62, 62); font-size: 16px; line-height: 28px; white-space: normal;">CNI要工作需要三部分：</p><p style="margin: 32px 5px; color: rgb(62, 62, 62); font-size: 16px; line-height: 28px; white-space: normal;">首先DC/OS不需要外置的IPAM，而是由mesos-master的replicated_log负责管理分配IP地址，Mesos需要启动的时候，载入overlay network的modules。</p><p style="margin: 32px 5px; color: rgb(62, 62, 62); font-size: 16px; line-height: 28px; white-space: normal;">在路径/opt/mesosphere/etc/mesos-slave-modules下面有文件overlay_slave_modules.json。</p><pre style="border-width: 1px; border-style: solid; border-color: rgb(204, 204, 204); background-color: rgb(250, 250, 250); padding: 10px 20px; margin-top: 0px; margin-bottom: 1em; line-height: 32px; overflow: auto; border-radius: 5px; font-size: 16px;">ip-10-0-1-78 mesos-slave-modules # cat overlay_slave_modules.json
+{
+"libraries":
+[
+{
+  "file": "/opt/mesosphere/active/mesos-overlay-modules/lib/mesos/libmesos_network_overlay.so",
+  "modules":
+    [
+      {
+        "name": "com_mesosphere_mesos_OverlayAgentManager",
+        "parameters" :
+          [
+            {
+              "key": "agent_config",
+              "value" : "/opt/mesosphere/etc/overlay/config/agent.json"
+            }
+          ]
+      }
+    ]
+ }
+]
+}</pre><p style="margin: 32px 5px; color: rgb(62, 62, 62); font-size: 16px; line-height: 28px; white-space: normal;">其次需要载入CNI isolator，这个在MESOS_ISOLATION这个环境变量里面已经配置了。</p><p style="margin: 32px 5px; color: rgb(62, 62, 62); font-size: 16px; line-height: 28px; white-space: normal;">最后还需要navstar服务来实现跨节点之间的IP互访问。</p><p style="margin: 32px 5px; color: rgb(62, 62, 62); font-size: 16px; line-height: 28px; white-space: normal;">每个mesos-agent的机器上都有opt/mesosphere/packages/navstar–589afdaef03114a17576ee648ae433a052f7a4b9/，都会运行一个navstar进程。</p><p style="margin: 32px 5px; color: rgb(62, 62, 62); font-size: 16px; line-height: 28px; white-space: normal;">每个机器上都会创建网卡d-dcos，如果Docker容器使用CNI获取IP的容器都Attach到这个网卡上，而非docker0上。</p><p style="margin: 32px 5px; color: rgb(62, 62, 62); font-size: 16px; line-height: 28px; white-space: normal;">每个机器上都会创建网卡m-dcos，如果Mesos容器使用CNI获取IP的容器都Attach到这个网卡上。</p><p style="margin: 32px 5px; color: rgb(62, 62, 62); font-size: 16px; line-height: 28px; white-space: normal;">每台机器的d-dcos和m-dcos的网段都不同。</p><p style="margin: 32px 5px; color: rgb(62, 62, 62); font-size: 16px; line-height: 28px; white-space: normal;">每台机器都会创建一个vtep1024的网卡，作为VTEP，背后是vxlan。</p><p style="margin: 32px 5px; color: rgb(62, 62, 62); font-size: 16px; line-height: 28px; white-space: normal;">每台机器都会创建默认的路由表，从本节点连接到其他的节点默认走vtep1024这个网卡。</p><pre style="border-width: 1px; border-style: solid; border-color: rgb(204, 204, 204); background-color: rgb(250, 250, 250); padding: 10px 20px; margin-top: 0px; margin-bottom: 1em; line-height: 32px; overflow: auto; border-radius: 5px; font-size: 16px;">9.0.0.0/24 via 44.128.0.1 dev vtep1024
+9.0.1.0/24 via 44.128.0.2 dev vtep1024
+9.0.3.0/24 via 44.128.0.4 dev vtep1024</pre><p style="margin: 32px 5px; color: rgb(62, 62, 62); font-size: 16px; line-height: 28px; white-space: normal;">对DC/OS的网络的配置在/opt/mesosphere/etc/dcos/network/cni路径下：</p><p><a rel="lightbox" target="_blank" data-fancybox-group="thumb" style="text-decoration: underline; outline: none; color: rgb(0, 161, 158);"><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/A1HKVXsfHNnK23xicswlRpQGcPjzDic7IRmRMJ3UKOiabJLW97LGuWpriaWDRrZiaKsia6lFxTUddhfcbsJasAMSicOzw/0?wx_fmt=png" data-ratio="0.052346570397111915" data-w="554" src="../Images/60bc5222c1712af9f3e48f9055caad57.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/A1HKVXsfHNnK23xicswlRpQGcPjzDic7IRmRMJ3UKOiabJLW97LGuWpriaWDRrZiaKsia6lFxTUddhfcbsJasAMSicOzw/0?wx_fmt=png"/><br/></a></p><p style="margin: 32px 5px; color: rgb(62, 62, 62); font-size: 16px; line-height: 28px; white-space: normal;">为了试验这两个新的功能，我们首先创建一个使用CNI的Mesos容器，但是启动的是Docker的Image nginx。</p><pre style="border-width: 1px; border-style: solid; border-color: rgb(204, 204, 204); background-color: rgb(250, 250, 250); padding: 10px 20px; margin-top: 0px; margin-bottom: 1em; line-height: 32px; overflow: auto; border-radius: 5px; font-size: 16px;">{
+"id":"nginxmesos",
+"cmd":"env; ip -o addr; sleep 3600",
+"cpus":0.10,
+"mem":512,
+"instances":1,
+"ipAddress":{
+  "networkName":"dcos"
+},
+"container":{
+  "type":"MESOS",
+  "docker":{
+     "network":"USER",
+     "image":"nginx",
+     "portMappings":[
+        {
+            "host_port": 0,
+            "container_port": 80,
+            "protocol": "tcp"
+        }
+     ]
+  }
+}
+}</pre><p style="margin: 32px 5px; color: rgb(62, 62, 62); font-size: 16px; line-height: 28px; white-space: normal;">在日志里面，打印出来容器的IP地址是m-dcos网段的。</p><p><a rel="lightbox" target="_blank" data-fancybox-group="thumb" style="text-decoration: underline; outline: none; color: rgb(0, 161, 158);"><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/A1HKVXsfHNnK23xicswlRpQGcPjzDic7IRTStddV8ib89B9svlRyDZT5cdx2s4ACbfbYhibOhKgWRv8jaxnBWSibGibQ/0?wx_fmt=png" data-ratio="0.6046931407942239" data-w="554" src="../Images/0a551eb501f80d58ca7a695d1c7dc0fe.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/A1HKVXsfHNnK23xicswlRpQGcPjzDic7IRTStddV8ib89B9svlRyDZT5cdx2s4ACbfbYhibOhKgWRv8jaxnBWSibGibQ/0?wx_fmt=png"/><br/></a></p><p style="margin: 32px 5px; color: rgb(62, 62, 62); font-size: 16px; line-height: 28px; white-space: normal;">然后我们再启动一个使用CNI的Docker容器。</p><pre style="border-width: 1px; border-style: solid; border-color: rgb(204, 204, 204); background-color: rgb(250, 250, 250); padding: 10px 20px; margin-top: 0px; margin-bottom: 1em; line-height: 32px; overflow: auto; border-radius: 5px; font-size: 16px;">{
+"id":"nginxmesos1",
+"cmd":"env; ip -o addr; sleep 3600",
+"cpus":0.10,
+"mem":512,
+"instances":1,
+"ipAddress":{
+  "networkName":"dcos"
+},
+"container":{
+  "type":"DOCKER",
+  "docker":{
+     "network":"USER",
+     "image":"nginx",
+     "portMappings":[
+        {
+            "host_port": 0,
+            "container_port": 80,
+            "protocol": "tcp"
+        }
+     ]
+  }
+}
+}</pre><p style="margin: 32px 5px; color: rgb(62, 62, 62); font-size: 16px; line-height: 28px; white-space: normal;">从日志我们看出，配置的IP是d-dcos网段的，而非docker0网段的。</p><p><a rel="lightbox" target="_blank" data-fancybox-group="thumb" style="text-decoration: underline; outline: none; color: rgb(0, 161, 158);"><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/A1HKVXsfHNnK23xicswlRpQGcPjzDic7IRvS5ibiaAKibicqQwbq1p2nYFuGRUsHLXeqHia3nLgoOaloIK6G5khTkeXhA/0?wx_fmt=png" data-ratio="0.6534296028880866" data-w="554" src="../Images/51297fe80a65855382b1f3fd4a2210fb.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/A1HKVXsfHNnK23xicswlRpQGcPjzDic7IRvS5ibiaAKibicqQwbq1p2nYFuGRUsHLXeqHia3nLgoOaloIK6G5khTkeXhA/0?wx_fmt=png"/><br/></a></p><p style="margin: 32px 5px; color: rgb(62, 62, 62); font-size: 16px; line-height: 28px; white-space: normal;">从Mesos上我们看出这两个容器是在两个节点上的。</p><p><a rel="lightbox" target="_blank" data-fancybox-group="thumb" style="text-decoration: underline; outline: none; color: rgb(0, 161, 158);"><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/A1HKVXsfHNnK23xicswlRpQGcPjzDic7IRvOuJ7wUmWxzZolW9iazrnZrkQiahbWmU2EerG08eSbM1aGsxpC0tPxow/0?wx_fmt=png" data-ratio="0.11934900542495479" data-w="553" src="../Images/0c1c55dfc248c634b7ac7cb189afe3c2.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/A1HKVXsfHNnK23xicswlRpQGcPjzDic7IRvOuJ7wUmWxzZolW9iazrnZrkQiahbWmU2EerG08eSbM1aGsxpC0tPxow/0?wx_fmt=png"/><br/></a></p><p style="margin: 32px 5px; color: rgb(62, 62, 62); font-size: 16px; line-height: 28px; white-space: normal;">登入Docker的容器，ping另外一个CNI的Mesos的IP是没有问题的。</p><pre style="border-width: 1px; border-style: solid; border-color: rgb(204, 204, 204); background-color: rgb(250, 250, 250); padding: 10px 20px; margin-top: 0px; margin-bottom: 1em; line-height: 32px; overflow: auto; border-radius: 5px; font-size: 16px;">ip-10-0-1-78 cni # docker ps
+CONTAINER ID IMAGE COMMAND CREATED STATUS PORTS NAMES
+e7908deb3017 nginx "/bin/sh -c 'env; ip " 28 minutes ago Up 28 minutes 80/tcp, 443/tcp mesos-b3fbe6d9-236a-4856-a986-9babbba9c02c-S2.e3c96fa7-b5ff-4af6-9099-bbed399c7c37
+a992929fb0d1 nginx "nginx -g 'daemon off" 6 hours ago Up 6 hours 443/tcp, 0.0.0.0:4989-&gt;80/tcp mesos-b3fbe6d9-236a-4856-a986-9babbba9c02c-S2.fca41f8d-816c-49cd-9b19-ba059b95e885
+8032756dd66e nginx "nginx -g 'daemon off" 6 hours ago Up 6 hours 443/tcp, 0.0.0.0:27003-&gt;80/tcp mesos-b3fbe6d9-236a-4856-a986-9babbba9c02c-S2.c0fdd3db-6f17-41d3-ab05-6f2d4d0bfa13
+ip-10-0-1-78 cni # docker exec -it e7908deb3017 bash
+root@e7908deb3017:/# ip addr
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1
+link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+inet 127.0.0.1/8 scope host lo
+   valid_lft forever preferred_lft forever
+inet6 ::1/128 scope host
+   valid_lft forever preferred_lft forever
+51: eth0@if52: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1420 qdisc noqueue state UP group default
+link/ether 02:42:09:00:03:82 brd ff:ff:ff:ff:ff:ff
+inet 9.0.3.130/25 scope global eth0
+   valid_lft forever preferred_lft forever
+inet6 fe80::42:9ff:fe00:382/64 scope link
+   valid_lft forever preferred_lft forever
+root@e7908deb3017:/# ping 9.0.2.13
+PING 9.0.2.13 (9.0.2.13): 56 data bytes
+64 bytes from 9.0.2.13: icmp_seq=0 ttl=62 time=0.709 ms
+64 bytes from 9.0.2.13: icmp_seq=1 ttl=62 time=0.535 ms</pre><p style="margin-top: -2px; max-width: 100%; min-height: 1em; white-space: normal; font-size: 16px; line-height: 25.6px; color: rgb(51, 51, 51); width: 670px; overflow: hidden; text-align: center; background-color: rgb(255, 255, 255); box-sizing: border-box !important; word-wrap: break-word !important;"><br/></p><p style="margin-top: -2px; max-width: 100%; min-height: 1em; white-space: normal; font-size: 16px; line-height: 25.6px; color: rgb(51, 51, 51); width: 670px; overflow: hidden; text-align: center; background-color: rgb(255, 255, 255); box-sizing: border-box !important; word-wrap: break-word !important;"><img class="" data-ratio="0.046875" data-src="http://mmbiz.qpic.cn/mmbiz/dyDu14T9ZVDsBZJmPGhibNvDxPWibRB3shyzUeRCFXHQ8wYznFhPGiaEKAqBNOl7PGKw9e9ZFWvlckteVAaOWqNKQ/640?wx_fmt=png" data-type="png" data-w="640" style="display: block; box-sizing: border-box !important; word-wrap: break-word !important; visibility: visible !important; width: 670px !important;" width="670px" src="../Images/012972ae036968155329ba4bf0391f18.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/dyDu14T9ZVDsBZJmPGhibNvDxPWibRB3shyzUeRCFXHQ8wYznFhPGiaEKAqBNOl7PGKw9e9ZFWvlckteVAaOWqNKQ/640?wx_fmt=png"/></p><section style="margin: 30px 5px 20px; max-width: 100%; white-space: normal; color: rgb(51, 51, 51); text-align: justify; font-weight: 700; font-size: 20px; line-height: 1.5; background-color: rgb(255, 255, 255); box-sizing: border-box !important; word-wrap: break-word !important;">Q&amp;A</section><p style="margin: 32px 5px; color: rgb(62, 62, 62); font-size: 16px; line-height: 28px; white-space: normal;"><strong><span style="color: rgb(136, 136, 136);">Q：请问DC/OS目前测试的最大集群是多少节点的？</span></strong></p><blockquote><p style="margin: 32px 5px; color: rgb(62, 62, 62); line-height: 28px;">A： Mesos的节点数Tweeter和Apple网上说的数目都万节点以上，我们公司现在的客户有千节点级别的。</p></blockquote><p style="margin: 32px 5px; color: rgb(62, 62, 62); font-size: 16px; line-height: 28px; white-space: normal;"><strong><span style="color: rgb(136, 136, 136);">Q：DC/OS目前用在什么场景？</span></strong></p><blockquote><p style="margin: 32px 5px; color: rgb(62, 62, 62); line-height: 28px;">A：DC/OS目前的应用场景主要还是微服务和大数据混合部署比较多，也是其设计核心所在。</p></blockquote><p style="margin: 32px 5px; color: rgb(62, 62, 62); font-size: 16px; line-height: 28px; white-space: normal;"><span style="color: rgb(136, 136, 136);"><strong>Q：请问有部署Stateful的应用，比如MySQL吗？</strong></span></p><blockquote><p style="margin: 32px 5px; color: rgb(62, 62, 62); line-height: 28px;">A：是用DC/OS还是建议从无状态的服务开始，随着运维能力的提高，可以部署有状态的服务，但是有状态的服务不建议直接使用Marathon进行部署，一方面它无法区分多个instance之间的区别，另一方面需要配合统一存储来实现。对于有状态的服务，可以自己实现Framework，例如我们使用的数据库是MongoDB，也是写了自己的Framework的。</p></blockquote><p style="max-width: 100%; min-height: 1em; text-align: center; box-sizing: border-box !important; word-wrap: break-word !important;"><img data-ratio="0.6109375" data-src="http://mmbiz.qpic.cn/mmbiz_gif/A1HKVXsfHNkFqNG6WV0wnxnGxY0Meu4GFzRfwPNqLmxLgjt8GYgQeJTd81KI2f0Mo06pm7CZUJ541ibRcXsGTFA/0?wx_fmt=gif" data-type="gif" data-w="640" style="box-sizing: border-box !important; word-wrap: break-word !important; visibility: visible !important; width: 670px !important;" width="100%" src="../Images/393cc019b1d4c7c6ca7a0b7546e84bb4.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_gif/A1HKVXsfHNkFqNG6WV0wnxnGxY0Meu4GFzRfwPNqLmxLgjt8GYgQeJTd81KI2f0Mo06pm7CZUJ541ibRcXsGTFA/0?wx_fmt=gif"/><br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>我还是科普一下“加密”之类的问题吧</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>我还是科普一下“加密”之类的问题吧</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA4MDU0NzY4Ng==&amp;mid=208000007&amp;idx=1&amp;sn=a950c0c63269e49e669bdaf97c71c7da&amp;chksm=1633ee0e214467182e0743d445b1bd61855b9fce4404a9a6f6ba93764c5ceccccc5db47ebf1c&amp;scene=126&amp;sessionid=1681653946#rd">http://mp.weixin.qq.com/s?__biz=MzA4MDU0NzY4Ng==&amp;mid=208000007&amp;idx=1&amp;sn=a950c0c63269e49e669bdaf97c71c7da&amp;chksm=1633ee0e214467182e0743d445b1bd61855b9fce4404a9a6f6ba93764c5ceccccc5db47ebf1c&amp;scene=126&amp;sessionid=1681653946#rd</a></blockquote><p>﻿从我混论坛到现在这么久了，大家也都问过很多很多为什么。 <br style=""/>不过一直以来，好像有一个问题是亘古不变的： </p><p><br/></p><blockquote><p>xxxxx，这是什么加密呀？</p></blockquote><br style=""/>一般xxxxx，看起来就是base64。 <br style=""/>其实吧，对这种问题忍了很久了……其实…… <br style=""/>xxxxx他娘的就是base64呀！！ <br style=""/><br style=""/>那有人问了，但为毛解开是乱码啊？？ <br style=""/>因为，因为，因为是加过密的，所以是乱码啊！！ <br style=""/><p>这回到本源，有两个问题我们一定搞清楚： </p><p><br/></p><blockquote><p>1.加密是什么？ </p><p>2.base64存在的意义是什么？</p></blockquote><br style=""/>首先，加密顾名思义，就是把我们能看懂的数据，加密成我们看不懂的数据。 <br style=""/>也就是说，一个密码，可能只有大小写字母和数字，但经过AES或TEA加密过后，就可以是0~255中任意一个字符了。 <br style=""/>那很大几率就是一个我们“认不得”的字符，比如\xa3，你知道是啥字符么？ <br style=""/>这也就是我们俗称的乱码。这样的字符，在很多设备上是看不清也分不清，也不适合在HTTP等各种协议中发送的。 <br style=""/><br style=""/>于是，有人创造了base64编码。这个编码的意义就在于，他可以将0~255里任意字符，通过某算法编码成一个“可见字符”，也就是“大小写字母”、“数字”、“+”、“/”。 <br style=""/>所以，我们可以一个图片，直接编码成一串base64。 <br style=""/><br style=""/>说到这里应该说明白了吧…… <br style=""/><p>因为加密后的字符串中含有很多不可见字符，所以我们有几种解决方案：</p><p> </p><blockquote><p>1.base64编码 <br/></p><p>2.hex编码（md5实际上就是这样处理的）<br/></p></blockquote><p><br style=""/></p><p>所以，你们问的xxxxx，95%是某种加密完之后，用base64编码一遍再存入数据库的。 <br/></p>所以……以后别拿来一个base64编码后的字符串，来问这是什么加密了。光一个字符串，怎么可能看出是什么加密？？至少提供一点其他信息吧……
+        
+</body>
+</html>

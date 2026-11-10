@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>思科发布BASS开源恶意软件签名生成器</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>思科发布BASS开源恶意软件签名生成器</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485506&amp;idx=2&amp;sn=0f83c6a5e7f1b1b5058df4ea26834c23&amp;chksm=ea973928dde0b03e39be038d184d70f41313b910433327efab0803218510cef678b411595e24&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485506&amp;idx=2&amp;sn=0f83c6a5e7f1b1b5058df4ea26834c23&amp;chksm=ea973928dde0b03e39be038d184d70f41313b910433327efab0803218510cef678b411595e24&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKian6icURKqaRAo3ichVny3ZHGS7gZOnkk9PAfMOSKZKADhvkCYakicIhpNiacicjo7n3UZKXe5XsauHrJXg/0?wx_fmt=png" data-ratio="0.552" data-w="875" src="../Images/e9841a036da4c1d283254b98864434ec.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKian6icURKqaRAo3ichVny3ZHGS7gZOnkk9PAfMOSKZKADhvkCYakicIhpNiacicjo7n3UZKXe5XsauHrJXg/0?wx_fmt=png"/></p><p><br/></p><p><strong>思科Talso情报团队发布了一个名为BASS的开源框架，旨在从恶意软件自动生成防病毒签名。</strong></p><p><br/></p><p>BASS是一款自动化签名合成器，它能自动通过分析属于之前已生成集群中的恶意代码来自动创建签名。BASS工具旨在简化恶意软件分析，主要目标是改进资源利用并让恶意软件分析更容易。</p><p><br/></p><p>BASS旨在减少思科ClamAV开源防病毒引擎的资源使用，它旨在生成更多基于模式的签名而非基于哈希的签名。每天ClamAV数据库都跟数千个新签名整合，而其中很多签名基于哈希。遗憾的是，使用哈希检测恶意软件能识别出单个恶意文件而非整个恶意软件集群。BASS框架仍然处于测试阶段。</p><p><br/></p><p>BASS是用Python框架作为Docker容器的一个集群实现的，它可规模化并且实现跟其它工具交互的web服务。</p><p><br/></p><p>思科专家指出，BASS框架能够从多种来源导入恶意软件集群。一旦过滤恶意软件集群后检测到文件跟BASS框架预测的输入相对应，就会使用IDA Pro或其它反汇编程序将二进制拆解，然后BASS会搜索样本寻找能被用于生成签名的公共代码。</p><p><br/></p><p><br/></p><p><strong style="line-height: 25.6px; white-space: normal;">本文由360代码卫士编译，不代表360观点，转载请注明“转自360代码卫士www.codesafe.cn”。</strong></p>
+        
+</body>
+</html>

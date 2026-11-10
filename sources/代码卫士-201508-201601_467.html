@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>思科ISE中存在HTML验证缺陷</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>思科ISE中存在HTML验证缺陷</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485894&amp;idx=5&amp;sn=5d84f96178759fde36942686aaaa7dce&amp;chksm=ea9738acdde0b1ba453223cd4e2240fc45965b736562af48e36b3a19bb7e70dc3ceb6db2c8e6&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485894&amp;idx=5&amp;sn=5d84f96178759fde36942686aaaa7dce&amp;chksm=ea9738acdde0b1ba453223cd4e2240fc45965b736562af48e36b3a19bb7e70dc3ceb6db2c8e6&amp;scene=27#wechat_redirect</a></blockquote><p>思科在其身份服务引擎（ISE）中发现一处缺陷：其管理门户并没有恰当验证HTML请求，它可能会导致攻击者看到管理员已创建的一个定制页面。这一点之所以重要是因为系统管理员的这个定制页面可能包含关于ISE管理的网络敏感安全信息。</p><p><br/></p><p>安全公告指出，这个漏洞存在的原因是所上传的HTML文件缺乏访问控制。</p><p><br/></p><p>攻击者能够通过特别编制指向定制化页面文件名的HTTP请求利用这个漏洞。思科表示已发现漏洞的利用代码，但截至目前并未发现被利用。然而公司还没有提供软件更新。</p><p><br/></p><p>思科建议管理员窃取将敏感信息发送至ISE定制化页面，并建议访问控制列表将对定制化页面的访问权限限制在受信任的机器上。</p><p><br/></p>本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。
+        
+</body>
+</html>

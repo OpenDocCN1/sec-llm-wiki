@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>GoPro摄像机更新机制泄露大量用户WiFi密码</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>GoPro摄像机更新机制泄露大量用户WiFi密码</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247486011&amp;idx=1&amp;sn=98887621fb8f041d51515dd677af4c10&amp;chksm=ea973b51dde0b247d5f492376d8638dcd3058bac348bcd3efcf04914cf43b23a5a414c551f46&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247486011&amp;idx=1&amp;sn=98887621fb8f041d51515dd677af4c10&amp;chksm=ea973b51dde0b247d5f492376d8638dcd3058bac348bcd3efcf04914cf43b23a5a414c551f46&amp;scene=27#wechat_redirect</a></blockquote><p>最近几年来最酷的事莫过于拥有一台GoPro摄像机了。这些可爱的摄像机们可谓无坚不摧。不管是将它们从飞机上扔下去还是被汽车碾压，它们都完好无损且还可进行正常工作。</p><p><br/></p><p><span style="color: rgb(0, 176, 80);">密码重置</span></p><p>最近，我拿来了朋友的GoPro，发现有一款移动app可控制这台摄像机。它要求用户连接至摄像机运行的无线网络，随后这款app会提供给用户访问诸如查看摄像机SD卡文件以及开始摄像的权限。我的问题是，朋友忘记了摄像机密码，所以我决定重设密码。</p><p><br/></p><p>为了重新设置WiFi设置，我需要按照GoPro网站 http://gopro.com/support/articles/wi-fi-name-password上的要求进行。步骤非常简单：一直点击“下一步”直至“完成”然后会有一个链接至zip文件。当下载这个文件时，我会获得一个压缩文档，然后拷贝一份至SD卡，插入GoPro然后重启摄像机。</p><p><br/></p><p>当我打开这个压缩文档后，出现了一个名叫“settings.in”的文件，里面包含摄像机需要进行的设置。</p><p><br/></p><p><span style="color: rgb(0, 176, 80);">链接</span></p><p>我们来看看这个链接：</p><p>http://cbcdn2.gp-static.com/uploads/firmware-bundles/firmware_bundle/8605145/UPDATE.zip</p><p><br/></p><p>注意这个链接里有一个数字，作用就像token一样用来区分不同的文件，我将它加粗显示了。你所需要做的就是访问别人的WiFi设置并且改变这个数字。我尝试将这个数字改成+/-1并且得到了其他人的文件。</p><p><br/></p><p><span style="color: rgb(0, 176, 80);">POC</span></p><p>为了保证发动攻击的可能性，我写了一个能够运行很多url的python脚本，将设置从响应中提取出来并导出至一个CSV文件。</p><p>我没有发现其他任何复杂的情况，也没有发现任何限制下载这些zip文件的东西，这样我就能够创建1000个WiFi名称以及密码，其中包括我自己的在内。</p><p><br/></p><p><span style="color: rgb(0, 176, 80);">攻击</span></p><p>我决定不对用户发动攻击。一个原因是像踩着滑雪板寻找GoPro摄像机的WiFi网络来说要花费时间。另外是出于道德考虑：我们处理的是个人数据，可能有人会觉得这样做会受到侮辱。</p><p><br/></p><p>但是从理论上来讲，这个代码很容易写出来。你所需要做的就是查看GoPro网站列表中在你附近的每个网络，如果找到了，那么你就会获得所有的文件。</p><p><br/></p><p><span style="color: rgb(0, 176, 80);">结论</span></p><p>GoPro是一款非常酷的产品。许多人爱用并且几乎天天都在使用，所以GoPro应该保护我们的数据及设置安全。</p><p><br/></p><p>作为一个快速缓解方式，我将会把URL中的数字部分用GUID或者其他类型的随机值取代，以此减小猜测链接的可能性。</p><p><br/></p><p>在用户下载后将这种数据从服务器删除或者在一两个小时左右将其删除非常重要。</p><p><br/></p><p>遗憾的是，我没有联系到GoPro相关人员向他们说明这个情况，希望US-CERT能够找到他们。</p><p><br/></p><p><span style="color: rgb(0, 176, 80);">更新</span></p><p>US-CERT快速找到了GoPro的安全工程师们。辛苦他们了。</p><p><br/></p><p><span style="color: rgb(0, 176, 80);">更新2</span></p><p>2015年3月4日：这个问题似乎已经解决了。</p><p><br/></p><p>本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。</p><p><br/></p>
+        
+</body>
+</html>

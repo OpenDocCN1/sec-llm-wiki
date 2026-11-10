@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Git客户端出现漏洞 影响Windows及Mac版本</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Git客户端出现漏洞 影响Windows及Mac版本</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247486057&amp;idx=4&amp;sn=6d266ee478455f8c2a04f7bc845d7833&amp;chksm=ea973b03dde0b2156527e4a824ab67d92acda81d61a504990bb977143ca457eac021cb1374e6&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247486057&amp;idx=4&amp;sn=6d266ee478455f8c2a04f7bc845d7833&amp;chksm=ea973b03dde0b2156527e4a824ab67d92acda81d61a504990bb977143ca457eac021cb1374e6&amp;scene=27#wechat_redirect</a></blockquote><p>        GitHub发现一个严重的Git安全漏洞，影响官方Git客户端的所有版本以及所有与Git版本库交互的相关软件，包括Windows及Mac版本。由于这是一个只针对客户端的漏洞，github.com及GitHub企业版本并未受到直接影响。</p><p>        该漏洞涉及Git及Git兼容的客户端，这些客户端访问不区分大小写或大小写正常化的文件系统。攻击者可精心制作一个恶意Git tree，当克隆或检查库时，会引发Git重写.git/config文件，从而导致客户端执行任意命令。在OS X（HFS+）或任何微软Windows（NTFS,FAT）版本运行的Git客户端都可被通过这一漏洞利用。Linux客户端并未受到影响，如果它们在一个区分大小写的文件系统运行。</p><p>        GitHub鼓励所有GitHub以及GitHub企业版用户尽快更新Git客户端，并且当克隆或访问的Git库被托管在不安全或不被信任的主机中时，要特别注意。</p><p>        托管在github.com上的库不会包含引发该漏洞的任何恶意Git tree，因为GitHub目前已经验证并阻止了这些tree。同时还对github.com上所有现存内容进行了自动化扫描。实际上在发现这个漏洞之前便对可能推送到网站的恶意内容进行了扫描。</p><p>        GitHub的Windows及Mac版本更新版本已经发布并可供下载，并且都包含对桌面应用程序本身以及Git命令行客户端捆绑版本的安全修复。</p><p>        另外，以下Git更新版本已经修复了这一漏洞</p><p>        l  Git核心团队宣布对目前所有Git版本发布了维护版本（v1.8.5.6, v1.9.5, v2.0.5, v2.1.4, and v2.2.1）</p><p>        l  Git的Windows版本（即MSysGit）已发布维护版本1.9.5。</p><p>        l  两大Git库，libgit2及JGit已经发布了带补丁的维护版本。强烈建议使用这些库的第三方软件进行更新。</p><p><br/></p>
+        
+</body>
+</html>

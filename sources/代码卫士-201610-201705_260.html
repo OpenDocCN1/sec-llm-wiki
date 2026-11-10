@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>杀毒产品和中间件削弱了HTTPS连接的安全性</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>杀毒产品和中间件削弱了HTTPS连接的安全性</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485589&amp;idx=2&amp;sn=bef64963506a70ffd3e8197e7701de7a&amp;chksm=ea9739ffdde0b0e96aa37162292ed62b0f517759ab2cb1d0b1a77837e13bc43c566ffc7fadf2&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485589&amp;idx=2&amp;sn=bef64963506a70ffd3e8197e7701de7a&amp;chksm=ea9739ffdde0b0e96aa37162292ed62b0f517759ab2cb1d0b1a77837e13bc43c566ffc7fadf2&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKiam2an9bicxxtlDPediccibFSnHWZhYiahv7Wll7cfMBhoKXUSicgic607j2cJkpmSntPphyvJTGnI2VlrwA/0?wx_fmt=png" data-ratio="0.31851851851851853" data-w="675" src="../Images/31b513761008eaa188ed16163b9036ac.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKiam2an9bicxxtlDPediccibFSnHWZhYiahv7Wll7cfMBhoKXUSicgic607j2cJkpmSntPphyvJTGnI2VlrwA/0?wx_fmt=png"/></p><p><br/></p><p><strong>来自Mozilla、谷歌、CloudFlare、多所美国大学和国际计算机科学研究所的研究人员发现，越来越多的杀毒和网络工具拦截了TLS连接以获取加密流量，但在很多情况下，它们削弱了连接的安全性并带来了漏洞。</strong></p><p><br/></p><p>这项研究报告的主题是<a>关于HTTPS拦截的安全影响</a>。专家们分析了跟网络浏览器、安全产品和恶意软件相关的TLS握手，并创建了一组试探发让网络服务器检测HTTPS拦截情况并识别出相关产品。</p><p><br/></p><p>研究人员将这些试探发部署到了火狐更新服务器、CloudFlare内容分布网络 (CDN)和一些大型电商网站中。分析显示，4%的火狐连接、6.2%的电商连接和近11%的基于美国的CloudFlare连接被拦截。</p><p><br/></p><p>还有一个令人担忧的情况是，97%的火狐连接、54%的CloudFlare和32%的电商连接被拦截后安全性降低。超过62%的中间件连接被削弱而且超过58%的中间件中存在严重漏洞。</p><p><br/></p><p>研究人员指出，不仅是被拦截的连接使用更弱的密码算法，而且对已知损坏的密码提供10-40%的广告支持也会导致中间人攻击者随后拦截、降级并解密连接。</p><p><br/></p><p>接受产品测试的中间件厂商包括A10 Networks、Blue Coat、Barracuda、Check Point、思科、Forcepoint、Fortinet、Juniper Networks、微软、Sophos、Untangle和WebTian。只有Blue Coat的产品测试结果是A级即跟浏览器等同的优化TLS连接，而其余产品的测试结果是C即包含已知漏洞或F即包含损坏连接易受中间人攻击。</p><p><br/></p><p>测试分析的杀毒产品包括来自Avast、AVG、Bitdefender、Bullguard、CYBERsitter、Dr. Web、ESET、G DATA、卡巴斯基、KinderGate、Net Nanny、 PC Pandora和Qustodio的Windows 和Mac产品。结果只有两款Avast产品测试结果是A级。</p><p><br/></p><p>研究人员表示已将研究结果告知受影响厂商，虽然有些厂商已经解决了这些问题或者计划这么做，但是有些厂商直接忽略或者拒绝更新产品而降责任转嫁给消费者。</p><p><br/></p><p>一名Chrome安全团队成员兼前Mozilla雇员此前曾表示只有微软做出的杀毒产品并不糟糕，随后，研究人员公布了这份报告。</p>
+        
+</body>
+</html>

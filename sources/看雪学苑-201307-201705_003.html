@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>聊聊游戏辅助那些事上部第一篇——过掉那些讨厌的游戏保护</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>聊聊游戏辅助那些事上部第一篇——过掉那些讨厌的游戏保护</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NTc2MDYxMw==&amp;mid=2458283121&amp;idx=1&amp;sn=f695db785889733713d011ba913e0c28&amp;chksm=b1815cfb86f6d5ed4d7fff73df9d6d5e5c2f32d935164b918b11d478b46821e2667166ac17d6&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NTc2MDYxMw==&amp;mid=2458283121&amp;idx=1&amp;sn=f695db785889733713d011ba913e0c28&amp;chksm=b1815cfb86f6d5ed4d7fff73df9d6d5e5c2f32d935164b918b11d478b46821e2667166ac17d6&amp;scene=27#wechat_redirect</a></blockquote><p style="line-height: 1.75em; margin-top: 10px; margin-bottom: 10px;"><span style="font-size: 15px;">这个系列计划分为上下两部，上部是内置型辅助，下部是按键型辅助。</span></p><p style="line-height: 1.75em; margin-top: 10px; margin-bottom: 10px;"><span style="font-size: 15px;">相对以前那些裸奔游戏，现在的新游戏多少都会有些保护，这是绕不过去的坎。</span></p><p style="line-height: 1.75em; margin-top: 10px; margin-bottom: 10px;"><span style="font-size: 15px;">下面针对我发现的几个保护方法，逐个的聊一聊。</span></p><p style="line-height: 1.75em; margin-top: 10px; margin-bottom: 10px;"><span style="font-size: 15px;"><br/></span></p><p style="line-height: 1.75em; margin-top: 10px; margin-bottom: 10px;"><span style="font-size: 15px;"/></p><section class="_135editor" data-tools="135&#x7F16;&#x8F91;&#x5668;" data-id="89351" style="border-width: 0px; border-style: none; border-color: currentcolor; -moz-border-top-colors: none; -moz-border-right-colors: none; -moz-border-bottom-colors: none; -moz-border-left-colors: none; padding: 0px;"><section class="__bg_gif" style="background-image: url(&quot;http://mmbiz.qpic.cn/mmbiz_gif/1UG7KPNHN8GgibI3AmdxbRtLJBKkf3GeHvuLCiapVQPbwtshpPOAXVL6SrqMZdddHjUK2fXQQk8d9XPekrbwCzCQ/s640?&quot;); background-size: 100% auto; background-repeat: no-repeat; width: 40px; height: 40px; margin: 0px auto; color: rgb(255, 255, 255);"><section style="margin: 0px auto; text-align: center; font-size: 14px; line-height: 40px; color: rgb(255, 255, 255);"><p style="border-width: 0px; border-style: none; border-color: currentcolor; -moz-border-top-colors: none; -moz-border-right-colors: none; -moz-border-bottom-colors: none; -moz-border-left-colors: none; padding: 0px; margin: 0px;">0<span class="autonum" data-original-title="" title="">1</span></p></section></section></section><p style="line-height: 1.75em; margin-top: 10px; margin-bottom: 10px;"><span style="font-size: 15px;"/><br/></p><p style="line-height: 1.75em; margin-top: 10px; margin-bottom: 10px;"><span style="font-size: 15px;">R3 应用层下，DebugActiveProcess 加载调试器时，会设置一个远程断点，而这个远程断点其实多此一举，反而有时会触发反调试检测。唯一要做的就是绕过它。</span></p><p style="line-height: normal;"><span style="font-size: 15px;">这是 NtDebugActiveProcess 的上层函数，DbgUiDebugActiveProcess 的反汇编代码：</span><a style="font-size: 14px; text-decoration: underline;"><span style="font-size: 14px;"><br/></span></a></p><p style="line-height: normal;"><a style="font-size: 14px; text-decoration: underline;"><span style="font-size: 14px;"><br/></span></a></p><blockquote><p style="line-height: normal;"><a style="font-size: 14px; text-decoration: underline;"><span style="font-size: 14px;">NtDebugActiveProcess@8</span></a><span style="font-size: 14px;"> (775909A4h)  <br/>7760FC64  mov         esi,eax        // 原始返回地址<br/>7760FC66  test        esi,esi  <br/>7760FC68  jl          </span><a style="font-size: 14px; text-decoration: underline;"><span style="font-size: 14px;">_DbgUiIssueRemoteBreakin@4</span></a><span style="font-size: 14px;"> (7760FC03h)  <br/>7760FC72  mov         esi,eax  <br/>7760FC74  test        esi,esi  <br/>7760FC76  jge         </span><a style="font-size: 14px; text-decoration: underline;"><span style="font-size: 14px;">_DbgUiStopDebugging@4</span></a><span style="font-size: 14px;"> (7760FB88h)  <br/>7760FC80  mov         eax,esi  <br/>7760FC82  pop         esi        // +0x1E后的返回地址<br/>7760FC83  pop         ebp  <br/>7760FC84  ret         4 </span></p></blockquote><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">下面是64位 WINDOW7 下面的 NtDebugActiveProcess 的钩子函数的具体代码，绕过远程断点的方法是在返回地址上加偏移0x1E</span><br/></p><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/1UG7KPNHN8GgibI3AmdxbRtLJBKkf3GeHqQVdBObRhdpqYDXicibySk2Rug2xEPFmreMbDJicsicnQNQGpibiahCURL4g/0?wx_fmt=png" class="" data-ratio="0.7819148936170213" data-w="564" src="../Images/a40e7acc937fac261553c736fb14093e.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/1UG7KPNHN8GgibI3AmdxbRtLJBKkf3GeHqQVdBObRhdpqYDXicibySk2Rug2xEPFmreMbDJicsicnQNQGpibiahCURL4g/0?wx_fmt=png"/></p><p style="line-height: 1.75em; margin-top: 10px; margin-bottom: 10px;"><span style="font-size: 15px;"><br/></span></p><section class="_135editor" data-tools="135&#x7F16;&#x8F91;&#x5668;" data-id="89351" style="border-width: 0px; border-style: none; border-color: currentcolor; -moz-border-top-colors: none; -moz-border-right-colors: none; -moz-border-bottom-colors: none; -moz-border-left-colors: none; padding: 0px;"><section class="__bg_gif" style="background-image: url(&quot;http://mmbiz.qpic.cn/mmbiz_gif/1UG7KPNHN8GgibI3AmdxbRtLJBKkf3GeHvuLCiapVQPbwtshpPOAXVL6SrqMZdddHjUK2fXQQk8d9XPekrbwCzCQ/s640?&quot;); background-size: 100% auto; background-repeat: no-repeat; width: 40px; height: 40px; margin: 0px auto; color: rgb(255, 255, 255);"><section style="margin: 0px auto; text-align: center; font-size: 14px; line-height: 40px; color: rgb(255, 255, 255);"><p style="border-width: 0px; border-style: none; border-color: currentcolor; -moz-border-top-colors: none; -moz-border-right-colors: none; -moz-border-bottom-colors: none; -moz-border-left-colors: none; padding: 0px; margin: 0px;"><span style="font-size: 16px;"><strong>02</strong></span></p></section></section></section><p style="line-height: 1.75em; margin-top: 10px; margin-bottom: 10px;"><span style="font-size: 15px;"/><br/></p><p style="line-height: 1.75em; margin-top: 10px; margin-bottom: 10px;"><span style="font-size: 15px;">如果保护程序有驱动，那么在 R0 核心层下调试端口清零会是绝大多数游戏保护的选择。进程的调试端口保存了一个调试器对像，当有异常发生时，操作系统的异常处理程序会查询这个端口，如果存在调试器，就会将异常发送给调试器，调试器会优先获得异常处理的权利。</span></p><p style="line-height: 1.75em; margin-top: 10px; margin-bottom: 10px;"><span style="font-size: 15px;">网上有不少方法，这儿采用自建调试端口管理的方法绕过它，呵呵，你想清零就清零，反正我又不用它。直接上获取设置调试端口的相关代码。</span></p><p style="line-height: 1.75em; margin-top: 10px; margin-bottom: 10px;"><span style="font-size: 15px;"/></p><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/1UG7KPNHN8GgibI3AmdxbRtLJBKkf3GeHheX6rNvfj3O6KglPOu2jIRCMGibp8b7smVtJBh73adtMeEJqm5JhfCg/0?wx_fmt=png" class="" data-ratio="0.898176291793313" data-w="658" src="../Images/ae85c997ca94353791f2771668eff5e3.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/1UG7KPNHN8GgibI3AmdxbRtLJBKkf3GeHheX6rNvfj3O6KglPOu2jIRCMGibp8b7smVtJBh73adtMeEJqm5JhfCg/0?wx_fmt=png"/></p><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/1UG7KPNHN8GgibI3AmdxbRtLJBKkf3GeHDWreMS9Em18eGiar8T2nRHQUqPdko17pKmticqFSJxwliaBqfzhyliam5A/0?wx_fmt=png" class="" data-ratio="0.8568807339449541" data-w="545" src="../Images/43a52df0430b2fbcb8659187df7f8238.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/1UG7KPNHN8GgibI3AmdxbRtLJBKkf3GeHDWreMS9Em18eGiar8T2nRHQUqPdko17pKmticqFSJxwliaBqfzhyliam5A/0?wx_fmt=png"/></p><p style="line-height: 1.75em; margin-top: 10px; margin-bottom: 10px;"><span style="font-size: 15px;"/><span style="font-size: 15px;">这是真正的核心代码，注意看注释。后面的 DeviceIoControlDispatch 会调用这个函数。</span></p><p style="line-height: 1.75em; margin-top: 10px; margin-bottom: 10px;"><span style="font-size: 15px;"/></p><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/1UG7KPNHN8GgibI3AmdxbRtLJBKkf3GeHFibJiaZaA7cxJcfgQpQsYcWGvtvK6vYOS9KibGibeIpNZfzRnefI52DoBA/0?wx_fmt=png" class="" data-ratio="1.0656303972366148" data-w="579" src="../Images/1a1ccb089aadc37ea3d95402f05f0615.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/1UG7KPNHN8GgibI3AmdxbRtLJBKkf3GeHFibJiaZaA7cxJcfgQpQsYcWGvtvK6vYOS9KibGibeIpNZfzRnefI52DoBA/0?wx_fmt=png"/></p><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/1UG7KPNHN8GgibI3AmdxbRtLJBKkf3GeHNZvUL0HE32scZXWCfLibCUD8YtttpT64pZxnlUdKvMOqWMYRCwTDjSg/0?wx_fmt=png" class="" data-ratio="1.1650853889943074" data-w="527" src="../Images/24d22083bd7f881ad91a49349647c1d7.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/1UG7KPNHN8GgibI3AmdxbRtLJBKkf3GeHNZvUL0HE32scZXWCfLibCUD8YtttpT64pZxnlUdKvMOqWMYRCwTDjSg/0?wx_fmt=png"/></p><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/1UG7KPNHN8GgibI3AmdxbRtLJBKkf3GeHGS2phQnsv9z9aygeRrOeH1lJlqdSXgIicCVFyDLEjeiaoWFfHEvVod7A/0?wx_fmt=png" class="" data-ratio="0.9048543689320389" data-w="515" src="../Images/bf27192e23d4f502136d04c2a4572669.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/1UG7KPNHN8GgibI3AmdxbRtLJBKkf3GeHGS2phQnsv9z9aygeRrOeH1lJlqdSXgIicCVFyDLEjeiaoWFfHEvVod7A/0?wx_fmt=png"/></p><p style="line-height: 1.75em; margin-top: 10px; margin-bottom: 10px;"><span style="font-size: 15px;"/><span style="font-size: 15px;">但是用 OnNtDebugActiveProcess 加载那是完全不调试，因为这个函数不用你清零调试端口了，我自己就直接清零了。然后就要对 DbgkForwardException下钩子，让我们自己保存的调试端口发挥作用。具体代码。</span></p><blockquote><pre class=""><p style="line-height: normal;"><span style="font-size: 12px;">BOOLEAN
+OnDbgkForwardException(
+    IN PEXCEPTION_RECORD ExceptionRecord,
+    IN BOOLEAN DebugException,
+    IN BOOLEAN SecondChance
+    )
+{
+    DBGKM_APIMSG m;
+    PDBGKM_EXCEPTION args;
+    NTSTATUS st;
+    PAGED_CODE();
+ if (!DebugException)
+ {
+  return FALSE;
+ }
+ //
+ // 进程设置了调试端口，或者没有影射当前进程的调试端口
+ //
+ if (GetDebugPort(PsGetCurrentProcess()) == NULL)
+ {
+  return FALSE;
+ }
+ //
+ // 调试端口被置零。
+ //
+ _KdPrint(("DbgkForwardException ExceptionAddress = %08x, ExceptionCode = %08x \r\n", ExceptionRecord-&gt;ExceptionAddress, ExceptionRecord-&gt;ExceptionCode));
+ args = &amp;m.u.Exception;
+ //
+ // Initialize the debug LPC message with default information.
+ //
+ _KdPrint(("DBGKM_FORMAT_API_MSG\r\n"));
+ DBGKM_FORMAT_API_MSG(m,DbgKmExceptionApi,sizeof(*args));
+    //
+    // Fill in the remainder of the debug LPC message.
+    //
+ _KdPrint(("args-&gt;ExceptionRecord = *ExceptionRecord\r\n"));
+ args-&gt;ExceptionRecord = *ExceptionRecord;
+    args-&gt;FirstChance = !SecondChance;
+    //
+    // Send the debug message to the destination LPC port.
+    //
+ _KdPrint(("DbgkpSendApiMessage\r\n"));
+ st = DbgkpSendApiMessage(&amp;m,DebugException);
+
+    //
+    // If the send was not successful, then return a FALSE indicating that
+    // the port did not handle the exception. Otherwise, if the debug port
+    // is specified, then look at the return status in the message.
+    //
+    if (!NT_SUCCESS(st) ||
+        ((DebugException) &amp;&amp;
+        (m.ReturnedStatus == DBG_EXCEPTION_NOT_HANDLED || !NT_SUCCESS(m.ReturnedStatus))))
+ {
+  _KdPrint(("DbgkForwardException FAILED, STATUS = %08x, DebugException = %d, ReturnedStatus = %08x!\r\n", st, DebugException, m.ReturnedStatus));
+  return FALSE;
+    }
+ else
+ {
+  _KdPrint(("DbgkForwardException SUCCESSED!\r\n"));
+  return TRUE;
+    }
+}</span></p></pre></blockquote><p style="line-height: 1.75em; margin-top: 10px; margin-bottom: 10px;"><span style="font-size: 15px;">上面的两个函数用到了几个没有导出的核心函数，这就需要自己定位相关的函数了，这里就不再展开定位的方法了。</span></p><p style="line-height: 1.75em; margin-top: 10px; margin-bottom: 10px;"><span style="font-size: 15px;">调试器在应用层需要添加钩子函数：DbgNtDebugActiveProcess64，与前面的
+ DbgNtDebugActiveProcess64 的差别在不再调用 TrueNtDebugActiveProcess，而是通过 
+DeviceIoControl 调用我们自己的NtDebugActiveProcess</span></p><p style="line-height: 1.75em; margin-top: 10px; margin-bottom: 10px;"><span style="font-size: 15px;"/></p><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/1UG7KPNHN8GgibI3AmdxbRtLJBKkf3GeHJJv1nng01T6icZhlQNnC5235TO1iaYribTPBeGq9zEh1wQ7BOjpkK9lSw/0?wx_fmt=png" class="" data-ratio="1.0772058823529411" data-w="544" src="../Images/8d6f989aff0f06a278de9fadb8ace7af.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/1UG7KPNHN8GgibI3AmdxbRtLJBKkf3GeHJJv1nng01T6icZhlQNnC5235TO1iaYribTPBeGq9zEh1wQ7BOjpkK9lSw/0?wx_fmt=png"/></p><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/1UG7KPNHN8GgibI3AmdxbRtLJBKkf3GeHLGZ8ESLyBfMF6uYaSwsLVIvHo5soVYB8UsZO1QTt9b6VPOozbou4EA/0?wx_fmt=png" class="" data-ratio="0.14256198347107438" data-w="484" src="../Images/b3f53337c341e5091315dc3733676d54.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/1UG7KPNHN8GgibI3AmdxbRtLJBKkf3GeHLGZ8ESLyBfMF6uYaSwsLVIvHo5soVYB8UsZO1QTt9b6VPOozbou4EA/0?wx_fmt=png"/></p><p style="line-height: 1.75em; margin-top: 10px; margin-bottom: 10px;"><span style="font-size: 15px;"/><br/></p><section class="_135editor" data-tools="135&#x7F16;&#x8F91;&#x5668;" data-id="89351" style="border-width: 0px; border-style: none; border-color: currentcolor; -moz-border-top-colors: none; -moz-border-right-colors: none; -moz-border-bottom-colors: none; -moz-border-left-colors: none; padding: 0px;"><section class="__bg_gif" style="background-image: url(&quot;http://mmbiz.qpic.cn/mmbiz_gif/1UG7KPNHN8GgibI3AmdxbRtLJBKkf3GeHvuLCiapVQPbwtshpPOAXVL6SrqMZdddHjUK2fXQQk8d9XPekrbwCzCQ/s640?&quot;); background-size: 100% auto; background-repeat: no-repeat; width: 40px; height: 40px; margin: 0px auto; color: rgb(255, 255, 255);"><section style="margin: 0px auto; text-align: center; font-size: 14px; line-height: 40px; color: rgb(255, 255, 255);"><p style="border-width: 0px; border-style: none; border-color: currentcolor; -moz-border-top-colors: none; -moz-border-right-colors: none; -moz-border-bottom-colors: none; -moz-border-left-colors: none; padding: 0px; margin: 0px;"><strong><span style="font-size: 16px;">03</span></strong></p></section></section></section><p style="line-height: 1.75em; margin-top: 10px; margin-bottom: 10px;"><br/></p><p style="line-height: 1.75em; margin-top: 10px; margin-bottom: 10px;"><span style="font-size: 15px;">调试器对像降权。当系统的调试器对像的访问权限被设置为零时，表现为附加不上所有程序，游戏保护让我们创建的调试对像成为没有调试权限的调试对像。处理方法：重建一个调试对像类型，然后替换掉系统的调试对像类型。</span></p><blockquote><pre class=""><p style="line-height: normal;"><span style="font-size: 12px;">NTSTATUS
+DbgkCreateDebugObjectType(
+ POBJECT_TYPE* DebugObjectType
+)
+{
+ NTSTATUS Status;
+ UNICODE_STRING Name;
+ POBJECT_TYPE SysDebugObjectType;
+ POBJECT_TYPE ObpTypeObjectType;
+ PAGED_CODE();
+ //
+ // 先打开系统本身的调试对像
+ //
+ RtlInitUnicodeString(&amp;Name, L"\\ObjectTypes\\DebugObject");
+ ObpTypeObjectType = ObGetObjectType(*PsProcessType);
+ Status = ObReferenceObjectByName(&amp;Name, OBJ_CASE_INSENSITIVE, NULL, 0, ObpTypeObjectType, KernelMode, NULL, (PVOID*)&amp;SysDebugObjectType);
+ if (NT_SUCCESS(Status))
+ {
+  //
+  // 系统调试器的对像关闭函数
+  //
+  (OB_CLOSE_METHOD&amp;)SysDbgkpCloseObject = SysDebugObjectType-&gt;TypeInfo.CloseProcedure;
+  //
+  // 先试着打开我们的调试对像类型，如果打开成功，直接使用即可
+  //
+  RtlInitUnicodeString(&amp;Name, L"\\ObjectTypes\\NewDebugObject");
+  Status = ObReferenceObjectByName(&amp;Name, OBJ_CASE_INSENSITIVE, NULL, 0, ObpTypeObjectType, KernelMode, NULL, (PVOID*)DebugObjectType);
+  if (Status == STATUS_OBJECT_NAME_NOT_FOUND)
+  {
+   RtlInitUnicodeString(&amp;Name, L"NewDebugObject");
+   GENERIC_MAPPING GenericMapping = { STANDARD_RIGHTS_READ | DEBUG_READ_EVENT,
+    STANDARD_RIGHTS_WRITE | DEBUG_PROCESS_ASSIGN,
+    STANDARD_RIGHTS_EXECUTE | SYNCHRONIZE,
+    DEBUG_ALL_ACCESS };
+   OBJECT_TYPE_INITIALIZER oti = { 0 };
+   oti.Length = sizeof(oti);
+   oti.SecurityRequired = TRUE;
+   oti.InvalidAttributes = 0;
+   oti.PoolType = NonPagedPool;
+   oti.DeleteProcedure = SysDebugObjectType-&gt;TypeInfo.DeleteProcedure;
+   oti.CloseProcedure = (OB_CLOSE_METHOD)DbgkpCloseObject;
+   oti.ValidAccessMask = DEBUG_ALL_ACCESS;
+   oti.GenericMapping = GenericMapping;
+   oti.DefaultPagedPoolCharge = 0;
+   oti.DefaultNonPagedPoolCharge = 0;
+   Status = ObCreateObjectType(&amp;Name, &amp;oti, NULL, DebugObjectType);
+  }
+  else if (NT_SUCCESS(Status))
+  {
+   (*DebugObjectType)-&gt;TypeInfo.CloseProcedure = (OB_CLOSE_METHOD)DbgkpCloseObject;
+  }
+  ObDereferenceObject(SysDebugObjectType);
+ }
+ return Status;
+}
+NTSTATUS DbgkInitialize()
+{
+ POBJECT_TYPE NewDebugObjectType;
+ Status = DbgkCreateDebugObjectType(&amp;NewDebugObjectType);
+ if (NT_SUCCESS(Status))
+ {
+  *DbgkDebugObjectType = NewDebugObjectType;
+ }
+}</span></p></pre></blockquote><p style="line-height: 1.75em; margin-top: 10px; margin-bottom: 10px;"><span style="font-size: 15px;">DbgkDebugObjectType 为系统内核调试器对像地址，可以通过符号搜索获取地址。TP在启动后会让所用的附加或启动调试失败，然后我们来这么一下，整个世界就安静了。</span></p><p style="line-height: 1.75em; margin-top: 10px; margin-bottom: 10px;"><span style="font-size: 15px;"><br/></span></p><section class="_135editor" data-tools="135&#x7F16;&#x8F91;&#x5668;" data-id="89351" style="border-width: 0px; border-style: none; border-color: currentcolor; -moz-border-top-colors: none; -moz-border-right-colors: none; -moz-border-bottom-colors: none; -moz-border-left-colors: none; padding: 0px;"><section class="__bg_gif" style="background-image: url(&quot;http://mmbiz.qpic.cn/mmbiz_gif/1UG7KPNHN8GgibI3AmdxbRtLJBKkf3GeHvuLCiapVQPbwtshpPOAXVL6SrqMZdddHjUK2fXQQk8d9XPekrbwCzCQ/s640?&quot;); background-size: 100% auto; background-repeat: no-repeat; width: 40px; height: 40px; margin: 0px auto; color: rgb(255, 255, 255);"><section style="margin: 0px auto; text-align: center; font-size: 14px; line-height: 40px; color: rgb(255, 255, 255);"><p style="border-width: 0px; border-style: none; border-color: currentcolor; -moz-border-top-colors: none; -moz-border-right-colors: none; -moz-border-bottom-colors: none; -moz-border-left-colors: none; padding: 0px; margin: 0px;"><strong><span style="font-size: 16px;">04</span></strong></p></section></section></section><p style="line-height: 1.75em; margin-top: 10px; margin-bottom: 10px;"><br/></p><p style="line-height: 1.75em; margin-top: 10px; margin-bottom: 10px;"><span style="font-size: 15px;">这里感谢一下微软，64位的PG帮了我们不少忙，干掉了很多的游戏保护。在64位的系统下，游戏保护基本上过掉这三个就可以了，当然最后还要加上一个过PG的布丁。32位下则一般还还需要过掉
+ 
+NtOpenProcess，NtReadVirtualMemory，NtWriteVirtualMemory，NtQuerySystemInformation等几个函数，如果采用主动式难度不算很大。所谓主动式就是你走你的阳关道，我走我的独木桥，我另外开辟一条路走，把钩子下在应用层，让所有调用这些函数都转到我的函数上来。而且这些钩子不是加在游戏程序上，而是加在调试器上。</span></p><p style="line-height: 1.75em; margin-top: 10px; margin-bottom: 10px;"><span style="font-size: 15px;">贴一个32下的应用层 NtOpenProcess 钩子函数：利用 DeviceIoControl 跳到核心层，调用我们自己的核心层的 NtOpenProcess，其它的就不一一贴了。</span></p><p style="line-height: 1.75em; margin-top: 10px; margin-bottom: 10px;"><span style="font-size: 15px;"/></p><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/1UG7KPNHN8GgibI3AmdxbRtLJBKkf3GeHVL5qAUIWE2Aia1YqiccyvI8CcOmpX8NIHXPNfN6MeC5UbC9RDYnSfZMw/0?wx_fmt=png" class="" data-ratio="1.2045454545454546" data-w="440" src="../Images/84db863ad6147fa43fc4d00d5e876b98.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/1UG7KPNHN8GgibI3AmdxbRtLJBKkf3GeHVL5qAUIWE2Aia1YqiccyvI8CcOmpX8NIHXPNfN6MeC5UbC9RDYnSfZMw/0?wx_fmt=png"/></p><p style="line-height: 1.75em; margin-top: 10px; margin-bottom: 10px;"><span style="font-size: 15px;"/><br/></p><section class="_135editor" data-tools="135&#x7F16;&#x8F91;&#x5668;" data-id="89351" style="border-width: 0px; border-style: none; border-color: currentcolor; -moz-border-top-colors: none; -moz-border-right-colors: none; -moz-border-bottom-colors: none; -moz-border-left-colors: none; padding: 0px;"><section class="__bg_gif" style="background-image: url(&quot;http://mmbiz.qpic.cn/mmbiz_gif/1UG7KPNHN8GgibI3AmdxbRtLJBKkf3GeHvuLCiapVQPbwtshpPOAXVL6SrqMZdddHjUK2fXQQk8d9XPekrbwCzCQ/s640?&quot;); background-size: 100% auto; background-repeat: no-repeat; width: 40px; height: 40px; margin: 0px auto; color: rgb(255, 255, 255);"><section style="margin: 0px auto; text-align: center; font-size: 14px; line-height: 40px; color: rgb(255, 255, 255);"><p style="border-width: 0px; border-style: none; border-color: currentcolor; -moz-border-top-colors: none; -moz-border-right-colors: none; -moz-border-bottom-colors: none; -moz-border-left-colors: none; padding: 0px; margin: 0px;"><strong><span style="font-size: 16px;">05</span></strong></p></section></section></section><p style="line-height: 1.75em; margin-top: 10px; margin-bottom: 10px;"><br/></p><p style="line-height: 1.75em; margin-top: 10px; margin-bottom: 10px;"><span style="font-size: 15px;">前面几个应用层的钩子都用到了 DeviceIoControl，所以贴一下驱动中的 DeviceIoControlDispatch 函数。</span></p><blockquote><pre class=""><p style="line-height: normal;"><span style="font-size: 12px;">NTSTATUS DbgHelperDeviceIoControlDispatch
+(
+ IN  PDEVICE_OBJECT  DeviceObject,
+ IN  PIRP            Irp     )
+{
+ PIO_STACK_LOCATION              irpStack;
+ NTSTATUS                        status;
+ PDBGHELPER_DEVICE_EXTENSION  deviceExtension;
+ ULONG                           inputLength;
+ ULONG                           outputLength;
+ _KdPrint( (__FUNCTION__"++. IRP %p", Irp) );
+ deviceExtension = (PDBGHELPER_DEVICE_EXTENSION)DeviceObject-&gt;DeviceExtension;
+ // Get our IRP stack location
+ irpStack = IoGetCurrentIrpStackLocation(Irp);
+ // Get the buffer lengths
+ inputLength = irpStack-&gt;Parameters.DeviceIoControl.InputBufferLength;
+ outputLength = irpStack-&gt;Parameters.DeviceIoControl.OutputBufferLength;
+ switch (irpStack-&gt;Parameters.DeviceIoControl.IoControlCode) 
+ {
+ case IOCTL_NtOpenProcess:
+ {
+  _KdPrint(("IOCTL_NtOpenProcess"));
+  PARAM_NtOpenProcess* ioBuffer = (PARAM_NtOpenProcess*)Irp-&gt;AssociatedIrp.SystemBuffer;
+  if ((ioBuffer == NULL) || (inputLength != sizeof(PARAM_NtOpenProcess)) || (outputLength &lt; sizeof(NTSTATUS)))
+  {
+   return CompleteIrp(Irp, STATUS_INVALID_PARAMETER, 0);
+  }
+  else
+  {
+   //
+   // 调用真正的函数 NtOpenProcess
+   //
+   status = DbgHelperNtOpenProcess(ioBuffer-&gt;ProcessHandle, ioBuffer-&gt;DesiredAccess, ioBuffer-&gt;ObjectAttributes, ioBuffer-&gt;ClientId);
+   _KdPrint(("STATUS = 0x%08x, ProcessHandle = 0x%08x, ProcessId = 0x%08x, ThreadId = 0x%08x", status, ioBuffer-&gt;ProcessHandle ? *ioBuffer-&gt;ProcessHandle : (PHANDLE)-1, ioBuffer-&gt;ClientId-&gt;UniqueProcess, ioBuffer-&gt;ClientId-&gt;UniqueThread));
+   *(NTSTATUS *)ioBuffer = status;
+   return CompleteIrp(Irp, STATUS_SUCCESS, sizeof(NTSTATUS));
+  }
+ }
+ break;
+ case IOCTL_NtCreateDebugObject:
+ {
+  _KdPrint(("IOCTL_NtCreateDebugObject Enter\n"));
+  PARAM_NtCreateDebugObject* ioBuffer = (PARAM_NtCreateDebugObject*)Irp-&gt;AssociatedIrp.SystemBuffer;
+  if ((ioBuffer == NULL) || (inputLength != sizeof(PARAM_NtCreateDebugObject)) || (outputLength &lt; sizeof(NTSTATUS)))
+  {
+   return CompleteIrp(Irp, STATUS_INVALID_PARAMETER, 0);
+  }
+  else
+  {
+   //
+   // 调用我们自己的函数 NtCreateDebugObject，返回的 DebugObjectHandle 兼容系统的调试对像
+   //
+   status = OnNtCreateDebugObject(ioBuffer-&gt;DebugObjectHandle, ioBuffer-&gt;DesiredAccess, ioBuffer-&gt;ObjectAttributes, ioBuffer-&gt;Flags);
+   _KdPrint(("STATUS = 0x%08x, DebugObjectHandle = 0x%08x, DesiredAccess = 0x%08x, Flags =  0x%08x", status, ioBuffer-&gt;DebugObjectHandle ? *ioBuffer-&gt;DebugObjectHandle : (HANDLE)-1, ioBuffer-&gt;DesiredAccess, ioBuffer-&gt;Flags));
+   *(NTSTATUS *)ioBuffer = status;
+   _KdPrint(("IOCTL_NtCreateDebugObject Leave\n"));
+   return CompleteIrp(Irp, STATUS_SUCCESS, sizeof(NTSTATUS));
+  }
+ }
+ break;
+ case IOCTL_NtDebugActiveProcess:
+ {
+  _KdPrint(("IOCTL_NtDebugActiveProcess Enter\n"));
+  PARAM_NtDebugActiveProcess* ioBuffer = (PARAM_NtDebugActiveProcess*)Irp-&gt;AssociatedIrp.SystemBuffer;
+  if ((ioBuffer == NULL) || (inputLength != sizeof(PARAM_NtDebugActiveProcess)) || (outputLength &lt; sizeof(NTSTATUS)))
+  {
+   return CompleteIrp(Irp, STATUS_INVALID_PARAMETER, 0);
+  }
+  else
+  {
+   //
+   // 调用我们自己的函数 NtDebugActiveProcess
+   //
+   status = OnNtDebugActiveProcess(ioBuffer-&gt;ProcessHandle, ioBuffer-&gt;DebugObjectHandle);
+   _KdPrint(("STATUS = 0x%08x, ProcessHandle = 0x%08x, DebugObjectHandle = 0x%08x", status, ioBuffer-&gt;ProcessHandle, ioBuffer-&gt;DebugObjectHandle));
+   *(NTSTATUS *)ioBuffer = status;
+   _KdPrint(("IOCTL_NtDebugActiveProcess Leave\n"));
+   return CompleteIrp(Irp, STATUS_SUCCESS, sizeof(NTSTATUS));
+  }
+ }
+ break;
+ case IOCTL_NtRemoveProcessDebug:
+ {
+  _KdPrint(("IOCTL_NtRemoveProcessDebug Enter\n"));
+  PARAM_NtRemoveProcessDebug* ioBuffer = (PARAM_NtRemoveProcessDebug*)Irp-&gt;AssociatedIrp.SystemBuffer;
+  if ((ioBuffer == NULL) || (inputLength != sizeof(PARAM_NtRemoveProcessDebug)) || (outputLength &lt; sizeof(NTSTATUS)))
+  {
+   return CompleteIrp(Irp, STATUS_INVALID_PARAMETER, 0);
+  }
+  else
+  {
+   //
+   // 调用我们自己的函数 NtRemoveProcessDebug
+   //
+   status = OnNtRemoveProcessDebug(ioBuffer-&gt;ProcessHandle, ioBuffer-&gt;DebugObjectHandle);
+   _KdPrint(("STATUS = 0x%08x, ProcessHandle = 0x%08x, DebugObjectHandle = 0x%08x", status, ioBuffer-&gt;ProcessHandle, ioBuffer-&gt;DebugObjectHandle));
+   *(NTSTATUS *)ioBuffer = status;
+   _KdPrint(("IOCTL_NtRemoveProcessDebug Leave\n"));
+   return CompleteIrp(Irp, STATUS_SUCCESS, sizeof(NTSTATUS));
+  }
+ }
+ break;
+ case IOCTL_NtReadVirtualMemory:
+ {
+  _KdPrint(("IOCTL_NtReadVirtualMemory"));
+  PARAM_NtReadVirtualMemory* ioBuffer = (PARAM_NtReadVirtualMemory*)Irp-&gt;AssociatedIrp.SystemBuffer;
+  if ((ioBuffer == NULL) || (inputLength != sizeof(PARAM_NtReadVirtualMemory)) || (outputLength &lt; sizeof(NTSTATUS)))
+  {
+   return CompleteIrp(Irp, STATUS_INVALID_PARAMETER, 0);
+  }
+  else
+  {
+   //
+   // 调用我们自己的 NtReadVirtualMemory 函数
+   //
+   status = DbgHelperNtReadVirtualMemory(ioBuffer-&gt;ProcessHandle, ioBuffer-&gt;BaseAddress, ioBuffer-&gt;Buffer, ioBuffer-&gt;BufferSize, ioBuffer-&gt;NumberOfBytesWritten);
+   _KdPrint(("STATUS = 0x%08x, ProcessHandle = 0x%08x, BaseAddress = 0x%08x, BufferSize = 0x%08x", status, ioBuffer-&gt;ProcessHandle, ioBuffer-&gt;BaseAddress, ioBuffer-&gt;BufferSize));
+   *(NTSTATUS *)ioBuffer = status;
+   return CompleteIrp(Irp, STATUS_SUCCESS, sizeof(NTSTATUS));
+  }
+ }
+ break;
+ case IOCTL_NtWriteVirtualMemory:
+ {
+  _KdPrint(("IOCTL_NtWriteVirtualMemory"));
+  PARAM_NtWriteVirtualMemory* ioBuffer = (PARAM_NtWriteVirtualMemory*)Irp-&gt;AssociatedIrp.SystemBuffer;
+  if ((ioBuffer == NULL) || (inputLength != sizeof(PARAM_NtWriteVirtualMemory)) || (outputLength &lt; sizeof(NTSTATUS)))
+  {
+   return CompleteIrp(Irp, STATUS_INVALID_PARAMETER, 0);
+  }
+  else
+  {
+   //
+   // 调用我们自己的 NtWriteVirtualMemory 函数
+   //
+   status = DbgHelperNtWriteVirtualMemory(ioBuffer-&gt;ProcessHandle, ioBuffer-&gt;BaseAddress, ioBuffer-&gt;Buffer, ioBuffer-&gt;BufferSize, ioBuffer-&gt;NumberOfBytesWritten);
+   _KdPrint(("STATUS = 0x%08x, ProcessHandle = 0x%08x, BaseAddress = 0x%08x, BufferSize = 0x%08x", status, ioBuffer-&gt;ProcessHandle, ioBuffer-&gt;BaseAddress, ioBuffer-&gt;BufferSize));
+   *(NTSTATUS *)ioBuffer = status;
+   return CompleteIrp(Irp, STATUS_SUCCESS, sizeof(NTSTATUS));
+  }
+ }
+ break;
+ case IOCTL_NtQuerySystemInformation:
+ {
+  _KdPrint(("IOCTL_NtQuerySystemInformation Enter\n"));
+  PARAM_NtQuerySystemInformation* ioBuffer = (PARAM_NtQuerySystemInformation*)Irp-&gt;AssociatedIrp.SystemBuffer;
+  if ((ioBuffer == NULL) || (inputLength != sizeof(PARAM_NtQuerySystemInformation)) || (outputLength &lt; sizeof(NTSTATUS)))
+  {
+   return CompleteIrp(Irp, STATUS_INVALID_PARAMETER, 0);
+  }
+  else
+  {
+   //
+   // 调用我们自己的函数 NtRemoveProcessDebug
+   //
+   status = NtQuerySystemInformation(ioBuffer-&gt;SystemInformationClass, ioBuffer-&gt;SystemInformation, ioBuffer-&gt;SystemInformationLength, ioBuffer-&gt;ReturnLength);
+   _KdPrint(("STATUS = 0x%08x, SystemInformationClass = %d, SystemInformation = %d", status, ioBuffer-&gt;SystemInformationClass, ioBuffer-&gt;SystemInformation));
+   *(NTSTATUS *)ioBuffer = status;
+   _KdPrint(("IOCTL_NtQuerySystemInformation Leave\n"));
+   return CompleteIrp(Irp, STATUS_SUCCESS, sizeof(NTSTATUS));
+  }
+ }
+ break;
+ default:
+  status = STATUS_INVALID_DEVICE_REQUEST;
+  Irp-&gt;IoStatus.Status = status;
+  IoCompleteRequest (Irp, IO_NO_INCREMENT);
+  break;
+ }
+ _KdPrint( (__FUNCTION__"--. IRP %p STATUS %x", Irp, status) );
+ return status;
+}</span></p></pre></blockquote><p style="line-height: 1.75em; margin-top: 10px; margin-bottom: 10px;"><span style="font-size: 15px;">最后预告一下，本系列的第二篇，聊聊游戏辅助那些事上部第二篇——跟踪是个苦力活，调试器有什么好建议？</span></p><p style="line-height: 1.75em; margin-top: 10px; margin-bottom: 10px;"><span style="font-size: 15px;">当然什么时候发我自己也不知道了，因为还没写呢。想看的就自己关注了。</span></p><p style="margin-top: 15px; margin-bottom: 15px; line-height: 1.75em; text-align: center;"><span style="font-size: 15px; color: rgb(136, 136, 136);">本文由看雪论坛<span class="username text-bold"> youngboz</span><span class=""> </span>原创</span><span style="font-size: 15px;"><br/></span></p><p style="margin-top: 15px; margin-bottom: 15px; line-height: 1.75em;"><span style="font-size: 15px;"/><br/></p><p style="margin-top: 15px; margin-bottom: 15px; line-height: 1.75em;"><span style="font-size: 15px;"/></p><p style="margin-top: 15px; margin-bottom: 15px; max-width: 100%; min-height: 1em; line-height: 1.75em; box-sizing: border-box !important; overflow-wrap: break-word !important;"><span style="max-width: 100%; color: rgb(79, 138, 187); box-sizing: border-box !important; overflow-wrap: break-word !important;"><strong style="max-width: 100%; box-sizing: border-box !important; overflow-wrap: break-word !important;">你可能对以下内容感兴趣：<br/></strong></span></p><hr style="max-width: 100%; line-height: 25.6px; box-sizing: border-box !important; overflow-wrap: break-word !important;"/><p style="max-width: 100%; min-height: 1em; line-height: 25.6px; box-sizing: border-box !important; overflow-wrap: break-word !important;"><br style="max-width: 100%; box-sizing: border-box !important; overflow-wrap: break-word !important;"/></p><ul class=" list-paddingleft-2" style="list-style-type: circle;"><li><p style="margin-top: 10px; margin-bottom: 10px; max-width: 100%; min-height: 1em; line-height: normal; box-sizing: border-box !important; overflow-wrap: break-word !important;"><span style="max-width: 100%; font-size: 15px; box-sizing: border-box !important; overflow-wrap: break-word !important;"><a href="http://mp.weixin.qq.com/s?__biz=MjM5NTc2MDYxMw==&amp;mid=2458282630&amp;idx=1&amp;sn=61fcbc708235dec5d7897a0d7c315756&amp;chksm=b1815a0c86f6d31a50ba1f9a39d876e28f2c71096100b28e961df185f7be94ec77b9199efd51&amp;scene=21#wechat_redirect" target="_blank" style="max-width: 100%; box-sizing: border-box !important; overflow-wrap: break-word !important;">等你来挑战！| 看雪 CTF 2017 攻击篇</a></span></p></li><li><p style="margin-top: 10px; margin-bottom: 10px; max-width: 100%; min-height: 1em; line-height: normal; box-sizing: border-box !important; overflow-wrap: break-word !important;"><span style="max-width: 100%; font-size: 15px; box-sizing: border-box !important; overflow-wrap: break-word !important;"><a href="http://mp.weixin.qq.com/s?__biz=MjM5NTc2MDYxMw==&amp;mid=2458282621&amp;idx=1&amp;sn=15f5bc0fa2b0b34ae241668b23a3939b&amp;chksm=b1815af786f6d3e1fd4bad2c336d725ec600551a6477bbc4c6af93167074ac83873aeba89938&amp;scene=21#wechat_redirect" target="_blank" style="max-width: 100%; box-sizing: border-box !important; overflow-wrap: break-word !important;">【终于等到你！】看雪 CTF 2017</a></span></p></li><li><p style="margin-top: 10px; margin-bottom: 10px; max-width: 100%; min-height: 1em; line-height: normal; box-sizing: border-box !important; overflow-wrap: break-word !important;"><span style="max-width: 100%; box-sizing: border-box !important; overflow-wrap: break-word !important; font-size: 15px;"><a href="http://mp.weixin.qq.com/s?__biz=MjM5NTc2MDYxMw==&amp;mid=2458283039&amp;idx=2&amp;sn=7965f942fd1629eb4b0502b01a522998&amp;chksm=b1815c9586f6d583b224490858104e7a5e5affad9542fe33da744c091ec234c3a55016f41690&amp;scene=21#wechat_redirect" target="_blank">MS17-010 SMB 远程命令执行漏洞利用分析</a><br/></span></p></li><li><p style="margin-top: 10px; margin-bottom: 10px; max-width: 100%; min-height: 1em; line-height: normal; box-sizing: border-box !important; overflow-wrap: break-word !important;"><span style="max-width: 100%; font-size: 15px; box-sizing: border-box !important; overflow-wrap: break-word !important;"><a href="http://mp.weixin.qq.com/s?__biz=MjM5NTc2MDYxMw==&amp;mid=2458283033&amp;idx=2&amp;sn=7a0d3fa2c8c5e2bdcac6379351269330&amp;chksm=b1815c9386f6d585439b2186c5fc7099c74ce5398483563db182f868911a3a2c6c4be7500021&amp;scene=21#wechat_redirect" target="_blank">新手逆向学习--Win7 下 64 位扫雷逆向以及辅助制作</a><br style="max-width: 100%; box-sizing: border-box !important; overflow-wrap: break-word !important;"/></span></p></li><li><p style="margin-top: 10px; margin-bottom: 10px; max-width: 100%; min-height: 1em; line-height: normal; box-sizing: border-box !important; overflow-wrap: break-word !important;"><a href="http://mp.weixin.qq.com/s?__biz=MjM5NTc2MDYxMw==&amp;mid=2458282703&amp;idx=3&amp;sn=bfa728ff73cd389cd9258ca32008c6e2&amp;chksm=b1815a4586f6d353468f3adf9545aab3ffdce4f4c3e0e47c967298eca045db0558e37865c3a7&amp;scene=21#wechat_redirect" target="_blank" style="max-width: 100%; font-size: 15px; box-sizing: border-box !important; overflow-wrap: break-word !important;"><span style="max-width: 100%; box-sizing: border-box !important; overflow-wrap: break-word !important;"/></a><a href="http://mp.weixin.qq.com/s?__biz=MjM5NTc2MDYxMw==&amp;mid=2458283005&amp;idx=2&amp;sn=2fc411b70549c789085e517ef6dfc3e9&amp;chksm=b1815b7786f6d261975cd000d4ddf2c4cffe3cf2d8ab06d870e7971e862c29c7278996bdfb6c&amp;scene=21#wechat_redirect" target="_blank" style="font-size: 15px; text-decoration: none;"><span style="font-size: 15px;"/></a><a href="http://mp.weixin.qq.com/s?__biz=MjM5NTc2MDYxMw==&amp;mid=2458283017&amp;idx=3&amp;sn=745024d678707b6dcf0cdc94ff5472a5&amp;chksm=b1815c8386f6d59538bfeeb8d3837007f07b0b4d3cd77b439f7856edd391127b6b2f36fb105d&amp;scene=21#wechat_redirect" target="_blank" style="font-size: 15px; text-decoration: none;"><span style="font-size: 15px;">Ring3 注入总结及编程实现【有码】</span></a><br style="max-width: 100%; box-sizing: border-box !important; overflow-wrap: break-word !important;"/></p></li><li><p style="margin-top: 10px; margin-bottom: 10px; max-width: 100%; min-height: 1em; line-height: normal; box-sizing: border-box !important; overflow-wrap: break-word !important;"><span style="max-width: 100%; font-size: 15px; box-sizing: border-box !important; overflow-wrap: break-word !important;"><a href="http://mp.weixin.qq.com/s?__biz=MjM5NTc2MDYxMw==&amp;mid=2458283003&amp;idx=1&amp;sn=bcfd852aea24f274bf8fda85f9300a85&amp;chksm=b1815b7186f6d26758f7f0f1cb0c7ec9da888ab0d80a7b2e2850453bfc03f05640443839d7bf&amp;scene=21#wechat_redirect" target="_blank">【原创】WannaCry勒索软件中“永恒之蓝”漏洞利用分析</a><br style="max-width: 100%; box-sizing: border-box !important; overflow-wrap: break-word !important;"/></span></p></li><li><p style="margin-top: 10px; margin-bottom: 10px; max-width: 100%; min-height: 1em; line-height: normal; box-sizing: border-box !important; overflow-wrap: break-word !important;"><span style="max-width: 100%; font-size: 15px; box-sizing: border-box !important; overflow-wrap: break-word !important;">......<br style="max-width: 100%; box-sizing: border-box !important; overflow-wrap: break-word !important;"/></span></p></li></ul><p style="margin-top: 15px; margin-bottom: 15px; max-width: 100%; min-height: 1em; line-height: 1.75em; box-sizing: border-box !important; overflow-wrap: break-word !important;"><span style="max-width: 100%; font-size: 15px; box-sizing: border-box !important; overflow-wrap: break-word !important;">更多优秀文章，长按下方二维码，“<span style="max-width: 100%; color: rgb(0, 122, 170);">关注看雪学院公众号</span>”查看！</span></p><p style="margin-top: 15px; margin-bottom: 15px; max-width: 100%; min-height: 1em; line-height: 1.75em; box-sizing: border-box !important; overflow-wrap: break-word !important;"><span style="max-width: 100%; font-size: 15px; box-sizing: border-box !important; overflow-wrap: break-word !important;"/></p><p style="max-width: 100%; min-height: 1em; box-sizing: border-box !important; overflow-wrap: break-word !important;"><img class="" data-ratio="0.665625" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/1UG7KPNHN8E4ItLe4LX3YbLUffeV86icpcBApdQiakmEMuy4q8mVAaBjA0P1wez6NzO52zvKNlQQQ4siaztZDYhBg/640?wx_fmt=jpeg" data-type="jpeg" data-w="640" style="box-sizing: border-box !important; overflow-wrap: break-word !important; visibility: visible !important; width: auto !important; height: auto !important;" width="auto" src="../Images/0274bbc2a3af61de341208e5b6cd390b.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/1UG7KPNHN8E4ItLe4LX3YbLUffeV86icpcBApdQiakmEMuy4q8mVAaBjA0P1wez6NzO52zvKNlQQQ4siaztZDYhBg/640?wx_fmt=jpeg"/></p><p style="margin-top: 15px; margin-bottom: 15px; max-width: 100%; min-height: 1em; line-height: 1.75em; box-sizing: border-box !important; overflow-wrap: break-word !important;"><span style="max-width: 100%; font-size: 15px; box-sizing: border-box !important; overflow-wrap: break-word !important;"/><span style="max-width: 100%; color: rgb(178, 178, 178); box-sizing: border-box !important; overflow-wrap: break-word !important; font-size: 15px;">看雪论坛：http://bbs.pediy.com/</span><span style="max-width: 100%; color: rgb(178, 178, 178); font-size: 14px; box-sizing: border-box !important; overflow-wrap: break-word !important;"><br style="max-width: 100%; box-sizing: border-box !important; overflow-wrap: break-word !important;"/></span></p><p style="margin-top: 15px; margin-bottom: 15px; max-width: 100%; min-height: 1em; line-height: 1.75em; box-sizing: border-box !important; overflow-wrap: break-word !important;"><span style="max-width: 100%; color: rgb(178, 178, 178); font-size: 15px; box-sizing: border-box !important; overflow-wrap: break-word !important;">微信公众号 ID：ikanxue</span></p><p style="margin-top: 15px; margin-bottom: 15px; max-width: 100%; min-height: 1em; line-height: 1.75em; box-sizing: border-box !important; overflow-wrap: break-word !important;"><span style="max-width: 100%; color: rgb(178, 178, 178); font-size: 15px; box-sizing: border-box !important; overflow-wrap: break-word !important;">微博：看雪安全</span></p><p style="margin-top: 15px; margin-bottom: 15px; line-height: 1.75em;"><span style="max-width: 100%; color: rgb(178, 178, 178); font-size: 15px; box-sizing: border-box !important; overflow-wrap: break-word !important;">投稿、合作：www.kanxue.com</span><span style="font-size: 15px;"/><br/></p>
+        
+</body>
+</html>

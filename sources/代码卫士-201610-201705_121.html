@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>黑客能使用扫描器控制气隙恶意软件</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>黑客能使用扫描器控制气隙恶意软件</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485555&amp;idx=1&amp;sn=1f26f85c2e43b4394bfb144161dd67ef&amp;chksm=ea973919dde0b00f95bbff41d07094a6521be56e4742e54d96e4b1190e8511422948a0bfce78&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485555&amp;idx=1&amp;sn=1f26f85c2e43b4394bfb144161dd67ef&amp;chksm=ea973919dde0b00f95bbff41d07094a6521be56e4742e54d96e4b1190e8511422948a0bfce78&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiam7uHCc80VtTfib2EI2iao9T58JJnHeBxeVDjnIZ4rOQicCj640Sbh7SAPZBmicBFib0m80CCROTTTK33Q/0?wx_fmt=jpeg" data-ratio="0.5595026642984015" data-w="563" src="../Images/b6b36aa305ff63a58908e2ed9b3f9c3a.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiam7uHCc80VtTfib2EI2iao9T58JJnHeBxeVDjnIZ4rOQicCj640Sbh7SAPZBmicBFib0m80CCROTTTK33Q/0?wx_fmt=jpeg"/></p><p><br/></p><p><strong>研究人员</strong><a><strong>已公布一篇论文</strong></a><strong>说明了如何通过一款办公室扫描器和一个光来源如激光器或智能灯泡来远程控制植入气隙网络中的恶意软件。</strong></p><p><br/></p><p>使用扫描器控制气隙的方法首次由来自以色列魏兹曼科学研究所应用数学系教授兼RSA算法投资人Adi Shamir在2014年的欧洲黑帽大会上总结的。Shamir和来自以色列本古里安大学的两名研究员Ben Nassi和Yuval Elovici目前发布了关于这种攻击方法的详细研究报告。</p><p><br/></p><p>这三名专家开展的实验显示，攻击者能够通过将一个光来源指向一台联网的且盖子打开的平板扫描仪向一台被隔离机器上的恶意软件发送命令。攻击者站在扫描仪所在大楼的外面就可办到。这款恶意软件可在攻击者开始发送命令时的某个时间点和日期初始化扫描。研究人员指出只有第一次的扫描日期需要被设置，随后的日期都会在每次攻击时提供。这些命令作为来自激光器或其它光来源的脉冲进行传输——当光来源启动时会传输1比特，关闭时传输0比特。这个光来源可以是一个可见的激光器或者是一个不可见的红外线激光器从而让攻击变得更加隐蔽。光来源可附着到一个看台上或者是一架无人机上。</p><p><br/></p><p>如果从大楼外部能清楚地看到扫描器的话，这种激光器攻击也会起作用。如果扫描器被窗帘或墙体堵住，那么攻击者能够远程劫持位于同样房间的智能灯泡作为目标扫描器从而用它来发送信号。</p><p><br/></p><p>Shamir首次提及这种攻击方法时，他仅仅说明了将激光器附着在无人机上的场景。这次发表的论文还详细描述了如何通过智能灯泡来实施攻击。在实验中，安全专家让无人机飞到一座大楼里的第三层且距扫描器有15米远。他们设法通过50毫秒每比特的传输速率将命令”d x.pdf”在3.2秒内传输出去。更加强大的激光器可从900米远的地方实施攻击。</p><p><br/></p><p>在智能灯泡的攻击场景中即劫持智能灯泡并将它打开时和关闭时设置为传输1比特和0比特，一台位于目标大楼的车辆对恶意软件发送指令。在这次试验中，研究人员还发动了勒索攻击，攻击者以”en q”命令（即加密目录q）的形式发送了四字节的数据。这次攻击在四秒内以100毫秒的传输速率实施。</p><p><br/></p><p>研究人员指出这是一种双向通信信道，因为恶意软件能使用扫描器来发送可见光脉冲供无人机上的视频记录器捕获并解码。</p><p><br/></p><p>这并非研究人员用来攻击气隙网络的唯一一种方法。几个月前，他们还详述了其它方法，包括涉及USB设备、硬盘和风扇发出的噪音、热辐射等。</p><p><br/></p><p><br/></p><p><strong style="white-space: normal;">本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。</strong></p>
+        
+</body>
+</html>

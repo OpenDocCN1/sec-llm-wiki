@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>自动化运维工具Ansible修复代码执行漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>自动化运维工具Ansible修复代码执行漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485600&amp;idx=3&amp;sn=4cca04a117570435766e4e8978b1ad75&amp;chksm=ea9739cadde0b0dcec51c37f7a3eb27766e449393e70747fafdddd19e95d77e26a46f65425a4&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485600&amp;idx=3&amp;sn=4cca04a117570435766e4e8978b1ad75&amp;chksm=ea9739cadde0b0dcec51c37f7a3eb27766e449393e70747fafdddd19e95d77e26a46f65425a4&amp;scene=27#wechat_redirect</a></blockquote><p style="text-indent: 28px; line-height: 150%; text-align: center;"><strong><span style="font-size:16px;line-height:150%;font-family:宋体"><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiakwj6utvjsR5EDa8VeIt5HkrkzPeYCTwBpJZWC0ibJz9bIGcR9AvYF0StCTXs1gmPyZ7g9AUJ0ib9Sg/0?wx_fmt=jpeg" data-ratio="0.6913357400722022" data-w="554" src="../Images/4fdcfe384550d2f003691df88cbbe104.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiakwj6utvjsR5EDa8VeIt5HkrkzPeYCTwBpJZWC0ibJz9bIGcR9AvYF0StCTXs1gmPyZ7g9AUJ0ib9Sg/0?wx_fmt=jpeg"/></span></strong></p><p><br/></p><p><strong>周一发布的Ansilbe IT自动化平台更新解决了一个绕过漏洞，可被用于在Ansible控制器上执行任意代码并获取联网主机的访问权限。</strong></p><p><br/></p><p>Ansible是一款开源自动化解决方案，被Red Hat于2015年收购。该平台可用于自动化处理多种任务如配置管理、云配给、应用程序部署、任务执行以及多节点编配。Ansible的中心节点即控制器设置得很安全，因为它并没有将服务暴露给主机因此攻击面很小。然而，来自荷兰Computest的研究人员发现了一个弱点可被利用。</p><p><br/></p><p>Ansible控制器会接受所管理的远程系统的所谓“事实”，并可将其用于多种目的。为防止被滥用，一些事实被过滤了但专家已经识别出六种不同的方法可绕过这个过滤器。能够绕过这个过滤器并控制某些事实的攻击者能够在Ansible控制器中执行任意代码，并自此转移至其它主机上。</p><p><br/></p><p>研究人员指出，某些事实具有特殊意义，比如ansible_python_interpreter和ansible_connection。前者定义了当Ansible寻找Python解释器时所运行的命令；后者是对Ansible运行主机的判断。如果攻击者能够控制第一个事实，那么就能执行任意代码；如果它能够控制第二个事实，那么就能在任意的（Ansible控制的）主机上执行代码。</p><p><br/></p><p>安全研究人员已在去年12月8日和9日将问题报告给Ansible平台和Red Hat安全团队。于本周一发布的Ansible 2.2.1 RC3和2.1.4 RC1版本解决了这个问题。这个问题的CVE编号是CVE-2016-9587，别列为“高危漏洞”。技术详情见Computest的<a>安全公告</a>。</p><p><br/></p>
+        
+</body>
+</html>

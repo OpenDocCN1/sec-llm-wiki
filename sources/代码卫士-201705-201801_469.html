@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>FreeRADIUS修复验证绕过缺陷</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>FreeRADIUS修复验证绕过缺陷</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485519&amp;idx=3&amp;sn=503530dd100fd4d5a100a4b82f3bfdc4&amp;chksm=ea973925dde0b033634dbf9f9962c2437efc16e49f2b621b1ec401f67bb9b98a362743dc2b2a&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485519&amp;idx=3&amp;sn=503530dd100fd4d5a100a4b82f3bfdc4&amp;chksm=ea973925dde0b033634dbf9f9962c2437efc16e49f2b621b1ec401f67bb9b98a362743dc2b2a&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKianPlRxNRlj99ticymfrSNpBMtOH6OGEYeBc1iaa3QiaK7TsnVpTalBqKgXNiboZ0Kzvib3c6Mrr9mDr3gw/0?wx_fmt=png" data-ratio="0.29491525423728815" data-w="295" src="../Images/a24e62b1047668a3f6a7393dbceaf75c.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKianPlRxNRlj99ticymfrSNpBMtOH6OGEYeBc1iaa3QiaK7TsnVpTalBqKgXNiboZ0Kzvib3c6Mrr9mDr3gw/0?wx_fmt=png"/></p><p><br/></p><p><strong>上周五发布的FreeRADIUS更新修复了一个潜在的严重漏洞。该漏洞可被用于绕过服务器验证。开发人员几个月前就已经知晓该漏洞但此前的修复并不完整。</strong></p><p><br/></p><p>FreeRADIUS是一款RADIUS（远程认证拨号用户服务）开源实现，它是用户验证、授权和账户管理的网络协议。FreeRADIUS被认为是世界上最流行的RADIUS服务器，很多全球500强公司和互联网服务提供商都在使用它。</p><p><br/></p><p>这个安全漏洞编号为CVE-2017-9148，是由Stefan Winter和Lubos Pavlicek发现的，后者此前就注意到第一次发布的补丁并不完整。他们发现FreeRADIUS可让TLS会话在验证完成前恢复。</p><p><br/></p><p>Kankovsky在安全公告中指出，在FreeRADIUS中实现TTLS和PEAP处理恢复的TLS连接时跳过了内部验证。它是一种功能但服务器必须在内部验证完成之前不能允许恢复TLS会话。但遗憾的是，受影响的FreeRADIUS没有可靠地阻止了未经验证的会话，除非TLS会话缓存被完全禁用，它能让攻击者无需发送任何有效凭证的情况下诱发成功验证。研究人员指出，攻击者能够连接到服务器、暂停会话并随后将其恢复，而无需有效凭证就能利用这个漏洞。</p><p><br/></p><p>研究人员首次告知这个漏洞的时间大概是在2017年年初；2月初，漏洞在3.1.x和4.0.x版本中修复，3.0.x版本可能也在同一时间修复，但实际上3.0.x的补丁并不完整。</p><p><br/></p><p>Pavlicek在4月24日独立发现了这个缺陷并将其告知FreeRADIUS开发人员。5月8日开发人员推出完整修复方案并在上周在版本3.0.14中推出。</p><p><br/></p><p>建议无法更新至最新版本的用户将EAP模块中的cache部分设置下”enabled=0” 从而禁用TLS会话缓存。不受支持的版本将不会收到补丁。</p><p><br/></p><p>PoC利用代码已开发出，但尚未公开。目前FreeRADIUS尚未发现利用该漏洞的迹象。</p><p><br/></p><p><br/></p><p><strong style="line-height: 25.6px; white-space: normal;">本文由360代码卫士编译，不代表360观点，转载请注明“转自360代码卫士www.codesafe.cn”。</strong></p>
+        
+</body>
+</html>

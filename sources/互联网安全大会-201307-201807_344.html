@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>梭子鱼网站存漏洞 用户信息恐遭泄露</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>梭子鱼网站存漏洞 用户信息恐遭泄露</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5ODI2MTg3Mw==&amp;appmsgid=10000082&amp;itemidx=2&amp;sign=189eeaca7c031eec7e49446ab515c513&amp;scene=126&amp;sessionid=1681309453#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5ODI2MTg3Mw==&amp;appmsgid=10000082&amp;itemidx=2&amp;sign=189eeaca7c031eec7e49446ab515c513&amp;scene=126&amp;sessionid=1681309453#wechat_redirect</a></blockquote><p style="line-height:32px"><span style="font-size:16px;font-family:华文细黑">日前，埃及安全专家Ebrahim Hegazy发现梭子鱼的更新服务器中存在的安全问题，通过该漏洞可以获取到一些用户的凭据。当系统管理员需要去保护一个目录不能被普通用户访问的时候，有很多方法，其中之一就是配置htaccess和htpasswd，当配置了之后，会弹出一个对话框，让用户输入身份验证的凭据，这些凭据保存在htpasswd文件里面，格式如下：Username:Password</span></p><p style="line-height:32px"><span style="font-size:16px;font-family:华文细黑"> </span></p><p style="line-height:32px"><span style="font-size:16px;font-family:华文细黑">正常情况下，htpasswd文件应该存储在web目录以外(如C:\AnyName\.htpasswd)，但梭子鱼的文件存储在admin目录下，任意用户可以直接访问下面的链接。http://updates.cudasvc.com/admin/.htpasswd</span></p><p style="line-height:32px"><span style="font-size:16px;font-family:华文细黑"> </span></p><p style="line-height:32px"><span style="font-size:16px;font-family:华文细黑">通过访问该链接，可以获取所有梭子鱼公司用户的帐号，如：Support、Sales、英国分公司员工的密码、更新服务器用户等，并且这些密码都是明文，如下图：</span></p><p style="line-height:32px"><span style="font-size:16px;font-family:华文细黑"> </span></p><p><img src="../Images/105d88f61589b05a5afa7db28d027e17.png" style="float:none;" data-original-src="http://mmsns.qpic.cn/mmsns/f4CbNfICAmVzUlajODghZjVNKyxj2evOhGuNFsvPFn8F1jicstWYpaQ/0"/></p><p><img src="../Images/087b4810a95525041cb74adb7e5d55aa.png" style="float:none;" data-original-src="http://mmsns.qpic.cn/mmsns/f4CbNfICAmVzUlajODghZjVNKyxj2evOGQ5UX3faGvsPPJJ7waEibbw/0"/></p><p style="line-height:32px"><br/></p><p style="line-height:32px"><span style="font-size:16px;font-family:华文细黑">梭子鱼是一家总部位于美国的安全与存储解决方案提供商。</span></p><p style="line-height:32px"><span style="font-size:16px;font-family:华文细黑"> </span></p><p style="text-indent:28px;line-height:33px"><strong><span style="font-size:16px;font-family:华文细黑">关注2013互联网安全大会，获取最新安全资讯</span></strong><span style="font-size:16px;font-family:华文细黑">。<strong>微信号：</strong>CISC360            <strong>微博：</strong>@互联网安全大会</span></p><p><br/></p>
+        
+</body>
+</html>

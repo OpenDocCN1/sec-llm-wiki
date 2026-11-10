@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>【转】不是修改数据的攻击就叫数据攻击</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>【转】不是修改数据的攻击就叫数据攻击</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxOTM1MDQ1NA==&amp;mid=2451172106&amp;idx=1&amp;sn=0ed84446806f326836ce3e288c3778be&amp;chksm=8c251dd3bb5294c52b7a560cc40250b75b88bbf5448d5b8814dacfa58e66a5c08f3fa67955ce&amp;scene=126&amp;sessionid=1681276559#rd">http://mp.weixin.qq.com/s?__biz=MzAxOTM1MDQ1NA==&amp;mid=2451172106&amp;idx=1&amp;sn=0ed84446806f326836ce3e288c3778be&amp;chksm=8c251dd3bb5294c52b7a560cc40250b75b88bbf5448d5b8814dacfa58e66a5c08f3fa67955ce&amp;scene=126&amp;sessionid=1681276559#rd</a></blockquote><p>转的，只是看完比较感兴趣当笔记了。</p><p><br/></p><p>转自yuange微博</p><p>http://www.weibo.com/yuange1975?is_hot=1&amp;noscale_head=1#_0</p><p><br/></p><p>原文：<br/></p><p>http://www.weibo.com/ttarticle/p/show?id=2309404144223724113779#_rnd1503650844693</p><p><br/></p><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/V9abY6oHTko3d83CzMcznm8Cyecx9RrmjR6LpiaxbIUvbqBakkBqFOfdQAjZxurQsKsV1icbsKQKwBb96AmMDwAw/0?wx_fmt=png" class="" data-ratio="0.4004004004004004" data-w="999" src="../Images/ff3f4b9aa43007f89f917d7aa5ea51a5.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/V9abY6oHTko3d83CzMcznm8Cyecx9RrmjR6LpiaxbIUvbqBakkBqFOfdQAjZxurQsKsV1icbsKQKwBb96AmMDwAw/0?wx_fmt=png"/></p><p><br/></p><p>       
+<br/></p><p>        浏览器的一些利用缓解BYPASS，现在很多人说是数据攻击，个人理解其实已经不完全算数据攻击了。不是修改数据的攻击就是数据攻击，数据攻击要在没可控代码执行基础上的数据修改导致主要的攻击实现才能算数据攻击，如果有可控代码执行了，那就主要是代码执行的作用了。而现在大家讲的浏览器的数据攻击基本上都是利用漏洞实现任意数据读写，然后利用任意读写修改关键数据，实现所谓的“数据攻击”。</p><p><br/></p><p>      
+其实稍微对浏览器漏洞攻防有点了解的都知道，这种数据攻击就是我首先提出的DVE数据虚拟执行的思路，DVE思路点名了这种攻击的本质。这种虚拟执行其实已经是代码执行了，但是这种代码执行突破了CPU对数据“执行”的保护，就象CPU
+ DEP保护的一种异常一样，这就是我最初说”cpu 
+seh“的用意。其实这个已经很明显的点名了怎么突破DEP的思路了，可是很多人没认识到这种本质，只说我这是挖了一个大坑让人跳。</p><p><br/></p><p>   
+   
+ DVE思路，把浏览器等环境下虚拟执行的脚本数据看成真正执行的代码，这样就直接视DEP为不存在毫不费力的突破了最关键的DEP保护，这就是攻防思路的强大。这样DVE把远程攻击转换成了本地的受限指令突破，也就是虚拟机的沙箱突破。有代码有漏洞又是同一个空间的虚拟机的沙箱突破就很简单了，这就是利用漏洞修改数据达到指针指令作用。其实脚本有了指针，已经和汇编语言没有本质区别了，这个时候的脚本已经等效于完全控制虚拟机系统了，已经完成了控制实现了我们常见利用的shellcode需要的任意代码执行。</p><p><br/></p><p> 
+     
+ 而后面的很多人认为的“数据攻击”，其实就是一个具体的要执行功能的shellcode为了逃避检测的一些技巧罢了。比如原来windows的功能调用的int调用号不兼容等，用一些技巧找到一些api的地址，这些都只是一些shellcode编写的技巧和一些对抗措施。</p><p><br/></p><p> 
+       
+一种攻击方法要算什么攻击，要看最主要的实现控制用的是什么方法。浏览器环境下的实现任意读写，本质上已经是任意代码执行了，虽然是脚本执行，无cfg等利用缓解措施情况下也等效于任意cpu代码执行了，后续修改数据只是本地对抗这些利用缓解措施，所以不能算真正意义上的数据攻击。圈子里有个大牛，曾经举的一个例子就很不恰当，他发现的一个漏洞好像eeye的人说利用不了，结果他结合另外一个漏洞成功利用，然后就打了eeye的脸。其实他结合的另外一个漏洞本身就可以完全实现远程利用，这就原来的漏洞没有发挥作用。圈子里最说明问题最典型的一个漏洞就是“管理员克隆漏洞”，可能很多人都知道，记得好像还被宣传成第一个中国人发现的微软严重漏洞。</p><p><br/></p>
+        
+</body>
+</html>

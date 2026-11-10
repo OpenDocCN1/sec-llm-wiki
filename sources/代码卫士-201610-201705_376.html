@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>多款索尼安全摄像头中存在后门</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>多款索尼安全摄像头中存在后门</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485625&amp;idx=4&amp;sn=00974512b2aab2e799a03e1a1c53a4aa&amp;chksm=ea9739d3dde0b0c5568b68c277bd05143cd4ee71dda36e6fce494c4c8413144e3adcdb6894da&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485625&amp;idx=4&amp;sn=00974512b2aab2e799a03e1a1c53a4aa&amp;chksm=ea9739d3dde0b0c5568b68c277bd05143cd4ee71dda36e6fce494c4c8413144e3adcdb6894da&amp;scene=27#wechat_redirect</a></blockquote><p><strong>索尼为多款安全摄像头发布了固件更新，解决可导致设备被控制的重要漏洞，其中包括如Mirai这样的僵尸网络。</strong></p><p><br/></p><p>SEC安全咨询公司发现了这个漏洞，它影响80台索尼SNC 系列的IP摄像头。这些专业产品被全球许多组织机构所使用，2014年世界杯期间国际足球联盟也曾使用过。虽然研究人员仅仅破解了管理员密码（"admin”），但他们认为根密码也可被轻松搞定。</p><p><br/></p><p>专家还发现了一个CGI二进制（prima-factory.cgi）允许远程用户通过发送一个特别编制的HTTP请求的方式启用设备的Telnet服务。虽然请求需要包括验证数据，但是用户名和密码(primana/primana)可从文件中以明文形式获取。攻击者能利用这些凭证向prima-factory.cgi发送请求并启用Telnet服务，随后利用根账户获取权限升级的远程访问权限。</p><p><br/></p><p>SEC公司指出，这个”primana”用户账户实际上是一个后门，似乎是索尼为了测试设备专门设置的。另外，研究人员还发现了一个名为”debug”的且密码为”popeyeConnection”的类似账户，不过还未进行分析。</p><p><br/></p><p>研究人员认为这个后门是索尼开发人员专门设置的，目的是在开发或出厂功能测试结局按进行调试，并非是“未经授权的第三方”设置的。不过如果攻击者获取根权限，就能实施多种攻击如干扰摄像头功能、监控用户、控制食品、攻陷摄像头所在网络并利用Mirai等恶意软件进行感染。</p><p><br/></p><p>如果摄像头的网络界面被暴露，那么有网络访问权限的攻击者就能利用这个漏洞。从网上搜索到约4000台联网摄像头，其中很多来自美国和德国，不过专家认为实际被暴露的数目要多。</p><p><br/></p><p>索尼于10月11日知悉漏洞问题并于11月28日发布了固件更新1.86.00和2.7.2版本。索尼拒绝透露这些后门的目的，SEC也通知了德国和奥地利的CERT以及FIRST，它们也将告知各国政府和关键基础设施组织机构可能也在使用易受攻击的产品。</p>
+        
+</body>
+</html>

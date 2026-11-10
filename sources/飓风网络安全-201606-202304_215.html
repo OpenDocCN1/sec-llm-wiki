@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>魔术引号、addslashes和mysql_real_escape_string的防御以及绕过</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>魔术引号、addslashes和mysql_real_escape_string的防御以及绕过</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI3NzMzNzE5Ng==&amp;mid=2247484465&amp;idx=1&amp;sn=1eec0dc5d596792933d6defe9482e5a4&amp;chksm=eb668132dc110824b951546be18bdc597fd818a276f24345ce090b0e550df535b730e321c851&amp;scene=126&amp;sessionid=1681407304#rd">http://mp.weixin.qq.com/s?__biz=MzI3NzMzNzE5Ng==&amp;mid=2247484465&amp;idx=1&amp;sn=1eec0dc5d596792933d6defe9482e5a4&amp;chksm=eb668132dc110824b951546be18bdc597fd818a276f24345ce090b0e550df535b730e321c851&amp;scene=126&amp;sessionid=1681407304#rd</a></blockquote><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="color: rgb(255, 0, 0); font-size: 18px;">0x00：php内置过滤函数</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">php有内置的函数用来防御攻击，简单的介绍几个函数。</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">魔术引号</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">当打开时，所有的 '（单引号），"（双引号），\（反斜线）和 NULL 字符都会被自动加上一个反斜线进行转义。这和 addslashes() 作用完全相同。</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">一共有三个魔术引号指令：</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">magic_quotes_gpc 影响到 HTTP 请求数据（GET，POST 和 COOKIE）。不能在运行时改变。在 PHP 中默认值为 on。 参见 get_magic_quotes_gpc()。</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">magic_quotes_runtime 如果打开的话，大部份从外部来源取得数据并返回的函数，包括从数据库和文本文件，所返回的数据都会被反斜线转义。该选项可在运行的时改变，在 PHP 中的默认值为 off。 参见 set_magic_quotes_runtime() 和 get_magic_quotes_runtime()。</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">magic_quotes_sybase 如果打开的话，将会使用单引号对单引号进行转义而非反斜线。此选项会完全覆盖 magic_quotes_gpc。如果同时打开两个选项的话，单引号将会被转义成 ''。而双引号、反斜线 和 NULL 字符将不会进行转义。 如何取得其值参见 ini_get()。</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">mysql_real_escape_string</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">转义sql语句中使用的字符串中的特殊字符：\x00、\n、\r、\、'、"、\x1a</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">addslashes()</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">返回在预定义字符之前添加反斜杠的字符串，预定义字符：'、"、\、NULL</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">看了很多php网站在防sql注入上还在使用ddslashes和str_replace，百度一下"PHP防注入"也同样在使用他们，实践发现就连mysql_real_escape_string也有黑客可以绕过的办法，如果你的系统仍在用上面三个方法，建议更好。</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">用str_replace以及各种php字符替换函数来防注入已经不用我说了，这种“黑名单”式的防御已经被证明是经不起时间考验的。</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">下面给出绕过addslasher和mysql_real_escape_string的方法(Trick)。</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">如果你不确定你的系统是否有SQL注入的风险，请将下面的下面的DEMO部署到你的服务器，如果运行结果相同，那么请参考最后的完美的解决方案。</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">mysql：</span></p><pre style="padding: 8px; margin-top: 0px; margin-bottom: 1em; background-color: rgb(243, 251, 243); font-family: Consolas, Verdana, Arial; font-size: 12px; overflow: auto; width: 712.797px; border-left: 4px solid rgb(98, 141, 183); color: rgb(51, 51, 51); clear: right; line-height: 22px; white-space: pre-wrap;"><span style="font-size: 18px;">mysql&gt; select version();
++---------------------+
+| version()           |
++---------------------+
+| 5.0.45-community-ny |
++---------------------+
+1 row in set (0.00 sec)
+mysql&gt; create database test default charset GBK;
+Query OK, 1 row affected (0.00 sec)
+mysql&gt; use test;
+Database changed
+mysql&gt; CREATE TABLE users (
+    username VARCHAR(32) CHARACTER SET GBK,
+    password VARCHAR(32) CHARACTER SET GBK,
+    PRIMARY KEY (username)
+);
+Query OK, 0 rows affected (0.02 sec)
+mysql&gt; insert into users SET username='ewrfg', password='wer44';
+Query OK, 1 row affected (0.01 sec)
+mysql&gt; insert into users SET username='ewrfg2', password='wer443';
+Query OK, 1 row affected (0.01 sec)
+mysql&gt; insert into users SET username='ewrfg4', password='wer4434';
+Query OK, 1 row affected (0.01 sec)＝</span></pre><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">php：</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><br/></p><pre style="padding: 8px; margin-top: 0px; margin-bottom: 1em; background-color: rgb(243, 251, 243); font-family: Consolas, Verdana, Arial; font-size: 12px; overflow: auto; width: 712.797px; border-left: 4px solid rgb(98, 141, 183); color: rgb(51, 51, 51); clear: right; line-height: 22px; white-space: pre-wrap;"><span style="font-size: 18px;">&lt;?php
+echo "PHP version: ".PHP_VERSION."\n";
+
+mysql_connect('servername','username','password');
+mysql_select_db("test");
+mysql_query("SET NAMES GBK");
+
+$_POST['username'] = chr(0xbf).chr(0x27).' OR username = username /*';
+$_POST['password'] = 'guess';
+
+$username = addslashes($_POST['username']);
+$password = addslashes($_POST['password']);
+$sql = "SELECT * FROM  users WHERE  username = '$username' AND password = '$password'";
+$result = mysql_query($sql) or trigger_error(mysql_error().$sql);
+
+var_dump(mysql_num_rows($result));
+var_dump(mysql_client_encoding());
+
+$username = mysql_real_escape_string($_POST['username']);
+$password = mysql_real_escape_string($_POST['password']);
+$sql = "SELECT * FROM  users WHERE  username = '$username' AND password = '$password'";
+$result = mysql_query($sql) or trigger_error(mysql_error().$sql);
+
+var_dump(mysql_num_rows($result));
+var_dump(mysql_client_encoding());
+
+mysql_set_charset("GBK");
+$username = mysql_real_escape_string($_POST['username']);
+$password = mysql_real_escape_string($_POST['password']);
+$sql = "SELECT * FROM  users WHERE  username = '$username' AND password = '$password'";
+$result = mysql_query($sql) or trigger_error(mysql_error().$sql);
+
+var_dump(mysql_num_rows($result));
+var_dump(mysql_client_encoding());</span></pre><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">结果：</span></p><pre style="padding: 8px; margin-top: 0px; margin-bottom: 1em; background-color: rgb(243, 251, 243); font-family: Consolas, Verdana, Arial; font-size: 12px; overflow: auto; width: 712.797px; border-left: 4px solid rgb(98, 141, 183); color: rgb(51, 51, 51); clear: right; line-height: 22px; white-space: pre-wrap;"><span style="font-size: 18px;">PHP version: 5.5.44
+int(3)
+string(6) "latin1"
+int(3)
+string(6) "latin1"
+int(0)
+string(3) "gbk"</span></pre><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">可以看出来不论是使用addslashes还是mysql_real_escape_string,我都可以利用编码的漏洞来实现输入任意密码就能登录服务器的注入攻击！！！！</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="color: rgb(255, 0, 0); font-size: 18px;">0x01：宽字节注入</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">  尽管现在呼吁所有的程序都使用unicode编码，所有的网站都使用utf-8编码，来一个统一的国际规范。但仍然有很多，包括国内及国外（特别是非英语国家）的一些cms，仍然使用着自己国家的一套编码，比如gbk，作为自己默认的编码类型。也有一些cms为了考虑老用户，所以出了gbk和utf-8两个版本。</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">我们就以gbk字符编码为示范，拉开帷幕。gbk是一种多字符编码，有一个地方尤其要注意：</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">通常来说，一个gbk编码汉字，占用2个字节。一个utf-8编码的汉字，占用3个字节。在php中，我们可以通过输出</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">echo strlen("和");</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">来测试。当将页面编码保存为gbk时输出2，utf-8时输出3。</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">除了gbk以外，所有ANSI编码都是2个字节。ansi只是一个标准，在不用的电脑上它代表的编码可能不相同，比如简体中文系统中ANSI就代表是GBK。</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">如上，想绕过魔术引号等限制，有两种方式：</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">1.将\前面再加一个\（或单数个即可），变成\\’，这样\被转义了，’逃出了限制</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">2.将\去掉。</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">我们这里的宽字节注入是利用mysql的一个特性，mysql在使用GBK编码的时候，会认为两个字符是一个汉字（前一个ascii码要大于128，才到汉字的范围）。</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">这就是mysql的特性，因为gbk是多字节编码，他认为两个字节代表一个汉字，所以%df和后面的\也就是%5c变成了一个汉字“運”，而’逃逸了出来。再尝试“%df%df%27”，就不报错了。因为%df%df是一个汉字，%5c%27不是汉字，仍然是\’。</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">那么mysql怎么判断一个字符是不是汉字，根据gbk编码，第一个字节ascii码大于128，基本上就可以了。比如我们不用%df，用%a1也可以，%a1%5c他可能不是汉字，但一定会被mysql认为是一个宽字符，就能够让后面的%27逃逸了出来。</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">但需要注意的是</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">gb2312和gbk应该都是宽字节家族的一员，却不能注入，这归结于gb2312编码的取值范围。它的高位范围是0xA1~0xF7，低位范围是0xA1~0xFE，而\是0x5c，是不在低位范围中的。所以，0x5c根本不是gb2312中的编码，所以自然也是不会被吃掉的。</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">所以，把这个思路扩展到世界上所有多字节编码，我们可以这样认为：只要低位的范围中含有0x5c的编码，就可以进行宽字符注入。</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="color: rgb(255, 0, 0); font-size: 18px;">0x02：宽字符注入的修复</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">先调用mysql_set_charset函数设置连接所使用的字符集为gbk，再调用mysql_real_escape_string来过滤用户输入。</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">这个方式是可行的，但有部分老的cms，在多处使用addslashes来过滤字符串，我们不可能去一个一个把addslashes都修改成mysql_real_escape_string。我们第二个解决方案就是，将character_set_client设置为binary（二进制）。</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">只需在所有sql语句前指定一下连接的形式是二进制：</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">mysql_query("SET character_set_connection=gbk, character_set_results=gbk,character_set_client=binary", $conn); </span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">这几个变量是什么意思？</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">当我们的mysql接受到客户端的数据后，会认为他的编码是character_set_client，然后会将之将换成character_set_connection的编码，然后进入具体表和字段后，再转换成字段对应的编码。</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">然后，当查询结果产生后，会从表和字段的编码，转换成character_set_results编码，返回给客户端。</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">所以，我们将character_set_client设置成binary，就不存在宽字节或多字节的问题了，所有数据以二进制的形式传递，就能有效避免宽字符注入。</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="color: rgb(255, 0, 0); font-size: 18px;">0x03:PDO和MYSQLI</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">完美解决方案就是使用拥有Prepared Statement机制的PDO和MYSQLi来代替mysql_query(注：mysql_query自 PHP 5.5.0 起已废弃，并在将来会被移除)：</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">PDO：</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="color: rgb(51, 51, 51); font-family: Consolas, Verdana, Arial; white-space: pre-wrap; background-color: rgb(243, 251, 243); font-size: 18px;">$pdo = new PDO('mysql:dbname=dbtest;host=127.0.0.1;charset=utf8', 'user', 'pass');
+
+$pdo-&gt;setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+$pdo-&gt;setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+$stmt = $pdo-&gt;prepare('SELECT * FROM employees WHERE name = :name');
+$stmt-&gt;execute(array('name' =&gt; $name));
+
+foreach ($stmt as $row) {
+    // do something with $row
+}</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><span style="font-size: 18px;">MYSQLi：</span></p><p style=" height: auto; overflow: hidden; color: rgb(85, 85, 85); ; ; ; ; ; "><br/></p><pre style="padding: 8px; margin-top: 0px; margin-bottom: 1em; background-color: rgb(243, 251, 243); font-family: Consolas, Verdana, Arial; font-size: 12px; overflow: auto; width: 712.797px; border-left: 4px solid rgb(98, 141, 183); color: rgb(51, 51, 51); clear: right; line-height: 22px; white-space: pre-wrap;"><span style="font-size: 18px;">$stmt = $dbConnection-&gt;prepare('SELECT * FROM employees WHERE name = ?');
+$stmt-&gt;bind_param('s', $name);
+
+$stmt-&gt;execute();
+
+$result = $stmt-&gt;get_result();
+while ($row = $result-&gt;fetch_assoc()) {
+    // do something with $row
+}</span></pre><p><br/></p>
+        
+</body>
+</html>

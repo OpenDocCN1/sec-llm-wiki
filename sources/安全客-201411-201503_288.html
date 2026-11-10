@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Google云计算平台GAE被发现超过30个漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Google云计算平台GAE被发现超过30个漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA5ODA0NDE2MA==&amp;mid=201506641&amp;idx=3&amp;sn=3fe2b24b956b7b89279c9b9c6b385c8a&amp;chksm=19618f3e2e160628eb57951b95900b46de34e7bcda8d3623f63eb92455535240b04f97becdef&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA5ODA0NDE2MA==&amp;mid=201506641&amp;idx=3&amp;sn=3fe2b24b956b7b89279c9b9c6b385c8a&amp;chksm=19618f3e2e160628eb57951b95900b46de34e7bcda8d3623f63eb92455535240b04f97becdef&amp;scene=27#wechat_redirect</a></blockquote><p style=""><img data-src="http://mmbiz.qpic.cn/mmbiz/Ok4fxxCpBb6YwacfMgnyuibpSjPicFAiaG4MVicgDD8t33AYqib4I7nKhm1numExz5vtfXmZ1zTmnW45CcBSso5Inicg/0" title="t01d22980018d6e5759.png" width="600" height="368" border="0" vspace="0" style="border: 0px; width: 600px; height: 368px;" class="" id="c1418124758219" data-ratio="0.6140350877192983" data-w="456" src="../Images/0ae09fe8407bd83d80a0c6f27305d4fb.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/Ok4fxxCpBb6YwacfMgnyuibpSjPicFAiaG4MVicgDD8t33AYqib4I7nKhm1numExz5vtfXmZ1zTmnW45CcBSso5Inicg/0"/></p><p style="">安全研究人员在Google App Engine的Java环境中发现了大量的严重漏洞，攻击者可以绕过安全沙箱的防御。</p><p style="">Google App Engine是Google的PaaS(平台作为服务)云计算平台，可以在Google托管的数据中心开发和托管web应用。GAE为多种流行的语言与框架提供了定制的程序，其中大量是建立在Java环境中的</p><p style="">安全研究公司Security Explorations报告了这些漏洞，他们对Java过去的版本进行了相关研究。这个发现由Security Explorations的创建者和CEO在漏洞披露平台Full Disclosure security mailing list中被披露。</p><p style="">根据安全公司的报告，该缺陷可以被攻击者利用来实现一个完整的Java虚拟机安全沙箱绕过，并执行任意代码。研究人员估计，漏洞数量超过30个。</p><p style="">利用这些漏洞，安全研究人员能够绕过GAE中JRE类白名单，获得完整的JRE（Java运行环境）。他们发现了22个完整的Java虚拟机安全沙箱绕过问题，其中17个被成功利用。</p><p style="">此外，研究人员能够执行本地代码，具体表现是任意库/系统调用和访问文件（binary/classes）包括JRE沙箱。他们甚至从二进制文件中转移DWARF信息，从二进制文件的Java类定义PROTOBUF等等。</p><p style="">然而，因为谷歌暂停使用他们测试GAE的账户，研究人员一直无法完成研究。</p><p style="">“不幸的是，由于GAE账户“test”被暂停使用，我们不能完成这项工作”Gowdiak写道。”毫无疑问，这是我们的最后一个opsec的失败（本周我们将在底层操作系统的沙箱做一点更积极的研究，发布为各种系统调用，让大家通过学习更加了解错误代码202，沙箱本身，等等）。”</p><p style="">Google已普遍支持，帮助安全研究社区，在安全公司的研究人员认为，Google将重新启用它们的GAE账户，让他们完成研究。</p><p style="">本文由 360安全播报 翻译，转载请注明“转自360安全播报”，并附上链接。<br/></p><p style="">原文链接：http://thehackernews.com/2014/12/google-app-engine-hosting-security.html</p><p><br/></p>
+        
+</body>
+</html>

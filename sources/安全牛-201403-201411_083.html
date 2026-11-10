@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>【牛闻牛事】黑客入侵打印机　物联网安全不容乐观</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>【牛闻牛事】黑客入侵打印机　物联网安全不容乐观</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5Njc3NjM4MA==&amp;mid=200906446&amp;idx=2&amp;sn=8470db37e7a5b0d2840d1f69620d5347&amp;chksm=28e9261d1f9eaf0ba05008bfbf304d78a37315c17c0153b8febd7e879abefb599b1883f2ef9e&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5Njc3NjM4MA==&amp;mid=200906446&amp;idx=2&amp;sn=8470db37e7a5b0d2840d1f69620d5347&amp;chksm=28e9261d1f9eaf0ba05008bfbf304d78a37315c17c0153b8febd7e879abefb599b1883f2ef9e&amp;scene=27#wechat_redirect</a></blockquote><p>在不久前的伦敦举行的44Con大会上Context Information Security的MikeJordan演示了如何利用佳能的Pixma打印机的Web界面修改打印机的固件从而运行Doom游戏。<br/><br/>MikeJordan可以通过远程访问这台打印机的Web界面， 打印无数的文件从而把喷墨耗尽。Mike Jordan发现，佳能的固件更新流程存在漏洞， 对固件更新没有进行签名， 只是做了简单的XOR加密。 而通过对加密的破解， MikeJordan可以很容易的用一个恶意的“固件更新”来欺骗打印机进行更新。 在演示中，他安装了Doom游戏。<br/><br/>这样的原理可以很容易用来在打印机中植入木马来盗取打印的文件。 或者通过打印机建立一个进入公司内网的通道。 <br/><br/>ContextSecurity Information的团队过去也曾经展示过入侵其他物联网设备（如智能灯泡， IP相机， 
+NAS）这些入侵显示了物联网的安全性堪忧。 “最新的对佳能打印机的入侵演示显示了新兴的物联网设备的安全问题严重，因为制造商急于把这些设备进行联网，从而忽略了安全问题。 在佳能打印机的案例里， 打印机的Web界面对用户登入甚至没有认证。使得任何人都可以连接到这台设备。 不过， 真正的问题在于固件更新的流程。”Mike Jordan在博客中写道。<br/><br/>“如果你能触发固件更新， 你就也能够更改Web代理的设置和DNS服务器，从而可以让打印机到你指定的地址去检查更新， 安装任意代码。 在我们的演示中，我们安装了Doom游戏。”<br/><br/></p><p>利用Internet搜索引擎Shodan， Context Information Security的团队搜索到了32000个IP地址的打印机，对其中的9000个地址的测试中， 他们发现可1822个IP地址有回应，而其中122个可能存在可以被入侵的固件。</p><p><br/></p><p>“即便打印机没有直接连接到互联网，比如通过NAT在内网，这些打印机依然存在被远程入侵的可能性。” Mike Jordan写道。</p><p>－－－<br/></p><p><span style="color:#7F7F7F">要闻、干货、原创、专业</span></p><p><span style="color:#7F7F7F">关注“信息安全知识”</span></p><p><span style="color:#7F7F7F">我们是安全牛！<br/></span></p><p style="text-align:center"><img data-w="200" data-ratio="1" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/kuIKKC9tNkB8pQ3CTSGictAAAJL9tlrp5fY1dZLqqu1hlZys3BibaYTwKE2lXQe9tzpegvCECZqhNSg0icku7teTw/0" src="../Images/b7c37b7066302548960da8a2e74a40e4.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/kuIKKC9tNkB8pQ3CTSGictAAAJL9tlrp5fY1dZLqqu1hlZys3BibaYTwKE2lXQe9tzpegvCECZqhNSg0icku7teTw/0"/></p><p><br/></p>
+        
+</body>
+</html>

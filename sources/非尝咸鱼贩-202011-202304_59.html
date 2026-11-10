@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>【吃瓜】FB 全线宕机</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>【吃瓜】FB 全线宕机</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=Mzk0NDE3MTkzNQ==&amp;mid=2247484059&amp;idx=2&amp;sn=55507445789f3ea5eea17bb548ed255e&amp;chksm=c329fc6bf45e757dc867f3f409b61a7b2da18e077c42af45ced140614170373b9ecbe7c61a39&amp;scene=126&amp;sessionid=1681657506#rd">http://mp.weixin.qq.com/s?__biz=Mzk0NDE3MTkzNQ==&amp;mid=2247484059&amp;idx=2&amp;sn=55507445789f3ea5eea17bb548ed255e&amp;chksm=c329fc6bf45e757dc867f3f409b61a7b2da18e077c42af45ced140614170373b9ecbe7c61a39&amp;scene=126&amp;sessionid=1681657506#rd</a></blockquote><p>FB 从美国东部时间 11:40 左右开始故障，全面波及旗下即时通讯 WhatsApp 和知名社（炫）交（富）网站 Instagram。</p><p><br/></p><p>本着吃瓜的精神围观了一晚上，六个多小时过去，终于逐渐恢复服务。</p><p><br/></p><p>CloudFlare 写了一篇文章从技术角度解读这次足以载入史册的灾难性故障：</p><p><br/></p><p>Understanding How Facebook Disappeared from the Internet</p><p>https://blog.cloudflare.com/october-2021-facebook-outage/</p><p><br/></p><p>知名网络安全扫描工具 masscan 的作者在推上也发了一条科普主题：</p><p>twitter[.]com/erratarob/status/1445129721168158726</p><p><br/></p><p>不知道什么原因 fb 停止宣告自己的地址段，撤回了相关的路由。由于 fb 的 DNS 也在地址里，一举导致旗下服务的地址无法解析。接下来出现了和 2009 年暴风影音断网事件非常相似的现象，因为 fb 系列三大 app 装机量巨大，无法得到正确解析之后，来自世界各地数以（十？）亿计的客户端开始尝试反复请求 DNS 解析。CF 检测到比平时多 30 倍的 DNS 查询，以至于开始影响其他无关的互联网应用……</p><p><br/></p><p>博主网络知识很烂，仅限于精通 BGP 等单词的拼写和 WireShark 软件的安装和卸载，就不瞎翻译了。准确的信息请看原文。</p><p><br/></p><p>吃瓜期间最好笑的是这条：<br/></p><p><br/></p><p style="text-align: center;"><img class="rich_pages wxw-img js_insertlocalimg" data-ratio="0.5311475409836065" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/6N4b2yN3FOJXjiaOyfb4U2jDEIMdAJJj15xhhrEQfleqpqqzIY1lM0PKMwKM9zXkVyGAwkvAutUxWeUxPicdayjQ/640?wx_fmt=jpeg" data-type="jpeg" data-w="1220" style="" src="../Images/9e74ccf9a3fc3a471603be803ad9d301.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/6N4b2yN3FOJXjiaOyfb4U2jDEIMdAJJj15xhhrEQfleqpqqzIY1lM0PKMwKM9zXkVyGAwkvAutUxWeUxPicdayjQ/640?wx_fmt=jpeg"/></p><p><br/></p><p>不可靠的消息称，因为这场故障，内部的门禁系统也跟着抽风，导致肉身前往救场的员工没法进入大楼。</p>
+        
+</body>
+</html>

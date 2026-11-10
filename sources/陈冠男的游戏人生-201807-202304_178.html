@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>逆向一期/007/读文件（ini）断点</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>逆向一期/007/读文件（ini）断点</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzU5OTU3NDEzOQ==&amp;mid=2247483848&amp;idx=1&amp;sn=6b27bd5dd9563d22f2f08a0d56e14186&amp;chksm=feb392dcc9c41bcaef967f58d8dbff16aeaa67335a278f6dea4e4a40cabdacd98306d0122b99&amp;scene=126&amp;sessionid=1681663204#rd">http://mp.weixin.qq.com/s?__biz=MzU5OTU3NDEzOQ==&amp;mid=2247483848&amp;idx=1&amp;sn=6b27bd5dd9563d22f2f08a0d56e14186&amp;chksm=feb392dcc9c41bcaef967f58d8dbff16aeaa67335a278f6dea4e4a40cabdacd98306d0122b99&amp;scene=126&amp;sessionid=1681663204#rd</a></blockquote><section label="Edit by 135editor.com" style="font-size:16px;"><section data-role="outer" label="Powered by 135editor.com" style="font-size:16px;font-family:微软雅黑;"><section data-role="paragraph" class="_135editor" style="border: 0px none;box-sizing: border-box;"><section data-role="paragraph" class="" style="max-width: 100%;color: rgb(51, 51, 51);letter-spacing: 0.544px;text-align: justify;white-space: normal;border: 0px none;box-sizing: border-box;"><p style="max-width: 100%;min-height: 1em;text-align: center;"><span style="max-width: 100%;background-color: #00b0f0;color: #ffffff;"> 逆向学习 </span><br style="max-width: 100%;"/></p></section><section class="" data-role="paragraph" style="max-width: 100%;letter-spacing: 0.544px;text-align: justify;white-space: normal;border: 0px none;box-sizing: border-box;"><p style="color: #333333;max-width: 100%;min-height: 1em;"><br/></p>
+<p style="color: #333333;max-width: 100%;min-height: 1em;">学习教程教程：</p>
+<p style="color: #333333;max-width: 100%;min-height: 1em;">《Shark恒零基础百集VIP破解教程》</p>
+<p style="color: #333333;max-width: 100%;min-height: 1em;">这个教程在“学破解论坛”公开了，大家可以去找一下</p>
+<p style="color: #333333;max-width: 100%;min-height: 1em;">附带着教程里的所有实例</p>
+<p style="color: #333333;max-width: 100%;min-height: 1em;"><br/></p>
+<p style="max-width: 100%;min-height: 1em;"><span style="color:#ffffff;"><span style="background-color: #00b0f0;"><span style="letter-spacing: 0.544px;text-align: justify;">BP GetprivateProfileStringA</span>断点</span></span></p>
+<p style="color: #333333;"><br/></p>
+<p style="color: #333333;"><span style="color: #595959;font-size: 14px;">关于调用 ini 文件进行注册验证还可以使用这种方法寻找注册码</span></p>
+<p style="color: #333333;"><br/></p>
+<p style="color: #333333;">载入OD后</p>
+<p style="color: #333333;">下 <span style="letter-spacing: 0.544px;text-align: justify;">BP GetprivateProfileStringA </span>断点</p>
+<p style="color: #333333;"><span style="letter-spacing: 0.544px;caret-color: red;"/><img data-src="https://mmbiz.qpic.cn/mmbiz_png/df1X0NvQ5KkYSTq6pgrUdmicotUyrQxwkUt0oSDqq356ze4BpYSnichSRwftEVYtibcdMVOptYuJ4OvYliatI19DkQ/640" style="height: auto !important;" src="../Images/60243b0c4803049595418f8ef06766c3.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/df1X0NvQ5KkYSTq6pgrUdmicotUyrQxwkUt0oSDqq356ze4BpYSnichSRwftEVYtibcdMVOptYuJ4OvYliatI19DkQ/640"/></p>
+<p style="color: #333333;"><br/></p>
+<p style="color: #333333;"><span style="letter-spacing: 0.544px;caret-color: red;">F9 运行程序，程序断住</span></p>
+<p style="color: #333333;"><span style="letter-spacing: 0.544px;caret-color: red;"><img data-src="https://mmbiz.qpic.cn/mmbiz_png/df1X0NvQ5KkYSTq6pgrUdmicotUyrQxwkARKSoQzWrvt4tibK4pkcqibWkhylhdsIJPEvAllY8Rw6icHO6Ax1b1mqw/640" style="height: auto !important;" src="../Images/23fd675f39c59abf42f9220c2d7e43f7.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/df1X0NvQ5KkYSTq6pgrUdmicotUyrQxwkARKSoQzWrvt4tibK4pkcqibWkhylhdsIJPEvAllY8Rw6icHO6Ax1b1mqw/640"/></span></p>
+<p style="color: #333333;"><br/></p>
+<p style="color: #333333;">在上面，找到，调试，执行到用户代码，<span style="color: #333333;letter-spacing: 0.544px;text-align: justify;">回到程序领空</span></p>
+<p style="color: #333333;"><span style="font-size: 14px;">（快捷键Alt+F9）</span></p>
+<p style="color: #333333;"><span style="letter-spacing: 0.544px;caret-color: red;"><img data-src="https://mmbiz.qpic.cn/mmbiz_png/df1X0NvQ5KkYSTq6pgrUdmicotUyrQxwkUNGjEuibOkNJIxHYuX6p6GuaeiaicMLHXoEWe7R0a632Rjr5H5aPmRZRA/640" style="height: auto !important;" src="../Images/dc4fcf732fe2a30ffeef12472891c47c.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/df1X0NvQ5KkYSTq6pgrUdmicotUyrQxwkUNGjEuibOkNJIxHYuX6p6GuaeiaicMLHXoEWe7R0a632Rjr5H5aPmRZRA/640"/></span></p>
+<p style="color: #333333;"><span style="letter-spacing: 0.544px;caret-color: red;color: #7f7f7f;font-size: 14px;">因为调用的断点是系统 API 所以会断在系统领空，而我们需要在程序领空才能找到注册码</span><span style="letter-spacing: 0.544px;caret-color: red;color: #7f7f7f;"><br/></span></p>
+<p style="color: #333333;"><br/></p>
+<p style="color: #333333;"><span style="letter-spacing: 0.544px;caret-color: red;">F8单步向下，找到了一些字符串，复制下来，里面有一个可以注册成功</span></p>
+<p style="color: #333333;"><span style="letter-spacing: 0.544px;caret-color: red;"><img data-src="https://mmbiz.qpic.cn/mmbiz_png/df1X0NvQ5KkYSTq6pgrUdmicotUyrQxwkMoHPCsXfvvzK5ezKv1wJVlQVYlEG7zW72d8NwtOc8WEznn4Zg8SoOw/640" style="height: auto !important;" src="../Images/3dc486356c5529c5d114e0da63c04e26.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/df1X0NvQ5KkYSTq6pgrUdmicotUyrQxwkMoHPCsXfvvzK5ezKv1wJVlQVYlEG7zW72d8NwtOc8WEznn4Zg8SoOw/640"/></span></p>
+<section class="_135editor" data-tools="135编辑器" data-id="94155" style="border: 0px none;box-sizing: border-box;"><section style="text-align: center;"><section style="display: inline-block;"><section style="width:6em;"><img data-width="100%" data-src="https://mmbiz.qpic.cn/mmbiz_gif/7QRTvkK2qC5Q3Q2JPcAgQibyJut3L80CAvxE9FKNHZ3MlZdLMhD7oYO7k0siaiciblpNuFV6xoenXkrQe3pTRnweVw/640?wx_fmt=gif" style="display: block;width: 100%;height: auto !important;" src="../Images/426189ab44f430c09351d8cf7124b524.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_gif/7QRTvkK2qC5Q3Q2JPcAgQibyJut3L80CAvxE9FKNHZ3MlZdLMhD7oYO7k0siaiciblpNuFV6xoenXkrQe3pTRnweVw/640?wx_fmt=gif"/></section></section></section></section><section class="_135editor" data-id="image-undefined" style="border: 0px none;box-sizing: border-box;"><p style="text-align:center;"><img data-src="https://mmbiz.qpic.cn/mmbiz_png/df1X0NvQ5KkYSTq6pgrUdmicotUyrQxwkz9Ybs49EX4RGpgIXGqurSqgR8CGcgcrIKNPIHaDibibaHXBWlwmd5zLA/640" style="height: auto !important;" src="../Images/3e22dc1fe03e5e99b7a518528d965f58.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/df1X0NvQ5KkYSTq6pgrUdmicotUyrQxwkz9Ybs49EX4RGpgIXGqurSqgR8CGcgcrIKNPIHaDibibaHXBWlwmd5zLA/640"/></p></section><section class="_135editor" data-tools="135编辑器" data-id="86032" style="border: 0px none;box-sizing: border-box;"><section style="text-align: center;"><section style="background-color: rgb(254, 254, 254);padding: 0px 15px;display: inline-block;margin: 0px auto;box-sizing: border-box;"><p style="text-align: center;color: inherit;"><span style="font-size: 14px;color: #000000;" class="135brush" data-brushtype="text">END</span></p></section><section style="margin: -12px 0px 10px;"><section style="border-top: 1px dashed rgb(33, 33, 34);width: 100%;border-right-color: rgb(33, 33, 34);border-bottom-color: rgb(33, 33, 34);border-left-color: rgb(33, 33, 34);box-sizing: border-box;" data-width="100%"><br/></section></section></section></section></section></section></section></section>
+        
+</body>
+</html>

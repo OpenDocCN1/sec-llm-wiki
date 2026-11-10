@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>研究人员展示因特尔SGX如何泄露密钥</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>研究人员展示因特尔SGX如何泄露密钥</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485571&amp;idx=5&amp;sn=426324adabd862a00bcbff5cf4f7fe9f&amp;chksm=ea9739e9dde0b0ff9f0c7c870e72bc49656a62c8c5cf87f81b932904be1b21eb9300bd74e952&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485571&amp;idx=5&amp;sn=426324adabd862a00bcbff5cf4f7fe9f&amp;chksm=ea9739e9dde0b0ff9f0c7c870e72bc49656a62c8c5cf87f81b932904be1b21eb9300bd74e952&amp;scene=27#wechat_redirect</a></blockquote><p><strong>今年1月份，研究员Samuel Weiser曾协助找到因特尔软件保护扩展（SGX）输入-输出保护中可能存在的漏洞。</strong></p><p><br/></p><p>目前他跟其他四名来自奥地利格拉茨工业大学的合作人员写出了PoC利用代码，该代码能利用SGX隐藏恶意软件，并且在五分钟之内，就能从在同一系统上运行的SGX enclave中获取RSA密钥。</p><p><br/></p><p>而这正是SGX想要阻止的。SGX是一个分离机制，本该保护代码和数据免受恶意攻击者攻击。Weiser及其团队创造了一个称之为Prime+Probe的侧信道攻击，并表示它在原生的因特尔环境或跨Docker容器运行。</p><p><br/></p><p>这个PoC代码旨在通过三个步骤恢复别人enclave中的RSA密钥。首先，找到受害者缓存器设置的位置，其次当受害者触发RSA签名计算时观察缓存器设置，最后提取密钥。正如论文中指出的那样，“我们为因特尔CPU开发出目前所知最准确的定时测量技术，可为硬件完美定制。我们将DRAM和缓存侧信道结合起来构建了一种新方法可在不对页面大小假设的情况下恢复物理地址位。我们攻击的是OpenVPN实例所使用的mbedTLS的RSA实现。虽然有对侧信道攻击的防御措施，攻击还是成功了。我们从一次Prime+Probe追踪中就提取出了4096位RSA密钥的96%部分，并且在5分钟内从11次追踪中就完全实现了密钥恢复。”</p><p><br/></p><p>这种攻击甚至可跨不同的Docker容器运行，因为Docker引擎会为两个容器调用同样的SGX驱动。</p><p><br/></p><p><strong>定时：</strong>加密侧信道攻击需要有一个高分辨率的计时器，而这是SGX禁止的。Weiser及其团队梳理了因特尔的参数并定在了inc和add指令上。为了仿效被禁的计时器，研究人员使用了以下×86指令：</p><p><br/></p><p><img data-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiamhicMGiaZ1pKHeicmzLo7hHK3Nq5zrP15ibW8YAcveYGibp5585icZK9aeZqXKxZtRLQPbNBwVaFibSIjJQ/0?wx_fmt=jpeg" width="618" height="186" style="border-width: 0px; border-style: initial; border-color: initial;" data-type="jpeg" data-ratio="0.30097087378640774" data-w="618" src="../Images/93acdfab69a9d9114af9a33d85924ab1.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiamhicMGiaZ1pKHeicmzLo7hHK3Nq5zrP15ibW8YAcveYGibp5585icZK9aeZqXKxZtRLQPbNBwVaFibSIjJQ/0?wx_fmt=jpeg"/><br/></p><p><br/></p><p><strong>“驱逐集”生成：</strong>这个步骤旨在发现“映射到相同缓存集的”虚拟地址：我们按顺序扫描会引发行冲突的物理接近的一个地址内存。因为SGX enclave内存以连续方式分配，因此我们可以在虚拟地址中执行扫描。</p><p><br/></p><p>完成以上两个步骤后，Wiser和团队理清了如何监控易受攻击的缓存集，寻找RSA密钥计算的性能签名。</p><p><br/></p><p>这部分攻击必须发生在离线状态，也就是说要跟收集数据的缓存监控分隔开，因为最后你会发现有很多数据因而产生很多噪音。密钥恢复有三步，第一步是预先处理追踪，第二步是从每次追踪中提取部分密钥，第三部是通过这部分密钥来恢复私钥。</p><p><br/></p><p>在一个可使用SGX且运行Ubuntu 16.10的联想ThinkPad T460s上，他们发现：</p><p><br/></p><p>* 尝试340次，恶意软件就能够从可获得的2048个缓存集中找到一个易受攻击的缓存集；</p><p><br/></p><p>* 从易受攻击的缓存集中捕获一次追踪平均需要72秒；</p><p><br/></p><p>* 一次单独的缓存追踪可访问96%的4096位RSA密钥，而在11次追踪中就可获取全部的RSA密钥。</p><p><br/></p><p>研究人员表示他们的攻击可被拦截，不过因特尔必须拿出修复方案，因为修改操作系统会弱化SGX模型。</p>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>恶意软件猎手： 找出恶意C&C服务器的Shodan新工具</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>恶意软件猎手： 找出恶意C&C服务器的Shodan新工具</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485537&amp;idx=1&amp;sn=50874b744448d5858db6a1f468df6ee7&amp;chksm=ea97390bdde0b01db69009f327f27c39426ee2412db51725c3eb9b75858cb52c2e19d28a60a2&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485537&amp;idx=1&amp;sn=50874b744448d5858db6a1f468df6ee7&amp;chksm=ea97390bdde0b01db69009f327f27c39426ee2412db51725c3eb9b75858cb52c2e19d28a60a2&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKiakABXTMR7dexBgeTj6QNxWy57EYMopysJghesIU1Cnnn5VicrH2FZyEkFOhGOMrNvx6DcVIpicia0vJw/0?wx_fmt=png" data-ratio="0.521978021978022" data-w="728" src="../Images/6eea0048179243feca47bf64f49d1e11.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKiakABXTMR7dexBgeTj6QNxWy57EYMopysJghesIU1Cnnn5VicrH2FZyEkFOhGOMrNvx6DcVIpicia0vJw/0?wx_fmt=png"/></p><p><br/></p><p><strong>不断增多的不安全联网设备成为悬在每个人和每个组织机构头上的一把剑，恶意软件作者一直伺机入侵这些设备组建成发动DDoS攻击和其它网络攻击的僵尸网络。</strong></p><p><br/></p><p>不过Shodan和Recorded Future公司合作推出一款新爬虫：恶意软件猎手 (Malware Hunter)，它能定期扫描互联网识别出多种恶意软件和僵尸网络的C&amp;C服务器。“恶意软件猎手”的结果已整合到Shodan引擎结果中。后者是旨在收集并列出所有类型的联网设备和系统信息的搜索引擎。</p><p><br/></p><p><strong>恶意软件猎手如何识别C&amp;C服务器？</strong></p><p><br/></p><p>那么恶意软件猎手是如何知道哪个IP地址正在被用于托管恶意C&amp;C服务器呢？Shodan已为此部署了专门的爬虫并通过伪装成返回给C&amp;C服务器的受感染计算机，扫描全网来查找配置为僵尸网络C&amp;C服务器的计算机和设备。爬虫将目标IP当成C&amp;C并向每个IP地址反馈，如果它得到的是正响应，那么它就知道这个IP地址是一个恶意的C&amp;C服务器。</p><p><br/></p><p>Recorded Future在<a>一份长达15页的报告</a>中指出，“当合适的请求出现在RAT控制器的侦听器端口时，RAT会返回具体的响应（字符串）”，“在某些情况下，即便是一个基本的TCP三次握手就足以引出RAT控制器响应。这种唯一响应就是一种指纹，能说明RAT控制器（控制面板）正在有问题的计算机上运行”。</p><p><br/></p><p><strong>已识别出逾5700台恶意C&amp;C服务器</strong></p><p><br/></p><p>试用恶意软件猎手后得到如下令人印象深刻的结果：</p><p><br/></p><p>（1）    恶意软件猎手已经识别出全球超过5700台C&amp;C服务器。</p><p><br/></p><p>（2）    前三个恶意C&amp;C服务器最多的国家和地区是美国（72%）、中国香港（12%）和中国（5.2%）。</p><p><br/></p><p>（3）    五款流行远程访问木马包括Gh0st RAT木马（93.5%）、DarkComet木马（3.7%）、一些属于njRAT木马的服务器、ZeroAccess木马和XtremeRAT木马。</p><p><br/></p><p>（4）    Shodan也能识别出Black Shades、Poison Ivy和Net Bus的C&amp;C服务器。</p><p><br/></p><p>读者可在Shodan网站上搜索“category:malware”获得结果（注意搜索时不加双引号）。</p><p><br/></p><p>恶意软件猎手旨在让安全研究人员能更加容易地找到新的C&amp;C服务器，甚至是在访问到恶意软件样本之前就找到。这种情报收集方法也有助于杀毒厂商识别出无法检测到的恶意软件并阻止其将被盗数据返回给攻击者C&amp;C服务器。</p><p><br/></p><p><br/></p><p><strong style="white-space: normal;">本文由360代码卫士编译，不代表360观点，转载请注明“转自360代码卫士www.codesafe.cn”。</strong></p>
+        
+</body>
+</html>

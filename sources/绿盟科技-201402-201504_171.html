@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>【紧急安全通告】Apache Struts2 CVE-2014-0094修复补丁绕过漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>【紧急安全通告】Apache Struts2 CVE-2014-0094修复补丁绕过漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5ODYyMTM4MA==&amp;mid=200164033&amp;idx=1&amp;sn=1ca8977d23376b5bdc3b8459514cf969&amp;chksm=28dd1b6a1faa927c3b53bfdbaf5cb6b8fb29cd15f0455f96a43b847d8cadf24cd8d5313004bb&amp;scene=126&amp;sessionid=1681372679#rd">http://mp.weixin.qq.com/s?__biz=MjM5ODYyMTM4MA==&amp;mid=200164033&amp;idx=1&amp;sn=1ca8977d23376b5bdc3b8459514cf969&amp;chksm=28dd1b6a1faa927c3b53bfdbaf5cb6b8fb29cd15f0455f96a43b847d8cadf24cd8d5313004bb&amp;scene=126&amp;sessionid=1681372679#rd</a></blockquote><p><br/></p><p>发布日期：2014-04-24</p><p><br/></p><p>CVE ID：CVE-2014-0094</p><p><br/></p><p>受影响的软件及系统：</p><p>====================</p><p>Apache Struts 2.0.0 - Apache Struts 2.3.16.1</p><p><br/></p><p>综述：</p><p>======</p><p>Apache Struts2在处理修复CVE-2014-0094的漏洞修补方案存在漏洞，导致补丁可被完全绕过，攻击者通过提交精心构造请求，绕过修复补丁造成文件泄漏或拒绝服务，在特定情况下（例如Tomcat 8）可造成远程执行任意命令。</p><p><br/></p><p>目前Apache Struts2在Github上提交的修复方案仍然存在被绕过的可能性。强烈建议Apache Struts2用户暂时启用WAF、IPS等设备防御可能的攻击。</p><p style="text-align: center"><img data-src="http://mmbiz.qpic.cn/mmbiz/IpYUt4DIvZeIFdys2hEXINoNMLCuwWZjhYKicYOicxkD4Cjjx4CM03MxaN5IV2GkmDIO0FY1Uh09lS8oqyQ0cpOQ/0" src="../Images/fd453ca9f4f975dc67fd67175296cb99.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/IpYUt4DIvZeIFdys2hEXINoNMLCuwWZjhYKicYOicxkD4Cjjx4CM03MxaN5IV2GkmDIO0FY1Uh09lS8oqyQ0cpOQ/0"/></p><p style="white-space: normal;"><br/></p><p>分析：<br/></p><p>======</p><p>Struts2 是第二代基于Model-View-Controller (MVC)模型的web应用框架。 Struts2是java企业级web应用的可扩展性的框架。它是WebWork和Struts社区合并后的产物。</p><p><br/></p><p>Apache Struts2在2.3.16.1版本之前，提供class参数传递的功能，但由于此功能可导致用户操控服务器运行环境中的一些对象，因此在2.3.16.1中禁用了此功能。但是由于防护规则不完善，导致可被攻击者绕过。</p><p><br/></p><p><br/></p><p>厂商状态：</p><p>==========</p><p>厂商暂未修复此安全漏洞，强烈建议Struts用户启用WAF、IPS等设备防御可能的攻击。</p><p>并在厂商修补后及时升级到最新版本。</p><p>http://struts.apache.org/</p><p><br/></p><p><br/></p><p>声 明</p><p>==========</p><p><br/></p><p>本安全公告仅用来描述可能存在的安全问题，绿盟科技不为此安全公告提供任何保证或承诺。由于传播、利用此安全公告所提供的信息而造成的任何直接或者间接的后果及损失，均由使用者本人负责，绿盟科技以及安全公告作者不为此承担任何责任。绿盟科技拥有对此安全公告的修改和解释权。如欲转载或传播此安全公告，必须保证此安全公告的完整性，包括版权声明等全部内容。未经绿盟科技允许，不得任意修改或者增减此安全公告内容，不得以任何方式将其用于商业目的。</p><p><br/></p><p><br/></p><p>详细内容，请点击左下部的“阅读原文”。</p><p><br/></p>
+        
+</body>
+</html>

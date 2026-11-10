@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>一个内网漫游的Bat小脚本</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>一个内网漫游的Bat小脚本</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI3NzMzNzE5Ng==&amp;mid=2247483758&amp;idx=1&amp;sn=a53c1e7677b8678690b9384f6d13370f&amp;chksm=eb66846ddc110d7bc151faa8f9f2e93ca55a4e1e6cf873a6d838b953cbe0ba3c11cd62fdb0b1&amp;scene=126&amp;sessionid=1681407401#rd">http://mp.weixin.qq.com/s?__biz=MzI3NzMzNzE5Ng==&amp;mid=2247483758&amp;idx=1&amp;sn=a53c1e7677b8678690b9384f6d13370f&amp;chksm=eb66846ddc110d7bc151faa8f9f2e93ca55a4e1e6cf873a6d838b953cbe0ba3c11cd62fdb0b1&amp;scene=126&amp;sessionid=1681407401#rd</a></blockquote><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz/ibhQpAia4xu01aicMm7F2BCRUzE8WiaBtibbkFicyCvqMyQibAVa6QpyLs5STmibWOJJQay4vcBuODnqhicwKghibqLIVcKg/0?wx_fmt=png" data-ratio="0.7654723127035831" data-w="307" src="../Images/f9d807c0e7d9f3ff50f01b29a9088a9e.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/ibhQpAia4xu01aicMm7F2BCRUzE8WiaBtibbkFicyCvqMyQibAVa6QpyLs5STmibWOJJQay4vcBuODnqhicwKghibqLIVcKg/0?wx_fmt=png"/><br/></p><pre class="brush:java; toolbar: true; auto-links: true;" style=" box-sizing: border-box; margin: 10px 2em 15px; padding: 10px 15px; border-width: 1px 1px 1px 4px; border-style: solid; border-color: rgb(242, 242, 242) rgb(242, 242, 242) rgb(242, 242, 242) rgb(204, 0, 0); color: rgb(85, 85, 85); white-space: pre-wrap; word-wrap: break-word; font-stretch: normal; font-size: 12.5px; ;  line-height: 19px; overflow: auto; width: auto; background-color: rgb(255, 255, 224); ">@echo off 
+setlocal ENABLEDELAYEDEXPANSION 
+ @FOR /F "usebackq eol=- skip=1 delims=\" %%j IN (`net view ^| find "命令成功完成" /v ^|find
+ "The command completed successfully." /v`) DO ( 
+ @FOR /F "usebackq delims=" %%i IN (`@ping -n 1 -4 %%j ^| findstr "Pinging"`) DO ( 
+ @FOR /F "usebackq tokens=2 delims=[]" %%k IN (`echo %%i`) DO (echo \\%%k  [%%j]) 
+ ) 
+ ) </pre><p><br/></p>
+        
+</body>
+</html>

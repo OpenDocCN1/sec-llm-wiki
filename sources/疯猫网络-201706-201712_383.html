@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>渗透测试TIPS之删除、伪造Linux系统登录日志</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>渗透测试TIPS之删除、伪造Linux系统登录日志</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzIyMzE5NTQ3Ng==&amp;mid=2650588619&amp;idx=1&amp;sn=e19da722451aa46448d66ba22ef55425&amp;chksm=f0299df0c75e14e61f22755a406805a5edfd7bd81c5814487fffc579bec22ebd721bd07f76e2&amp;scene=126&amp;sessionid=1681370466#rd">http://mp.weixin.qq.com/s?__biz=MzIyMzE5NTQ3Ng==&amp;mid=2650588619&amp;idx=1&amp;sn=e19da722451aa46448d66ba22ef55425&amp;chksm=f0299df0c75e14e61f22755a406805a5edfd7bd81c5814487fffc579bec22ebd721bd07f76e2&amp;scene=126&amp;sessionid=1681370466#rd</a></blockquote><p><img data-type="gif" data-src="http://mmbiz.qpic.cn/mmbiz_gif/5ZACCn1bWEwrm1niax0xWl6tFwyaPqCHRyskxXGvZQgOFTCFaUiaU6PSmdmwSdb3JEAuZwPx0lPWsHf2xuib8Asew/0?wx_fmt=gif" class="" data-ratio="0.15625" data-w="640" src="../Images/bd12d37e5b6d2b5b81389d88a9cef40a.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_gif/5ZACCn1bWEwrm1niax0xWl6tFwyaPqCHRyskxXGvZQgOFTCFaUiaU6PSmdmwSdb3JEAuZwPx0lPWsHf2xuib8Asew/0?wx_fmt=gif"/></p><h2 style="box-sizing: border-box; font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; font-weight: bold; line-height: 1.1; color: rgb(55, 56, 56); margin-top: 30px; margin-bottom: 15px; font-size: 18px; white-space: normal; background-color: rgb(255, 255, 255);">0×00. 引言</h2><p><span style="color: rgb(123, 12, 0);">擦除日志在渗透测试中是非常重要的一个阶段，这样可以更好地隐藏入侵痕迹，做到不被系统管理人员察觉，实现长期潜伏的目的。 前段时间NSA泄露的渗透测试工具中就有一款wtmp日志的擦除，非常好用，这引起了我的兴趣，于是研究了一下linux 登录相关二进制日志的文件格式，用python写了一个日志擦除，伪造的工具（末尾附源码）</span></p><h2 style="box-sizing: border-box; font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; font-weight: bold; line-height: 1.1; color: rgb(55, 56, 56); margin-top: 30px; margin-bottom: 15px; font-size: 18px; white-space: normal; background-color: rgb(255, 255, 255);">0×01. Linux中与登录有关的日志及其格式分析</h2><p>Linux中涉及到登录的二进制日志文件有</p><p><br/></p><blockquote><pre style=" box-sizing: border-box; overflow: auto; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; "><code class="hljs javascript">    /var/run/utmp
+
+    /var/log/wtmp
+
+    /var/log/btmp
+
+    /var/log/lastlog</code></pre></blockquote><p><br/></p><p>其中 utmp 对应w 和 who命令； wtmp 对应last命令；btmp对应lastb命令；lastlog 对应lastlog命令</p><p>经查Linux man 手册，</p><p><br/></p><blockquote><pre style=" box-sizing: border-box; overflow: auto; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; "><code class="hljs javascript">/var/run/utmp
+/var/log/wtmp
+/var/log/btmp</code></pre></blockquote><p><br/></p><p>的二进制格式都是一样的， 我们姑且称之为xtmp 格式</p><p>而/var/log/lastlog 文件的格式与之不同，需单独分析，下面我们先分析xtmp的文件格式吧，这里以utmp 格式为例</p><p><br/></p><h3><strong>UTMP 文件格式</strong></h3><p>utmp 文件格式是这样的：</p><p><br/></p><blockquote><pre style=" box-sizing: border-box; overflow: auto; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; "><code class="hljs cpp">    #define UT_LINESIZE     32
+
+    #define UT_NAMESIZE     32
+
+    #define UT_HOSTSIZE     256
+
+        struct utmp {            short   ut_type;              /* Type of record */
+
+            pid_t   ut_pid;               /* PID of login process */
+
+            char    ut_line[UT_LINESIZE]; /* Device name of tty - "/dev/" */
+
+            char    ut_id[4];             /* Terminal name suffix,
+
+                                             or inittab(5) ID */
+
+            char    ut_user[UT_NAMESIZE]; /* Username */
+
+            char    ut_host[UT_HOSTSIZE]; /* Hostname for remote login, or
+
+                                             kernel version for run-level
+
+                                             messages */
+
+            struct  exit_status ut_exit;  /* Exit status of a process
+
+                                             marked as DEAD_PROCESS; not
+
+                                             used by Linux init(8) */
+
+            /* The ut_session and ut_tv fields must be the same size when
+
+               compiled 32- and 64-bit.  This allows data files and shared
+
+               memory to be shared between 32- and 64-bit applications. */
+
+        #if __WORDSIZE == 64 &amp;&amp; defined __WORDSIZE_COMPAT32
+
+            int32_t ut_session;           /* Session ID (getsid(2)),
+
+                                             used for windowing */
+
+            struct {                int32_t tv_sec;           /* Seconds */
+
+                int32_t tv_usec;          /* Microseconds */
+
+            } ut_tv;                      /* Time entry was made */
+
+        #else
+
+             long   ut_session;           /* Session ID */
+
+             struct timeval ut_tv;        /* Time entry was made */
+
+        #endif
+
+           int32_t ut_addr_v6[4];        /* Internet address of remote
+
+                                             host; IPv4 address uses
+
+                                             just ut_addr_v6[0] */
+
+            char __unused[20];            /* Reserved for future use */
+
+        };
+
+    其中 exit_status 结构为：    struct exit_status {              /* Type for ut_exit, below */
+
+        short int e_termination;      /* Process termination status */
+
+        short int e_exit;             /* Process exit status */
+
+    };
+
+其中 ut_type 为日志记录的类型，主要有以下几种日志    #define EMPTY         0 /* Record does not contain valid info
+
+                               (formerly known as UT_UNKNOWN on Linux) */
+
+    #define RUN_LVL       1 /* Change in system run-level (see
+
+                               init(8)) */
+
+    #define BOOT_TIME     2 /* Time of system boot (in ut_tv) */
+
+    #define NEW_TIME      3 /* Time after system clock change
+
+                               (in ut_tv) */
+
+    #define OLD_TIME      4 /* Time before system clock change
+
+                               (in ut_tv) */
+
+    #define INIT_PROCESS  5 /* Process spawned by init(8) */
+
+    #define LOGIN_PROCESS 6 /* Session leader process for user login */
+
+    #define USER_PROCESS  7 /* Normal process */
+
+    #define DEAD_PROCESS  8 /* Terminated process */
+
+    #define ACCOUNTING    9 /* Not implemented */
+
+    #define UT_LINESIZE      32
+
+    #define UT_NAMESIZE      32
+
+    #define UT_HOSTSIZE     256</code></pre></blockquote><p><br/></p><p>utmp 记录例子（二进制内容解析处理后）：</p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDfwIR3sm39jsia7Xtiab2hkKMlfWD67mGC2mBmqBexShmvOrzlVV2nuWw/0?wx_fmt=jpeg" class="" data-ratio="0.08695652173913043" data-w="690" src="../Images/ed110cb7b167cece0cc87c48d9e55652.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDfwIR3sm39jsia7Xtiab2hkKMlfWD67mGC2mBmqBexShmvOrzlVV2nuWw/0?wx_fmt=jpeg"/></p><p><br/></p><p>对比utmp的文件格式结构，挑几个重要的字段解释下</p><p>第1个字段7 表示这条记录类型，一般的用户正常登录记录类型都是7，错误登录是6 ，也就是btmp所记录的类型</p><p>第2个字段1497 是pid ，截图中我是用ssh远程登录linux，这里指的就是sshd的子进程bash的pid</p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDo4Ad2skkIJgTm9xOETC3O9WL39XbmLATOqXllA81zaZfslKGZxKcvA/0?wx_fmt=jpeg" class="" data-ratio="0.15217391304347827" data-w="690" src="../Images/0526293ebeb95b64122118702986c4fc.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDo4Ad2skkIJgTm9xOETC3O9WL39XbmLATOqXllA81zaZfslKGZxKcvA/0?wx_fmt=jpeg"/></p><p><br/></p><p>第3个字段pts/0 表示的登录的伪终端 ，后面一串\0是填充的数据</p><p>第4个字段 ts/0表示的伪终端的后缀</p><p>第5个字段root 表示登录用户名，后面一串\0是填充数据，因为这个字段为32个字节大小</p><p>第6个字段10.1.100.1 表示的是登录主机，后面一串\0是填充数据，因为这个字段为256个字节大小</p><p>第10个字段表示的是登录时间，精确到秒</p><p>第11个字段表示的是登录时间中微妙部分</p><p>第12个字段表示的是登录sessionid</p><p><br/></p><h3><strong>lastlog 文件格式：</strong></h3><p><strong><br/></strong></p><blockquote><pre style=" box-sizing: border-box; overflow: auto; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; "><code class="hljs cpp" style=" box-sizing: border-box; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; "> <span class="hljs-meta" style="box-sizing: border-box; color: rgb(43, 110, 161);">#<span class="hljs-meta-keyword" style="box-sizing: border-box; font-weight: bold;">define</span> UT_LINESIZE     32</span>
+    <span class="hljs-meta" style="box-sizing: border-box; color: rgb(43, 110, 161);">#<span class="hljs-meta-keyword" style="box-sizing: border-box; font-weight: bold;">define</span> UT_HOSTSIZE     256</span>
+    <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">struct</span> lastlog
+      {        <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">__time_t</span> ll_time;        <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">char</span> ll_line[UT_LINESIZE];        <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">char</span> ll_host[UT_HOSTSIZE];
+      };</code></pre></blockquote><p><br/></p><p>lastlog 记录例子（二进制内容解析处理后）：</p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDHiaMkFYnKXpvWVyWpJRqzK8P1icrKmqAJKCvhxpuCoMoOW8eEfDeJ09Q/0?wx_fmt=jpeg" class="" data-ratio="0.057971014492753624" data-w="690" src="../Images/e53d46c88872d06d43594b3a1b70a160.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDHiaMkFYnKXpvWVyWpJRqzK8P1icrKmqAJKCvhxpuCoMoOW8eEfDeJ09Q/0?wx_fmt=jpeg"/></p><p><br/></p><p>第1个字段表示最后一次登录时间</p><p>第2个字段表示最后一次登录的终端</p><p>第3个字段表示最后一次登录的IP</p><h2 style="box-sizing: border-box; font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; font-weight: bold; line-height: 1.1; color: rgb(55, 56, 56); margin-top: 30px; margin-bottom: 15px; font-size: 18px; white-space: normal; background-color: rgb(255, 255, 255);">0×02. 擦除，伪造登录日志的测试</h2><p>1.删除utmp记录，将自己从w或者who输出中隐藏</p><p>比如此时有两个登录记录，一个是root（要删除的记录），一个是f3</p><p>删除前：</p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDQeIthPuvMaXGUx4BwQdvtWyN4Vmla7HMGatGKWf5I69CNEjWthA5JA/0?wx_fmt=jpeg" class="" data-ratio="0.16376811594202897" data-w="690" src="../Images/40c9f0ca13c227bbd61056ae9c5a8d2e.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDQeIthPuvMaXGUx4BwQdvtWyN4Vmla7HMGatGKWf5I69CNEjWthA5JA/0?wx_fmt=jpeg"/></p><p><br/></p><p><br/></p><p>删除后：</p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDIKA0TvrF93sbJXHBhcNtLrFia7icDyjH1FGb4r7a5ebRwxJzYYROswzw/0?wx_fmt=jpeg" class="" data-ratio="0.18405797101449275" data-w="690" src="../Images/0015c11f1fc5bd97d4e43987a48ab379.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDIKA0TvrF93sbJXHBhcNtLrFia7icDyjH1FGb4r7a5ebRwxJzYYROswzw/0?wx_fmt=jpeg"/></p><p><br/></p><ol style="list-style-type: none;" class=" list-paddingleft-2"><li><p>添加utmp记录，伪造登录信息</p></li></ol><p>添加前：</p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDo06U2pfvgCXZqfGs3cgEYL3Yvd4WDoUYTDykKJpX1bYSZ6BNhKV3Tw/0?wx_fmt=jpeg" class="" data-ratio="0.2072463768115942" data-w="690" src="../Images/8be1aca85de885399458ec3e09aac54b.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDo06U2pfvgCXZqfGs3cgEYL3Yvd4WDoUYTDykKJpX1bYSZ6BNhKV3Tw/0?wx_fmt=jpeg"/></p><p><br/></p><p>添加后：<br/></p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDZdH0jJiar0P8Vfgua8TQzGZRrDW4tnhCibAqbl5ux0R9jaFOvvQR2GxQ/0?wx_fmt=jpeg" class="" data-ratio="0.26956521739130435" data-w="690" src="../Images/44318d589dfa036e85b3ae0963f5288c.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDZdH0jJiar0P8Vfgua8TQzGZRrDW4tnhCibAqbl5ux0R9jaFOvvQR2GxQ/0?wx_fmt=jpeg"/></p><p><br/></p><p>注： 添加Fake 在线记录的时候，pid必须可以找到相应进程，一般可以使用sshd的或者是bash的相关PID</p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDpicKiapHicXzHuv1UibmPCC2T3X5yrOgic7HVpWjhZxtnF6WUJ32JJAhKyA/0?wx_fmt=jpeg" class="" data-ratio="0.08260869565217391" data-w="690" src="../Images/232cd273f9c3ce899bb3c38bcf665ec8.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDpicKiapHicXzHuv1UibmPCC2T3X5yrOgic7HVpWjhZxtnF6WUJ32JJAhKyA/0?wx_fmt=jpeg"/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDZo5siaHoR5qUk1qUazf8EI94IhxkpNpJ1zsMsVvbIjiah9nr8q0QlxyQ/0?wx_fmt=jpeg" class="" data-ratio="0.11884057971014493" data-w="690" src="../Images/914b662c553da6ecc17b9808549e2af3.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDZo5siaHoR5qUk1qUazf8EI94IhxkpNpJ1zsMsVvbIjiah9nr8q0QlxyQ/0?wx_fmt=jpeg"/></p><p><br/></p><p>2.删除历史登录记录(wtmp)</p><p>删除前：</p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDeTOZibRGfB3OUOgnURhCBPNVwdYXIfLw2ralvPfLTZU13hwoq7wzgPA/0?wx_fmt=jpeg" class="" data-ratio="0.6376811594202898" data-w="690" src="../Images/ff63826a2d8a5630e30c2c6ad7bb8360.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDeTOZibRGfB3OUOgnURhCBPNVwdYXIfLw2ralvPfLTZU13hwoq7wzgPA/0?wx_fmt=jpeg"/></p><p><br/></p><p>删除指定用户，指定host的历史登录记录</p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDjmcKtalKbshkGel8t5BJiaVX2V2aW68DHq86NNTxFfb5fOrXbT3wFOw/0?wx_fmt=jpeg" class="" data-ratio="0.07681159420289856" data-w="690" src="../Images/8c65664cc931ca1fffe39e221251fad0.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDjmcKtalKbshkGel8t5BJiaVX2V2aW68DHq86NNTxFfb5fOrXbT3wFOw/0?wx_fmt=jpeg"/></p><p><br/></p><p>删除后：</p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDalVUZsU0YvHmg2doZzexG32UdHLU2Jd0SyXCzcTtFX4obZ3ZgkSicZQ/0?wx_fmt=jpeg" class="" data-ratio="0.3565217391304348" data-w="690" src="../Images/27f1932edeb55a282dc4f5a44ffd7fa2.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDalVUZsU0YvHmg2doZzexG32UdHLU2Jd0SyXCzcTtFX4obZ3ZgkSicZQ/0?wx_fmt=jpeg"/></p><p><br/></p><p>3.添加wtmp记录</p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDE3g2ficMvFibt6o4IdMfdnNEjnkQKhSYbzPhRiaib67eCOZK7ApPeaicKnQ/0?wx_fmt=jpeg" class="" data-ratio="0.21304347826086956" data-w="690" src="../Images/55da2d0a4e95824bc16340c169064368.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDE3g2ficMvFibt6o4IdMfdnNEjnkQKhSYbzPhRiaib67eCOZK7ApPeaicKnQ/0?wx_fmt=jpeg"/></p><p><br/></p><p>4.删除btmp记录</p><p>删除前</p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDHnY9ZFfPBicvD84ZaysRAyP26HcxLajrTTmB1NIdte55frKibiaLqoGbw/0?wx_fmt=jpeg" class="" data-ratio="0.4246376811594203" data-w="690" src="../Images/ae0d422f69144768fbe46eaf21b709f2.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDHnY9ZFfPBicvD84ZaysRAyP26HcxLajrTTmB1NIdte55frKibiaLqoGbw/0?wx_fmt=jpeg"/></p><p><br/></p><p>hacker 这个账户有很多次尝试登录记录</p><p>删除后：</p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDsZtESibUJA8cyatv4OsfgsRdq0zchJA1gZyfBWR17XHv4qCllLXWkVA/0?wx_fmt=jpeg" class="" data-ratio="0.3" data-w="690" src="../Images/0db264de4c11ae43570da7c39b60c0c5.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDsZtESibUJA8cyatv4OsfgsRdq0zchJA1gZyfBWR17XHv4qCllLXWkVA/0?wx_fmt=jpeg"/></p><p><br/></p><p>5.添加btmp 伪造记录</p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDtTXiaCudTJPb6c3w6l4ibdsVVUibIKc7MCXt9QryOTh2gpj1PSXicJ5JPA/0?wx_fmt=jpeg" class="" data-ratio="0.28695652173913044" data-w="690" src="../Images/2acfea717f227afd6a84f21e554bebb6.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDtTXiaCudTJPb6c3w6l4ibdsVVUibIKc7MCXt9QryOTh2gpj1PSXicJ5JPA/0?wx_fmt=jpeg"/></p><p><br/></p><p>6.删除lastlog 记录</p><p>hacker 用户最后一次登录记录，删除前：</p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDY2BWcqJfwgcN1jBenyyhMtibGQBY8RoSkC5LJllJ56gqJ0g40dpIuSw/0?wx_fmt=jpeg" class="" data-ratio="0.6927536231884058" data-w="690" style="width: 100%; height: auto;" src="../Images/81439ab7ef8e28656da054579d14316b.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDY2BWcqJfwgcN1jBenyyhMtibGQBY8RoSkC5LJllJ56gqJ0g40dpIuSw/0?wx_fmt=jpeg"/></p><p><br/></p><p>删除后：</p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDBe0IXRjibezjsvcFNia8ZwAuicaogssucpic2uuk3Ek87vpGiaBrrAXib1fw/0?wx_fmt=jpeg" class="" data-ratio="0.04782608695652174" data-w="690" src="../Images/e3efd5d0ef8f1fb9bd53c30e96f6fd96.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDBe0IXRjibezjsvcFNia8ZwAuicaogssucpic2uuk3Ek87vpGiaBrrAXib1fw/0?wx_fmt=jpeg"/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDvmljdS3t6CBOuFCFtNibAv3KwTrDnJI4SacIcbSicyhyFVhjIhWLrbtw/0?wx_fmt=jpeg" class="" data-ratio="0.7973760932944607" data-w="686" src="../Images/90c84164b288447e3bfa2306966bb3a5.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDvmljdS3t6CBOuFCFtNibAv3KwTrDnJI4SacIcbSicyhyFVhjIhWLrbtw/0?wx_fmt=jpeg"/></p><p><br/></p><p>7.添加伪造的lastlog记录</p><p>python fake_login_log.py –mode add –type=lastlog –user=hacker –date=”2017-7-24 14:22:07</p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDEnFK1X6gj6x4ic2aLHUGF90hNJwOd34CgvPtWG6KmlWibdHlUsvdtqDQ/0?wx_fmt=jpeg" class="" data-ratio="0.14202898550724638" data-w="690" src="../Images/586e99e81383d2ffe8f12bdce8ecd46a.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzESjuAia3QtD6BibL4DibZEIDEnFK1X6gj6x4ic2aLHUGF90hNJwOd34CgvPtWG6KmlWibdHlUsvdtqDQ/0?wx_fmt=jpeg"/></p><p><br/></p><p>这里说明一下：lastlog中并不记录用户名，而是根据文件偏移位置来计算当前记录的用户名是多少，比如当前用户是f3，其UID为1001，那么lastlog 日志从头开始向后移动 1001　×　LAST_STRUCT_SIZE处的位置则为f3用户最后一次登录记录写入处（用户即使没有最后一次登录记录，在相应的偏移处都会有记录，这就是我们使用lastlog看到的never login的记录）</p><p><br/></p><h2 style="box-sizing: border-box; font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; font-weight: bold; line-height: 1.1; color: rgb(55, 56, 56); margin-top: 30px; margin-bottom: 15px; font-size: 18px; white-space: normal; background-color: rgb(255, 255, 255);"><span style="box-sizing: border-box;">0×04. 总结</span></h2><p>目前此工具可以实现对:</p><p><br/></p><blockquote><pre style=" box-sizing: border-box; overflow: auto; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; "><code class="hljs javascript">/var/run/utmp
+
+/var/log/wtmp
+
+/var/log/btmp
+
+/var/log/lastlog</code></pre></blockquote><p><br/></p><p>进行删除，添加伪造记录功能，并且在修改相关文件后恢复其时间属性值（比如文件访问时间和文件修改时间），有人会说了，直接echo “” &gt;/var/log/xtmp 不就行了吗，干嘛这么麻烦，直接删除是很好，不过有点粗暴。 本工具不仅可以实现按照 登录主机，登录用户， 时间戳等条件进行按需删除，还可以添加伪造登录记录，以达到迷惑系统管理员之目的。需要补充一点的是，目前还未实现根据时间区间来删除指定记录，也希望有兴趣的同学补充一下</p><p><br/></p><p><strong><br/></strong></p><p><br/></p><p><img data-type="gif" data-src="http://mmbiz.qpic.cn/mmbiz_gif/5ZACCn1bWEwrm1niax0xWl6tFwyaPqCHRL7zA6G4OWxgibRsJT9lLafJppjibev1TUxHYEia92BiaAtlc7u0BcOmUvA/0?wx_fmt=gif" class="" data-ratio="0.7" data-w="500" src="../Images/e8c1330a4ae95198ebdb17e4f3bb4cbb.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_gif/5ZACCn1bWEwrm1niax0xWl6tFwyaPqCHRL7zA6G4OWxgibRsJT9lLafJppjibev1TUxHYEia92BiaAtlc7u0BcOmUvA/0?wx_fmt=gif"/></p><p><br/></p>
+        
+</body>
+</html>

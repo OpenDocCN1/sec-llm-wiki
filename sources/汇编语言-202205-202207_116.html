@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>结队编程-使用Qt做出一个可视化界面</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>结队编程-使用Qt做出一个可视化界面</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzIxNDcwOTcwOQ==&amp;mid=2247493727&amp;idx=5&amp;sn=7f149de9282b4d9edb0cecb90ad2815d&amp;chksm=97a1ccfda0d645eba100da7346d7092c745431f3f625536a14427d875fbfb6aa1e4736ee8e48&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzIxNDcwOTcwOQ==&amp;mid=2247493727&amp;idx=5&amp;sn=7f149de9282b4d9edb0cecb90ad2815d&amp;chksm=97a1ccfda0d645eba100da7346d7092c745431f3f625536a14427d875fbfb6aa1e4736ee8e48&amp;scene=27#wechat_redirect</a></blockquote><p style="margin-bottom: 32px;line-height: 2em;"><span style="font-size: 14px;">   首先，我认为，做结队编程的这个项目，我们之前所做的个人香项目能提供的帮助微乎其微。代码的复用除了出题那块，几乎完全没有用到，只是一些在个人项目中使用到的思想对结队编程有一定的帮助。</span></p><p style="margin-bottom: 32px;line-height: 2em;"><span style="font-size: 14px;">   因为之前没有使用过Qt这个软件，所以我是边学边做，在Qt中因为提供了GUI库，所以UI界面能比较容易的做出来。在这个项目中，我使用了10个.h文件，10个.cpp文件和8个.ui文件，分别用来做登陆，注册，更改密码，选择题目类型，输入题目数量，出题，出选项，最终得分这些模块。万事开头难，在经过一定的摸索之后，Qt的核心也不过就是信号与槽函数相结合，在我们熟练掌握这一点之后，做出界面已经就不是难题了，它的难点在于“杂”，因为有很多个类，我们必须有条理的对这些类层层包含堆砌，因为一不小心就会出现重复声明或者未声明的错误。这真的花了我不少时间，我认为很有必要在一开始的时候就规划好所有的模块，避免无章无法。不得不吐槽一下C，include真的不好用！</span></p><p style="margin-bottom: 32px;line-height: 2em;"><span style="font-size: 14px;">    这个项目的难点在于出题并且计算出正确答案，再给出三个相近的错误答案。我们使用了一个类，对这些操作数进行封装，因为类较为方便的可以对同类项进行合并。因为这一块不是我负责的，我就不多说了。</span></p><p style="margin-bottom: 32px;line-height: 2em;"><span style="font-size: 14px;">    做这个项目确实学到了很多，像之前不会的对txt文件进行读取、修改，为数组动态开辟空间并作为返回值等等，很有帮助，很有意义！</span></p><p style="text-align: center;margin-bottom: 0em;"><img class="rich_pages wxw-img" data-galleryid="" data-ratio="0.64375" data-s="300,640" data-type="jpeg" data-w="640" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/fAG5BYsI9fWT2IYAPIwdva1qh6Q1da3W2icaiaw8lN7ia4waqhH8alib2oBagUgibibTyRnBmMK7zuqUKVEFzTJI5R8A/640?wx_fmt=jpeg" style="" src="../Images/9b8f6def06931f9f8362d053d292df10.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/fAG5BYsI9fWT2IYAPIwdva1qh6Q1da3W2icaiaw8lN7ia4waqhH8alib2oBagUgibibTyRnBmMK7zuqUKVEFzTJI5R8A/640?wx_fmt=jpeg"/></p><p style="margin-bottom: 32px;line-height: 2em;"><br/></p>
+        
+</body>
+</html>

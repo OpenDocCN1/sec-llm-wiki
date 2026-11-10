@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>基于Python的新恶意软件HolyCrypt意欲扩散</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>基于Python的新恶意软件HolyCrypt意欲扩散</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485715&amp;idx=1&amp;sn=b472e2352e4c3306437cc5c65afcbd75&amp;chksm=ea973879dde0b16f3c724fd47f84a8ae819d591613ffc8b164b52ad10d93627077f4e69759eb&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485715&amp;idx=1&amp;sn=b472e2352e4c3306437cc5c65afcbd75&amp;chksm=ea973879dde0b16f3c724fd47f84a8ae819d591613ffc8b164b52ad10d93627077f4e69759eb&amp;scene=27#wechat_redirect</a></blockquote><p style="text-indent: 2em;"><strong>有时攻击者在测试恶意软件时会出错，导致即将发布的产品会在早期测试阶段落入安全研究人员手中，这便于信息安全研究专家研究威胁是如何逐渐演变的。</strong></p><p style="text-indent: 2em;">最新发现的恶意软件HolyCrypt就是这样一个意外，由AVG安全研究员 Jakub Kroustek前天发现。</p><p style="text-indent: 2em;">通过源代码分析，HolyCrypt由一种非标准恶意软件代码Python编写，并使用PyInstaller工具整理成EXE文件，PyInstaller之前也用于创建PWOBot键盘记录器和比特币挖掘机等恶意软件。</p><p style="text-indent: 2em;"><strong>HolyCrypt使用Python编写，AES加密</strong></p><p style="text-indent: 2em;">HolyCrypt运行模式简单。一旦受害者感染，使用静态密码加密文件。这种简单机制之前很多安全研究员已经破解过。</p><p style="text-indent: 2em;">在Kroustek检测到的样本中，密码开始使用的是AES加密测试。与此同时，恶意软件的攻击目标是仅仅20KB的小文件，这条重要线索证明它的作者仍在开发恶意软件的过程中。</p><p style="text-indent: 2em;">另外，加密过后，恶意软件也会将用户的桌面换上新壁纸，壁纸底部的链接暂时还是虚拟的，也证明了HolyCrypt的开发者还没有完全开发完。</p><p style="text-indent: 2em;"><strong>HolyCrypt目前分布在虚假的PDF文件</strong></p><p style="text-indent: 2em;"><a name="OLE_LINK93"/><span style="line-height: 25.6px; text-indent: 32px; white-space: pre-wrap;">HolyCrypt的</span>作者使用了经典的双扩展方法，将可运行文件伪装成PDF文件名，例如ReportXYZ.pdf.exe。</p><p style="text-indent: 2em;">当前版本的HolyCrypt会在所有加密文件显示“已加密”字样。如果你的文件被锁定，谷歌搜索“HolyCrypt解密”查看安全专家是否已破解。</p>
+        
+</body>
+</html>

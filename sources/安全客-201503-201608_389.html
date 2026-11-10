@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>灾难级漏洞预警：不小心被开启的上帝模式</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>灾难级漏洞预警：不小心被开启的上帝模式</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA5ODA0NDE2MA==&amp;mid=204636499&amp;idx=2&amp;sn=30ed05319994b47bc4e92a31b567e9cc&amp;chksm=1951b13c2e26382a8c9fb11f670bb7bdb4c654cebed22c951949d9854f7da6010ef1834df7f2&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA5ODA0NDE2MA==&amp;mid=204636499&amp;idx=2&amp;sn=30ed05319994b47bc4e92a31b567e9cc&amp;chksm=1951b13c2e26382a8c9fb11f670bb7bdb4c654cebed22c951949d9854f7da6010ef1834df7f2&amp;scene=27#wechat_redirect</a></blockquote><p><span style="">来自：知乎乌云专栏</span></p><p><span style=""/></p><p style=""><span style="">通常来说银行的安全控件是保护电脑的，但这一次它给大家带来灾难性的安全问题（</span>WooYun-2015-096339<span style="">）。</span></p><p style=""><span style="font-weight: 900;"><span style="">它做了什么</span></span></p><p style=""><span style="">在 IE 中，有一个「safe mode」，默认配置下它一定是开启状态的，但你装了某些银行的控件后他们会把它关闭，目的是为了用户体验，这么做之后你使用网银时就不再需要再确认加载控件了，更重要的是，这个操作是永久的。</span></p><p style=""><span style="">这让我想起 14 年的一个漏洞，通杀 IE 3 - 11：</span></p><p style=""><span style="">获取一个 VBScript 函数的内存地址。</span></p><p style=""><span style="">通过上一步得到的地址使用第一个漏洞算出「safe mode」的地址。</span></p><p style=""><span style="">再使用第二个漏洞将「safe mode」设置为 0，开启「<span style="font-weight: 900;">上帝模式</span>」。</span></p><p style=""><span style="">现在，银行的「安全控件」相当于帮黑客做了这些事。</span></p><p style=""><span style="">开启上帝模式后，你浏览器到攻击者的网页时，它可以直接在你的电脑上做任何操作。比如，在电脑上静默下载一个 .exe 然后安装，安装了 .exe 就什么都能干了。</span></p><p style=""><span style="font-weight: 900;"><span style="">有关「信任域」</span></span></p><p style=""><span style="">严谨来说这个安全问题的还需要一个信任域站点的 XSS（网页内容注入） ，但相比IE漏洞成本是非常的小。</span></p><p style=""><span style="">你装上一些 IE 控件后他们通常会把自己的站点添加到 IE 的信任域内，你现在打开 「IE -&gt; 菜单栏 -&gt; 工具 -&gt; Internet 选项 -&gt; 受信任站点 -&gt; 站点」应该是能看到支付宝以及一些银行相关的站点，这些就是「信任域」了，这里面的站点任意一个页面内容可被控制被可能被黑客利用。</span></p><p style=""><span style="font-weight: 900;"><span style="">漏洞演示（请通过阅读原文进行观看）</span></span></p><p style=""><br/></p><p style=""><span style="font-weight: 900;"><span style="">影响范围</span></span></p><p style=""><span style="">浏览器：IE （无版本限制）</span></p><p style=""><span style="">银行控件：工商银行 / 建设银行 / 交通银行 / 华夏银行 （持续更新）</span></p><p style=""><span style="font-weight: 900;"><span style="">修复方式</span></span></p><p style=""><span style="">检测脚本和补丁：</span>fix.js<span style="">（下载后双击运行）</span></p><p style=""><span style="">手动修复：</span></p><p style=""><span style="">IE -&gt; 菜单栏 -&gt; 工具 -&gt; Internet 选项 -&gt; 受信任站点 -&gt; 点击「默认级别」-&gt; 点击「应用」</span></p><p style=""><span style="font-weight: 900;"><span style="">反馈</span></span></p><p style=""><span style="">如果你使用检测补丁发现了问题，但没有安装过上述列表的控件，可以看看你的信任域站点中都有哪些站点，回复到专栏下，这样可以帮我们找到更多存在安全问题的「安全控件」：）</span></p><p style=""><br/></p><p style=""><br/></p><p style="">本文转载自 知乎乌云专栏<br/>原文链接：http://zhuanlan.zhihu.com/wooyun/19967471</p><p><span style=""><br/></span><br/></p>
+        
+</body>
+</html>

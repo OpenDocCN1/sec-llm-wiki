@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>经合法Apple ID签名的新型MacOS恶意软件监控HTTPS流量</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>经合法Apple ID签名的新型MacOS恶意软件监控HTTPS流量</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485538&amp;idx=3&amp;sn=f3ddc39b162b7ecaec0163fbc8cf58b2&amp;chksm=ea973908dde0b01e68cabdebaa1330b4741d1d89f8a0f4747640f7a4836c06351e985ed2c3c9&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485538&amp;idx=3&amp;sn=f3ddc39b162b7ecaec0163fbc8cf58b2&amp;chksm=ea973908dde0b01e68cabdebaa1330b4741d1d89f8a0f4747640f7a4836c06351e985ed2c3c9&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKialR4OiauwkwRzgQ9oHicd8FM1RUcHcpFFTw0xibIlWypqFh10CCfapeJs1MyyoBusZJWQge5LIo6Gxsg/0?wx_fmt=png" data-ratio="0.521978021978022" data-w="728" src="../Images/be0f07a48716f4528d5707d848f0969f.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKialR4OiauwkwRzgQ9oHicd8FM1RUcHcpFFTw0xibIlWypqFh10CCfapeJs1MyyoBusZJWQge5LIo6Gxsg/0?wx_fmt=png"/></p><p><br/></p><p><strong>很多人以为自己用的是Mac计算机，所以恶意软件会少点。但事实并非如此。</strong></p><p><br/></p><p>迈克菲实验室指出，针对Mac计算机的恶意软件攻击在2016年上涨744%，研究人员已发现仅46万个Mac恶意软件样本，而这只不过占所有Mac恶意软件的一小部分。</p><p><br/></p><p>来自CheckPoint公司的恶意软件研究团队发现了一款无法被检测到的Mac恶意软件，影响所有版本的Mac OS X，VitursTotal无法检测到，而且“是通过一个合法的开发者证书（经苹果验证）签名的”。</p><p><br/></p><p>这款恶意软件被称为DOK，它通过邮件钓鱼活动得以传播，而且研究人员指出它是首个针对macOS用户的大规模恶意软件。该恶意软件旨在获取管理员权限并在目标系统上安装一个新的根证书，这样攻击者就能拦截并获取访问受害者所有通信的权限，包括SSL加密流量。</p><p><br/></p><p>差不多三个月前，来自Malwarebytes的研究人员也发现了一款少见的基于Mac的监控软件Fruitfly。后者旨在监控生物医药研究中心的计算机且多年来未被检测到。</p><p><br/></p><p><strong>DOK如何运作</strong></p><p><br/></p><p>DOK通过伪装成纳税申报单存在不一致信息的钓鱼邮件进行传播，诱骗受害者运行附件中的恶意.zip文件。由于恶意软件作者使用的是由苹果公司签名的合法开发者证书，DOK能轻易绕过macOS操作系统中的内置安全功能Gatekeeper。有意思的是，DOK恶意软件在几乎所有的杀毒产品中都无法被检测到。</p><p><br/></p><p>一旦被安装，恶意软件就会将自己拷贝到/Users/Shared/文件夹，然后增加到“longinItem”以便持续访问，每次系统重启时它都会自动执行直至有效负载安装完成。</p><p><br/></p><p>DOK随后会在所有的其它窗口上创建一个窗口，展示信息指出在操作系统中发现了一个安全问题且存在可用更新，但用户必须输入密码。一旦受害者安装了这个更新，恶意软件就获得了受害者设备上的管理员权限并更改受害者系统的网络设置，这样所有流出的连接都会经过一个代理。</p><p><br/></p><p>研究人员指出，恶意软件通过这些权限会安装OS X的数据包管理器brew，以便安装额外的工具TOR和SOCAT。</p><p><br/></p><p><strong>设置代理后自我删除</strong></p><p><br/></p><p>DOK随后会在受感染的Mac设备上安装一个新的根证书，这样攻击者就能通过中间人攻击拦截受害者的流量。研究人员之后，几乎所有的杀毒软件都没有更新签名数据库来发现DOKOS X恶意软件，因为DOK一旦在目标设备上修改好用于拦截目的的代理设置就会自我删除。苹果只要撤销这个被恶意使用的开发者证书就可解决问题。同时，用户要避免点击包含在来自不受信任来源的信息或邮件中的链接并在提供根密码时一定要格外谨慎。</p><p><br/></p><p><br/></p><p><strong style="white-space: normal;">本文由360代码卫士编译，不代表360观点，转载请注明“转自360代码卫士www.codesafe.cn”。</strong></p>
+        
+</body>
+</html>

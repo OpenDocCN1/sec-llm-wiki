@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>MacSpy：首款针对MacOS的恶意软件即服务面世</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>MacSpy：首款针对MacOS的恶意软件即服务面世</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485511&amp;idx=2&amp;sn=4f2236cbab6d22c48fa541616e6cc899&amp;chksm=ea97392ddde0b03be28658a3a815955fb204e240016bbdc21f98e966ef1fc9f5624aaa9350c7&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485511&amp;idx=2&amp;sn=4f2236cbab6d22c48fa541616e6cc899&amp;chksm=ea97392ddde0b03be28658a3a815955fb204e240016bbdc21f98e966ef1fc9f5624aaa9350c7&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiamWxdycyvWNibwbVPU4uFDjIz28osCwDSxhNg9BdeP1oIGIJ3vZCptrKN7XdGEOsRTUwBKn1yzygYw/0?wx_fmt=jpeg" data-ratio="0.6689655172413793" data-w="580" src="../Images/7cd6789a017dfe194c93e446e51198ab.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiamWxdycyvWNibwbVPU4uFDjIz28osCwDSxhNg9BdeP1oIGIJ3vZCptrKN7XdGEOsRTUwBKn1yzygYw/0?wx_fmt=jpeg"/></p><p><br/></p><p><strong>就在针对Mac用户的首款勒索即服务MacRansom面世几天后，第一款免费的恶意软件即服务MacSpy就出现在一家地下论坛上。</strong></p><p><br/></p><p>MacSpy的作者声称该恶意软件为“有史以来最复杂的Mac监控软件”，它构建自“MacOS上对此类程序的需求”。开发人员在广告上指出MacSpy有两种类别，一种免费一种高级，但并未对“高级”类别定价。</p><p><br/></p><p>免费类别支持经由TOR网络的匿名通信、可捕获截屏、记录按键、记录声音、检索剪贴板内容和浏览器数据以及在同步进程种抓取iCloud照片。另外，广告还声称MacSpy完全无法被追踪，AlienVault指出这是因所耗内存和CPU均少的原因。</p><p><br/></p><p>付费的MacSpy还能让用户调整抓取并远程记录间隔，并且能检索来自Mac的所有文件和数据、在几秒内加密整个用户目录，并且将恶意软件伪装成一个合法文件的格式。此外，它还支持对所收集文件的日常归档、访问邮件和社交网络账户、并且从更新和代码签名中获益。</p><p><br/></p><p>然而，MacSpy似乎并非完美无瑕，想要成为犯罪分子的人无法自动注册该服务，而是需要通过邮件向作者申请。创建账户后，作者会向新用户发送一个压缩文件以及解压指南。</p><p><br/></p><p>用户如果将MacSpy的解压文件夹放到USB驱动上并在必要时手动执行一个64位可执行文件 “updated” 就能感染机器。这个可执行文件并没有签名且似乎无法被VirusTotal上的多种杀毒公司检测到。</p><p><br/></p><p>除了 “updated” 文件外，这份文档还包含一个64位的可执行文件 “webkitprocy”，它是一个64位动态连接的共享库 “libevent-2.0.5.dylib” 和一个配置文件。鉴于webkitproxy和libevent-2.0.5.dylib由TOR签名，研究人员认为它们跟TOR洋葱路由功能相关。</p><p><br/></p><p>MacSpy还包括反分析功能，如调试器和虚拟化检查。跟MacRansom一样它还会检查是否在Mac上运行。为了保持持续性，MacSpy还会在~/Library/LaunchAgents/com.apple.webkit.plist上创建一个启动条目，确保它在每次启动时都会运行。</p><p><br/></p><p>执行后，MacSpy还会自我复制并将文件关联到“~/Library/.DS_Stores/” 上并删除原始文件夹。之后，它会使用curl命令联系C&amp;C服务器并通过POST请求通过TOR代理发送所收集数据。它还会删除用于收集数据的临时文件。</p><p><br/></p><p>AlienVault指出，MacSpy显示了人们对MacOS的关注增多，而MacOS一般被认为比较安全。未来针对MacOS的恶意软件会更多。</p><p><br/></p><p><br/></p><p><strong style="line-height: 25.6px; white-space: normal;">本文由360代码卫士编译，不代表360观点，转载请注明“转自360代码卫士www.codesafe.cn”。</strong></p>
+        
+</body>
+</html>

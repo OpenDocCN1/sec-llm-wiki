@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>微软Bing服务器暴露用户搜索查询和位置信息</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>微软Bing服务器暴露用户搜索查询和位置信息</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5Mzc4MzUzMQ==&amp;mid=2650254223&amp;idx=1&amp;sn=a8a580a2018250081144257dd7ba2d43&amp;chksm=be92c00b89e5491d492b0342c9c3cb75b930751c2b28728ac7f61d535bfc4623369bc665e237&amp;scene=126&amp;sessionid=1681667019#rd">http://mp.weixin.qq.com/s?__biz=MjM5Mzc4MzUzMQ==&amp;mid=2650254223&amp;idx=1&amp;sn=a8a580a2018250081144257dd7ba2d43&amp;chksm=be92c00b89e5491d492b0342c9c3cb75b930751c2b28728ac7f61d535bfc4623369bc665e237&amp;scene=126&amp;sessionid=1681667019#rd</a></blockquote><p style="text-align: center;"><img class="rich_pages js_insertlocalimg" data-ratio="0.521978021978022" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/hZj512NN8jmBvDMJOiaib7ONyNYlSC2ZnhiaCUrtCHvElFtlc1EoESo0WYN0tkM8e8mdRD1RncjEnElYPeeL83Fcw/640?wx_fmt=jpeg" data-type="jpeg" data-w="728" style="" src="../Images/6623ff282d8a939e792c925bedd8ca8a.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/hZj512NN8jmBvDMJOiaib7ONyNYlSC2ZnhiaCUrtCHvElFtlc1EoESo0WYN0tkM8e8mdRD1RncjEnElYPeeL83Fcw/640?wx_fmt=jpeg"/></p><p><br/></p><p>与Microsoft Bing相关的一个后端服务器暴露了搜索引擎移动应用用户的敏感数据，包括搜索查询、设备详细信息和GPS坐标等。<br/></p><p><br/></p><p>然而，日志数据库不包括任何个人信息，如姓名或地址。</p><p><br/></p><p>9月12日，WizCase的Ata Hakcil发现了这一数据泄露，它是一个6.5TB的海量日志文件缓存，任何人都可以在没有任何密码的情况下访问这些文件，这有可能让攻击者利用这些信息进行敲诈和网络钓鱼诈骗。</p><p><br/></p><p>WizCase称，服务器在9月10日之前一直受到密码保护，此后，身份验证似乎被无意中删除了。</p><p><br/></p><p>微软安全响应中心知悉后，于9月16日解决了这一错误配置。</p><p><br/></p><p>近年来，配置不当的服务器一直是数据泄露的持续来源，它会导致电子邮件地址、密码、电话号码和私人信息暴露。</p><p><br/></p><p>WizCase的Chase Williams在周一的一篇文章中说：“基于绝对的数据量，可以安全地推测，任何在服务器暴露的情况下使用Bing搜索的人都有风险。”“我们看到了来自70多个国家的搜索记录。”</p><p>一些搜索词包括搜索儿童色情内容和他们在搜索后访问的网站，以及“与枪支相关的查询，包括购买枪支的搜索历史记录，以及‘杀死共产主义者’之类的搜索词。”</p><p><br/></p><p>除了设备和位置的详细信息外，这些数据还包括使用移动应用程序执行搜索的确切时间、用户从搜索结果中访问的URL的部分列表以及三个唯一标识符，如ADID（Microsoft广告分配给广告的数字ID）、“deviceID”和“devicehash”。</p><p><br/></p><p>此外，该服务器还遭受了至少两次所谓的“meow attack”，这是一次自动网络攻击，自7月以来，该攻击已从14000多个不安全的数据库实例中抹去数据，且没有任何解释。</p><p><br/></p><p>尽管泄露的服务器没有透露姓名和其他个人信息，但WizCase警告说，这些数据可能被用于其他目的。此外，这还会让犯罪分子定位用户的行踪，用户可能会遭受人身攻击。</p><p><br/></p><p>“无论是搜索成人内容、欺骗重要人物、极端政治观点，还是人们在必应上搜索的数百件令人尴尬的事情，”该公司表示一旦黑客掌握了搜索查询信息，他们可以根据服务器上提供的详细信息查出受害者的身份，从而使受害者容易成为敲诈的目标。”</p><p style="box-sizing: border-box;margin-bottom: 10px;color: rgb(76, 76, 76);font-family: &quot;Helvetica Neue&quot;, Helvetica, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei&quot;, &quot;WenQuanYi Micro Hei&quot;, sans-serif;font-size: 14px;text-align: start;white-space: normal;background-color: rgb(255, 255, 255);"><br/></p>
+        
+</body>
+</html>

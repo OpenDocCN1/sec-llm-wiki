@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>揭露Tor隐秘服务的用户身份轻而易举</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>揭露Tor隐秘服务的用户身份轻而易举</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485953&amp;idx=1&amp;sn=b683b02e39aa058cc7253b9508ae4a4b&amp;chksm=ea973b6bdde0b27d2d769abf11cc2f689eaefb8952084f4cbb22da7b93d3434935105ea1522c&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485953&amp;idx=1&amp;sn=b683b02e39aa058cc7253b9508ae4a4b&amp;chksm=ea973b6bdde0b27d2d769abf11cc2f689eaefb8952084f4cbb22da7b93d3434935105ea1522c&amp;scene=27#wechat_redirect</a></blockquote><p>安全研究人员在上周阿姆斯特丹举行的Box会议中演示了Tor隐秘服务的用户是如何将自己的身份置于风险境地的，当然前提是攻击者愿意投入时间及资源来挖掘。</p><p><br/></p><p>这个发现具有重大意义，因为浏览Tor隐秘服务被认为比利用Tor网络匿名浏览公开网络更加安全。而现在，一切都发生了变化。CloudFlare的安全团队成员Filippo Vaisorda以及一名独立研究员George Tankersley在演讲中表示，破坏访问隐秘服务器的匿名权限极其容易——因此识别服务器用户身份也轻而易举。</p><p><br/></p><p>这是非常糟糕的事实，因为不仅狡诈的“丝绸之路”站点在运行这个隐秘服务，而且诸如Facebook的站点也在使用。Tor经常因以下现象而见诸报端：让在线毒品交易及其他犯罪活动成为可能，记者们、解密者们、安全研究人员们、以及任何珍视隐私的人们能够并且确实使用该服务匿名交换信息并浏览网络。</p><p><br/></p><p>安全研究人员指出，如果运行不必隐藏地址的隐秘服务，用户就不会受到这个风险的威胁。在启用TLS的站点上使用Tor可能是更好的办法。当使用Tor匿名浏览公开的网络时，用户会登录至一个入口点服务器，然后用户的流量会被重新路由并导出出口服务器，以此来隐藏IP地址。这种方法的劣势在于，从技术上来说运行足够的欺诈入口及出口节点来把用户接入Tor跟退出Tor的地方相连是有可能的。不过需要使用大量资源而且还不能被Tor运行者发现，但确实存在这个可能性。</p><p><br/></p><p>隐秘服务消除了这种可能性，因为所有的流量都位于Tor网络本身，并不存在可以连接入口节点的退出节点，这就是为什么人们认为使用隐秘服务更加安全的原因。</p><p><br/></p><p>隐秘服务要求HSDir（隐藏服务目录）节点的使用进行运行，两组三个节点。这些节点管理者与隐藏服务的连接，并且要证实恶意HSDir节点是“受信任的”，只需要连续运行四天。</p><p><br/></p><p>安全研究人员表示，攻击者能够通过运行HSDir节点来识别出用户的连接，人们之前认为非常难以办到，但实际上相对简单并且价格不贵。为了演示，他们设置了这些节点然后成功说服Facebook的隐秘服务将它们当做HSDir提供商。研究人员Tankersley表示，可以将恶意HSDir替换为这个进程中的一个出口节点。虽然HSDirs可以实现这个目的，但它的被保护程度要逊于出口节点。通过这种方式攻击隐秘服务用户要比攻击只是通过Tor连接到正常网站的用户容易得多。研究人员表示，虽然这个事实违反直觉，但人们有必要了解。不过依然需要在识别用户身份之前控制连接“入口”端中的某些东西。</p><p><br/></p><p>不过站点运营者也可采取措施应对这个风险。隐秘服务提供商要特别留心新的HSDir节点或者运行自己的HSDir节点，如果发现有其它HSDir节点试图连接至服务可提供告警信息。</p><p><br/></p><p>研究人员已发布软件工具以发现可疑HSDir节点，他们表示为隐秘服务更改Tor软件可以阻止此类相关联的攻击。不过购者需自慎。</p><p><br/></p><p>本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。</p><p><br/></p>
+        
+</body>
+</html>

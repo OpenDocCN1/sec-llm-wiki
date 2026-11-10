@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CA的统一基础架构管理器存在目录遍历漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>CA的统一基础架构管理器存在目录遍历漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485640&amp;idx=2&amp;sn=ee28e887edc2f701e2f9269ed3f2c7a2&amp;chksm=ea9739a2dde0b0b4c97e5233f0729197fbd55b6d569713291bdc4d8e4ce4f92029a1ed1aa21e&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485640&amp;idx=2&amp;sn=ee28e887edc2f701e2f9269ed3f2c7a2&amp;chksm=ea9739a2dde0b0b4c97e5233f0729197fbd55b6d569713291bdc4d8e4ce4f92029a1ed1aa21e&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKial1h3ibvbGsCT9loLyw5CQIChQIxyozHS35OricGx5PdeI90LkKn1THxIlnkXLWVuBzsJIVIR2pjuYg/0?wx_fmt=jpeg" data-ratio="0.6615384615384615" data-w="130" src="../Images/b56807e63c68a235b4bde271ccbb67de.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKial1h3ibvbGsCT9loLyw5CQIChQIxyozHS35OricGx5PdeI90LkKn1THxIlnkXLWVuBzsJIVIR2pjuYg/0?wx_fmt=jpeg"/><br/></p><p><br/></p><p><strong>CA Technologies统一基础架构管理器（UMI）——以前称为CA Nimsoft——存在三个漏洞需要修复，其中一个可被远程利用。</strong></p><p><br/></p><p>CA于2010年收购Nimsoft并开发了“single pane of glass”监控系统，涵盖服务器、网络、存储和数据库。</p><p><br/></p><p>其中最严重的漏洞由趋势科技的Zero Day Initiative发现，“rgod”是一个位于download_lar小服务程序中的目录遍历漏洞（CVE-2016-5803）。</p><p><br/></p><p>工控系统网络应急响应小组（ICS-CERT）表示UMI不会发现“解析到某个位置”的用户提供的路径名，该路径名位于打算使用的受限目录之外。</p><p><br/></p><p>“这会使得攻击者遍历文件系统以访问受限目录外的文件或目录。攻击者可能会创建或重写用于执行代码的关键文件，例如程序或库。”公告中表示。</p><p><br/></p><p>触发也不是特别难：在Service Pack 1 的8.4以及更早版本，UMI的遗漏序列如“..”能够到达用户目录之外。</p><p><br/></p><p>CA已经修复了此处的漏洞，并在此过程中修复了另外两个漏洞。</p><p><br/></p><p>CVE-2016-9164是另一个目录遍历漏洞，位于diag.jsp小服务程序中。</p><p><br/></p><p>CVE-2016-9165更难以利用。它位于get_sessions小服务程序中，可以返回所有活动会话的会话ID。攻击者可以使用这些信息劫持任何当前活动会话，包括管理会话。</p>
+        
+</body>
+</html>

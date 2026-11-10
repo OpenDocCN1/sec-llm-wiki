@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>朝鲜遭受无文件攻击</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>朝鲜遭受无文件攻击</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485530&amp;idx=2&amp;sn=bea415980da982f86c9619a2f615f1c8&amp;chksm=ea973930dde0b026a5bdcf81277085f4db86c5137e759baa6d33315ef4efd812515edbca6edc&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485530&amp;idx=2&amp;sn=bea415980da982f86c9619a2f615f1c8&amp;chksm=ea973930dde0b026a5bdcf81277085f4db86c5137e759baa6d33315ef4efd812515edbca6edc&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiamRRgS3nHKqr0VaXoYl8W8gdJIzTvP4vsNHFMcsxCbHPlnEfJR5aKFvTbkiabRUHz0WbQSX0OKfsbg/0?wx_fmt=jpeg" data-ratio="0.7750362844702468" data-w="689" src="../Images/507b2a5f72bc1b41978e193348fbba48.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiamRRgS3nHKqr0VaXoYl8W8gdJIzTvP4vsNHFMcsxCbHPlnEfJR5aKFvTbkiabRUHz0WbQSX0OKfsbg/0?wx_fmt=jpeg"/></p><p><br/></p><p><strong>安全公司Cylance新检测到一种无文件威胁Baijiu，攻击者主要通过钓鱼邮件传播，并攻陷了带有一系列后门“狮子山”的下载器“台风”。</strong></p><p><br/></p><p>研究人员指出，有三个因素引起了他们的注意，一是攻击不同寻常的复杂度，二是网络托管服务GeoCities（20世纪90年代流行）的应用，三是使用了多种混淆方法。</p><p><br/></p><p>钓鱼诱饵是2016年因狮子山台风引发的发生在朝鲜咸镜北道省的洪灾。100多人因此丧生，10多万人无家可归。诱骗文档中含有一个LNK文件和引用《2016年朝鲜咸镜北道省洪灾见闻》。这个LNK文件执行了一个Windows命令，抓取并运行javascript代码。这个代码会下载两个还会托管在GeoCities上的DLL文件。研究人员指出，两个DLL都可当做在资源部分编码的PowerShell脚本发射器，而且它们都使用了属于mywellnessmatters.com的过期证书。</p><p><br/></p><p>这个PowerShell脚本会查询寻找命名文件的GeoCities URL。如果未找到，那么脚本就什么措施都不会采取。研究人员分析的其中一个文件是另外一个负责传播并执行最终有效负载的PowerShell脚本。这些文件实际上是后门，能让攻击者枚举并控制文件、枚举驱动和版本信息、控制进程、枚举和控制注册信息、上传/下载文件、抓取屏幕截图并安全删除后门痕迹。</p><p><br/></p><p>这次攻击活动再次表明攻击者正转向无文件或无恶意软件攻击模式以逃避检测。研究人员指出，Baijiu通过多个DLL文件和PowerShell脚本从LNK文件转向“狮子山”后门，且它能够在每个阶段都实施自我混淆，这都是这次攻击的特别之处。另外使用GeoCities隐藏组件“表明攻击技巧中出现了令人困扰的新趋势，而这些技巧并不仅限于雅虎的GeoCiteis。”</p><p><br/></p><p>研究人员在一份邮件中澄清并未将攻击直接归因于中国。然而，他们认为“它可能是来自由赛门铁克首次说明的Egobot代码库……而且它跟影响范围更广泛的Dark Hotel行动有关联。”</p><p><br/></p><p>2014年11月，卡巴斯基实验室指出，几年来，一个名为Darkhotel的强大攻击者已针对高级个人发动一系列成功攻击，它所使用的方法和技术大大超出一般的网络犯罪行为的范围。攻击者具备运营能力、数学和加密分析的攻击能力，以及其它足以利用受信任商业网络和使用战略针对具体受害者群体发动攻击的资源。</p><p><br/></p><p><br/></p><p><strong style="white-space: normal;">本文由360代码卫士编译，不代表360观点，转载请注明“转自360代码卫士www.codesafe.cn”。</strong></p>
+        
+</body>
+</html>

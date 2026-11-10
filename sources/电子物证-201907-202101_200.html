@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>【emulator & simulator】有什么区别？</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>【emulator & simulator】有什么区别？</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAwNDcwMDgzMA==&amp;mid=2651035785&amp;idx=2&amp;sn=b9a45ca5e987e9b07d34d317fa10c66f&amp;chksm=80d0d778b7a75e6ee4eac4f06e368b8f8cc077f1dd4c00dc728579427505276d896aa6c514a2&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzAwNDcwMDgzMA==&amp;mid=2651035785&amp;idx=2&amp;sn=b9a45ca5e987e9b07d34d317fa10c66f&amp;chksm=80d0d778b7a75e6ee4eac4f06e368b8f8cc077f1dd4c00dc728579427505276d896aa6c514a2&amp;scene=27#wechat_redirect</a></blockquote><section style="line-height: 1.75em;margin-bottom: 10px;margin-top: 10px;"><strong>仿真器</strong>（emulator）和模拟器（simulator）是比较容易混淆的概念，这两个概念不仅针对计算机体系结构，在很多方面都有所应用，例如航空模拟器、街机仿真器等。</section><section style="line-height: 1.75em;margin-bottom: 10px;margin-top: 10px;"><strong>模拟器</strong>（simulator）是用于分析研究目标系统本身，模拟器系统本身要跟目标系统保持一致。例如飞行模拟器对于用户来讲其本身要跟真正的飞机一致；再比如gem5模拟器，其本身要跟CPU所有内部行为一致（包括内部运行原理都要一致）。好的模拟器本身也可以仿真其目标系统，但不是所有模拟器都有这个特性。</section><section style="line-height: 1.75em;margin-bottom: 10px;margin-top: 10px;"><strong>仿真器</strong>（emulator）的目的是作为目标系统的替代品，可以完全替代目标系统，完成其对外的功能，即仿真器系统只需要保证呈现给外部的行为跟目标系统一致（不需要保证内部运行原理一致）。例如想在电脑上玩小时候玩的街机游戏，就需要在电脑上安装一个街机仿真器（虽然很多人喜欢称其为“街机模拟器”）。使用仿真器的目的是模拟目标系统呈现出的运行环境，仿真器保证的是完成目标系统相同的行为，不在乎其内部实现原理，再例如EMU8086仿真器，可以在另一台非8086电脑上仿真8086微处理器的行为。即使再好的仿真器也不能作为模拟器用于研究目标系统内部运行原理。</section><section style="line-height: 1.75em;margin-bottom: 10px;margin-top: 10px;">针对gem5，其本身是一个CPU模拟器，但是因为其也能做到仿真器可以完成的工作（gem5运行于Atmoic模式）， 
+尽管其运行速度相比真正CPU差很多，也可以认为其是一个类似于EMU8086的CPU仿真器。但是尽管gem5运行于乱序(Out Of Order,
+ 
+简称O3)时，gem5可以被看做CPU模拟器，其内部模拟的CPU各个模块也不是完全一样，所以也可以任务，gem5是由仿真多个部件的仿真器构成的。总之，模拟器针对目标系统内部进行模拟，仿真器用于仿真目标系统对外的行为。</section><p><br/></p><p style="text-align: right;">作者：<span data-report-click="{&quot;mod&quot;:&quot;popu_379&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/wordwarwordwar&quot;}">长弓的坚持</span></p><p><img class="__bg_gif" data-copyright="0" data-ratio="0.3872832369942196" data-type="gif" data-w="692" style="line-height: 27.2px;white-space: normal;text-align: center;font-family: -apple-system-font, BlinkMacSystemFont, &quot;Helvetica Neue&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei UI&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;letter-spacing: 0.544px;box-sizing: border-box !important;overflow-wrap: break-word !important;visibility: visible !important;background-color: rgb(255, 255, 255);width: 677px !important;height: auto !important;" data-src="https://mmbiz.qpic.cn/mmbiz_gif/dDhDhftpRFvypLIddOk8EJNwFmGv5sw40Ty0d9OMXUbicPtzt610wXiaf0l7HdpW9JXT9OZf3JbuNh3FvUPJnAKQ/640?wx_fmt=gif" src="../Images/7a59bd5ed738ce74233c2630ee8f6fad.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_gif/dDhDhftpRFvypLIddOk8EJNwFmGv5sw40Ty0d9OMXUbicPtzt610wXiaf0l7HdpW9JXT9OZf3JbuNh3FvUPJnAKQ/640?wx_fmt=gif"/><br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>安全研究员发现福布斯网站多个漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>安全研究员发现福布斯网站多个漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485935&amp;idx=2&amp;sn=55f8afb2f6f693582a184a17377a0601&amp;chksm=ea973885dde0b193bf0421ceef013e4704579c83d25074bc709801e555d18c0131da367b6fff&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485935&amp;idx=2&amp;sn=55f8afb2f6f693582a184a17377a0601&amp;chksm=ea973885dde0b193bf0421ceef013e4704579c83d25074bc709801e555d18c0131da367b6fff&amp;scene=27#wechat_redirect</a></blockquote><p>安全专家Rafael Fontes Souza在福布斯（Forbes）网站上发现多个漏洞，并出于教育目的而披露。如下为具体详情。</p><p><br/></p><p>当网页应用程序允许用户通过某个参数值插入合法HTML代码并向目标页面注入自己的内容时，就会产生HTML注入漏洞。从本质上来看，当应用程序没有正确处理用户输入数据时就会发生HTML注入。要将这个漏洞转换为跨站点脚本漏洞，我们只需要使用一个脚本标签以执行自己的JS代码。这是简单的HTML，而福布斯网站实际上并没有像其他站点一样对输入进行编码，而是将我们输入的query添加到了自己的HTML代码中。</p><p><br/></p><p><span style="color: rgb(0, 176, 80); "><em>一些网页app会尝试本地应对措施如寻找包含里面带有“&lt;script&gt;”或 “alert”词语的“典型”攻击。在多数情况下，通过对有效负载的稍微修改就可以绕过此类薄弱的过滤。比如很多站点只是寻找准确的关键字的，但如果我们利用一些字母就可以混淆网络应用程序这样它就可以完美运行。</em></span></p><p><span style="color: rgb(0, 176, 80); "><em><br/></em></span></p><p>由于我并非为了盗取信息或用于恶意目的，所以并没有继续进行。但众所周知攻击者可以利用这个技术继续实施漏洞代码利用。步骤如下：</p><ul style="list-style-type: disc; " class=" list-paddingleft-2"><li><p>攻击者发现注入漏洞并使用HTML注入攻击。</p></li><li><p>攻击者编造恶意链接，包括诸如的HTML内容并将其通过邮件发送给用户。</p></li><li><p>由于页面位于受信任的域名，因此用户访问该页面。</p></li><li><p>攻击者注入的HTML释放，并要求用户给出凭证（用户名及密码）。</p></li><li><p>用户输入的凭证被发送至攻击者的服务器中。</p></li></ul><p><br/></p><p>缓解措施</p><ul style="list-style-type: disc; " class=" list-paddingleft-2"><li><p>过滤特殊字符的输入参数</p></li><li><p>根据特殊字符的输入参数过滤输出</p><p><br/></p></li></ul><p>代码应当从用户输入中过滤元字符。管理员必须针对网络应用程序采取适当措施以阻止此类攻击的发生，因为攻击后果远超预期。所有上述信息均用于教育目的，所有它用我们概不负责。</p><p><br/></p><p>本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。</p><p><br/></p>
+        
+</body>
+</html>

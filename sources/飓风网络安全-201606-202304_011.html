@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Jira Service Management Server和Data Center身份认证绕过漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Jira Service Management Server和Data Center身份认证绕过漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI3NzMzNzE5Ng==&amp;mid=2247485701&amp;idx=1&amp;sn=d47dbad64ec1357f7a380fb40c8e87ea&amp;chksm=eb668c06dc1105102b0c78d865f16991d507b9d5299065254c20293098db96e108dcbf493379&amp;scene=126&amp;sessionid=1681407022#rd">http://mp.weixin.qq.com/s?__biz=MzI3NzMzNzE5Ng==&amp;mid=2247485701&amp;idx=1&amp;sn=d47dbad64ec1357f7a380fb40c8e87ea&amp;chksm=eb668c06dc1105102b0c78d865f16991d507b9d5299065254c20293098db96e108dcbf493379&amp;scene=126&amp;sessionid=1681407022#rd</a></blockquote><p>漏洞描述:</p><p>CVE-2023-22501 
+        
+            
+                <br/></p><p>近日，飓风安全应急团队监测到Atlassian官方发布安全公告，修复了一个存在于Jira Service Management 
+Server和Data Center中的身份认证绕过漏洞，该漏洞是当Jira Service 
+Management开启用户目录和邮件外发的写入权限时，攻击者可获取尚未登录过账户的用户注册凭证，最终攻击者可冒用这些用户身份获得对Jira 
+Service Management实例访问权限。</p><p><strong>【受影响版本】</strong></p><ul class="list-paddingleft-1"><li><p>5.3.0 &lt;= Jira Service Management Server/Data Center &lt;= 5.3.2</p></li><li><p>5.4.0 &lt;= Jira Service Management Server/Data Center &lt;= 5.4.1</p></li><li><p>Jira Service Management Server/Data Center = 5.5.0</p><p><br/></p></li></ul><p><strong>【安全版本】</strong></p><ul class="list-paddingleft-1"><li><p>Jira Service Management Server/Data Center &gt;= 5.3.3</p></li><li><p>Jira Service Management Server/Data Center &gt;= 5.4.2</p></li><li><p>Jira Service Management Server/Data Center &gt;= 5.5.1</p></li><li><p>Jira Service Management Server/Data Center &gt;= 5.6.0</p></li></ul><p><img class="rich_pages wxw-img" data-ratio="0.1892744479495268" data-src="https://mmbiz.qpic.cn/mmbiz_png/ibhQpAia4xu01pQbiaAlRib2tskSckMdqcLjRwIt7L1ELzShZ3r6fibbamxaia2JH8EMzmic4wgDMjYaJgQZMw2sc3VUA/640?wx_fmt=png" data-type="png" data-w="317" src="../Images/282350642bfdd98bb141fe17938f2845.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/ibhQpAia4xu01pQbiaAlRib2tskSckMdqcLjRwIt7L1ELzShZ3r6fibbamxaia2JH8EMzmic4wgDMjYaJgQZMw2sc3VUA/640?wx_fmt=png"/></p><p>Jira Service Management基于Jira平台，是Atlassian为所有团队提供的服务管理解决方案。</p><p><br/></p><p>影响范围
+        </p><p>5.3.0 &lt;= Jira Service Management Server/Data Center &lt;= 5.3.2 
+、5.4.0 &lt;= Jira Service Management Server/Data Center &lt;= 5.4.1、 
+Jira Service Management Server/Data Center = 5.5.0</p><p><br/></p><p>解决方案
+    </p><p><span style="font-weight: 600;border-bottom: 1px solid #002664;color: #002664;">修复建议</span>
+            </p><p><strong>临时修复建议：</strong></p><ul class="list-paddingleft-1"><li><p>如果目前无法升级，若业务环境允许，使用白名单限制相关端口的访问来降低风险。</p></li><li><p>如果您的 Jira 站点是通过 atlassian.net 域访问的，则它由 Atlassian 托管，您不会受到该漏洞的影响。</p></li><li><p>若暂时无法升级Jira Service Management，您可以通过手动升级至特定版本的servicedesk-variable-substitution-plugin JAR文件作为临时解决方法。</p></li></ul><p>手动升级servicedesk-variable-substitution-plugin jar文件的步骤：</p><p>1、 根据以下链接下载版本特定的JAR文件</p><p>Jira Service Management 5.5.0：https://confluence.atlassian.com/jira/files/1188786458/1206784728/1/1674516535669/servicedesk-variable-substitution-plugin-5.5.1-REL-0005.jar</p><p>Jira Service Management 5.4.0, 5.4.1：https://confluence.atlassian.com/jira/files/1188786458/1206784727/1/1674516523541/servicedesk-variable-substitution-plugin-5.4.2-REL-0005.jar</p><p>Jira Service Management 5.3.0, 5.3.1, 5.3.2：https://confluence.atlassian.com/jira/files/1188786458/1206784726/1/1674516479803/servicedesk-variable-substitution-plugin-5.3.3-REL-0001.jar</p><p>2、停止Jira</p><p>3、复制jar包至Jira home目录</p><p>(a)Server：&lt;Jira_Home&gt;/plugins/installed-plugins</p><p>(b)Data Center：&lt;Jira_Shared&gt;/plugins/installed-plugins</p><p>4、启动Jira</p><p><strong>通用修复建议：</strong></p><p>官方已经针对漏洞发布了版本更新，下载地址如下：</p><ul class="list-paddingleft-1"><li><p>https://www.atlassian.com/zh/software/jira/service-management/download-archives</p></li></ul><p><br/></p><p style="display: none;"><mp-style-type data-value="3"/></p>
+        
+</body>
+</html>

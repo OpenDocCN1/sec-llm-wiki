@@ -1,0 +1,463 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>病毒木马查杀第004篇：熊猫烧香之专杀工具的编写</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>病毒木马查杀第004篇：熊猫烧香之专杀工具的编写</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAwMDQwNTE5MA==&amp;mid=209222458&amp;idx=4&amp;sn=8568a401ee45b955538ec7d0899aba0c&amp;chksm=1365a09324122985f241bd68070d000f87edc1e62cc0f6f2d90c6d4b89a00c80ed99c935ffdf&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzAwMDQwNTE5MA==&amp;mid=209222458&amp;idx=4&amp;sn=8568a401ee45b955538ec7d0899aba0c&amp;chksm=1365a09324122985f241bd68070d000f87edc1e62cc0f6f2d90c6d4b89a00c80ed99c935ffdf&amp;scene=27#wechat_redirect</a></blockquote><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);">一、前言</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);">      如果是非感染型的病毒，完成行为分析之后，就可以开始编写专杀工具了。当然对于我们这次研究的对象——“熊猫烧香”来说，其实通过之前的行为分析，我们并没有得出它的所有恶意行为，毕竟还没有对其进行逆向分析。所以这里仅针对我们上一篇文章所得出的结果，来进行专杀工具的编写。一般来说，专杀工具既可以用批处理实现，又可以用编程语言编写，但是现实中更多的还是用后者进行制作的，因为其更加严谨、灵活。因此我这里会使用C++来写一个简单的“熊猫烧香”专杀程序。</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);">二、病毒行为回顾与归纳<br/></p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);">      这里我们首先回顾一下病毒的行为：</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);">      病毒行为1：病毒本身创建了名为“spoclsv.exe”的进程，该进程文件的路径为“C:\WINDOWS\system32\drivers\spoclsv.exe”。</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);">      病毒行为2：在命令行模式下使用net share命令来取消系统中的共享。</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);">      病毒行为3：删除安全类软件在注册表中的启动项。</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);">      病毒行为4：在注册表“HKCU\Software\Microsoft\Windows\CurrentVersion\Run”中创建“svcshare”，用于在开机时启动位于“C:\WINDOWS\system32\drivers\spoclsv.exe”的病毒程序。</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);">      病毒行为5：修改注册表，使得隐藏文件无法通过普通的设置进行显示，该位置为：HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\Folder\Hidden\SHOWALL，病毒将CheckedValue的键值设置为了0。</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);">      病毒行为6：将自身拷贝到根目录，并命名为“setup.exe”，同时创建“autorun.inf”用于病毒的启动，这两个文件的属性都是“隐藏”。</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);">      病毒行为7：在一些目录中创建名为“Desktop_.ini”的隐藏文件。</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);">      病毒行为8：向外发包，连接局域网中其他机器。</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);">      纵观以上八点行为，这里需要说明的是，其中的第二点行为，由于我不知道用户计算机在中毒前的设置，因此这条我打算忽略。第三点行为，我不知道用户的计算机安装了哪些杀毒软件，而病毒又会将所有杀软的注册表启动项删除，所以这一条我打算忽略，用户在使用本专杀工具后，可以自行重新安装杀软，或者有经验的用户也可以自行在注册表中添加回杀软名称。另外，病毒的第八点行为，我也打算忽略，因为只要删除了病毒本体，那么自然就解决了这个问题，所以我的专杀工具主要应付剩下的五个问题。在这里各位读者想必也能够发现，我的专杀工具所要做的工作，与我之前写的手动查杀的过程其实是极为相似的，这也是为什么我当时就强调，我们依旧要掌握手动查杀病毒这个技能的原因。</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);"><br/></p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);">三、专杀工具界面的制作</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);">      如果使用批处理来杀毒，因为它运行时没有界面，因此我们往往不知道杀毒程序究竟干了些什么，也不知道究竟有没有查杀成功，这也凸显了使用高级语言开发专杀工具的优势。这里我使用MFC进行“熊猫烧香”病毒专杀工具的开发，绘制界面如下图所示：</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);"><span style="font-size: 14px; font-family: Arial;"><img width="473" height="432" data-src="http://mmbiz.qpic.cn/mmbiz/2dMzopbOicL8oDIibFHVPyNmH7NTN6o2JCicw9pqM7GgYXgUu3BWFBHoTu4qC7tczTa5LvTaQhwxhuytPYiaM23zYA/0?wx_fmt=jpeg" aid="365639" zoomfile="http://attach.52pojie.cn/forum/201501/02/005531b0a5ly282gdz0rgs.jpg" file="http://attach.52pojie.cn/forum/201501/02/005531b0a5ly282gdz0rgs.jpg" inpost="1" lazyloaded="true" load="1" title="clip_image001.jpg" style="border: none; max-width: 688px; box-shadow: rgb(153, 153, 153) 1px 1px 3px;" class="" data-type="jpeg" data-ratio="0.9133192389006343" data-w="473" src="../Images/ba2ab1b548d3821e6f4f079811770b47.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/2dMzopbOicL8oDIibFHVPyNmH7NTN6o2JCicw9pqM7GgYXgUu3BWFBHoTu4qC7tczTa5LvTaQhwxhuytPYiaM23zYA/0?wx_fmt=jpeg"/></span></p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);">其中的“Edit Box”控件的属性调整如下：</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);"><span style="font-size: 14px; font-family: Arial;"><img width="528" height="195" data-src="http://mmbiz.qpic.cn/mmbiz/2dMzopbOicL8oDIibFHVPyNmH7NTN6o2JCia10EJfcia9aiaPzwtLyQl3Et9icjvmhNx424a0BPHDAZY3QqNoEqPnaOA/0?wx_fmt=jpeg" aid="365640" zoomfile="http://attach.52pojie.cn/forum/201501/02/005618t81ofbqqrogxiqbx.jpg" file="http://attach.52pojie.cn/forum/201501/02/005618t81ofbqqrogxiqbx.jpg" inpost="1" lazyloaded="true" load="1" initialized="true" title="clip_image001.jpg" style="border: none; max-width: 688px; box-shadow: rgb(153, 153, 153) 1px 1px 3px;" class="" data-type="jpeg" data-ratio="0.3693181818181818" data-w="528" src="../Images/09cf3fe4343075db122fb1ddf5b190a1.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/2dMzopbOicL8oDIibFHVPyNmH7NTN6o2JCia10EJfcia9aiaPzwtLyQl3Et9icjvmhNx424a0BPHDAZY3QqNoEqPnaOA/0?wx_fmt=jpeg"/></span></p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);"><span style="word-wrap: break-word; font-weight: 700; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; line-height: 21px;"><span style="word-wrap: break-word;"/></span></p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);">四、计算病毒程序的散列值</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);">      在查杀病毒的技术中有一种方法类似于特征码查杀法，这种方法并不从病毒内提取特征码，而是计算病毒的散列值。利用这个散列值，就可以在查杀的过程中计算每个文件的散列，然后进行比较。这种方法简单易于实现，一般在病毒刚被发现时，在逆向分析前使用。常见的计算散列的算法有MD5、Sha-1以及CRC32等。</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);">这里使用CRC32算法计算散列值，代码如下：</p><pre class="brush:cpp;toolbar:false" style="margin-top: 0px; margin-bottom: 0px; padding: 3px 5px; clear: both; background-color: rgb(255, 255, 245); border: 1px dotted rgb(170, 170, 170); word-wrap: break-word; font-family: georgia, serif; color: rgb(68, 68, 68); font-size: 12px; line-height: 21.600000381469727px;">&lt;font color="#000"&gt;&lt;font face="Arial"&gt;DWORD CRC32(BYTE* ptr,DWORD Size)
+{   
+    DWORD crcTable[256],crcTmp1;   
+    //动态生成CRC-32表
+    for (int i=0; i&lt;256; i++)
+    {
+        crcTmp1 = i;
+        for (int j=8; j&gt;0; j--)
+        {
+            if (crcTmp1&amp;1) crcTmp1 = (crcTmp1 &gt;&gt; 1) ^ 0xEDB88320L;
+            else crcTmp1 &gt;&gt;= 1;
+        }
+         
+        crcTable[i] = crcTmp1;
+    }
+    //计算CRC32值
+    DWORD crcTmp2= 0xFFFFFFFF;
+    while(Size--)
+    {
+        crcTmp2 = ((crcTmp2&gt;&gt;8) &amp; 0x00FFFFFF) ^ crcTable[ (crcTmp2^(*ptr)) &amp; 0xFF ];
+        ptr++;
+    }   
+    return (crcTmp2^0xFFFFFFFF);
+}&lt;/font&gt;&lt;/font&gt;</pre><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);">该函数的参数有两个，一个是指向缓冲区的指针，第二个是缓冲区的长度。它将文件全部读入缓冲区中，然后用CRC32函数计算文件的CRC32散列值，可以得到我所研究的“熊猫烧香”病毒的散列值为0x89240FCD。这里请大家注意，不同版本的病毒的散列值是不同的，我所得出的这个值仅针对我所讨论的这个版本的病毒。</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);">五、查找进程与提升权限</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);">      我们需要在内存中查找病毒是否存在，代码如下：</p><pre class="brush:cpp;toolbar:false" style="margin-top: 0px; margin-bottom: 0px; padding: 3px 5px; clear: both; background-color: rgb(255, 255, 245); border: 1px dotted rgb(170, 170, 170); word-wrap: break-word; font-family: georgia, serif; color: rgb(68, 68, 68); font-size: 12px; line-height: 21.600000381469727px;">&lt;font color="#000"&gt;&lt;font face="Arial"&gt;BOOL FindTargetProcess(char *pszProcessName,DWORD *dwPid)
+{
+    BOOL bFind = FALSE;
+     
+    HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS,0);
+    if (hProcessSnap == INVALID_HANDLE_VALUE)
+    {
+        return bFind;
+    }
+     
+    PROCESSENTRY32 pe = { 0 };
+    pe.dwSize = sizeof(pe);
+     
+    BOOL bRet = Process32First(hProcessSnap,&amp;pe);
+    while (bRet)
+    {
+        if (lstrcmp(pe.szExeFile,pszProcessName) == 0)
+        {
+            *dwPid = pe.th32ProcessID;
+            bFind = TRUE;
+            break;
+        }
+        bRet = Process32Next(hProcessSnap,&amp;pe);
+    }
+ 
+    CloseHandle(hProcessSnap);
+     
+    return bFind;
+}&lt;/font&gt;&lt;/font&gt;</pre><p style="margin-top: 0px; margin-bottom: 0px; padding: 0px; line-height: 26px; color: rgb(68, 68, 68); white-space: normal; word-wrap: break-word; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; background-color: rgb(255, 255, 255);"><span style="color: rgb(0, 0, 0); word-wrap: break-word;"><span style="font-family: Arial; word-wrap: break-word;"/></span> 这里还需要提升系统的权限，提升成功后，当前进程就可以访问一些受限的系统资源。代码如下：</p><pre class="brush:cpp;toolbar:false" style="margin-top: 0px; margin-bottom: 0px; padding: 3px 5px; clear: both; background-color: rgb(255, 255, 245); border: 1px dotted rgb(170, 170, 170); word-wrap: break-word; font-family: georgia, serif; color: rgb(68, 68, 68); font-size: 12px; line-height: 21.600000381469727px;">&lt;font color="#000"&gt;&lt;font face="Arial"&gt;BOOL EnableDebugPrivilege(char *pszPrivilege)
+{
+    HANDLE hToken = INVALID_HANDLE_VALUE;
+    LUID luid;
+    TOKEN_PRIVILEGES tp;
+ 
+    BOOL bRet = OpenProcessToken(GetCurrentProcess(),TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY,&amp;hToken);
+    if (bRet == FALSE)
+    {
+        return bRet;
+    }
+ 
+    bRet = LookupPrivilegeValue(NULL,pszPrivilege,&amp;luid);
+    if (bRet == FALSE)
+    {
+        return bRet;
+    }
+ 
+    tp.PrivilegeCount = 1;
+    tp.Privileges[0].Luid = luid;
+    tp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
+ 
+    bRet = AdjustTokenPrivileges(hToken,FALSE,&amp;tp,sizeof(tp),NULL,NULL);
+ 
+    return bRet;
+}&lt;/font&gt;&lt;/font&gt;</pre><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);">六、查找并删除Desktop_.ini文件</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);">      病毒会在所有盘符下面的非系统目录中创建名为Desktop_.ini的文件，虽说这个文件看似并不会对系统产生什么危害，但是为了实现对“熊猫烧香”的彻底查杀，还是应当将其删除的。这里主要涉及两方面的知识，一个是遍历整个磁盘的文件，这需要使用FindFirstFile()与FindNextFile()这两个API函数，并采用递归调用的方法；另一个是修改文件属性，因为病毒创建出来的文件会带有系统、只读和隐藏这三个属性，若不对其进行更改，是无法删除病毒文件的。依照这个思想，编写代码如下：</p><pre class="brush:cpp;toolbar:false" style="margin-top: 0px; margin-bottom: 0px; padding: 3px 5px; clear: both; background-color: rgb(255, 255, 245); border: 1px dotted rgb(170, 170, 170); word-wrap: break-word; font-family: georgia, serif; color: rgb(68, 68, 68); font-size: 12px; line-height: 21.600000381469727px;">&lt;font color="#000"&gt;&lt;font face="Arial"&gt;DWORD WINAPI FindFiles(LPVOID lpszPath)
+{
+        WIN32_FIND_DATA stFindFile;
+        HANDLE hFindFile;
+    // 扫描路径
+    char szPath[MAX_PATH];    
+    char szFindFile[MAX_PATH];
+    char szSearch[MAX_PATH];
+    char *szFilter;
+    int len;
+    int ret = 0;
+ 
+    szFilter = "*.*";
+    lstrcpy(szPath, (char *)lpszPath);
+ 
+    len = lstrlen(szPath);
+    if(szPath[len-1] != '\\')
+    {
+        szPath[len] = '\\';
+        szPath[len+1] = '\0';
+    }
+ 
+    lstrcpy(szSearch, szPath);
+    lstrcat(szSearch,szFilter);
+ 
+    hFindFile = FindFirstFile(szSearch, &amp;stFindFile);
+    if(hFindFile != INVALID_HANDLE_VALUE)
+    {
+        do
+        {
+            lstrcpy(szFindFile, szPath);
+                    lstrcat(szFindFile, stFindFile.cFileName);
+ 
+            if(stFindFile.dwFileAttributes &amp; FILE_ATTRIBUTE_DIRECTORY)
+            {
+                if(stFindFile.cFileName[0] != '.')
+                {
+                    FindFiles(szFindFile);
+                }
+            }
+            else
+            {
+                if(!lstrcmp(stFindFile.cFileName,"Desktop_.ini"))
+                {
+                                    // 去除文件的隐藏、系统以及只读属性
+                                    DWORD dwFileAttributes = GetFileAttributes(szFindFile);
+                                    dwFileAttributes &amp;= ~FILE_ATTRIBUTE_HIDDEN;
+                                    dwFileAttributes &amp;= ~FILE_ATTRIBUTE_SYSTEM;
+                                    dwFileAttributes &amp;= ~FILE_ATTRIBUTE_READONLY;
+                                    SetFileAttributes(szFindFile, dwFileAttributes);
+                                    // 删除Desktop_.ini
+                                    BOOL bRet = DeleteFile(szFindFile); 
+                                    csTxt += szFindFile;
+                                    if (bRet)
+                                    {
+                                        csTxt += _T("被删除！\r\n");
+                                    } 
+                                    else
+                                    {
+                                        csTxt += _T("无法删除\r\n");
+                                    }
+                }
+            }
+            ret = FindNextFile(hFindFile, &amp;stFindFile);
+        }while(ret != 0);
+    }
+ 
+    FindClose(hFindFile);
+     
+    return 0;
+}&lt;/font&gt;&lt;/font&gt;</pre><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);">需要说明的是，这里需要在本程序前定义一个CString类型的csTxt全局变量，用于将查杀的结果信息输出到程序界面，之后的程序中也会用到这个变量。</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);">七、主程序的编写</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);">      主程序也就是“一键查杀”按钮的响应，我在代码中已添加相应的注释：</p><pre class="brush:cpp;toolbar:false" style="margin-top: 0px; margin-bottom: 0px; padding: 3px 5px; clear: both; background-color: rgb(255, 255, 245); border: 1px dotted rgb(170, 170, 170); word-wrap: break-word; font-family: georgia, serif; color: rgb(68, 68, 68); font-size: 12px; line-height: 21.600000381469727px;">&lt;font color="#000"&gt;&lt;font face="Arial"&gt;void CKillWhBoyDlg::OnBtnKill() 
+{
+    // TODO: Add your control notification handler code here
+    BOOL bRet = FALSE;
+    DWORD dwPid = 0; 
+///////////////////////////////////////////////////////////////////
+//  结束spoclsv.exe进程，并删除病毒程序本身
+///////////////////////////////////////////////////////////////////
+    bRet = FindTargetProcess("spoclsv.exe", &amp;dwPid);
+    if (bRet == TRUE)
+    {
+        csTxt = _T("检查系统内存...\r\n");
+        csTxt += _T("系统中存在病毒进程:spoclsv.exe\r\n");
+        csTxt += _T("准备进行查杀...\r\n");
+        SetDlgItemText(IDC_LIST,csTxt);   
+        // 提升权限
+        bRet = EnableDebugPrivilege(SE_DEBUG_NAME);
+        if (bRet == FALSE)
+        {
+            csTxt += _T("提升权限失败\r\n");
+        }
+        else
+        {
+            csTxt += _T("提升权限成功！\r\n");
+        }
+        SetDlgItemText(IDC_LIST,csTxt);
+        // 打开并尝试结束病毒进程
+        HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS,FALSE,dwPid);
+        if (hProcess == INVALID_HANDLE_VALUE)
+        {
+            csTxt += _T("无法结束病毒进程\r\n");
+            return ;
+        }
+        bRet = TerminateProcess(hProcess,0);
+        if (bRet == FALSE)
+        {
+            csTxt += _T("无法结束病毒进程\r\n");
+            return ;
+        }
+        csTxt += _T("病毒进程已经结束\r\n");
+        SetDlgItemText(IDC_LIST,csTxt);
+        CloseHandle(hProcess);
+    }
+    else
+    {
+        csTxt += _T("系统中不存在spoclsv.exe病毒进程\r\n");
+    }
+ 
+    Sleep(10);
+    // 查杀磁盘中是否存在名为spoclsv.exe的病毒文件
+    char szSysPath[MAX_PATH] = { 0 };
+    GetSystemDirectory(szSysPath,MAX_PATH);
+     
+    lstrcat(szSysPath,"\\drivers\\spoclsv.exe");
+ 
+    csTxt += _T("检查硬盘中是否存在spoclsv.exe文件...\r\n");
+ 
+    if (GetFileAttributes(szSysPath) == 0xFFFFFFFF)
+    {
+        csTxt += _T("spoclsv.exe病毒文件不存在\r\n");
+    }
+    else
+    {
+        csTxt += _T("spoclsv.exe病毒文件存在，正在计算散列值\r\n");
+ 
+        HANDLE hFile = CreateFile(szSysPath,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
+        if (hFile == INVALID_HANDLE_VALUE)
+        {
+            AfxMessageBox("Create Error");
+            return ;
+        }
+        DWORD dwSize = GetFileSize(hFile,NULL);
+        if (dwSize == 0xFFFFFFFF)
+        {
+            AfxMessageBox("GetFileSize Error");
+            return ;
+        }
+        BYTE *pFile = (BYTE*)malloc(dwSize);
+        if (pFile == NULL)
+        {
+            AfxMessageBox("malloc Error");
+            return ;
+        }
+         
+        DWORD dwNum = 0;
+        ReadFile(hFile,pFile,dwSize,&amp;dwNum,NULL);
+        // 计算spoclsv.exe的散列值
+        DWORD dwCrc32 = CRC32(pFile,dwSize);
+ 
+        if (pFile != NULL)
+        {
+            free(pFile);
+            pFile = NULL;
+        }
+ 
+        CloseHandle(hFile);
+        // 0x89240FCD是“熊猫烧香”病毒的散列值
+        if (dwCrc32 != 0x89240FCD)
+        {
+            csTxt += _T("spoclsv.exe校验和验证失败\r\n");
+        }
+        else
+        {
+            csTxt += _T("spoclsv.exe校验和验证成功，正在删除...\r\n");
+            // 去除文件的隐藏、系统以及只读属性
+            DWORD dwFileAttributes = GetFileAttributes(szSysPath);
+            dwFileAttributes &amp;= ~FILE_ATTRIBUTE_HIDDEN;
+            dwFileAttributes &amp;= ~FILE_ATTRIBUTE_SYSTEM;
+            dwFileAttributes &amp;= ~FILE_ATTRIBUTE_READONLY;
+            SetFileAttributes(szSysPath, dwFileAttributes);
+            // 删除spoclsv.exe
+            bRet = DeleteFile(szSysPath);
+            if (bRet)
+            {
+                csTxt += _T("spoclsv.exe病毒被删除！\r\n");
+            } 
+            else
+            {
+                csTxt += _T("spoclsv.exe病毒无法删除\r\n");
+            }
+        }
+    }  
+    SetDlgItemText(IDC_LIST,csTxt);
+    Sleep(10);
+///////////////////////////////////////////////////////////////////
+//  删除每个盘符下的setup.exe与autorun.inf，以及Desktop_.ini
+///////////////////////////////////////////////////////////////////
+    char szDriverString[MAXBYTE] = { 0 };  
+    char *pTmp = NULL;  
+    //获取字符串类型的驱动器列表  
+    GetLogicalDriveStrings(MAXBYTE, szDriverString);  
+   
+    pTmp = szDriverString;  
+   
+    while( *pTmp )  
+    {  
+        char szAutorunPath[MAX_PATH] = { 0 };    
+        char szSetupPath[MAX_PATH] = { 0 };
+        lstrcat(szAutorunPath,pTmp);
+        lstrcat(szAutorunPath,"autorun.inf");
+        lstrcat(szSetupPath,pTmp);
+        lstrcat(szSetupPath,"setup.exe");
+ 
+        if (GetFileAttributes(szSetupPath) == 0xFFFFFFFF)
+        {
+            csTxt += pTmp;
+            csTxt += _T("setup.exe病毒文件不存在\r\n");
+        }
+        else
+        {
+            csTxt += pTmp;
+            csTxt += _T("setup.exe病毒文件存在，正在进行计算校验和...\r\n");
+            HANDLE hFile = CreateFile(szSetupPath,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
+            if (hFile == INVALID_HANDLE_VALUE)
+            {
+                AfxMessageBox("Create Error");
+                return ;
+            }
+            DWORD dwSize = GetFileSize(hFile,NULL);
+            if (dwSize == 0xFFFFFFFF)
+            {
+                AfxMessageBox("GetFileSize Error");
+                return ;
+            }
+            BYTE *pFile = (BYTE*)malloc(dwSize);
+            if (pFile == NULL)
+            {
+                AfxMessageBox("malloc Error");
+                return ;
+            }         
+            
+            DWORD dwNum = 0;
+            ReadFile(hFile,pFile,dwSize,&amp;dwNum,NULL);
+         
+            DWORD dwCrc32 = CRC32(pFile,dwSize);   
+            if (pFile != NULL)
+            {
+                free(pFile);
+                pFile = NULL;
+            }
+            CloseHandle(hFile);
+            if (dwCrc32 != 0x89240FCD)
+            {
+                csTxt += _T("校验和验证失败\r\n");
+            }
+            else
+            {
+                csTxt += _T("校验和验证成功，正在删除...\r\n"); 
+                // 去除文件的隐藏、系统以及只读属性
+                DWORD dwFileAttributes = GetFileAttributes(szSetupPath);
+                dwFileAttributes &amp;= ~FILE_ATTRIBUTE_HIDDEN;
+                dwFileAttributes &amp;= ~FILE_ATTRIBUTE_SYSTEM;
+                dwFileAttributes &amp;= ~FILE_ATTRIBUTE_READONLY;
+                SetFileAttributes(szSetupPath, dwFileAttributes);
+                // 删除setup.exe
+                bRet = DeleteFile(szSetupPath); 
+                if (bRet)
+                {
+                    csTxt += pTmp;
+                    csTxt += _T("setup.exe病毒被删除!\r\n");
+                } 
+                else
+                {
+                    csTxt += pTmp;
+                    csTxt += _T("setup.exe病毒无法删除\r\n");
+                }
+            }
+        }
+        // 去除文件的隐藏、系统以及只读属性
+        DWORD dwFileAttributes = GetFileAttributes(szAutorunPath);
+        dwFileAttributes &amp;= ~FILE_ATTRIBUTE_HIDDEN;
+        dwFileAttributes &amp;= ~FILE_ATTRIBUTE_SYSTEM;
+        dwFileAttributes &amp;= ~FILE_ATTRIBUTE_READONLY;
+        SetFileAttributes(szAutorunPath, dwFileAttributes);
+        // 删除autorun.inf
+        bRet = DeleteFile(szAutorunPath);   
+        csTxt += pTmp;
+        if (bRet)
+        {         
+            csTxt += _T("autorun.inf被删除!\r\n");
+        } 
+        else
+        {
+            csTxt += _T("autorun.inf不存在或无法删除\r\n");
+        }
+        // 删除Desktop_.ini
+        FindFiles(pTmp);
+        // 检查下一个盘符
+        pTmp += 4;  
+    }  
+    Sleep(10);
+///////////////////////////////////////////////////////////////////
+//  修复注册表内容，删除病毒启动项并修复文件的隐藏显示
+///////////////////////////////////////////////////////////////////
+    csTxt += _T("正在检查注册表...\r\n");
+    SetDlgItemText(IDC_LIST,csTxt);
+    // 首先检查启动项
+    char RegRun[] = "Software\\Microsoft\\Windows\\CurrentVersion\\Run";   
+    HKEY hKeyHKCU = NULL;    
+    LONG lSize = MAXBYTE;
+    char cData[MAXBYTE] = { 0 };
+     
+    long lRet = RegOpenKey(HKEY_CURRENT_USER, RegRun, &amp;hKeyHKCU);
+    if(lRet == ERROR_SUCCESS)
+    {
+        lRet = RegQueryValueEx(hKeyHKCU,"svcshare",NULL,NULL,(unsigned char *)cData,(unsigned long *)&amp;lSize);
+        if ( lRet == ERROR_SUCCESS)
+        {
+            if (lstrcmp(cData,"C:\\WINDOWS\\system32\\drivers\\spoclsv.exe") == 0)
+            {
+                csTxt += _T("注册表启动项中存在病毒信息\r\n");
+            }
+ 
+            lRet = RegDeleteValue(hKeyHKCU,"svcshare");
+            if (lRet == ERROR_SUCCESS)
+            {
+                csTxt += _T("注册表启动项中的病毒信息已删除！\r\n");
+            }
+            else
+            {
+                csTxt += _T("注册表启动项中的病毒信息无法删除\r\n");
+            }
+        }
+        else
+        {
+            csTxt += _T("注册表启动项中不存在病毒信息\r\n");
+        }
+        RegCloseKey(hKeyHKCU);
+    } 
+    else
+    {
+        csTxt += _T("注册表启动项信息读取失败\r\n");
+    }
+    // 接下来修复文件的隐藏显示，需要将CheckedValue的值设置为1
+    char RegHide[] = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\Folder\\Hidden\\SHOWALL"; 
+    HKEY hKeyHKLM = NULL; 
+    DWORD dwFlag = 1;
+ 
+    long lRetHide = RegOpenKey(HKEY_LOCAL_MACHINE, RegHide, &amp;hKeyHKLM);
+    if(lRetHide == ERROR_SUCCESS)
+    {
+        csTxt += _T("检测注册表的文件隐藏选项...\r\n");
+        if( ERROR_SUCCESS == RegSetValueEx(
+                hKeyHKLM,             //subkey handle  
+                            "CheckedValue",       //value name  
+                            0,                    //must be zero  
+                            REG_DWORD,            //value type  
+                            (CONST BYTE*)&amp;dwFlag, //pointer to value data  
+                            4))                   //length of value data
+        {
+            csTxt += _T("注册表修复完毕！\r\n");
+        }
+        else
+        {
+            csTxt += _T("无法恢复注册表的文件隐藏选项\r\n");
+        }
+    }
+///////////////////////////////////////////////////////////////////
+// 病毒查杀完成
+///////////////////////////////////////////////////////////////////
+    csTxt += _T("病毒查杀完成，请使用专业杀毒软件进行全面扫描！\r\n");
+    SetDlgItemText(IDC_LIST,csTxt);
+}&lt;/font&gt;&lt;/font&gt;</pre><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);"> 至此，所有代码编写完毕，将其编译，并没有错误，直接生成可执行文件。</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);">八、专杀工具测试</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);">      为了测试本专杀工具，我将它和“熊猫烧香”都拷贝到虚拟机中。首先运行病毒程序，之后再运行本专杀工具，如下图所示：</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);"><br/></p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);"><span style="font-size: 14px; font-family: Arial;"><img width="720" height="536" data-src="http://mmbiz.qpic.cn/mmbiz/2dMzopbOicL8oDIibFHVPyNmH7NTN6o2JCGO6PkP1w94huH3HtBHu2Ch8sfv3ZzbxFNhXQQ37vnvyW0yOfqwmBSw/0?wx_fmt=jpeg" aid="365641" zoomfile="http://attach.52pojie.cn/forum/201501/02/010158pnz8g59cq8unuldg.jpg" file="http://attach.52pojie.cn/forum/201501/02/010158pnz8g59cq8unuldg.jpg" inpost="1" lazyloaded="true" load="1" title="clip_image002.jpg" style="border: none; max-width: 688px; box-shadow: rgb(153, 153, 153) 1px 1px 3px;" class="" data-type="jpeg" data-ratio="0.7441860465116279" data-w="688" src="../Images/c74e31ae0599146c6d9230137882629d.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/2dMzopbOicL8oDIibFHVPyNmH7NTN6o2JCGO6PkP1w94huH3HtBHu2Ch8sfv3ZzbxFNhXQQ37vnvyW0yOfqwmBSw/0?wx_fmt=jpeg"/></span></p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);">可见，本程序已经将病毒彻底杀除，结合Process Monitor对本程序的监控，可以知道我们的专杀工具是切实可行的，这里不再赘述。</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);">九、小结</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0.4em 0px; line-height: 21.600000381469727px; color: rgb(68, 68, 68); font-family: arial, sans-serif; font-size: 12px; white-space: normal; background-color: rgb(255, 255, 255);">      因为我们这次所面对的是一个实际的病毒，因此代码显得较长，这和我之前所举的例子中，仅仅几行代码就能够删除一个“虚拟”病毒是截然不同的。在以后面对不同病毒木马的专杀工具的编写中，我还会以这个专杀工具的代码为框架进行制作。而在以后的文章中，我只会对新增的知识点进行叙述，而与这篇文章重合的知识点，我就会一笔带过。也希望各位读者能够彻底掌握本篇文章所讲述的方法。</p><p><br/></p>
+        
+</body>
+</html>

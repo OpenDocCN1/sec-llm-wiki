@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>MySQL漏洞BACKRONYM允许客户端通过未加密连接发送数据</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>MySQL漏洞BACKRONYM允许客户端通过未加密连接发送数据</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485973&amp;idx=1&amp;sn=de375fbf1a4c4150b52a519e6321deda&amp;chksm=ea973b7fdde0b26936e9dfdd64ff493e4ddba4b461c87fc2af445d6dd46a8881642cec1bb88c&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485973&amp;idx=1&amp;sn=de375fbf1a4c4150b52a519e6321deda&amp;chksm=ea973b7fdde0b26936e9dfdd64ff493e4ddba4b461c87fc2af445d6dd46a8881642cec1bb88c&amp;scene=27#wechat_redirect</a></blockquote><p>Oracle MySQL 5.7.2及之前版本中出现一个安全漏洞，允许攻击者作为客户端及服务器之间的代理访问数据库并以明文形式检索信息，即使安全连接已与服务器谈判。</p><p><br/></p><p>漏洞产生基于的事实是，虽然配置MySQL服务器可要求加密连接，但客户端却无此选项，因此客户端会以明文形式输出查询结果。插入两台机器之间的攻击者可与服务器秘密通信，但与客户端的通信是不安全的且可获取数据。</p><p><br/></p><p><strong>“-ssl”选项的遗留行为</strong></p><p>问题的根本是客户端的“-ssl”选项遗留行为，该选项可在客户端启动，但无法强制启动。因此，如果服务器并未配置成使用TLS加密通信协议的形式，客户端会将信息发送。</p><p><br/></p><p>在中间人攻击中，威胁发动者可拦截MySQL客户端的连接并在首次握手阶段请求通过未加密协议来输出数据，并且始终遵守来自服务器的TLS请求。负责该行为的是MySQL中的“libmysqlclient”库。Duo Security公司的安全研究人员Adam Goodman发现了该漏洞，并将其称之为“BACKRONYM（MySQL不良认证引发网络重大风险，即Bad Authentication Causes Kritical Risk Over Networks, Yikes MySQL）”。Goodman表示，甲骨文已意识到这个问题并且发布了一个修复方案，但仅适用于MySQL 5.7.3及更高版本。同时，开发人员发布libmysqlclient的独立分布 6.1.3版本，尽管并非默认启用，但导致相关产品易受攻击。</p><p><br/></p><p><strong>缓解风险方法</strong></p><p>安全研究人员建议使用MySQL 5.7.3及以上版本，原因是修复方案并未移植到早期版本。一种措施是配置“REQUIRE X509 选项”，验证基于SSL/TLS证书的收件人身份，也就是说客户端必须使用TLS。</p><p><br/></p><p>Goodman表示，多数MySQL用户不必“非常担忧”，因为攻击者需要坐在客户端及服务器中间才可实施攻击，而且在多数情况下，客户端跟服务器位于相同的机器上或者相邻。</p><p><br/></p><p>不过公布这个漏洞（CVE-2015-3152）是为了引起大家对问题的重视，并允许管理人员采取必要措施消除该攻击向量。</p><p/><p>本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。</p>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Tor项目组发布沙盒Tor浏览器0.0.2</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Tor项目组发布沙盒Tor浏览器0.0.2</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485621&amp;idx=4&amp;sn=e979223ebb760e8d8e2ae11e60a371cd&amp;chksm=ea9739dfdde0b0c9a8030ce52c6ec273ea0bb09e6053cc2d882cb227a33a0a8e2883c088655b&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485621&amp;idx=4&amp;sn=e979223ebb760e8d8e2ae11e60a371cd&amp;chksm=ea9739dfdde0b0c9a8030ce52c6ec273ea0bb09e6053cc2d882cb227a33a0a8e2883c088655b&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKiano1TQcuXDQFPvKuIFKe1JSdCRP1Rt5VRzjxFicl48pEibmIibm3ZUzIK31Y0dyc5TJgr9rY7XGoicRjw/0?wx_fmt=png" data-ratio="0.521978021978022" data-w="728" src="../Images/6e87deac2745b4f0486143aab16c384f.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKiano1TQcuXDQFPvKuIFKe1JSdCRP1Rt5VRzjxFicl48pEibmIibm3ZUzIK31Y0dyc5TJgr9rY7XGoicRjw/0?wx_fmt=png"/><br/></p><p><br/></p><p><strong>非营利性组织Tor项目组发布了沙盒Tor浏览器0.0.2（Sandboxed Tor Browser 0.0.2）的初版版本。</strong></p><p><br/></p><p>该版本将Tor浏览器跟操作系统的其它进程进行隔离，并且限制了它跟底层API即能够暴露真实IP地址、MAC地址、计算机名称等的API进行交互或查询的能力。</p><p><br/></p><p>沙盒是一种分离运行程序的安全机制。当应用程序被沙盒时，其进程就会在跟底层操作系统不同的环境中运行，因此这款应用程序中的出错或安全问题就无法被用来影响操作系统的其它部分。沙盒应用程序能在分开的区域和内存中启用，它们能够在对其它应用程序或操作系统不带来任何威胁的情况下运行。很多主要的浏览器如Chrome、火狐和Edge都是利用沙盒环境与操作系统隔离。</p><p><br/></p><p>不过Tor浏览器本身基于开源的火狐浏览器，它并没有使用沙盒环境，导致浏览器在某种程序上是不安全的，即使有了很多隐私保护功能也是如此。2015年，FBI在调查儿童色情网站Playpen事件中，入侵了全球120多个国家的8700台左右的电脑。FBI利用Tor利用代码识别并抓取了使用Tor隐藏身份的Playpen访客。此类利用代码针对的是Tor浏览器，但也可暴露记者、持不同政见者等人。鉴于此，Tor项目组在今年9月份着手开始准备沙盒版本。这样做是因为针对Tor浏览器的利用代码和漏洞能够被局限在沙盒环境中，且不能出来影响计算机的其它部分或者暴露任何人的身份。</p><p><br/></p><p>一名开发人员指出，这款浏览器的功能是：（1）基于Gtk+3的UI下载/安装/更新Tor浏览器、配置Tor并且推出沙盒浏览器。“Tor浏览器启动器”在多个容器中运行Tor浏览器。（2）Linux seccomp=bpf+namespace容器试图阻止/缓解利用代码并将个人可识别信息数量减少到最低。</p><p><br/></p><p>该版本目前仅适用于Linux操作系统。下周应该会推出官方二进制。目前用户可自行通过<a>源代码</a>尝鲜。如果对隐私有特别担忧，可附加使用VPN。</p>
+        
+</body>
+</html>

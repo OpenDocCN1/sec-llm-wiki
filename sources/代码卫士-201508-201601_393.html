@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>微软修复SharePoint 2013中的XSS漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>微软修复SharePoint 2013中的XSS漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485881&amp;idx=3&amp;sn=75aece8bc928931b58e5c27ace701fcd&amp;chksm=ea9738d3dde0b1c5964f135eb636af076c88ad9ce2c2511d44b1898b43f70c251680f2f7122f&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485881&amp;idx=3&amp;sn=75aece8bc928931b58e5c27ace701fcd&amp;chksm=ea9738d3dde0b1c5964f135eb636af076c88ad9ce2c2511d44b1898b43f70c251680f2f7122f&amp;scene=27#wechat_redirect</a></blockquote><p><strong>安全研究人员从微软</strong><strong>Office</strong><strong>的服务器套件</strong><strong>SharePoint</strong><strong>中发现了一个可暴露用户隐私信息的跨站点脚本漏洞。</strong></p><p><strong><br/></strong></p><p>这个漏洞（CVE-2015-2522）影响SharePoint 2013 
+15.0.4571.1502及之前版本。SharePoint平台将多个与商务管理相关的功能结合到一个单独的工具箱中，使得系统管理员不必一次性处理
+多个软件平台。在真实场景中，SharePoint服务器被部署在关闭的企业网络中作为大中型企业的内联网，成为微软企业为止最佳的企业产品之一，提供的
+功能包括内容管理、文件管理、私有云、社交网络、搜索、商业智能以及流程管理等。</p><p><br/></p><p><strong>清理不当的用户输入导致</strong><strong>XSS</strong><strong>漏洞利用</strong></p><p><strong><br/></strong></p><p>安全研究人员表示，通过将恶意代码输入被SharePoint平台清理不当的输入字段的方式，攻击者能够利用这个漏洞。这些字段用来记录备注、关键
+字、和评论，而且任何拥有访问权限的人都能够将XSS漏洞存储到SharePoint服务器上，随后毫无察觉的用户就能访问带有XSS漏洞的页面。成功利
+用这个漏洞允许攻击者强迫受害者从受控制的来源下载并执行恶意代码，将用户浏览器重定向至另外一个含有恶意内容的页面，或者引发虚假的验证弹出窗口并要求
+获得用户的登录详情。</p><p><br/></p><p><strong>漏洞与渗透代码工具包联合使用</strong></p><p><strong><br/></strong></p><p>研究人员还表示，攻击者还能暴露并窃取存储在验证cookies中或来自用户代理字符串的敏感信息。随后这些数据可与渗透代码工具包联合使用，并将
+用户重定向至一个“适合的”恶意软件有效负载中。此外，由于SharePoint通常与Windows Active 
+Directory服务器共同使用，攻击者还能获取访问共享企业登录凭证的权限，而且还能获得访问公司整套服务的权限。</p><p><br/></p><p>目前，该漏洞（MS15-099）已随其它安全更新一同发布。</p><p><br/></p>本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。
+        
+</body>
+</html>

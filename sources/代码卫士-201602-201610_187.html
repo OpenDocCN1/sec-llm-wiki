@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>如何不通过苹果重置Mac固件密码？</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>如何不通过苹果重置Mac固件密码？</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485734&amp;idx=2&amp;sn=652f2f2fed7d866ad0e843634d35a505&amp;chksm=ea97384cdde0b15addc723a161eaca1e1f47973d76cefbc6095c97d81775c47c2e899f813988&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485734&amp;idx=2&amp;sn=652f2f2fed7d866ad0e843634d35a505&amp;chksm=ea97384cdde0b15addc723a161eaca1e1f47973d76cefbc6095c97d81775c47c2e899f813988&amp;scene=27#wechat_redirect</a></blockquote><p style="text-indent: 32px;line-height: 150%"><strong><span style="font-size:16px;line-height:150%;font-family:宋体">专注于Mac安全和逆向工程的安全工程师fG!发现不通过苹果支持团队便可重置Mac固件密码。</span></strong></p><p style="text-indent: 32px;line-height: 150%"><span style="font-size:16px;line-height:150%;font-family:宋体">苹果能够让iMac和MacBook用户为固件设置一个密码，这样没人能够修改核心设备设置。跟其它密码的情况一样，用户可能会忘记所设密码。在这种情况下，用户可寻求苹果支持团队的帮助。在设备重启过程中，用户会被要求同时按下五个键SHIFT+CONTROL+OPTION+COMMAND+S，随后屏幕上就会出现一个长代码。将该代码提交给苹果员工后，用户就会收到一个SCBO文件，然后将该文件插入USB就能够删除密码。不过只有通过原始销售发票证明对设备的所有权才能这样修改密码。</span></p><p style="text-indent: 32px;line-height: 150%"><span style="font-size:16px;line-height:150%;font-family:宋体">fG!表示在网上发现了提供SCBO文件的服务，花费是100美元。于是他决定在笔记本上运行该文件，查看SCBO和苹果的EFI是如何运行的，并且查看是否可绕过这一进程。fG!研究发现包含固件密码信息的EFI变体是“CBF2CC32”，并指出“如果你有一个SPI闪光信号并想要删除苹果EFI固件密码，你就需要丢下闪光内容，删除‘CBF2CC32’变体，并重新刷新修改过的固件就可以。或者只要定位变体并且直接修改并删除这个变体，而不必重新刷新整个内容”。另外，他还指出“‘3E6D568B’变体很特殊，因为如果你删除这个变体，NVRAM就会被重置为默认状态，而固件密码无需再进行设置。”</span></p><p style="text-indent: 32px;line-height: 150%"><span style="font-size:16px;line-height:150%;font-family:宋体">研究人员还发现，在不访问苹果私钥的情况下无法生成SBCO文件。因此出售SBCO文件的网上服务很显然是虚假或者非法的。出售文件的人设法向苹果的支持系统提交了非法请求并将获取的SCBO文件以高价出售。苹果支持中心的内部员工或者苹果公司本身可能提供了此类帮助。不过，只有苹果公司有这种机会调查并追踪这些文件的来源。</span></p><p style="text-indent: 32px;line-height: 150%"><span style="font-size:16px;line-height:150%;font-family:宋体">今年二月份，有新闻媒体报道称黑客以数千欧元的价格跟苹果爱尔兰公司的员工交换企业密码。现在或许我们能够知道为何犯罪分子愿意为苹果员工凭证支付如此高的价格了。</span></p><p style="text-indent: 32px; line-height: 150%;"><span style="font-size:16px;line-height:150%;font-family:宋体">告警：如果你必须重置固件密码，记得在尝试文中提到的建议之前先向专业人员请教。</span></p>
+        
+</body>
+</html>

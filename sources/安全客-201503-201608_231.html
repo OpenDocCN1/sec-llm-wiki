@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>信不信把你paypal的钱都偷了？</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>信不信把你paypal的钱都偷了？</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA5ODA0NDE2MA==&amp;mid=207057304&amp;idx=4&amp;sn=1e9dfcabdec8ebb979b64d0467cfd898&amp;chksm=193441f72e43c8e13a69fad9180d0c1dcfc9afac12d48d2793f83519c9ee256bb204bfc9ab91&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA5ODA0NDE2MA==&amp;mid=207057304&amp;idx=4&amp;sn=1e9dfcabdec8ebb979b64d0467cfd898&amp;chksm=193441f72e43c8e13a69fad9180d0c1dcfc9afac12d48d2793f83519c9ee256bb204bfc9ab91&amp;scene=27#wechat_redirect</a></blockquote><p><span style="font-size: 14px; color: rgb(0, 176, 80);"><strong>专家Ebrahim Hegazy 在Paypal上发现一个关键的存储型XSS漏洞,该漏洞可以以明文的格式窃取用户信用卡信息。</strong></span></p><p style="text-indent: 2em; text-align: left;"><span style="font-size: 14px;">著名安全专家Ebrahim Hegazy(@Zigoo0) 
+在“https://Securepayments.Paypal.com”上发现了一个存储型XSS漏洞,可以被攻击者用来窃取信用卡和Paypal用户登录凭证…和更多邪恶的用法!SecurePayments域经常被Paypal用户用来在任何购物网站购买物品时做安全支付验证。这个安全的支付页面需要Paypal用户来填写某些信息,包括他们的信用卡号码,CVV2,截止日期。如果要使用Paypal来完成支付和购买所选产品,这些信息是必要的。Paypal通过加密通道(HTTPS)处理提交的数据,攻击者不能嗅探/偷取这样的数据。</span></p><p style="text-indent: 2em; text-align: left;"><span style="font-size: 14px;">“我发现这个存储型XSS漏洞会直接影响SecurePayment页面,然后允许我改变页面的HTML框架和重写页面内容,攻击者可以让用户使用自己伪造的HTML表单来完成和发送用户数据(以明文的方式发送到攻击者的服务器),然后使用这些信息来购买物品或者甚至可以让被害用户的基金转移到自己的帐户!”专家在一篇博客文章中写道。</span></p><p style="text-align:center"><img data-w="477" data-ratio="0.9790356394129979" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz/Ok4fxxCpBb4OU609meLJyp0KT3pq1yY5KXVm8f0DQxEHQ167ZzE01OYrm5fyshOqejibLGmI20gomCgkVL8Lq6g/0?wx_fmt=png" title="t014db4b33c2d1dd6cf.png" style="text-align: center; visibility: visible;" src="../Images/50a5a4720e476414e31168dc3783d3ac.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/Ok4fxxCpBb4OU609meLJyp0KT3pq1yY5KXVm8f0DQxEHQ167ZzE01OYrm5fyshOqejibLGmI20gomCgkVL8Lq6g/0?wx_fmt=png"/></p><p style="text-indent: 2em; text-align: left;"><span style="color: rgb(255, 0, 0); font-size: 14px;"><strong>有哪些攻击场景?</strong></span></p><p style="text-indent: 2em; text-align: left;"><span style="font-size: 14px;">Ebrahim博士解释说,最严重的攻击场景是:</span></p><p style="text-indent: 2em; text-align: left;"><span style="font-size: 14px;">攻击者设置一个购物网站或入侵任何购物网站,通过Paypal的漏洞修改“CheckOut”按钮,CheckOut用户恶意浏览购物网站,选择一些产品,点击“付款”按钮用Paypal账户来支付,然后用户会被重定向到https://Securepayments.Paypal.com/来填写所需的信用卡信息完成采购订单,在这个页面上,该产品的价格和支付按钮都将在同一个页面里面,因为我们知道攻击者现在控制这一页!</span></p><p style="text-indent: 2em; text-align: left;"><span style="font-size: 14px;">当Paypal用户点击提交按钮时,并不是支付显示的“100美元”,而是你将支付攻击者决定的价格! !</span></p>
+        
+</body>
+</html>

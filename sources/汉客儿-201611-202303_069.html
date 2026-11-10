@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>驱动下Wow64栈回溯和进程模块枚举</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>驱动下Wow64栈回溯和进程模块枚举</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI1NTUzMjUzMQ==&amp;mid=2247483855&amp;idx=1&amp;sn=388a1288e16757ec4e2b7b3acb4a942f&amp;chksm=ea35cd53dd4244450b712fe80f60626be81ddff910f837562b526b8f2ead72ad9304b6737a57&amp;scene=126&amp;sessionid=1681666050#rd">http://mp.weixin.qq.com/s?__biz=MzI1NTUzMjUzMQ==&amp;mid=2247483855&amp;idx=1&amp;sn=388a1288e16757ec4e2b7b3acb4a942f&amp;chksm=ea35cd53dd4244450b712fe80f60626be81ddff910f837562b526b8f2ead72ad9304b6737a57&amp;scene=126&amp;sessionid=1681666050#rd</a></blockquote><p style="font-size: 0.875em;margin: 0px 0px 1.2em !important;">文/Anhkgg/2018年12月31日 | <strong><span style="background-color: rgb(178, 178, 178);">082/100</span></strong></p><p style="font-size: 0.875em;margin: 0px 0px 1.2em !important;">很久没写驱动代码，最近又摸了一下。</p><p style="font-size: 0.875em;margin: 0px 0px 1.2em !important;">在驱动中回溯调用栈，找到特定模块，获取模块地址、大小、路径等信息，然后…。</p><h3 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 1.2em;">堆栈回溯</h3><p style="font-size: 0.875em;margin: 0px 0px 1.2em !important;">驱动中通常使用RtlWalkFrameChain来获取调用栈信息，接口如下：</p><pre style="font-size: 0.8em;font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;font-size: 0.75em;margin: 1.2em 0px;"><code style="font-size: 0.8em;font-family: Consolas, Inconsolata, Courier, monospace;margin: 0px 0.15em;background-color: rgb(248, 248, 248);white-space: pre;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">ULONG
+RtlWalkFrameChain(OUT PVOID *Callers, IN ULONG Count, IN ULONG Flags);
+//Callers一个PVOID数组，保存栈中retaddr值
+//Count表示数组大小
+//Flags=0获取内核层栈信息，=1获取应用层栈信息
+//返回值表示栈的层数</code></pre><p style="font-size: 0.875em;margin: 0px 0px 1.2em !important;">还有其他函数，未使用：</p><pre style="font-size: 0.8em;font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;font-size: 0.75em;margin: 1.2em 0px;"><code style="font-size: 0.8em;font-family: Consolas, Inconsolata, Courier, monospace;margin: 0px 0.15em;background-color: rgb(248, 248, 248);white-space: pre;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">VOID
+RtlGetCallersAddress(
+    OUT PVOID *CallersAddress, //address to save the first caller.
+    OUT PVOID *CallersCaller   //address to save the second caller.
+)
+RtlCaptureStackBackTrace</code></pre><p style="font-size: 0.875em;margin: 0px 0px 1.2em !important;">其实对于单纯的x86(ring3)-&gt;x86(ring0)，和x64(ring3)-&gt;x64(ring0)没甚么好说的，就是普通的栈信息。</p><p style="font-size: 0.875em;margin: 0px 0px 1.2em !important;">我这里要着重提的是x86(ring3)-&gt;x64(ring0)，也就是64位系统的32位程序在进行系统调用时的堆栈（称为Wow64）。</p><p style="font-size: 0.875em;margin: 0px 0px 1.2em !important;">先看看CreateFile的栈信息。Windbg并不能直接通过k显示wow64到内核的所有栈信息，wow64部分需要通过扩展指令切换，具体如下：</p><pre style="font-size: 0.8em;font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;font-size: 0.75em;margin: 1.2em 0px;"><code style="font-size: 0.8em;font-family: Consolas, Inconsolata, Courier, monospace;margin: 0px 0.15em;background-color: rgb(248, 248, 248);white-space: pre;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">1: kd&gt; kvn
+ # Child-SP          RetAddr           : Args to Child                                                           : Call Site
+05 fffff880`026cf940 fffff800`041dc574 : 00000000`0027e0d8 fffff960`c0100080 00000000`0027e9a0 00000000`0027e0f0 : nt!IopCreateFile+0x2bc
+06 fffff880`026cf9e0 fffff800`03ecf693 : fffffa80`19646060 fffff880`026cfb60 00000000`0027e028 00000000`fffffffc : nt!NtCreateFile+0x78
+07 fffff880`026cfa70 00000000`7796c08a : 00000000`73c8c1ff 00000000`001deeb0 00000000`001deec8 00000000`00000000 : nt!KiSystemServiceCopyEnd+0x13 (TrapFrame @ fffff880`026cfae0)
+08 00000000`0027e068 00000000`73c8c1ff : 00000000`001deeb0 00000000`001deec8 00000000`00000000 00000000`00000000 : ntdll!ZwCreateFile+0xa
+09 00000000`0027e070 00000000`73c7d18f : 00000000`001deeb0 00000000`00000000 00000000`00000000 00000000`00000060 : wow64!whNtCreateFile+0x10f
+0a 00000000`0027e140 00000000`73c02776 : 00000000`76c572b9 00000000`73c70023 00000000`00000246 00000000`001dee38 : wow64!Wow64SystemServiceEx+0xd7
+0b 00000000`0027ea00 00000000`73c7d286 : 00000000`00000000 00000000`73c01920 00000000`77a303c8 00000000`7794ca81 : wow64cpu!ServiceNoTurbo+0x2d
+0c 00000000`0027eac0 00000000`73c7c69e : 00000000`00000000 00000000`00000000 00000000`73c74b10 00000000`7ffe0030 : wow64!RunCpuSimulation+0xa
+0d 00000000`0027eb10 00000000`7795f9b6 : 00000000`00332db0 00000000`00000000 00000000`77a4d670 00000000`77a20910 : wow64!Wow64LdrpInitialize+0x42a
+0e 00000000`0027f060 00000000`779bbb89 : 00000000`00000000 00000000`7795f1d1 00000000`0027f610 00000000`00000000 : ntdll!LdrpInitializeProcess+0x17e3
+0f 00000000`0027f550 00000000`7794a0ee : 00000000`0027f610 00000000`00000000 00000000`7efdf000 00000000`00000000 : ntdll! ?? ::FNODOBFM::`string'+0x22a30
+10 00000000`0027f5c0 00000000`00000000 : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!LdrInitializeThunk+0xe
+1: kd&gt; !wow64exts.sw
+Switched to Guest (WoW) mode
+1: kd:x86&gt; kvn
+The context is partially valid. Only x86 user-mode context is available.
+ # ChildEBP          RetAddr           Args to Child                                         
+00 001dee2c 76f1c76b 001deec8 c0100080 001dee6c ntdll_77b00000!NtCreateFile+0x12 (FPO: [11,0,0])
+01 001deed0 75583f66 00000060 c0100080 00000003 KERNELBASE!CreateFileW+0x35e (FPO: [Non-Fpo])
+02 001deefc 755853c4 004b4d90 c0000000 00000003 kernel32!CreateFileWImplementation+0x69 (FPO: [Non-Fpo])
+03 001def2c 013259e2 001def78 c0000000 00000003 kernel32!CreateFileA+0x37 (FPO: [Non-Fpo])</code></pre><p style="font-size: 0.875em;margin: 0px 0px 1.2em !important;">而RtlWalkFrameChain(x, n, 1)是可以完整获取到wow64到nt之前的所有应用层栈信息。如下：</p><pre style="font-size: 0.8em;font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;font-size: 0.75em;margin: 1.2em 0px;"><code style="font-size: 0.8em;font-family: Consolas, Inconsolata, Courier, monospace;margin: 0px 0.15em;background-color: rgb(248, 248, 248);white-space: pre;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">00000000`7796c08a //ntdll!ZwCreateFile+0xa
+00000000`73c8c1ff
+00000000`73c7d18f
+00000000`73c02776
+00000000`73c7d286
+00000000`73c7c69e
+00000000`7795f9b6
+00000000`779bbb89
+00000000`7794a0ee
+//00000000`00000000 没有这层
+76f1c76b //ntdll_77b00000!NtCreateFile+0x12
+75583f66
+755853c4
+013259e2</code></pre><p style="font-size: 0.875em;margin: 0px 0px 1.2em !important;">需要注意的是，两个ntdll并不一样（ntdll_77b00000是32位dll），并且ntdll中间出现了wow64和wow64cpu两个模块，这就涉及到具体x86调用（wow64）如何切换到x64了，这里不展开。</p><h3 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 1.2em;">进程模块枚举</h3><p style="font-size: 0.875em;margin: 0px 0px 1.2em !important;">可能大家都知道驱动中枚举模块的一种方法（非ZwQuerySystemInformation、SystemModuleInformation ），使用进程Peb-&gt;Ldr链表枚举，可以获取到模块的路径、基址、大小等信息。</p><p style="font-size: 0.875em;margin: 0px 0px 1.2em !important;">下面是通常驱动下获取模块信息的代码，适用于x64内核获取x64进程模块信息以及x86内核获取x86进程模块信息。</p><pre style="font-size: 0.8em;font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;font-size: 0.75em;margin: 1.2em 0px;"><code style="font-size: 0.8em;font-family: Consolas, Inconsolata, Courier, monospace;margin: 0px 0.15em;background-color: rgb(248, 248, 248);white-space: pre;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">//通过模块名获取模块基址、大小、全路径等信息
+Peb = GetProcessPeb(Process);
+Ldr = Peb-&gt;Ldr;
+if (Ldr &amp;&amp; Ldr-&gt;Initialized)
+{
+    if (!IsListEmpty(&amp;Ldr-&gt;InLoadOrderModuleList))
+    {
+        ListPtr = ListHead = Ldr-&gt;InLoadOrderModuleList.Flink;
+        do
+        {
+            pLdrDataEntry = CONTAINING_RECORD(ListPtr, LDR_DATA_TABLE_ENTRY, InLoadOrderLinks);
+            if (RtlEqualUnicodeString(&amp;pLdrDataEntry-&gt;BaseDllName, Target, TRUE))
+            {
+                if (Base) {
+                    *Base = (ULONG_PTR)pLdrDataEntry-&gt;DllBase;
+                }
+                if (Size) {
+                    *Size = pLdrDataEntry-&gt;SizeOfImage;
+                }
+                Status = STATUS_SUCCESS;
+                break;
+            }
+            ListPtr = ListPtr-&gt;Flink;
+        } while (ListPtr-&gt;Flink != ListHead);
+    }</code></pre><p style="font-size: 0.875em;margin: 0px 0px 1.2em !important;">那特殊的Wow64又有什么不同呢？（x64内核获取x86进程模块信息）。</p><p style="font-size: 0.875em;margin: 0px 0px 1.2em !important;">对于wow64进程来说，EPROCESS结构中有个特殊字段保存wow64的peb结构。</p><pre style="font-size: 0.8em;font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;font-size: 0.75em;margin: 1.2em 0px;"><code style="font-size: 0.8em;font-family: Consolas, Inconsolata, Courier, monospace;margin: 0px 0.15em;background-color: rgb(248, 248, 248);white-space: pre;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">struct _EPROCESS
+{
+    PVOID Wow64Process;//
+}</code></pre><p style="font-size: 0.875em;margin: 0px 0px 1.2em !important;">Win7之前Wow64Process是_WOW64_PROCESS结构，内部包含字段位wow64的peb，win7后Wow64Process直接就是wow64的peb。</p><p style="font-size: 0.875em;margin: 0px 0px 1.2em !important;">直接就可以通过PsGetProcessWow64Process（未文档化函数）来获取到该字段。</p><pre style="font-size: 0.8em;font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;font-size: 0.75em;margin: 1.2em 0px;"><code style="font-size: 0.8em;font-family: Consolas, Inconsolata, Courier, monospace;margin: 0px 0.15em;background-color: rgb(248, 248, 248);white-space: pre;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">Peb = PsGetProcessWow64Process(Process); //Process-&gt;Wow64Process</code></pre><p style="font-size: 0.875em;margin: 0px 0px 1.2em !important;">wow64的peb结构不再是_PEB，而是使用于wow64的_PEB32，一大特点就是所有的地址都是32位的，为了再x64下定义这种字段，只好使用ULONG。</p><pre style="font-size: 0.8em;font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;font-size: 0.75em;margin: 1.2em 0px;"><code style="font-size: 0.8em;font-family: Consolas, Inconsolata, Courier, monospace;margin: 0px 0.15em;background-color: rgb(248, 248, 248);white-space: pre;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">#pragma pack(push, 1)
+typedef struct _PEB32 {
+    BOOLEAN InheritedAddressSpace;      // These four fields cannot change unless the
+    BOOLEAN ReadImageFileExecOptions;   //
+    BOOLEAN BeingDebugged;              //
+    BOOLEAN SpareBool;                  //
+    ULONG Mutant;                      // INITIAL_PEB structure is also updated.
+
+    ULONG ImageBaseAddress;
+    ULONG Ldr;//PPEB_LDR_DATA32
+}PEB32, *PPEB32;
+#pragma pack(pop)</code></pre><p style="font-size: 0.875em;margin: 0px 0px 1.2em !important;">结构中Ldr位32位地址指针，使用ULONG定义，Ldr也是特殊的_PEB_LDR_DATA32结构，字段和普通的_PEB_LDR_DATA完全一致，只是地址全为ULONG（32位，x64地址为64位）。</p><pre style="font-size: 0.8em;font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;font-size: 0.75em;margin: 1.2em 0px;"><code style="font-size: 0.8em;font-family: Consolas, Inconsolata, Courier, monospace;margin: 0px 0.15em;background-color: rgb(248, 248, 248);white-space: pre;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">typedef struct _PEB_LDR_DATA32 {
+    ULONG Length;
+    ULONG Initialized;//bool
+    ULONG SsHandle;
+    LIST_ENTRY32 InLoadOrderModuleList;
+    LIST_ENTRY32 InMemoryOrderModuleList;
+    LIST_ENTRY32 InInitializationOrderModuleList;
+    ULONG EntryInProgress;//pvoid
+} PEB_LDR_DATA32, *PPEB_LDR_DATA32;</code></pre><p style="font-size: 0.875em;margin: 0px 0px 1.2em !important;">如此wow64进程模块信息获取的方法也出来了。</p><pre style="font-size: 0.8em;font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;font-size: 0.75em;margin: 1.2em 0px;"><code style="font-size: 0.8em;font-family: Consolas, Inconsolata, Courier, monospace;margin: 0px 0.15em;background-color: rgb(248, 248, 248);white-space: pre;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">#define UlongToPtr(ul) ULongToPtr(ul)
+#define ULongToPtr( ul ) ((VOID *)(ULONG_PTR)((unsigned long)ul))
+
+Peb = PsGetProcessWow64Process(Process);
+Ldr = UlongToPtr(Peb-&gt;Ldr);
+if (Ldr &amp;&amp; Ldr-&gt;Initialized)
+{
+    if (UlongToPtr(Ldr-&gt;InLoadOrderModuleList.Flink) != &amp;Ldr-&gt;InLoadOrderModuleList)
+    {
+        ListPtr = ListHead = UlongToPtr(Ldr-&gt;InLoadOrderModuleList.Flink);
+        do
+        {
+            pLdrDataEntry = CONTAINING_RECORD(ListPtr, LDR_DATA_TABLE_ENTRY32, InLoadOrderLinks);
+            RtlZeroMemory(ModuleName, MAX_PATH*sizeof(WCHAR));
+            RtlCopyMemory(ModuleName, UlongToPtr(pLdrDataEntry-&gt;BaseDllName.Buffer),
+                        pLdrDataEntry-&gt;BaseDllName.Length &gt; MAX_PATH*sizeof(WCHAR) ? 
+                        MAX_PATH*sizeof(WCHAR):pLdrDataEntry-&gt;BaseDllName.Length);
+            RtlInitUnicodeString(&amp;Name, ModuleName);
+            if (RtlEqualUnicodeString(&amp;Name, Target, TRUE))
+            {
+                if (Base) {
+                    *Base = (ULONG_PTR)pLdrDataEntry-&gt;DllBase;
+                }
+                if (Size) {
+                    *Size = pLdrDataEntry-&gt;SizeOfImage;
+                }
+                Status = STATUS_SUCCESS;                
+                break;
+            }
+            ListPtr = UlongToPtr(ListPtr-&gt;Flink);
+        } while (ListPtr-&gt;Flink != (ULONG)ListHead);
+    }
+}</code></pre><p style="font-size: 0.875em;margin: 0px 0px 1.2em !important;">搞定。</p><p style="font-size: 0.875em;margin: 0px 0px 1.2em !important;"><strong>参考：</strong></p><p style="font-size: 0.875em;margin: 0px 0px 1.2em !important;">1.http://www.cnblogs.com/welfear/archive/2010/11/16/1878503.html<br/>2.http://www.kernelmode.info/forum/viewtopic.php?t=2516<br/>3.http://rce.co/category/wow64/</p>
+        
+</body>
+</html>

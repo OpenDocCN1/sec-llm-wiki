@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Ubuntu环境Python3版本的更新升级使用方法</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Ubuntu环境Python3版本的更新升级使用方法</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=Mzg2NzUzNzk1Mw==&amp;mid=2247486908&amp;idx=3&amp;sn=2af1a7f2d79ce1687e083647d963624f&amp;chksm=cebb48f2f9ccc1e45350564223aebb56047f3fcc9ba3b2b93dca5b865137806465fac07f416b&amp;scene=126&amp;sessionid=1681666892#rd">http://mp.weixin.qq.com/s?__biz=Mzg2NzUzNzk1Mw==&amp;mid=2247486908&amp;idx=3&amp;sn=2af1a7f2d79ce1687e083647d963624f&amp;chksm=cebb48f2f9ccc1e45350564223aebb56047f3fcc9ba3b2b93dca5b865137806465fac07f416b&amp;scene=126&amp;sessionid=1681666892#rd</a></blockquote><p><strong>安装Python3</strong></p><p>sudo apt-get install zlib1g-dev libbz2-dev libssl-dev libncurses5-dev libsqlite3-dev libreadline-dev tk-dev libgdbm-dev libdb-dev libpcap-dev xz-utils libexpat1-dev liblzma-dev libffi-dev libc6-dev</p><p><br/></p><p><strong>Python3的下载地址</strong><br/></p><p>wget 'https://www.python.org/ftp/python/3.9.2/Python-3.9.2.tgz'</p><p>tar zxvf Python-3.9.2.tgz</p><p>cd Python-3.9.2</p><p>sudo mkdir -p /usr/local/python3</p><p>./configure --prefix=/usr/local/python3  --enable-optimizations</p><p>make</p><p>sudo make install</p><p><br/></p><p>sudo rm -rf /usr/bin/python3</p><p>sudo rm -rf /usr/bin/pip3</p><p><br/></p><p>sudo ln -s /usr/local/python3/bin/python3.9 /usr/bin/python3</p><p>sudo ln -s /usr/local/python3/bin/pip3.9 /usr/bin/pip3</p><p><br/></p><p><strong>使用pip3安装时会报如下错误提示信息的解决方法</strong><br/></p><p>subprocess.CalledProcessError: Command '('lsb_release', '-a')' returned non-zero exit status 1.</p><p><br/></p><p>sudo find / -name lsb_release</p><p>sudo rm -rf /usr/bin/lsb_release</p><p><br/></p><p>推荐使用virtuenv或者virtualenvwrapper创建虚拟环境去管理包，virtualenvwrapper使用还是很方便的，当然也可以直接使用pycharm去创建虚拟环境</p><p>pip3 install virtualenvwrapper</p><p><br/></p><p style="text-align: center;"><img class="rich_pages" data-ratio="1" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/LtmuVIq6tF1SlCmWPeibd6nU0cGSQaXd4kAOibYWX5LOaP9ibficzAUe9JwfOSSvRzOKIFUG23HESXRluACTJeAuNA/640?wx_fmt=jpeg" data-type="jpeg" data-w="258" style="" src="../Images/a0e4ab3e33150e228fc3f284ea9f821e.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/LtmuVIq6tF1SlCmWPeibd6nU0cGSQaXd4kAOibYWX5LOaP9ibficzAUe9JwfOSSvRzOKIFUG23HESXRluACTJeAuNA/640?wx_fmt=jpeg"/></p>
+        
+</body>
+</html>

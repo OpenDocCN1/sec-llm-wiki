@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>[CVE-2017-5662] Apache Batik信息泄露漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>[CVE-2017-5662] Apache Batik信息泄露漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485544&amp;idx=3&amp;sn=785bf25db50cac0344472e9724ad813f&amp;chksm=ea973902dde0b0140235d2c5d0d4fb9b7ccb2e301683cdd8f93552db2faec92d24b41bc684f1&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485544&amp;idx=3&amp;sn=785bf25db50cac0344472e9724ad813f&amp;chksm=ea973902dde0b0140235d2c5d0d4fb9b7ccb2e301683cdd8f93552db2faec92d24b41bc684f1&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiakZrBgoAHITrqujRKdu6TsfyRHOibiaXt3U6UzecyicP5MUOxrUFfib11ThTl8BPtTftDgpNdEN4UxoaA/0?wx_fmt=jpeg" data-ratio="0.43" data-w="400" src="../Images/a450ba5fe1e9e9ff1f73115101c45d1d.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiakZrBgoAHITrqujRKdu6TsfyRHOibiaXt3U6UzecyicP5MUOxrUFfib11ThTl8BPtTftDgpNdEN4UxoaA/0?wx_fmt=jpeg"/></p><p><br/></p><p><strong>来自Adobe公司的研究员Lars Krapf和Salesforce公司的Pierre Ernst都发现了Apache Batik信息泄露漏洞。该漏洞被评级为“中危”，影响版本是Batik 1.0至1.8版本。</strong></p><p><br/></p><p>位于服务器文件系统中且使用batik的文件可被泄露给发送恶意SVG文件的任意用户。根据可利用应用程序运行的用户上下文可展示文件类型。如果用户拥有根权限，那么就可能完全攻陷系统，获取机密或敏感文件信息。</p><p><br/></p><p>XXE还可通过DoS来攻击服务器的可用性，因为一个XML文档中的引用能够触发放大攻击。</p><p><br/></p><p>用户可更新至Batik 1.9以上版本免遭攻击。</p><p><br/></p><p><br/></p><p><strong style="white-space: normal;">本文由360代码卫士编译，不代表360观点，转载请注明“转自360代码卫士www.codesafe.cn”。</strong></p>
+        
+</body>
+</html>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>JavaScript里的循环方法：forEach，for-in，for-of</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>JavaScript里的循环方法：forEach，for-in，for-of</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzkwODM4NDM5OA==&amp;mid=2247504100&amp;idx=2&amp;sn=f28a4f6cd4598b0b14769140a3f00de3&amp;chksm=c0c85105f7bfd81306746d3a50122cbd4e8b35adfd7ec5dfae6bc9af475b0b7ffba02c6c3f52&amp;scene=126&amp;sessionid=1681309762#rd">http://mp.weixin.qq.com/s?__biz=MzkwODM4NDM5OA==&amp;mid=2247504100&amp;idx=2&amp;sn=f28a4f6cd4598b0b14769140a3f00de3&amp;chksm=c0c85105f7bfd81306746d3a50122cbd4e8b35adfd7ec5dfae6bc9af475b0b7ffba02c6c3f52&amp;scene=126&amp;sessionid=1681309762#rd</a></blockquote><section class="yead_editor" label="Copyright &#xA9; 2015 Yead All Rights Reserved." style="border: none; margin: 5px auto; text-align: center;"><p><img data-src="http://mmbiz.qpic.cn/mmbiz/bLmy0N4HIada6DcYy0RxOW91bmEkxPcuPVWJZmA5J2VbzC93eCF1XpiaWc3a6cPPCAK4GNHtMhAnyqM5aMWzM4g/0?wx_fmt=gif" class="" style="width: 100%; height: auto;" data-type="gif" data-ratio="0.10431654676258993" data-w="" src="../Images/a1b17de6675450adf91c82108caa983c.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/bLmy0N4HIada6DcYy0RxOW91bmEkxPcuPVWJZmA5J2VbzC93eCF1XpiaWc3a6cPPCAK4GNHtMhAnyqM5aMWzM4g/0?wx_fmt=gif"/></p></section><p><br/></p><p>JavaScript诞生已经有20多年了，我们一直使用的用来循环一个数组的方法是这样的：</p><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">for (var index = 0; index &lt; myArray.length; index++) {
+  console.log(myArray[index]);
+}</span></pre></blockquote><p><br/></p><p>自从JavaScript5起，我们开始可以使用<span style="color: rgb(255, 104, 39);"><strong>内置的forEach方法</strong></span>：</p><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">myArray.forEach(function (value) {
+  console.log(value);
+});</span></pre></blockquote><p><br/></p><p>写法简单了许多，但也有短处：你不能中断循环(使用break语句或使用return语句。</p><p><br/></p><p><strong><span style="color: rgb(255, 104, 39);">JavaScript里还有一种循环方法：for–in。</span></strong></p><p><br/></p><p>for-in循环实际是为循环”enumerable“对象而设计的：</p><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">var obj = {a:1, b:2, c:3};
+    
+for (var prop in obj) {
+  console.log("obj." + prop + " = " + obj[prop]);
+}
+
+// 输出:
+// "obj.a = 1"
+// "obj.b = 2"
+// "obj.c = 3"</span></pre></blockquote><p><br/></p><p>你也可以用它来循环一个数组：</p><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">for (var index in myArray) {    // 不推荐这样
+  console.log(myArray[index]);
+}</span></pre></blockquote><p><br/></p><p>不推荐用for-in来循环一个数组，因为，不像对象，数组的index跟普通的对象属性不一样，是重要的数值序列指标。</p><p><br/></p><p><strong>总之，for–in是用来循环带有字符串key的对象的方法。</strong></p><p><br/></p><h2><span style="color: rgb(255, 104, 39);"><strong>for-of循环</strong></span></h2><p><br/></p><p>JavaScript6里引入了一种新的循环方法，它就是for-of循环，它既比传统的for循环简洁，同时弥补了forEach和for-in循环的短板。</p><p><br/></p><p>我们看一下它的for-of的语法：</p><blockquote><pre><span style="color: rgb(0, 122, 170); font-size: 12px;">for (var value of myArray) {
+  console.log(value);
+}</span></pre></blockquote><p><br/></p><p>for-of的语法看起来跟for-in很相似，但它的功能却丰富的多，它能循环很多东西。</p><p><br/></p><h2><strong>for-of循环使用例子：</strong></h2><p><br/></p><h3>循环一个数组(Array):</h3><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">let iterable = [10, 20, 30];
+
+for (let value of iterable) {
+  console.log(value);
+}
+// 10
+// 20
+// 30</span></pre></blockquote><p><br/></p><p>我们可以使用const来替代let，这样它就变成了在循环里的不可修改的静态变量。</p><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">let iterable = [10, 20, 30];
+
+for (const value of iterable) {
+  console.log(value);
+}
+// 10
+// 20
+// 30</span></pre></blockquote><h3><br/></h3><h3>循环一个字符串：</h3><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">let iterable = "boo";
+
+for (let value of iterable) {
+  console.log(value);
+}
+// "b"
+// "o"
+// "o"</span></pre></blockquote><h3><br/></h3><h3>循环一个类型化的数组(TypedArray)：</h3><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">let iterable = new Uint8Array([0x00, 0xff]);
+
+for (let value of iterable) {
+  console.log(value);
+}
+// 0
+// 255</span></pre></blockquote><h3><br/></h3><h3>循环一个Map:</h3><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">let iterable = new Map([["a", 1], ["b", 2], ["c", 3]]);
+
+for (let [key, value] of iterable) {
+  console.log(value);
+}
+// 1
+// 2
+// 3
+
+for (let entry of iterable) {
+  console.log(entry);
+}
+// [a, 1]
+// [b, 2]
+// [c, 3]</span></pre></blockquote><h3><br/></h3><h3>循环一个 Set:</h3><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">let iterable = new Set([1, 1, 2, 2, 3, 3]);
+
+for (let value of iterable) {
+  console.log(value);
+}
+// 1
+// 2
+// 3</span></pre></blockquote><h3><br/></h3><h3>循环一个 DOM collection</h3><p><br/></p><p>循环一个DOM collections，比如NodeList，之前我们讨论过如何循环一个NodeList，现在方便了，可以直接使用for-of循环：</p><blockquote><pre><span style="font-size: 12px;">// Note: This will only work in platforms that have
+// implemented NodeList.prototype[Symbol.iterator]
+let articleParagraphs = document.querySelectorAll("article &gt; p");
+
+for (let paragraph of articleParagraphs) {
+  paragraph.classList.add("read");
+}</span></pre></blockquote><h3><br/></h3><h3>循环一个拥有enumerable属性的对象</h3><p><br/></p><p>for–of循环并不能直接使用在普通的对象上，但如果我们按对象所拥有的属性进行循环，可使用内置的Object.keys()方法：</p><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">for (var key of Object.keys(someObject)) {
+  console.log(key + ": " + someObject[key]);
+}</span></pre></blockquote><h3><br/></h3><h3>循环一个生成器(generators)</h3><p><br/></p><p>我们可循环一个生成器(generators):</p><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">function* fibonacci() { // a generator function
+  let [prev, curr] = [0, 1];
+  while (true) {
+    [prev, curr] = [curr, prev + curr];
+    yield curr;
+  }
+}
+
+for (let n of fibonacci()) {
+  console.log(n);
+  // truncate the sequence at 1000
+  if (n &gt;= 1000) {
+    break;
+  }
+}</span></pre></blockquote><p><br/></p><p><span style="font-size: 14px; color: rgb(136, 136, 136);">转载自：WEB骇客</span></p><p><span style="font-size: 14px; color: rgb(136, 136, 136);">文章地址：http://www.webhek.com/javascript-loop-foreach-for-in-for-of</span></p><p><span style="font-size: 14px; color: rgb(136, 136, 136);"/></p><section class="yead_editor" label="Copyright &#xA9; 2015 Yead All Rights Reserved." style=""><blockquote class="yead_bdc" style="margin-top: 5px; margin-bottom: 5px; padding-right: 10px; max-width: 100%; border: 2px dashed rgb(153, 153, 153); color: rgb(62, 62, 62); font-size: 14px; line-height: 30px; box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);"><p><strong><span style="font-size: 14px;">推荐阅读：</span></strong></p><ul class=" list-paddingleft-2" style="list-style-type: square;"><li><h2><a href="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=2655932295&amp;idx=2&amp;sn=d0403f8200abbd7fb6ee7aab334152e4&amp;scene=21#wechat_redirect" target="_blank" data_ue_src="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=2655932295&amp;idx=2&amp;sn=d0403f8200abbd7fb6ee7aab334152e4&amp;scene=21#wechat_redirect"><span style="font-size: 14px; text-decoration: underline;">10+ 实用的 JavaScript 调试小技巧</span></a></h2></li><li><h2><a href="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=210515802&amp;idx=1&amp;sn=ec1c83c11abe603ee35607c2197f925e&amp;scene=21#wechat_redirect" target="_blank" data_ue_src="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=210515802&amp;idx=1&amp;sn=ec1c83c11abe603ee35607c2197f925e&amp;scene=21#wechat_redirect"><span style="font-size: 14px; text-decoration: underline;">你可能不知道的一些JavaScript 奇技淫巧</span></a></h2></li><li><h2><a href="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=216787894&amp;idx=2&amp;sn=d6b0a1c51adeb8386bca2bddfd5ae9e8&amp;scene=21#wechat_redirect" target="_blank" data_ue_src="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=216787894&amp;idx=2&amp;sn=d6b0a1c51adeb8386bca2bddfd5ae9e8&amp;scene=21#wechat_redirect"><span style="font-size: 14px; text-decoration: underline;">JavaScript数据结构和算法简述</span></a></h2></li><li><h2><a href="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=406802028&amp;idx=2&amp;sn=3a59c570984a463507a22335f89937dd&amp;scene=21#wechat_redirect" target="_blank" data_ue_src="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=406802028&amp;idx=2&amp;sn=3a59c570984a463507a22335f89937dd&amp;scene=21#wechat_redirect"><span style="font-size: 14px; text-decoration: underline;">编写高质量JavaScript代码的一些建议</span></a></h2></li></ul></blockquote></section><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz/bLmy0N4HIaeKSsczbv1d2CjQRlQia15npPjq0B2m5ScmUcopIk45pp21quj2Tv6w6JjH77GMiaL5VIHP1A6aZlGQ/0?wx_fmt=jpeg" data-ratio="0.6672661870503597" data-w="" style="width: 100%; height: auto;" src="../Images/503a1eeff49a08ff9e5afab24251e9cb.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/bLmy0N4HIaeKSsczbv1d2CjQRlQia15npPjq0B2m5ScmUcopIk45pp21quj2Tv6w6JjH77GMiaL5VIHP1A6aZlGQ/0?wx_fmt=jpeg"/><br/></p>
+        
+</body>
+</html>

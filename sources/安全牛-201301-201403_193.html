@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>小百科：控制USB设备写入权限</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>小百科：控制USB设备写入权限</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/mp/appmsg/show?__biz=MjM5Njc3NjM4MA==&amp;appmsgid=10000485&amp;itemidx=2&amp;sign=01c3963487435436fa528833f1afd27d&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/mp/appmsg/show?__biz=MjM5Njc3NjM4MA==&amp;appmsgid=10000485&amp;itemidx=2&amp;sign=01c3963487435436fa528833f1afd27d&amp;scene=27#wechat_redirect</a></blockquote><p><span style="">为了防止他人随意修改保存在USB设备中的重要数据，我们可以修改系统注册表的相关键值，让普通用户只能访问USB设备中的数据内容，而不能随意改动其中的内容。</span></p><p><span style=""> </span></p><p><span style="">使用“Win+R”快捷键，打开系统“运行”文本框，输入“Regedit”命令，单击“确定”按钮后，开启注册表编辑器的运行状态。依次展开注册表编辑界面左侧的“HEKY_LOCAL_MACHINE\System\CurrentControlSet\Control\StorageDevicePolices”分支。</span></p><p><span style=""> </span></p><p><span style="">在目标分支下手工创建一个双字节键值“WriteProtect”，同时将其数值调整为“1”，重新启动Windows系统，这样用户日后只能对接入的USB设备进行读取操作，而不能进行写入操作。当有用户悄悄修改USB设备中的重要数据时，系统会弹出“磁盘有写保护”之类的提示。</span></p><p><span style=""> </span></p><p><span style=""> </span></p><p style="margin-bottom:8px;"><span style="">——如果大家觉得不错，就点击右上角分享吧</span></p><p style="margin-bottom:8px;"><span style="">信息安全知识，微信ID：gooann-sectv</span></p><p><br/></p>
+        
+</body>
+</html>

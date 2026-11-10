@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>【安全讲堂】如何在云计算虚拟化期间减少安全风险</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>【安全讲堂】如何在云计算虚拟化期间减少安全风险</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5Njc3NjM4MA==&amp;mid=200681023&amp;idx=3&amp;sn=ad8549e2465a19135d13e8359f6b7804&amp;chksm=28e696ec1f911ffac181e438a43ea73f94315d599078104af3bc6d67722baedbf3ca5ed8d754&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5Njc3NjM4MA==&amp;mid=200681023&amp;idx=3&amp;sn=ad8549e2465a19135d13e8359f6b7804&amp;chksm=28e696ec1f911ffac181e438a43ea73f94315d599078104af3bc6d67722baedbf3ca5ed8d754&amp;scene=27#wechat_redirect</a></blockquote><p>在云计算中，有三种基本服务模型：软件即服务(SaaS)、平台即服务(PaaS)和基础架构即服务(IaaS)。此外，还有三种基本的部署模型：公有、混合和私有。虚拟化通常被用于上述的这些云计算模型和部署中，以实现其诸多优势，包括成本效益、增加运行时间、改善灾难恢复和应用隔离。 <br/><br/>在云部署中处理虚拟化时，谁来管理安全并不重要，不管是提供商还是企业客户，因为需要解决相同的安全问题。选择一项服务和部署模型时，要知道SaaS提供了这个环境最小的控制，同时IaaS则提供了最多的控制。类似的，在公有云中，需要遵守云服务提供商(CSP)的规则，同时在私有云中，则具备环境的完全控制。这一点对于安全同样适用，用户控制了云部署中的很小的部分，而剩下的则由CSP控制。无法访问部署模型的具体部分，CSP则需要实施更合适的安全度量来处理。<br/><br/>尽管虚拟化带来了很多优势，但是也导致了很多安全问题：<br/><br/>管理程序：这个程序在相同的物理机上运行了多种虚拟机。如果管理程序中易于受到攻击，攻击者就会利用其进入到整个主机，从而就可以访问每一个运行在主机上的客用虚拟机。由于管理程序很少更新，已有的漏洞会危害整个系统的安全。如果发现了漏洞，关键就是尽快打补丁，组织潜在危害。</p><p><strong>解决方案</strong>：针对管理程序定期检查可用的最新的升级非常重要，同时要相应的升级系统。通过保持管理程序的更新，能够阻止攻击者利用已知的漏洞并控制主机系统，包括运行在上面的所有虚拟机。</p><p><br/>资源分配：物理内存或者数据存储被一个虚拟机使用并重新分配给其他虚拟机时，数据泄露也是风险。泄露通常发生在不再被需要的VM被删除以及释放资源分配给其他的VM事。一个新的VM收到了额外的资源，会采用取证调查技术获取整个物理内存的的镜像，以及数据存储。整个镜像随后会用于分析，这样就会将前一个VM留下的重要信息透露出去。</p><p><strong>解决方案</strong>：当从一个虚拟机将资源再分配给另一个虚拟机时，二者都需要确保其安全。旧的数据存在于物理内存中，也存在于数据存储中，需要用零来重写覆盖。</p><p><br/>虚拟机攻击：如果攻击者成功威胁了一个VM，就可以在很长一段时间里通过网络攻击相同主机上的其他VM。这也是越来越流行的一种跨虚拟机攻击方法，主要在于VM之间的流量无法被标准IDS/IPS软件程序检查出来。</p><p><strong>解决方案</strong>：有必要区别相同物理主机上的VM的流量进入和输出。这样我们就能够应用入侵检测和预防算法尽快捕获攻击者带来的威胁。</p><p><br/>迁移攻击：在必要时，大多数虚拟化界面中迁移虚拟机都很容易实现。VM通过网络发送给另外的虚拟化服务器，这个服务器上相同VM已经设置好。但是如果没能很好地管理流程，VM就可以通过非加密的渠道发送，可能被工具这通过网络中执行中间人攻击(MITM)嗅探到。</p><p><strong>解决方案</strong>：为了防止迁移攻击发生，必须保证网络的安全性，防止MITM渗透带来的威胁。这样做的话，就算攻击者能够威胁一个VM，但是无法成功执行MITM攻击。此
+外，通过安全的取代发送数据可能也会比较有用。虽然有人认为最好还是在迁移必须发生时，破坏并重新创建虚拟机镜像，但是通过安全渠道和网络更靠谱。</p><p><br/>对于虚拟化的云环境可能会出现多种攻击，但是如果在实施和管理云部署的时候进行了合适的安全控制和规程是可以预防的。在尝试确保云环境安全之前，理解这些恶意攻击如何执行很重要。这将有助于确保企业的防御更好地适应环境中最可能出现的威胁。在确保环境安全之后，检查安全度量是否很好地尝试执行攻击预防。这些可以在企业内部执行或者聘请防御检测公司来执行。</p><p>－－－<br/></p><p><span style="color: rgb(127, 127, 127);">要闻、干货、原创、专业</span></p><p><span style="color: rgb(127, 127, 127);">关注“信息安全知识”</span></p><p><span style="color: rgb(127, 127, 127);">我们是安全牛！</span></p><p style="text-align:center"><img data-w="200" data-ratio="1" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/kuIKKC9tNkB8pQ3CTSGictAAAJL9tlrp5fY1dZLqqu1hlZys3BibaYTwKE2lXQe9tzpegvCECZqhNSg0icku7teTw/0" src="../Images/b7c37b7066302548960da8a2e74a40e4.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/kuIKKC9tNkB8pQ3CTSGictAAAJL9tlrp5fY1dZLqqu1hlZys3BibaYTwKE2lXQe9tzpegvCECZqhNSg0icku7teTw/0"/></p><p><br/></p>
+        
+</body>
+</html>

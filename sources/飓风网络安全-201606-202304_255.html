@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>linux常见系统安全知识及使用</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>linux常见系统安全知识及使用</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI3NzMzNzE5Ng==&amp;mid=2247484370&amp;idx=1&amp;sn=c78ee56a2979411df28ae3b7a3081187&amp;chksm=eb6686d1dc110fc71c7c5c546183c94e91a92b6cdb5b4f699818ca5d580f8289216b6f3c0612&amp;scene=126&amp;sessionid=1681407324#rd">http://mp.weixin.qq.com/s?__biz=MzI3NzMzNzE5Ng==&amp;mid=2247484370&amp;idx=1&amp;sn=c78ee56a2979411df28ae3b7a3081187&amp;chksm=eb6686d1dc110fc71c7c5c546183c94e91a92b6cdb5b4f699818ca5d580f8289216b6f3c0612&amp;scene=126&amp;sessionid=1681407324#rd</a></blockquote><p style=" height: auto; overflow: hidden; color: rgb(80, 80, 80); ; ; ; ; ; ">一、简单了解系统启动过程<br/>BIOS—GRUB—内核（kernel）--initrd—读取文件—启动服务—tty终端—登录（用户，密码）<br/>（详细了解请访问http://blog.chinaunix.net/uid-23069658-id-3142047.html）</p><p style=" height: auto; overflow: hidden; color: rgb(80, 80, 80); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(80, 80, 80); ; ; ; ; ; ">二、加强系统账号安全<br/>1.账号文件：<br/>/etc/passwd ##用户信息<br/>/etc/shadow ##用户密码信息<br/>/etc/profile ##系统配置文件，环境变量等信息<br/>/home/用户/.bash_profile ##用户独有环境配置文件<br/>/etc/rc.local ##用户自定义开机执行操作文件</p><p style=" height: auto; overflow: hidden; color: rgb(80, 80, 80); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(80, 80, 80); ; ; ; ; ; ">2.安全管理<br/>1）关注以上文件变化<br/>2）删除不必要用户（userdel –r 用户）<br/>3）监控密码的变化及登录shall的变化<br/>4）必备锁定账号（passwd –l 用户），解锁（passwd –u 用户）</p><p style=" height: auto; overflow: hidden; color: rgb(80, 80, 80); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(80, 80, 80); ; ; ; ; ; ">3.优化账号密码<br/>1）优化账号：通过修改模板文件按指定新建用户     信     息l（/etc/skel/*##用户配置文件模板，可以定义一些环境变量；/etc/default/useradd ##创阿金用户的家目录，登录shell的模板文件）<br/>2）优化密码安全： <br/>A：密码使用时间：针对新建用户修改/etc/login.defs<br/>定义：已经建立的使用chage命令修改密码的使用时间<br/>B:密码优化：通过pam_crack模块设置密码复杂性要求，记录历史密码次数；通过Pam_tally2设置用户锁定策略</p><p style=" height: auto; overflow: hidden; color: rgb(80, 80, 80); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(80, 80, 80); ; ; ; ; ; ">4.历史命令<br/>1）History ##查看历史命令<br/>History –w ##将历史命令写入到文件中<br/>History –c ##清除内存中历史命令<br/>使用历史命令：上键、！！历史命令一部分<br/>默认情况下：历史命令记录在/.bash_history文件中，只有<br/>2）在退出或使用“history -w”时才会将历史命令写到文件中<br/>3）自定义历史命令记录<br/>可以在/etc/profile或用户目录下.bash_profile中进行定义<br/>常用配置项：<br/>HISTSIZE=100 ##定义记录历史命令的条数，默认1000<br/>HISTTIMEFORMAT=”%F-%T” ##记录历史命令时间<br/>HISTFTILE=”文件” ##第一历史命令存放文件，注意补虚有写入权限</p><p style=" height: auto; overflow: hidden; color: rgb(80, 80, 80); ; ; ; ; ; "><br/></p><p style=" height: auto; overflow: hidden; color: rgb(80, 80, 80); ; ; ; ; ; ">5.锁定文件：chattr ，lsattr<br/>常用选项：chatty +I 文件 ##锁定文件，-i解读<br/>chatty +a 文件 ##只允许追加，不需删除，-a取消<br/></p><p><br/></p>
+        
+</body>
+</html>

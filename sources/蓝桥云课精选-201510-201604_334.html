@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>C语言新人常见问题与错误</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>C语言新人常见问题与错误</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzkwODM4NDM5OA==&amp;mid=2247503936&amp;idx=2&amp;sn=f83f4dee2bb3d35e9a9c132b06e1d6b5&amp;chksm=c0c851a1f7bfd8b7e0b59c0418d40f391b89c2606f88c91c7812491d63b74ff5fd761c7b295c&amp;scene=126&amp;sessionid=1681309781#rd">http://mp.weixin.qq.com/s?__biz=MzkwODM4NDM5OA==&amp;mid=2247503936&amp;idx=2&amp;sn=f83f4dee2bb3d35e9a9c132b06e1d6b5&amp;chksm=c0c851a1f7bfd8b7e0b59c0418d40f391b89c2606f88c91c7812491d63b74ff5fd761c7b295c&amp;scene=126&amp;sessionid=1681309781#rd</a></blockquote><section class="yead_editor" label="Copyright &#xA9; 2015 Yead All Rights Reserved." style="border:none;border-style:none;margin: 5px auto;text-align: center;"><p><img data-src="http://mmbiz.qpic.cn/mmbiz/bLmy0N4HIadfxta1MAE76mJ6bZBV6tp2m5gczFeT33C7JvTRR8ibOiazwWc3fq0aMFyE01mulsVcZkF3LJ2v3Ruw/0?wx_fmt=gif" data-type="gif" data-ratio="0.14568345323741008" data-w="" src="../Images/e612a4edd3ced6ad3ed28021a847da82.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/bLmy0N4HIadfxta1MAE76mJ6bZBV6tp2m5gczFeT33C7JvTRR8ibOiazwWc3fq0aMFyE01mulsVcZkF3LJ2v3Ruw/0?wx_fmt=gif"/></p></section><p>不知不觉，学习C语言也快一年了。虽然有C语言课，但是老师完全让我们自己看书，在自学的过程中，和周围同学交流中，以及后来在CSDN，BCCN，百度知道看帖回帖中，也看到许多C语言新人常遇到的问题与常犯的错误。</p><p><br/></p><p>为了让新人们少走弯路少碰壁，我便打算写下此文。当然，由于我自己的水平也有限，其中可能自己也不知不觉犯了错误，望高手们果断斧正。</p><p><br/></p><p>下面的程序，基本是摘自在CSDN，BCCN，百度知道的提问帖，以及我身边的人和我自己写的程序，限于篇幅，对于问题影响不大的部分我已经删去或改写，一些与相应问题无关的错误也一并进行了修改。</p><p><br/></p><p>对于完整的修正后的程序都在code::blocks 10.05（编译器gcc，调试器gdb，平台windows 7旗舰版）上运行过。</p><p><br/></p><h2><span style="color: rgb(255, 104, 39);"><strong>1、程序画面一闪而过</strong></span></h2><p><br/></p><blockquote><pre><span style="font-size: 12px;">#include
+int main(void)
+{
+    int iSignal;         /*定义变量表示信号灯的状态*/
+    printf("the Red Light is 0,the Green Light is 1\n"); /*输出提示信息*/
+    scanf("%d",&amp;iSignal);       /*输入iSignal变量*/
+    if(iSignal==1)         /*使用if语句进行判断*/
+    {
+          printf("the Light is green,cars can run\n");  /*判断结果为真时输出*/
+    }
+    if(iSignal==0)         /*使用if语句进行判断*/
+    {
+         printf("the Light is red,cars can't run\n");  /*判断结果为真时输出*/
+    }
+    return 0;
+}</span></pre></blockquote><p><br/></p><p><span style="color: rgb(61, 167, 66);"><strong>解析：</strong></span>在XP以上的系统用win-tc,dev-cpp等IDE编译运行此程序时，无论输入什么数字，结果都是一闪而过，因为程序执行完语句后就直接退出了。</p><p><br/></p><p><span style="color: rgb(61, 167, 66);"><strong>解决方案：</strong></span>这里有几个办法：</p><ul class=" list-paddingleft-2" style="list-style-type: disc;"><li><p>(1)：在程序开头加上#include，然后在程序末尾加上system("pause");<br/>此方法仅适用于MS-DOS，windows，不适用于*nix等系统</p></li><li><p>(2)：在需要暂停的地方加入一个或两个getchar();<br/>这种方法，实质上并不是暂停程序，而是让程序等待用户输入若干个回车。但是效果和暂停是相同的。</p></li><li><p>(3)：在程序开头加上#include，在需要暂停的地方加入一个getch();，原理和上一种差不多。在win-tc里用得比较多。</p></li></ul><h2><br/></h2><h2><span style="color: rgb(255, 104, 39);"><strong>2、if,for,while的判断后直接跟;</strong></span></h2><p><br/></p><p>例如：</p><blockquote><pre><span style="font-size: 12px;">#include
+int main(void)
+{
+    int a;
+    scanf("%d",&amp;a);
+    if (a == 123);////错误，if(a == 123)后面不应加上;，而应该紧跟着
+                  ////{ printf();}代码
+    {
+        printf("ccc");
+    }
+    else
+    {
+        printf("ddd");
+    }
+    getchar();
+    return 0;
+}
+#include
+int main(void)
+{
+    int n,i;
+    printf("please input a number&gt;2:");
+    scanf("%d",&amp;n);
+    for(i=2;i
+    {
+        if(n%i==0)
+        break;
+    }
+    if(i
+    printf("%d not a sushu\n",n);
+    else
+    printf("%d is a sushu\n",n);
+    return 0;
+}</span></pre></blockquote><p><br/></p><p><span style="color: rgb(61, 167, 66);"><strong>解析&amp;解决方案：</strong></span>见注释</p><h2><br/></h2><h2><span style="color: rgb(255, 104, 39);"><strong>3、漏头文件，main函数格式不规范</strong></span></h2><p><br/></p><p>例如：</p><blockquote><pre><span style="font-size: 12px;">main()
+{
+    int a;
+    scanf("%d",&amp;a);
+    printf("input %d", a);
+}</span></pre></blockquote><p><br/></p><p><span style="color: rgb(61, 167, 66);"><strong>解析：</strong></span>这段程序没有带上头文件stdio.h。即漏写了#include 。如果仅有scanf,printf函数的话，stdio.h是可以省略并可以正确运行的，但是这是非常不好的习惯。而main()这种写法，C89标准勉强充许这种形式，C99标准是不允许的。</p><p><br/></p><p>而void main()，至今仍未有任何标准考虑接受它。但是有些编译器的确允许。当然，这种写法广为流行，应该和老谭的书关系非常大。</p><p><br/></p><p><span style="color: rgb(61, 167, 66);"><strong>解决方案：</strong></span>用到的头文件应该用include包含进去。main()函数应该写成int main(void)这种形式，在main()函数尾部加上return 0;</p><p><br/></p><p>即</p><blockquote><pre><span style="font-size: 12px;">#include
+int main(void)
+{
+    int a;
+    scanf("%d",&amp;a);
+    printf("input %d", a);
+    return 0;
+}</span></pre></blockquote><h2><br/></h2><h2><span style="color: rgb(255, 104, 39);"><strong>4、scanf格式控制误用</strong></span></h2><p><br/></p><p>例如：</p><blockquote><pre><span style="font-size: 12px;">#include
+int main(void)
+{
+    float a,b,c;
+    printf("shuru 3 ge xi shu :");
+    scanf("%f,%f,%f",&amp;a,&amp;b,&amp;c);
+    printf("he shi %f",a + b + c);
+    return 0;
+}</span></pre></blockquote><p><br/></p><p><span style="color: rgb(61, 167, 66);"><strong>解析：</strong></span> scanf()函数允许把普通字符放在格式字符串中。除了空格字符之外的普通字符一定要与输入串准确匹配。否则，例如上面的程序，那么scanf()将其解释成，将键入一个数字，键入一个逗号，然后再键入一个数字，再键入一个逗号，最后再键入一个数学。也就是说必须像这样输入：2.3,5.1,3.8。如果不能精确匹配，则scanf()读取将失败。</p><p><br/></p><p>作为编写这个程序的人，你可以按照这个格式输入，但是用户则不知应该以何种格式输入。所以应该改为scanf("%f%f%f",&amp;a,&amp;b,&amp;c);</p><p><br/></p><p><span style="color: rgb(61, 167, 66);"><strong>解决方案： </strong></span>scanf一行见解析。</p><p><br/></p><h2><span style="color: rgb(255, 104, 39);"><strong>5、scanf参数错误</strong></span></h2><p><br/></p><p>例如：</p><blockquote><pre><span style="font-size: 12px;">#include
+int main(void)
+{
+    char str[80];
+    printf("Please enter your first name");
+    scanf("%s", &amp;str);
+    printf("Hello %s", str);
+    return 0;
+}</span></pre></blockquote><p><br/></p><p><span style="color: rgb(61, 167, 66);"><strong>解析：</strong></span>scanf()中，读取int, long, float, double, char等类型的数据，是需要在第n（n&gt;=2)个参数里加上&amp;的，因为scanf()函数里，第n(n&gt;=2)个参数是变量的地址，而不是变量本身：<span style="line-height: 1.6;">例如定义int num;则scnaf("%d", &amp;num);</span></p><p><span style="line-height: 1.6;"><br/></span></p><p><span style="line-height: 1.6;">而读取字符串是不需要加上&amp;，因为字符串的变量名本身就代表了地址。</span><span style="line-height: 1.6;">所以例子中应为scanf("%s", str);同时，这条规则对于结构体内的变量的也适用，</span><span style="line-height: 1.6;">即</span></p><blockquote><pre><span style="font-size: 12px;">struct foo {
+char ch;
+char str[80];
+int num
+}data;</span></pre></blockquote><p><br/></p><p>那么应该是</p><blockquote><pre><span style="font-size: 12px;">scanf("%c%s%d", &amp;data.ch, data.str, &amp;data.num);</span></pre></blockquote><p><br/></p><p><span style="color: rgb(61, 167, 66);"><strong>解决方案：</strong></span>见解析</p><h2><br/></h2><h2><span style="color: rgb(255, 104, 39);"><strong>6、数据类型混淆</strong></span></h2><p><br/></p><p>例如：</p><blockquote><pre><span style="font-size: 12px;">#include
+int main(void)
+{  int a;
+   double b=1;
+   for(a=1;a&lt;=6;aA++)
+      b*=A;
+   printf("%ld",b);
+}</span></pre></blockquote><p><br/></p><p><span style="color: rgb(61, 167, 66);"><strong>解析：</strong></span>定义b为双精度浮点型，而输出使用%ld即长整型，数据类型不一致，输出为0.PS：老谭的书讲到用TC调试那一节举的例子貌似就是int a; 后面写到printf("%f",a);产生错误的。</p><p><br/></p><p><span style="color: rgb(61, 167, 66);"><strong>解决方案：</strong></span>把b定义为长整型long，即long b = 1;（其实这里还涉及到隐式转换，所以，更为正确的方法是把a也定义为长整型）</p><h2><br/></h2><h2><span style="color: rgb(255, 104, 39);"><strong>7、C语言中的“除法”</strong></span></h2><p><br/></p><p>例如：</p><blockquote><pre><span style="font-size: 12px;">#include
+int main(void)
+{
+    printf("请输入一个华氏温度\n");
+    float a,c;
+    scanf("%f",a);
+    c=5/9*(a-32);
+    printf("摄氏温度为%4.2f",c);
+    return 0;
+}</span></pre></blockquote><p><br/></p><p><span style="color: rgb(61, 167, 66);"><strong>解析：</strong></span> C语言中，两个整型数相除，如果不能除尽，那么小数部分会直接被丢弃，即“截尾”。因此5/9的结果是0.</p><p><br/></p><p><span style="color: rgb(61, 167, 66);"><strong>解决方案：</strong></span>应该使用类型转换，或者明确相除的两数的类型</p><blockquote><p><span style="font-size: 12px;">c=(float)5/9*(a-32);</span></p><p><span style="font-size: 12px;">c=5.0/9*(a-32);</span></p><p><span style="font-size: 12px;">c=5.0/9.0*(a-32);</span></p></blockquote><h2><br/></h2><h2><span style="color: rgb(255, 104, 39);"><strong>8、混合输入数字和字符的杯具</strong></span></h2><p><br/></p><blockquote><pre><span style="font-size: 12px;">#include
+int main(void)
+{
+    char ch;
+    int num, i;
+        printf("Enter a character and a integer:\n");
+    while((ch = getchar()) != '\n')
+    {
+        scanf("%d", &amp;num);
+            for(i = 0; i &lt; num; ++i)
+            putchar(ch);
+        putchar('\n');
+        printf("Enter an another pair.Empty line to quit");
+    }
+    return 0;
+}</span></pre></blockquote><p><br/></p><p><span style="color: rgb(61, 167, 66);"><strong>解析：</strong></span>这段程序表面看起来没有什么问题，但是，实际运行一遍的，就会发现，只输入了一组数据，程序就退出了。</p><p><br/>在开始的时候，程序运行良好，例如输入 a 2，程序就会打印出aa。但是，程序还没响应第二次输入就退出了。</p><p><br/></p><p>问题就出在换行符，这次是紧跟在第一个输入的2后面的那个换行符。scanf()函数将该换行符留在输入队列中，而getchar()并不跳过换行符。所以在循环的下一个周期，getchar(）读取了第一次输入时的换行符，而换行符正是终止循环的条件。</p><p><br/></p><p><span style="color: rgb(61, 167, 66);"><strong>解决方案：</strong></span>吃掉输入流中的回车即可</p><p><br/></p><p>在while循环最后，加上以下语句</p><blockquote><pre><span style="font-size: 12px;">while (getchar() != '\n')
+    continue;</span></pre></blockquote><p>也可以加上fflush(stdin);刷新输入流。</p><h2><br/></h2><h2><span style="color: rgb(255, 104, 39);"><strong>9、i++,i++;的纠结</strong></span></h2><p><br/></p><p>例：</p><blockquote><pre><span style="font-size: 12px;">#include &lt;stdio.h&gt;
+
+int main(void)
+{
+    int i = 5;
+    printf("%d %d", i++, i++);
+    return 0;
+}</span></pre></blockquote><p><br/></p><p><span style="color: rgb(61, 167, 66);"><strong>解析：</strong></span>这个问题，在实际编程应该是没有人会这么写的，可还是有很多初学者纠结于此。在编程这个领域里，很多时候，实践是最好的老师。对于代码有疑问，那么上机敲一遍，编译运行一遍是很好的方法。但是，在i++,i++这个方面，即使编译运行了这个程序，也不一定会有正确的结果。用VC，TC，gcc编译运行后的结果不一定相同。或者从某个角度来说，这里结果的正确与否其实并不重要了。</p><p><br/></p><p>printf("%d %d", i++, i++);这一个语句，其中的i++,i++是未指定行为。即C语言的标准并没有指定这运算是以何种顺序进行的。如果用gcc编译加上-Wall选项，那么会有warning:</p><blockquote><pre><span style="font-size: 12px;">gcc 2_1.c -o 2_1 -g -Wall
+2_1.c: 在函数‘main’中:
+2_1.c:6:24: 警告：‘i’上的运算结果可能是未定义的</span></pre></blockquote><p><br/></p><p>因此，要解决这个问题，最好的方法就是不要在程序中写这样的代码。</p><p><br/></p><p><span style="color: rgb(61, 167, 66);"><strong>解决方案：</strong></span>见上。</p><h2><br/></h2><h2><span style="color: rgb(255, 104, 39);"><strong>10、60&lt;=grade&lt;=70</strong></span></h2><p><br/></p><p>例：</p><blockquote><pre><span style="font-size: 12px;">if (60 &lt;= grade &lt;= 70)
+   printf("及格");
+else if(70 &lt;= grade &lt;= 85)
+     printf("良好");</span></pre></blockquote><p><br/></p><p><span style="color: rgb(61, 167, 66);"><strong>解析:</strong></span>在数学中，60&lt;=grade&lt;=70这种表达是成立的，但是在C语言中,并没有这种表达。</p><p><br/></p><p><span style="color: rgb(61, 167, 66);"><strong>解决方案：</strong></span>应该改写为</p><blockquote><pre><span style="font-size: 12px;">if ((60 &lt;= grade) &amp;&amp; (grade &lt;= 70))
+   printf("及格");
+else ...</span></pre></blockquote><h2><br/></h2><h2><span style="color: rgb(255, 104, 39);"><strong>11、switch接受什么值?</strong></span></h2><p><br/></p><p>例：</p><blockquote><pre><span style="font-size: 12px;">#include &lt;stdio.h&gt;
+
+int main(void)
+{
+    double choice;
+    scanf("%lf", &amp;choice);
+    switch(choice){
+    case 1.0 : printf("1.0");
+        break;
+    case 2.0 : printf("2.0");
+        break;
+    default : printf("It's not 1.0 or 2.0");
+    }
+    return 0;
+}</span></pre></blockquote><p><br/></p><p><span style="color: rgb(61, 167, 66);"><strong>解析：</strong></span>这种问题同样是不会出现在实际的编程当中。但是一些C语言题目可能会这么出。switch()接受的是整数：整型或者字符型。所以，浮点型，字符串等类型是不被switch()接受的。</p><p><br/></p><p><span style="color: rgb(61, 167, 66);"><strong>解决方案：</strong></span>无他……</p><p><br/></p><h2><span style="color: rgb(255, 104, 39);"><strong>12、==  =的困惑</strong></span></h2><p><br/></p><p>例：</p><blockquote><pre><span style="font-size: 12px;">void count(void);/*计数器函数*/
+void show_count(void);/*报告计数结果*/
+
+int main(void)
+{
+    puts("Please enter some letters:(# to end)");
+    count();
+    show_count();
+
+    puts("Thank you for using this program made by HerBal_Tea!");
+    system("pause");
+    return 0;
+}
+
+void count(void)
+{
+    while ((ch = getchar()) != STOP)
+    {
+        if (ch = SPACE)
+        {
+            sp_count++;
+            continue;
+        }
+
+        if (ch = ENTER)
+        {
+            n_count++;
+            continue;
+        }
+
+        other_count++;
+    }/*end of while ((ch = getchar()) != '#')*/
+}
+
+void show_count(void)
+{
+    puts("The number of \nspace enter other");
+    printf("%5d%6d%6d\n", sp_count, n_count, other_count);
+}</span></pre></blockquote><p><br/></p><p><span style="color: rgb(61, 167, 66);"><strong>解析：</strong></span>话说我自己也犯了这个错。在数学中，=表示相等，而在很多编程语言中，=表示赋值，==才表示相等。思维惯性导致错误。而且这个错误C编译器既不会报错也不会警告。出错了检查起来非常难。</p><p><br/></p><p>我看了不下二十遍调试的值监视都找不到，最后还是一行一行源代码看，才知道是这个问题。在C语言四书五经中的 c traps and pitfalls 和 expert c programming都提到过这个问题。</p><p><br/></p><p><span style="color: rgb(61, 167, 66);"><strong>解决方案：</strong></span>无他，唯细心。</p><p><br/></p><h2><span style="color: rgb(255, 104, 39);"><strong>13、溢出问题</strong></span></h2><p><br/></p><p>例：求斐波那契数列的前n项</p><blockquote><pre><span style="font-size: 12px;">#include &lt;stdio.h&gt;
+
+#define N 100
+
+int main(void)
+{
+    int fib[N];
+    int i;
+
+    fib[0] = fib[1] = 1;
+    printf("%d %d ", fib[0], fib[1]);
+    for (i = 2; i &lt; N; ++i)
+    {
+        fib[i] = fib[i - 1] + fib[i - 2];
+        printf("%d ", fib[i]);
+    }
+    return 0;
+}</span></pre></blockquote><p><br/></p><p><span style="color: rgb(61, 167, 66);"><strong>解析：</strong></span>在数学的概念中，整数、小数都是无限的，但是计算机中，即使是long long int或者double类型都是有一定限度的，超过限度就会溢出。</p><p><br/></p><p>即是，假设一个指针式体重秤最大量程为120KG，那么一个体重130KG的人站上去，那么指针会指向10KG的刻度处。溢出同理。</p><p><br/></p><p>而C语言，编译器是不会对溢出进行检查或者处理的。因此在编程中，应该自己估算一下数的大小，以选用合适的数据类型来表示数据。</p><p><br/></p><p>PS：由于TC编译出的程序是16位的，所以int也是16位，很容易就会溢出。</p><p><br/></p><p><span style="color: rgb(61, 167, 66);"><strong>解决方案：</strong></span>一方面是使用合适的数据类型，比如long ,long long 或者double。另一方面是，如果数特别大，连unsigned long long int或者连double都表示不了的时候，那么就用数组吧。<span style="line-height: 1.6;">不过定义数组的加减法还算好，但是定义乘除法就不是那么简单了。</span></p><p><span style="line-height: 1.6;"><br/></span></p><p><span style="line-height: 1.6;">所以推荐新人使用第一种方法。第二种方法，可以考虑自己编个小程序实现一下。</span></p><h2><br/></h2><h2><span style="color: rgb(255, 104, 39);"><strong>14、四舍五入?</strong></span></h2><p><br/></p><p>例：要求将输入的数按指定精度四舍五入输出</p><blockquote><pre><span style="font-size: 12px;">#include &lt;stdio.h&gt;
+
+int main(void)
+{
+    double a = 158.385427;
+    printf("%.2lf", a);
+    return 0;
+}</span></pre></blockquote><p><br/></p><p><span style="color: rgb(61, 167, 66);"><strong>解析：</strong></span> C语言中，printf("%.2lf", num);是直接截断至小数点后两位，并非四舍五入而是类似于趋零截尾。</p><p><br/></p><p><span style="color: rgb(61, 167, 66);"><strong>解决方案：</strong></span>如下</p><blockquote><pre><span style="font-size: 12px;">//四舍五入显示数字，精确由用户输入
+//可辨别正负 
+#include&lt;stdio.h&gt;
+#include&lt;stdlib.h&gt;
+#include&lt;math.h&gt;
+int main(void)
+{
+    int width;
+    double a = 158.385427;
+    puts("Enter the width");
+    scanf("%d",&amp;width);
+    if(a&gt;0.0)
+    a = (int)(a*pow(10,width) + 0.5)/pow(10,width);
+    else 
+    a = (int)(a*pow(10,width) - 0.5)/pow(10,width);
+    printf("The result is %.*lf\n",width,a);
+    system("pause");
+    return 0;
+}</span></pre></blockquote><h2><br/></h2><h2><span style="color: rgb(255, 104, 39);"><strong>15、函数的返回值</strong></span></h2><p><br/></p><p>例：</p><blockquote><pre><span style="font-size: 12px;">#include&lt;stdio.h&gt;
+double salary();/*计算工资税的函数*/
+void main()
+{
+    int choice;
+    char want0;
+    double result;
+    while(1)
+    {
+        printf("欢迎使用个人所得税计算器\n");
+        printf("\n");
+        printf("1.工资、薪金所得税计算\n");
+    printf("\n");
+        printf("请输入需要计算的税收项目序号：");
+        scanf("%d", &amp;choice);
+        if(choice==1)
+        {
+            salary();
+            printf("%lf", result);
+        }
+double salary()
+{
+    double sal, result;
+    printf("请输入您的薪水：");
+    scanf("%lf", &amp;sal);
+    if(sal&lt;=3000)
+    {
+        result=sal;
+    }
+        if(sal&gt;3000&amp;&amp;sal&lt;=4500)
+        {
+            result=sal*0.05;
+        }
+        if(sal&gt;4500&amp;&amp;sal&lt;=7500)
+        {
+            result=sal*0.1-75;
+        }
+        if(sal&gt;7500&amp;&amp;sal&lt;=12000)
+        {
+            result=sal*0.2-525;
+        }
+        if(sal&gt;12000&amp;&amp;sal&lt;=38000)
+        {
+            result=sal*0.25-975;
+        }
+        if(sal&gt;38000&amp;&amp;sal&lt;=58000)
+        {
+            result=sal*0.3-2725;
+        }
+        if(sal&gt;58000&amp;&amp;sal&lt;=83000)
+        {
+            result=sal*0.35-5475;
+        }
+        if(sal&gt;83000)
+        {
+            result=sal*0.45-13475;
+        }
+    return result;
+}</span></pre></blockquote><p><br/></p><p><span style="color: rgb(61, 167, 66);"><strong>解析：</strong></span>这个问题简单来说是，用户定义函数并未返回计算所得数值。往深的来说是关于存储类、链接，即变量的作用域、链接、存储时期的问题。</p><p><br/></p><p><span style="color: rgb(61, 167, 66);"><strong>解决方案：</strong></span></p><blockquote><pre><span style="font-size: 12px;">/*
+ * main.c
+ *
+ * Created on: 2011-6-11
+ * Author: ice
+ */
+
+#include&lt;stdio.h&gt;
+double salary();/*计算工资税的函数*/
+int main(void)
+{
+    int choice;
+//    char want0;////这个want0变量没有使用
+    double result;
+    while(1)
+    {
+        printf("欢迎使用个人所得税计算器\n");
+        printf("\n");
+        printf("1.工资、薪金所得税计算\n");
+     printf("\n");
+        printf("请输入需要计算的税收项目序号：");
+        scanf("%d", &amp;choice);
+        if(choice==1)
+        {
+            result = salary();//要有一个值接受返回值才可以
+            printf("%lf", result);
+        }
+    }
+}
+
+double salary()
+{
+    double sal, result;
+    printf("请输入您的薪水：");
+    scanf("%lf", &amp;sal);
+    if(sal&lt;=3000)
+    {
+        result=sal;
+    }
+        if(sal&gt;3000&amp;&amp;sal&lt;=4500)
+        {
+            result=sal*0.05;
+        }
+        if(sal&gt;4500&amp;&amp;sal&lt;=7500)
+        {
+            result=sal*0.1-75;
+        }
+        if(sal&gt;7500&amp;&amp;sal&lt;=12000)
+        {
+            result=sal*0.2-525;
+        }
+        if(sal&gt;12000&amp;&amp;sal&lt;=38000)
+        {
+            result=sal*0.25-975;
+        }
+        if(sal&gt;38000&amp;&amp;sal&lt;=58000)
+        {
+            result=sal*0.3-2725;
+        }
+        if(sal&gt;58000&amp;&amp;sal&lt;=83000)
+        {
+            result=sal*0.35-5475;
+        }
+        if(sal&gt;83000)
+        {
+            result=sal*0.45-13475;
+        }
+    return result;
+}</span></pre></blockquote><p><br/></p><p><span style="font-size: 14px; color: rgb(136, 136, 136);">文章地址：http://blog.chinaunix.net/uid-13059622-id-2972924.html</span></p><p><span style="font-size: 14px; color: rgb(136, 136, 136);">文章作者：icelights</span></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz/bLmy0N4HIaca48FuHSCnx3UhxA7x43zRC0ictOGM1e6wP43RUssmxM5Dtly2dSV423XZNOY2Qx6pDGoLpqibPn5Q/0?wx_fmt=jpeg" data-ratio="0.6672661870503597" data-w="" src="../Images/5be9cad5a12e5977c988df5721cb95dc.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/bLmy0N4HIaca48FuHSCnx3UhxA7x43zRC0ictOGM1e6wP43RUssmxM5Dtly2dSV423XZNOY2Qx6pDGoLpqibPn5Q/0?wx_fmt=jpeg"/><br/></p><section style="max-width: 100%; white-space: normal; border: 0px; color: rgb(68, 68, 68); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; font-size: 13px; line-height: 24px; height: 10px; box-sizing: border-box !important; word-wrap: break-word !important; background-image: url(http://mmbiz.qpic.cn/mmbiz/bLmy0N4HIac9gxpM1oWCpMftlTcboJg5CJvicEkOAHgKhhZR8ZOCSgZ0MRfKMHLS0PP73aElC60ibRAqbyxqQXKQ/0?wx_fmt=png); background-color: rgb(251, 19, 122); background-repeat: repeat-x;"/><p style="max-width: 100%; min-height: 1em; white-space: pre-wrap; color: rgb(62, 62, 62); line-height: 28.4444465637207px; box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);"><br style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;"/></p><p style="max-width: 100%; min-height: 1em; white-space: pre-wrap; color: rgb(62, 62, 62); line-height: 28.4444465637207px; box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);"><span style="max-width: 100%; color: rgb(255, 0, 0); box-sizing: border-box !important; word-wrap: break-word !important;"><strong style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;">一、IT技术领域：</strong></span></p><p style="max-width: 100%; min-height: 1em; white-space: pre-wrap; color: rgb(62, 62, 62); line-height: 28.4444465637207px; box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);">回复"<span style="max-width: 100%; color: rgb(255, 192, 0); box-sizing: border-box !important; word-wrap: break-word !important;"><strong style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;">1</strong></span>",查看【Linux】“Linux学习资源推荐”；<br style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;"/></p><p style="max-width: 100%; min-height: 1em; white-space: pre-wrap; color: rgb(62, 62, 62); line-height: 28.4444465637207px; box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);">回复"<span style="max-width: 100%; color: rgb(255, 192, 0); box-sizing: border-box !important; word-wrap: break-word !important;"><strong style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;">2</strong></span>",查看【Python】“Python语言十分钟快速入门”；</p><p style="max-width: 100%; min-height: 1em; white-space: pre-wrap; color: rgb(62, 62, 62); line-height: 28.4444465637207px; box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);">回复"<span style="max-width: 100%; color: rgb(255, 192, 0); box-sizing: border-box !important; word-wrap: break-word !important;"><strong style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;">3</strong></span>",查看【Java】“写好Java代码的30条经验总结”；</p><p style="max-width: 100%; min-height: 1em; white-space: pre-wrap; color: rgb(62, 62, 62); line-height: 28.4444465637207px; box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);">回复"<span style="max-width: 100%; color: rgb(255, 192, 0); box-sizing: border-box !important; word-wrap: break-word !important;"><strong style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;">4</strong></span>",查看【PHP】“你不得不知道的20个优秀PHP框架”；</p><p style="max-width: 100%; min-height: 1em; white-space: pre-wrap; color: rgb(62, 62, 62); line-height: 28.4444465637207px; box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);">回复"<span style="max-width: 100%; color: rgb(255, 192, 0); box-sizing: border-box !important; word-wrap: break-word !important;"><strong style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;">5</strong></span>",查看【WEB】“Web开发者不可不知的15条编码原则”；</p><p style="max-width: 100%; min-height: 1em; white-space: pre-wrap; color: rgb(62, 62, 62); line-height: 28.4444465637207px; box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);">回复"<span style="max-width: 100%; color: rgb(255, 192, 0); box-sizing: border-box !important; word-wrap: break-word !important;"><strong style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;">6</strong></span>",查看【C】“C语言谜题”；</p><p style="max-width: 100%; min-height: 1em; white-space: pre-wrap; color: rgb(62, 62, 62); line-height: 28.4444465637207px; box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);">回复"<span style="max-width: 100%; color: rgb(255, 192, 0); box-sizing: border-box !important; word-wrap: break-word !important;"><strong style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;">7</strong></span>",查看【Android】“移动终端开发必备知识”；</p><p style="max-width: 100%; min-height: 1em; white-space: pre-wrap; color: rgb(62, 62, 62); line-height: 28.4444465637207px; box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);"><br style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;"/></p><p style="max-width: 100%; min-height: 1em; white-space: pre-wrap; color: rgb(62, 62, 62); line-height: 28.4444465637207px; box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);"><strong style="max-width: 100%; color: rgb(255, 0, 0); box-sizing: border-box !important; word-wrap: break-word !important;">二、程序员技能：</strong></p><p style="max-width: 100%; min-height: 1em; white-space: pre-wrap; color: rgb(62, 62, 62); line-height: 28.4444465637207px; box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);">回复"<span style="max-width: 100%; color: rgb(255, 192, 0); box-sizing: border-box !important; word-wrap: break-word !important;"><strong style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;">算法</strong></span>",查看【算法】“各语言排序算法源代码”；</p><p style="max-width: 100%; min-height: 1em; white-space: pre-wrap; color: rgb(62, 62, 62); line-height: 28.4444465637207px; box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);">回复"<span style="max-width: 100%; color: rgb(255, 192, 0); box-sizing: border-box !important; word-wrap: break-word !important;"><strong style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;">git</strong></span>",查看【git】“简明 Git 命令速查表（中文版）”；</p><p style="max-width: 100%; min-height: 1em; white-space: pre-wrap; color: rgb(62, 62, 62); line-height: 28.4444465637207px; box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);">回复"<span style="max-width: 100%; color: rgb(255, 192, 0); box-sizing: border-box !important; word-wrap: break-word !important;"><strong style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;">sql</strong></span>",查看【数据库】“Mysql中常用的sql语句汇总”；</p><p style="max-width: 100%; min-height: 1em; white-space: pre-wrap; color: rgb(62, 62, 62); line-height: 28.4444465637207px; box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);"><br style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;"/></p><p style="max-width: 100%; min-height: 1em; white-space: pre-wrap; color: rgb(62, 62, 62); line-height: 28.4444465637207px; box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);"><span style="max-width: 100%; color: rgb(255, 0, 0); box-sizing: border-box !important; word-wrap: break-word !important;"><strong style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;">三、程序员：</strong></span></p><p style="max-width: 100%; min-height: 1em; white-space: pre-wrap; color: rgb(62, 62, 62); line-height: 28.4444465637207px; box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);">回复"<span style="max-width: 100%; color: rgb(255, 192, 0); box-sizing: border-box !important; word-wrap: break-word !important;"><strong style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;">kh</strong></span>",查看程序员的4大<strong style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;">困惑</strong>；</p><p style="max-width: 100%; min-height: 1em; white-space: pre-wrap; color: rgb(62, 62, 62); line-height: 28.4444465637207px; box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);">回复"<span style="max-width: 100%; color: rgb(255, 192, 0); box-sizing: border-box !important; word-wrap: break-word !important;"><strong style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;">gjh</strong></span>",查看那些<strong style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;">高级黑</strong>程序员的段子；</p>
+        
+</body>
+</html>

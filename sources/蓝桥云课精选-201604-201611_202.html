@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>再谈 JavaScript 异步编程</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>再谈 JavaScript 异步编程</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzkwODM4NDM5OA==&amp;mid=2247504147&amp;idx=2&amp;sn=0368798086f9e4925fe490ec728947d5&amp;chksm=c0c850f2f7bfd9e403fa6d0d8c90f24cfbcada2dd5498f1ca1a581ca01ad6d4b5907a07dedc1&amp;scene=126&amp;sessionid=1681309758#rd">http://mp.weixin.qq.com/s?__biz=MzkwODM4NDM5OA==&amp;mid=2247504147&amp;idx=2&amp;sn=0368798086f9e4925fe490ec728947d5&amp;chksm=c0c850f2f7bfd9e403fa6d0d8c90f24cfbcada2dd5498f1ca1a581ca01ad6d4b5907a07dedc1&amp;scene=126&amp;sessionid=1681309758#rd</a></blockquote><section class="yead_editor" style="margin:5px auto;white-space: normal;" title="17&#xFF0C;&#x66F4;&#x65B0;&#x4E8E;2015-06-01 23:07"><img class="wx-img" data-ratio="0.10431654676258993" data-src="http://mmbiz.qpic.cn/mmbiz/ianq03UUWGmKBiaFRAtInJGYgEuY433yBFoSMut9dugxNpzeoLObtnibs2uxuc0mMHltqB5fRfp1ecICCFteKstJQ/0?wx_fmt=gif" data-w="" style="margin-right: auto; margin-left: auto; display: block; clear: both; width: 100%; height: auto;" src="../Images/9dbc1fb976502c0c122ade4bb656d0c5.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/ianq03UUWGmKBiaFRAtInJGYgEuY433yBFoSMut9dugxNpzeoLObtnibs2uxuc0mMHltqB5fRfp1ecICCFteKstJQ/0?wx_fmt=gif"/></section><p><br/></p><p>随着前端的发展，异步这个词真是越来越常见了。假设我们现在有这么一个异步任务：</p><blockquote><p>向服务器发起数次请求，每次请求的结果作为下次请求的参数。</p></blockquote><p><br/></p><p>来看看我们都有哪些处理方法：</p><p><br/></p><h2><span style="color: rgb(255, 104, 39);"><strong>Callbacks</strong></span></h2><hr/><p><br/></p><p>最先想到也是最常用的便是回调函数了，我们来进行简单的封装：</p><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">let makeAjaxCall = (url, cb) =&gt; {    <br/>       // do some ajax
+    // callback with result}
+
+makeAjaxCall('http://url1', (result) =&gt; {
+    result = JSON.parse(result)
+})</span></pre></blockquote><p><br/></p><p>嗯，看起来还不错！但是当我们尝试嵌套多个任务时，代码看起来会是这样的：</p><blockquote><pre><span style="color: rgb(0, 122, 170); font-size: 12px;">makeAjaxCall('http://url1', (result) =&gt; {
+    result = JSON.parse(result)
+
+    makeAjaxCall(`http://url2?q=${result.query}`, (result) =&gt; {
+        result = JSON.parse(result)
+
+        makeAjaxCall(`http://url3?q=${result.query}`, (result) =&gt; {
+            // ...
+        })
+    })
+})</span></pre></blockquote><p><br/></p><p>天哪！快让那堆 }) 见鬼去吧！</p><p><br/></p><p>于是，我们想尝试借助 JavaScript 事件模型：</p><p><br/></p><h2><span style="color: rgb(255, 104, 39);"><strong>Pub/Sub</strong></span></h2><hr/><p><br/></p><p>在 DOM 事件的处理中，Pub/Sub 是一种很常见的机制，比如我们要为元素加上事件监听：</p><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">elem.addEventListener(type, (evt) =&gt; {    // handler})</span></pre></blockquote><p><br/></p><p>所以我们是不是也可以构造一个类似的模型来处理异步任务呢？</p><p><br/></p><p>首先是要构建一个分发中心，并添加 on / emit 方法：</p><blockquote><pre><span style="color: rgb(0, 122, 170); font-size: 12px;">let PubSub = {
+    events: {},
+    on(type, handler) {        <br/>            let events = this.events
+        events[type] = events[type] || []
+        events[type].push(handler)
+    },
+    emit(type, ...datas) {        <br/>            let events = this.events<br/>            if (!events[type]) {            <br/>                 return
+        }
+
+        events[type].forEach((handler) =&gt; handler(...datas))
+    }
+}</span></pre></blockquote><p><br/></p><p>然后我们便可以这样使用：</p><blockquote><pre><span style="color: rgb(0, 122, 170); font-size: 12px;">const urls = [<br/>    'http://url1',<br/>    'http://url2',    <br/>    'http://url3']let makeAjaxCall = (url) =&gt; {    <br/>    // do some ajax
+    PubSub.emit('ajaxEnd', result)
+}<br/>let subscribe = (urls) =&gt; {    <br/>      let index = 0
+
+    PubSub.on('ajaxEnd', (result) =&gt; {
+        result = JSON.parse(result)        <br/>            if (urls[++index]) {
+            makeAjaxCall(`${urls[index]}?q=${result.query}`)
+        }
+    })
+
+    makeAjaxCall(urls[0])
+}</span></pre></blockquote><p><br/></p><p>嗯……比起回调函数好像没有什么革命性的改变，但是这样做的好处是：我们可以将请求和处理函数放在不同的模块中，减少耦合。</p><p><br/></p><h2><span style="color: rgb(255, 104, 39);"><strong>Promise</strong></span></h2><hr/><p><br/></p><p>真正带来革命性改变的是 Promise 规范[1]。借助 Promise，我们可以这样完成异步任务：</p><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">let makeAjaxCall = (url) =&gt; {<br/>    return new Promise((resolve, reject) =&gt; { <br/>        // do some ajax
+        resolve(result)
+    })
+}
+
+makeAjaxCall('http://url1')
+    .then(JSON.parse)
+    .then((result) =&gt; makeAjaxCall(`http://url2?q=${result.query}`))
+    .then(JSON.parse)
+    .then((result) =&gt; makeAjaxCall(`http://url3?q=${result.query}`))</span></pre></blockquote><p><br/></p><p>好棒！写起来像同步处理的函数一样！</p><p><br/></p><p>别着急，少年。我们还有更棒的：</p><p><br/></p><h2><span style="color: rgb(255, 104, 39);"><strong>Generators</strong></span></h2><hr/><p><br/></p><p>ES6 的另外一个大杀器便是 Generators[2]。在一个 generator function 中，我们可以通过 yield 语句来中断函数的执行，并在函数外部通过 next 方法来迭代语句，更重要的是我们可以通过 next 方法向函数内部注入数据，动态改变函数的行为。比如：</p><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">function* gen() {    <br/>      let a = yield 1
+    let b = yield a * 2
+    return b
+}let it = gen()
+
+it.next() // output: {value: 1, done: false}<br/>it.next(10) // a = 10, output: {value: 20, done: false}<br/>it.next(100) // b = 100, output: {value: 100, done: true}</span></pre></blockquote><p><br/></p><p>通过 generator 将我们之前的 makeAjaxCall 函数进行封装：</p><blockquote><pre><span style="color: rgb(0, 122, 170); font-size: 12px;">let makeAjaxCall = (url) =&gt; {    <br/>      // do some ajax
+    iterator.next(result)
+}<br/>function* requests() {    <br/>      let result = yield makeAjaxCall('http://url1')
+    result = JSON.parse(result)
+    result = yield makeAjaxCall(`http://url2?q=${result.query}`)
+    result = JSON.parse(result)
+    result = yield makeAjaxCall(`http://url3?q=${result.query}`)<br/>}<br/>let iterator = requests()
+iterator.next() // get everything start</span></pre></blockquote><p><br/></p><p>哦！看起来逻辑很清楚的样子，但是每次都得从外部注入 iterator 感觉好不舒服……</p><p><br/></p><p>别急，我们让 Promise 和 Generator 混合一下，看会产出什么黑魔法：</p><blockquote><pre><span style="color: rgb(0, 122, 170); font-size: 12px;">let makeAjaxCall = (url) =&gt; {<br/>    return new Promise((resolve, reject) =&gt; {        <br/>          // do some ajax
+        resolve(result)
+    })
+}<br/>let runGen = (gen) =&gt; {  
+    let it = gen()    <br/>      let continuer = (value, err) =&gt; {        <br/>            let ret        <br/>            try {
+                  ret = err ? it.throw(err) : it.next(value)
+        } catch (e) {            <br/>                        return Promise.reject(e)
+        }        <br/>            if (ret.done) {            <br/>                       return ret.value
+        }        <br/>            return Promise
+            .resolve(ret.value)
+            .then(continuer)
+            .catch((e) =&gt; continuer(null, e))
+    }    <br/>      return continuer()
+}<br/>function* requests() {    <br/>      let result = yield makeAjaxCall('http://url1')
+    result = JSON.parse(result)
+    result = yield makeAjaxCall(`http://url2?q=${result.query}`)
+    result = JSON.parse(result)
+    result = yield makeAjaxCall(`http://url3?q=${result.query}`)<br/>}
+runGen(requests)</span></pre></blockquote><p><br/></p><p>runGen 函数看起来像个自动机一样，好厉害！</p><p><br/></p><p>实际上，这个 runGen 的方法是对 ECMAScript 7 async function 的一个实现：</p><h2><br/></h2><h2><span style="color: rgb(255, 104, 39);"><strong>async function</strong></span></h2><hr/><p><br/></p><p>ES7 中，引入了一个更自然的特性 async function[3]。利用 async function 我们可以这样完成任务：</p><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">let makeAjaxCall = (url) =&gt; {    <br/>     return new Promise((resolve, reject) =&gt; {        <br/>            // do some ajax
+        resolve(result)
+    })
+}
+
+;(async () =&gt; {    <br/>      let result = await makeAjaxCall('http://url1')
+    result = JSON.parse(result)
+    result = await makeAjaxCall(`http://url2?q=${result.query}`)
+    result = JSON.parse(result)
+    result = await makeAjaxCall(`http://url3?q=${result.query}`)<br/>})()</span></pre></blockquote><p><br/></p><p>就像我们在上文把 Promise 和 Generator 结合在一起时一样，await 关键字后同样接受一个 Promise。在 async function 中，只有在 await 后的语句完成后剩下的语句才会被执行，整个过程就像我们用 runGen 函数封装 Generator 一样。</p><p><br/></p><h2><strong><span style="color: rgb(255, 104, 39);">总结</span></strong></h2><hr/><p><br/></p><p>以上就是笔者总结的几种 JavaScript 异步编程模式。在行文过程中，我们只是简单描述了这几种模式，并没有提及错误处理的过程，您要是对此感兴趣，可以参考下文列出的引用文章。</p><p><br/></p><p>（全文完）</p><p><br/></p><p><strong>参考资料</strong></p><p><br/></p><ul class=" list-paddingleft-2" style="list-style-type: circle;"><li><p>[Promises/A+ Specification](<span style="color: rgb(136, 136, 136); font-size: 12px;">https://promisesaplus.com/</span>)</p></li><li><p>[Going Async With ES6 Generators](<span style="color: rgb(136, 136, 136); font-size: 12px;">http://davidwalsh.name/async-generators</span>)</p></li><li><p>[ES7 async functions](<span style="color: rgb(136, 136, 136); font-size: 12px;">http://jakearchibald.com/2014/es7-async-functions/</span>)</p></li><li><p>[Simplifying Asynchronous Coding with ES7 Async Functions](<span style="color: rgb(136, 136, 136); font-size: 12px;">http://www.sitepoint.com/simplifying-asynchronous-coding-es7-async-functions/</span>)</p></li><li><p>[从第三方实现看 Promise](<span style="color: rgb(136, 136, 136); font-size: 12px;">https://idiotwu.me/understanding-es6-promise/</span>)</p></li></ul><p><br/></p><p><span style="font-size: 14px; color: rgb(136, 136, 136);">转载自：segmentfault</span></p><p><span style="font-size: 14px; color: rgb(136, 136, 136);">文章地址：https://segmentfault.com/a/1190000002881997</span></p><p><span style="font-size: 14px; color: rgb(136, 136, 136);">作者：Dolphin_Wood</span></p><p><span style="font-size: 14px; color: rgb(136, 136, 136);"/></p><section class="yead_editor" style="margin:5px auto;white-space: normal;" title="327&#xFF0C;&#x66F4;&#x65B0;&#x4E8E;2015-09-25 10:02"><blockquote class="yead_bdc" style="margin-top: 5px; margin-bottom: 5px; padding-right: 10px; max-width: 100%; border: 2px dashed rgb(153, 153, 153); color: rgb(62, 62, 62); font-size: 14px; line-height: 30px; box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);"><p><strong><span style="font-size: 14px;">推荐阅读：</span></strong></p><ul class=" list-paddingleft-2" style="list-style-type: square;"><li><h2><a href="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=2655932531&amp;idx=3&amp;sn=9525fde3b4313e4c041ef08d582ab5f5&amp;scene=21#wechat_redirect" target="_blank" data_ue_src="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=2655932531&amp;idx=3&amp;sn=9525fde3b4313e4c041ef08d582ab5f5&amp;scene=21#wechat_redirect"><span style="font-size: 14px; text-decoration: underline;">这些Javascript知识点，面试和平时开发都需要</span></a></h2></li><li><h2><a href="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=2655932311&amp;idx=2&amp;sn=7722598f1c709091bb1f425ae7d483ed&amp;scene=21#wechat_redirect" target="_blank" data_ue_src="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=2655932311&amp;idx=2&amp;sn=7722598f1c709091bb1f425ae7d483ed&amp;scene=21#wechat_redirect"><span style="font-size: 14px; text-decoration: underline;">JavaScript里的循环方法：forEach，for-in，for-of</span></a></h2></li><li><h2><a href="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=2655932295&amp;idx=2&amp;sn=d0403f8200abbd7fb6ee7aab334152e4&amp;scene=21#wechat_redirect" target="_blank" data_ue_src="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=2655932295&amp;idx=2&amp;sn=d0403f8200abbd7fb6ee7aab334152e4&amp;scene=21#wechat_redirect"><span style="font-size: 14px; text-decoration: underline;">10+ 实用的 JavaScript 调试小技巧</span></a></h2></li><li><h2><a href="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=2655932229&amp;idx=2&amp;sn=a693da50b1a33f5dc2d54378fb7d82f3&amp;scene=21#wechat_redirect" target="_blank" data_ue_src="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=2655932229&amp;idx=2&amp;sn=a693da50b1a33f5dc2d54378fb7d82f3&amp;scene=21#wechat_redirect"><span style="font-size: 14px; text-decoration: underline;">看看国外的JavaScript题目,你能全部做对吗?</span></a></h2></li></ul></blockquote></section><section class="yead_editor yead-selected" style="margin:5px auto;white-space: normal;" title="812&#xFF0C;&#x66F4;&#x65B0;&#x4E8E;2016-08-04 22:48"><section class="wx-bg" style="border-style: solid; -webkit-border-image: url(&quot;http://mmbiz.qpic.cn/mmbiz/ianq03UUWGmIpwAQC8PpNCD8pUpQqmshV4Q5wrbETPaZtT8Uu4se1m48yjbFuVx1c7icEtiaERuKiaNlAwF8iafFdFg/0?wx_fmt=png&quot;) 60 140 115 63 fill repeat; border-width: 30px 70px 68px 32px;"><section style="margin-bottom:-35px;font-size:14px;line-height:30px"><p>点击菜单【技术教程】，即可用手机随时随地看教程啦~</p></section></section></section><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz/bLmy0N4HIaeKSsczbv1d2CjQRlQia15npPjq0B2m5ScmUcopIk45pp21quj2Tv6w6JjH77GMiaL5VIHP1A6aZlGQ/0?wx_fmt=jpeg" data-ratio="0.6672661870503597" data-w="" style="width: 100%; height: auto;" src="../Images/503a1eeff49a08ff9e5afab24251e9cb.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/bLmy0N4HIaeKSsczbv1d2CjQRlQia15npPjq0B2m5ScmUcopIk45pp21quj2Tv6w6JjH77GMiaL5VIHP1A6aZlGQ/0?wx_fmt=jpeg"/><br/></p>
+        
+</body>
+</html>

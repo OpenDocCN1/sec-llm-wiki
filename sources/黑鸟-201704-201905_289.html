@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>APT28最新攻击分析报告</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>APT28最新攻击分析报告</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxOTM1MDQ1NA==&amp;mid=2451172266&amp;idx=1&amp;sn=7a94c8c5866d3320efe4ec906cec7962&amp;chksm=8c251d73bb5294653da107582a37d3258eff31a958a2f166057d78fd49b958f2d37bd660f712&amp;scene=126&amp;sessionid=1681276519#rd">http://mp.weixin.qq.com/s?__biz=MzAxOTM1MDQ1NA==&amp;mid=2451172266&amp;idx=1&amp;sn=7a94c8c5866d3320efe4ec906cec7962&amp;chksm=8c251d73bb5294653da107582a37d3258eff31a958a2f166057d78fd49b958f2d37bd660f712&amp;scene=126&amp;sessionid=1681276519#rd</a></blockquote><div><span style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">主要内容：APT28仍然使用DDE进行投放，并且他们的Zebrocy和Koadic家族出现变种，其使用的UserAgents可加特征</span></span>
+<p><img class="item item-image" data-ratio="0.667969" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/V9abY6oHTkoYLTxX6Fx9ATZmhYNvfKexW5MAgMhJxpjTEjRB1vqKhASroSO3RqDjCLulpMHT6HIDgAWYbh1SdQ/640?wx_fmt=jpeg" data-type="2" style="width:1024.000000px;" src="../Images/5aba1427f625f335fda18f6b6314da7e.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/V9abY6oHTkoYLTxX6Fx9ATZmhYNvfKexW5MAgMhJxpjTEjRB1vqKhASroSO3RqDjCLulpMHT6HIDgAWYbh1SdQ/640?wx_fmt=jpeg"/><span style=" display:block;color:#BFBFBF;font-size:14px;line-height:1.6;margin-bottom:14px; " helvetica="" neue="" sc="" sans="" gb="" yahei="" ui="" arial="" sans-serif="" class="item item-image-desc">资产关联图</span></p><p><img class="item item-image" data-ratio="0.258503" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/V9abY6oHTkoYLTxX6Fx9ATZmhYNvfKex9xgDBsX6qn0mvaibjHicNkhNa3Dic267dGhibd07oib52Jic8jlbgWwkPiaicQ/640?wx_fmt=jpeg" data-type="2" style="width:1176.000000px;" src="../Images/c898c99a59ace5d2a4dcaa4cfe9d4f0d.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/V9abY6oHTkoYLTxX6Fx9ATZmhYNvfKex9xgDBsX6qn0mvaibjHicNkhNa3Dic267dGhibd07oib52Jic8jlbgWwkPiaicQ/640?wx_fmt=jpeg"/><span style=" display:block;color:#BFBFBF;font-size:14px;line-height:1.6;margin-bottom:14px; " helvetica="" neue="" sc="" sans="" gb="" yahei="" ui="" arial="" sans-serif="" class="item item-image-desc">User Agents特征</span></p><p><img class="item item-image" data-ratio="0.235669" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/V9abY6oHTkoYLTxX6Fx9ATZmhYNvfKex7vvdibemDUUMDnkicsibdIJiaeaGFibqIBtKtfWiclJk8Qrh0B8Nicdia4IkMw/640?wx_fmt=jpeg" data-type="2" style="width:628.000000px;" src="../Images/13f36fd369e62bdcd6aacab1e2b16837.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/V9abY6oHTkoYLTxX6Fx9ATZmhYNvfKex7vvdibemDUUMDnkicsibdIJiaeaGFibqIBtKtfWiclJk8Qrh0B8Nicdia4IkMw/640?wx_fmt=jpeg"/><span style=" display:block;color:#BFBFBF;font-size:14px;line-height:1.6;margin-bottom:14px; " helvetica="" neue="" sc="" sans="" gb="" yahei="" ui="" arial="" sans-serif="" class="item item-image-desc">隐藏的DDE域命令</span></p><p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">相关url（顺便一提，火绒已经拦截了访问请求，弹出上网保护，很迅速，大力推荐）</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">hxxp://86.106.131.177:6500/zIZFh\</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">hxxp://86.106.131[.]177/link/GRAPH.EXE</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">hxxp://92.114.92[.]102:80/d</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">hxxp://220.158.216[.]127/MScertificate.exe &amp; MScertificate.exe</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">报告地址</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">https://researchcenter.paloaltonetworks.com/2018/06/unit42-sofacy-groups-parallel-attacks/  </span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">IOCs</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">Domain</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">supservermgr[.]com</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">URL</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">hxxp://supservermgr[.]com/sys/upd/pageupd.php</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">Zebrocy</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">d697160aecf152a81a89a6b5a7d9e1b8b5e121724038c676157ac72f20364edc</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">cba5ab65a24be52214736bc1a5bc984953a9c15d0a3826d5b15e94036e5497df</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">25f0d1cbcc53d8cfd6d848e12895ce376fbbfaf279be591774b28f70852a4fd8</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">115fd8c619fa173622c7a1e84efdf6fed08a25d3ca3095404dcbd5ac3deb1f03</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">f27836430742c9e014e1b080d89c47e43db299c2e00d0c0801a2830b41b57bc1</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">5b5e80f63c04402d0b282e95e32155b2f86cf604a6837853ab467111d4ac15e2</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">dd7e69e14c88972ac173132b90b3f4bfb2d1faec15cca256a256dd3a12b6e75d</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">Koadic</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">abbad7acd50754f096fdc6551e728aa6054dcf8e55946f90a02b17db552471ca</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">User Agents</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322; .NET CLR 2.0.50727; .NET CLR 3.0.04506.30; .NET CLR 3.0.04506.648; InfoPath.1)</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">Mozilla/5.0 (Windows NT 6.1; WOW64) WinHttp/1.6.3.8 (WinHTTP/5.1) like Gecko</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">Mozilla v5.1 (Windows NT 6.1; rv:6.0.1) Gecko/20100101 Firefox/6.0.1</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">IPs</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">185.25.51[.]198</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">185.25.50[.]93</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">220.158.216[.]127</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">92.114.92[.]102</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">86.106.131[.]177</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">85.25.50[.]93</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">86.106.131[.]177</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">DDE Docs</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">85da72c7dbf5da543e10f3f806afd4ebf133f27b6af7859aded2c3a6eced2fd5</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">8cf3bc2bf36342e844e9c8108393562538a9af2a1011c80bb46416c0572c86ff</span></p>
+</div>
+        
+</body>
+</html>

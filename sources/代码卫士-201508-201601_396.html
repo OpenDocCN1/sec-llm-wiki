@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>随机长密码可绕过安卓5.x版本锁屏程序</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>随机长密码可绕过安卓5.x版本锁屏程序</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485882&amp;idx=6&amp;sn=be82370afdd7001d796803fb350384f9&amp;chksm=ea9738d0dde0b1c66ee91339d16e895325fd55d547b48fc4b275da88ac5ac2f807c5a351a870&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485882&amp;idx=6&amp;sn=be82370afdd7001d796803fb350384f9&amp;chksm=ea9738d0dde0b1c66ee91339d16e895325fd55d547b48fc4b275da88ac5ac2f807c5a351a870&amp;scene=27#wechat_redirect</a></blockquote><p><strong>安全研究员jgor</strong><strong>透露称，攻击者可设法解锁受密码保护的安卓手机。</strong></p><p><strong><br/></strong></p><p>该漏洞（CVE-2015-3860）仅影响最新的安卓设备，也就是运行5.0.0至5.1.0 
+OS版本的设备，而且可在相机app打开时利用一个非常长的密码字符串尝试验证锁屏的方法被利用。不过该漏洞仅在锁屏程序受保护且存在密码的情况下起作
+用，而通过PIN码或手势模式锁定的设备则不受影响。Jgor指出，攻击者必须在物理接近设备的情况下才能利用该漏洞。</p><p><br/></p><p><strong>发动攻击的基本步骤</strong></p><p><strong><br/></strong></p><p>攻击者首先必须编造一个长密码字符串，jgor指出可在屏保启动的情况下利用紧急通话窗口实现。攻击者可以一次写一个字符文本，或者可以多次复制粘贴一小部分直到整个字段都被占满。</p><p><br/></p><p>长文本一旦被复制到手机的粘贴板上，攻击者就能启动相机app。随后攻击者就会拉下通知面板并尝试访问手机的设置部分，而手机会自动要求用户输入密码，这样攻击者就能提交此前创建且存储在剪贴板上的长密码字符串。</p><p><br/></p><p><strong>相机app</strong><strong>崩溃且手机被解锁</strong></p><p><strong><br/></strong></p><p>输入上述文本会导致设备不稳定，最终导致相机app崩溃。当这种情况发生时，锁屏就会被移除，攻击者就会被重定向至可提取数据的主屏幕上。</p><p><br/></p><p>Jgor表示，导致相机崩溃所用的时间各不相同，而且有时候攻击者可能会被重定向至没有显示完全的主屏幕中。</p><p><br/></p><p>谷歌在今年6月份得悉该漏洞的存在，并在8月初发布了安卓5.1.1版本修复该问题。</p><p><br/></p>本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。
+        
+</body>
+</html>

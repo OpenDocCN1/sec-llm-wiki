@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>【牛】《Linux全版本通杀提权漏洞的复现与分析》实验上线</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>【牛】《Linux全版本通杀提权漏洞的复现与分析》实验上线</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5MTYxNjQxOA==&amp;mid=2652841153&amp;idx=3&amp;sn=fa74abb3fc249bdba387dbb0fd502b48&amp;chksm=bd59580c8a2ed11a7e0313415e0726b6973add6142663eaee60289612657b09ae7062000e884&amp;scene=126&amp;sessionid=1681574164#rd">http://mp.weixin.qq.com/s?__biz=MjM5MTYxNjQxOA==&amp;mid=2652841153&amp;idx=3&amp;sn=fa74abb3fc249bdba387dbb0fd502b48&amp;chksm=bd59580c8a2ed11a7e0313415e0726b6973add6142663eaee60289612657b09ae7062000e884&amp;scene=126&amp;sessionid=1681574164#rd</a></blockquote><p><strong>为什么这个漏洞叫脏牛（Dirty COW）漏洞？</strong><br/></p><p><br/></p><p>Linux内核的内存子系统在处理写时拷贝（Copy-on-Write)时存在条件竞争漏洞，导致可以破坏私有只读内存映射。一个低权限的本地用户能够利用此漏洞获取其他只读内存映射的写权限，有可能进一步导致提权漏洞。</p><p><br/></p><p><strong>漏洞介绍</strong></p><p><br/></p><p style="text-indent: 2em;"><span style="  ;  ">漏洞编号：CVE-2016-5195</span></p><p style="text-indent: 2em;"><span style="  ;  ">漏洞名称：脏牛（Dirty COW）</span></p><p style="text-indent: 2em;"><span style="  ;  ">漏洞危害：低权限用户利用该漏洞技术可以在<span style="  ;  color: rgb(255, 0, 0); ">全版本Linux</span>系统上实现本地提权</span></p><p style="text-indent: 2em;"><span style="  ;  ">影响范围：Linux<span style="  ;  text-indent: 32px; ">内核&gt;=2.6.22（2007年发行）开始就受影响了，直到2016年10月18日才修复。</span></span></p><p style="text-indent: 2em;"><span style=" text-indent: 32px; ;  font-size: 16px; color: rgb(255, 0, 0); ">360 Vulpecker Team：Android 7.0最新的10月补丁安全级别的系统上测试过漏洞POC，确认Android受影响</span></p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/3RhuVysG9Lf0wDHH3ibayicQuqKQRLRL6ulvpaqBFUgvcUNWl3x8csNR9zsmjLHlicZdicweTViamCHLfSKwRcFI4DA/0?wx_fmt=jpeg" data-ratio="0.3287671232876712" data-w="1022" src="../Images/e05c7690c770f49117dc81e817613e86.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/3RhuVysG9Lf0wDHH3ibayicQuqKQRLRL6ulvpaqBFUgvcUNWl3x8csNR9zsmjLHlicZdicweTViamCHLfSKwRcFI4DA/0?wx_fmt=jpeg"/><br/></p><p><br/></p><p><strong>实验目的</strong></p><p><br/></p><p>1）漏洞检测复现</p><p>2）漏洞形成原因</p><p>3）漏洞修复建议</p><p style="text-align: center;"><span style="font-size: 18px;"><strong><span style="font-size: 18px; color: rgb(255, 76, 0);">限时免费三天</span></strong></span></p><p style="text-align: center;"><strong><span style="color: rgb(255, 76, 0);"><br/></span></strong></p><p style="text-align: center;"><span style="color: rgb(0, 0, 0);">   这可是一头好牛哦，不信来实验室验验吧！</span><br/></p>
+        
+</body>
+</html>

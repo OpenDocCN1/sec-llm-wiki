@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>鸡尾酒钓鱼术盯上家庭路由器DNS设置</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>鸡尾酒钓鱼术盯上家庭路由器DNS设置</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247486015&amp;idx=1&amp;sn=d5e1b1c4d25dc0e863e033cd2ecfa4bf&amp;chksm=ea973b55dde0b243936fe204e498b90259fe99ab8f5aa3f9a098d937468bbd165e86471ba388&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247486015&amp;idx=1&amp;sn=d5e1b1c4d25dc0e863e033cd2ecfa4bf&amp;chksm=ea973b55dde0b243936fe204e498b90259fe99ab8f5aa3f9a098d937468bbd165e86471ba388&amp;scene=27#wechat_redirect</a></blockquote><p>鸡尾酒钓鱼术（或域欺骗、网址嫁接，Pharming)一般是基于网络的入侵行为，其最终目的是将受害者的网络流量重新定向至由黑客控制的网络服务器上，通常通过恶意修改DNS设置实现。</p><p><br/></p><p>然而，有些攻击开始转向网络，并通过垃圾邮件或钓鱼邮件实施攻击。</p><p><br/></p><p>卡巴斯基实验室研究人员已对这个趋势盯了一段时间，并在9月份报告称一起针对巴西家庭路由器的恶意活动利用路过式下载及社会工程相结合的方式窃取了银行及其他敏感网络服务的凭证。</p><p><br/></p><p>信息安全公司Proofpoint报道了最新的一起类似攻击，发生地也是巴西。该恶意活动始于去年12月份并持续了5周的时间。当时Proofpoint发现的钓鱼信息少于100条，发送对象是巴西最大电信公司Oi（Telemar Norte Leste S/A）的客户。</p><p><br/></p><p>钓鱼邮件警告用户称有一份过期的账单并提供了一个可解决这个问题的门户网站链接。实际上这些网站上的代码会针对电信公司出品的家庭UTStarcom及TP-Link路由器执行跨站请求伪造（CSRF）攻击。</p><p><br/></p><p>包含JavaScript内嵌框架的页面如果出现在路由器上，它们会利用CSRF漏洞实施攻击。同时它们还会利用默认的用户名密码组合暴力破解路由器的管理页面。一旦攻击者获得路由器的访问权限，它们能够将首选DNS设置改变为由攻击者控制的站点，并将备选DNS设置改变为谷歌的公共DNS。</p><p><br/></p><p>Proofpoint在公告中指出，“将一个功能性DNS服务器设置为次级将会允许网络中来自客户的DNS请求进行解析即便是在恶意DNS停止的情况下，这样用户可能不会注意到问题的产生并且也不会联系电信公司的客服支持寻求帮助，所以这个攻击不会被人发现并得到处理。</p><p><br/></p><p>通过这个方法，攻击者绕过了为重新定向流量对拥有公共DNS服务器的要求，并且更容易实现中间人攻击，从而嗅探流量、银行或电子邮件凭证。</p><p><br/></p><p>Proofpoint副总裁、高级安全及管理专家Kevin Epstein表示，这种攻击十分狡猾，它的构建方式导致人们难以察觉。笔记本上除了钓鱼邮件之外，并没有留下其他任何痕迹，而且除非你是一个登录到路由器并知道DNS如何设置的安全专家，否则不会发现路由器被攻陷的事实。</p><p><br/></p><p>受害者不止巴西一个；任何以默认凭证保证安全性的路由器都可能受到此类及其他类型的攻击。卡巴斯基实验室研究人员Fabio Assolini表示，他平均每天会发现4种此类新型攻击案例，而且这种网址嫁接活动的规模非常大。</p><p><br/></p><p>在过去的12个月至18个月期间，路由器入侵问题不断凸显，越来越多的白帽子黑客从广度及深度上展开了相关研究。在某些情况下，如内嵌在网络服务器RomPager的Misfortune Cookie漏洞导致1200万台包括家庭路由器在内的设备受攻击影响。在去年夏天举行的DEF CON大会上，一个名为SOHOpelessly Broken的黑客大赛的聚焦点便是路由器漏洞，结果向提供商报告了15个0day漏洞并予以修复。</p><p><br/></p><p>在目前的这个案例中，攻击者针对的是网络账户的银行凭证，Epstein指出，攻击的目标范围正在扩大，“截止目前，我们所知的动机来源于金钱，很多网络犯罪分子都以此为目标，但这个技巧具有一般通用性。如果想要获得DDOS攻击所需流量或者入侵一家公司，这是其中的一种方式，此外还可发动中间人攻击从而完全控制用户。”</p><p><br/></p><p>本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。</p><p><br/></p>
+        
+</body>
+</html>

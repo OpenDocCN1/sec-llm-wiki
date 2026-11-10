@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Windows版本的Mirai僵尸现身</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Windows版本的Mirai僵尸现身</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485589&amp;idx=1&amp;sn=f6583633b77df9cd90bc4baef984c1bc&amp;chksm=ea9739ffdde0b0e9bc64b9d5dab328d949a83cbb69fee8c681e63c125b851cf7df3507ec7251&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485589&amp;idx=1&amp;sn=f6583633b77df9cd90bc4baef984c1bc&amp;chksm=ea9739ffdde0b0e9bc64b9d5dab328d949a83cbb69fee8c681e63c125b851cf7df3507ec7251&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiam2an9bicxxtlDPediccibFSnHr3NKFwnMfIrlicyGBBqDFiaswcksIluwt47Ye6rnaAocJSL0JR7jwePA/0?wx_fmt=jpeg" data-ratio="0.4619140625" data-w="1024" src="../Images/f2bf4bcd60fc045a6abe1b6916f8074b.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiam2an9bicxxtlDPediccibFSnHr3NKFwnMfIrlicyGBBqDFiaswcksIluwt47Ye6rnaAocJSL0JR7jwePA/0?wx_fmt=jpeg"/></p><p><br/></p><p><strong>来自杀毒公司Dr. Web的研究人员发现了Mirai僵尸的Windows变体，它针对更多端口发动攻击。</strong></p><p><br/></p><p>Windows版本的Mirai僵尸被一些犯罪分子用于感染物联网设备并通过传播Mirai Linux恶意软件实施DDoS攻击。它的目标就是感染更多的设备。Mirai恶意软件首次于2016年8月出现，目的是专门感染物联网设备。</p><p><br/></p><p>Mirai僵尸网络感染了数千台路由器和物联网设备包括DVR和CCTV系统。Mirai的感染目标是从随机的IP地址中选择的，而且它试图通过使用管理员凭证的Telnet和SSH端口进行记录。</p><p><br/></p><p>研究人员将这次发现的Windows版本命名为Trojan.Mirai.1。它用C++编程，扫描某个IP地址范围的TCP端口，目的是执行多种命令并传播其它恶意软件。当启动时，Mirai木马会连接到命令和控制服务器上，下载配置文件 (wpd.dat) 并提取IP地址列表。随后会启动扫描器指向所列IP地址并同时检查多个端口。</p><p><br/></p><p>跟之前的Mirai Linux恶意软件不同的地方在于它扫描的端口更多，包括22、23、135、445、1433、3306和3389。</p><p><br/></p><p>当它成功感染一台新设备后，如果设备运行的是Linux OS，那么它就会执行一系列命令从而创建出一个新的DDoS Mirai僵尸网络。而如果受感染的设备运行的是Windows OS，那么就会发布自身的副本。它还会创建一个登录名为Mssqla密码为Bus3456#qwein的DBMS用户从而获取系统管理员权限。随后借助这个用户名和SQL服务器事件服务的帮助，它就会执行多个任务。仅有的一个例外是通过RDP协议的连接：在这种情况下，所有的指令都会被执行。另外，当通过Telnet协议连接到Linux设备时，它会将一个二进制文件下载到被攻陷设备上，而这个文件随后会下载并启动Linux.Mirai。</p><p><br/></p><p>以下是一些经SHA1加密的Trojan.Mirai.1的哈希：</p><p><br/></p><ul class=" list-paddingleft-2" style="list-style-type: disc;"><li><p>9575d5edb955e8e57d5886e1cf93f54f52912238</p></li><li><p>f97e8145e1e818f17779a8b136370c24da67a6a5</p></li><li><p>42c9686dade9a7f346efa8fdbe5dbf6fa1a7028e</p></li><li><p>938715263e1e24f3e3d82d72b4e1d2b60ab187b8</p></li></ul><p><br/></p>
+        
+</body>
+</html>

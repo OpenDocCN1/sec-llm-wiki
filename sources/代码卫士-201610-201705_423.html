@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>电脑有密码打不开？5美元设备来帮忙</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>电脑有密码打不开？5美元设备来帮忙</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485639&amp;idx=4&amp;sn=3c80422ca092ed44c1d770726a30696d&amp;chksm=ea9739addde0b0bbdfd8e9c938c15de959d4ff9f73137b45b8c9bd25c5eadbcd57aa1a38fcf6&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485639&amp;idx=4&amp;sn=3c80422ca092ed44c1d770726a30696d&amp;chksm=ea9739addde0b0bbdfd8e9c938c15de959d4ff9f73137b45b8c9bd25c5eadbcd57aa1a38fcf6&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKialA7FOzBDJ906KUiaWUTu8FA7rsNUcPTaBQWcMy1C2BTwASogH3auj95icbyE4icGQqFpDyRZeG3CuaA/0?wx_fmt=png" data-ratio="0.625" data-w="728" src="../Images/c4c4d9eb24d787b45eb9c28093f605e6.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKialA7FOzBDJ906KUiaWUTu8FA7rsNUcPTaBQWcMy1C2BTwASogH3auj95icbyE4icGQqFpDyRZeG3CuaA/0?wx_fmt=png"/><br/></p><p><br/></p><p><strong>下次把电脑放公司可要小心了，因为黑客仅需5美元花30秒就能入侵任何一台电脑。</strong></p><p><br/></p><p>著名的硬件黑客Samy Kamkar又整出意见便宜的利用工具，仅需30秒就能将后门安装到任何一台电脑中，即便电脑用了强密码也无济于事。这款工具名为“毒触（PoisonTap）”，可在一台5美元且连接到USB适配器的RaspberryPi Zero微型电脑中运行免费软件。如果浏览器在后台打开，即使电脑受密码保护，该电脑也会被成功攻击。攻击者所需要做的就是将这款设备插到目标电脑中并静静等待。</p><p><br/></p><p><strong>攻击原理</strong></p><p><br/></p><p>一旦通过USB端口插入Windows或Mac电脑，“毒触”就会开始模拟一个新的以太网连接。即使受害者的设备被连接到无线网络，它也会诱骗计算机将跟“毒触”的网络连接摆在优先地位。随后这款工具就会拦截所有的未加密网络流量并且窃取用来从受害者浏览器登录私有账户以及Alexa排名前100万站点会话的HTTP验证cookie。随后将数据发送到受攻击者控制的服务器中。</p><p><br/></p><p>Kamkar表示只要网络浏览器应用程序在后台运行，那么窃取cookie就是有可能的，即使这个应用程序并未被使用也是如此。</p><p><br/></p><p>因此，即使你不在电脑旁，浏览器中总有至少一个标签页打开的情况吧，这个页签可能会定期加载新的HTTP数据如广告或新闻更新。而这些数据并不使用HTTPS网络加密。</p><p><br/></p><p><strong>远程控制</strong></p><p><br/></p><p>“毒触”还允许攻击者将基于网络的后门安装到数千个域名的HTTP缓存中，导致受害者的浏览器以及本地网络被攻击者远程控制。Kamkar还表示，攻击还允许“攻击者远程强迫用户提出HTTP请求和代理返回响应(GET&amp;POSTs)”。即使“毒触”从目标计算机中拔掉，后门仍然存在，而黑客之后仍然能够控制目标设备。</p><p><br/></p><p>此外，“毒触”提取的是cookie而不是凭证，即使受害者启用了双因素验证，黑客还能够劫持目标用户的网上账户。Kamkar指出这款工具能够绕过多个其它安全机制如同源策略、X-Frame-Options HTTP响应头、HttpOnly cookie、DNS pinning以及跨来源自愿共享（CORS）。</p><p><br/></p><p><strong>如何防范</strong></p><p><br/></p><p>Kamkar表示目前没有唾手可得的修复方案，不过可通过以下方式避免此类攻击：</p><p><br/></p><p>1.将电脑设置为休眠而非睡眠状态，暂停电脑中的所有进程。</p><p>2.每次离开电脑前关闭所有的浏览器。</p><p>3.耐心清理完浏览器缓存。</p><p>4.使用全盘加密应用（如FileVault）以及“深度睡眠”模式。</p><p>5.或者直接禁用USB端口。</p><p><br/></p><p>不过Kamkar表示“每次离开电脑前都把浏览器关闭是有用的，但不具备实操性”，此外，“禁用USB端口也是有效的但是也不切实际”。此外，网络服务器运营商能够通过正确实现HTTPS和使用HSTS来保护用户安全阻止降级攻击。</p><p><br/></p><p>Samy Kamkar此前曾做过很多低成本的入侵工具，如能够猜测并窃取下一个信用卡号的MagSpoof、能够解锁几乎每辆汽车或车库门的RolUam、能够在不到30秒内破解Master Lock的挂锁以及伪装成USB充电器的窃取密码的KeySweeper。</p><p><br/></p>
+        
+</body>
+</html>

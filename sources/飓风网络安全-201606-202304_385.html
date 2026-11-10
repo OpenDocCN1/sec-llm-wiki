@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CentOS防范黑客几个小步骤</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>CentOS防范黑客几个小步骤</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI3NzMzNzE5Ng==&amp;mid=2247483855&amp;idx=1&amp;sn=878a45cc0bfd65a8589205e05db91bb2&amp;chksm=eb6684ccdc110ddab4cf0ba94a7d1f76a550539837d8cf11192bed7b9653963fa2e701a832d7&amp;scene=126&amp;sessionid=1681407391#rd">http://mp.weixin.qq.com/s?__biz=MzI3NzMzNzE5Ng==&amp;mid=2247483855&amp;idx=1&amp;sn=878a45cc0bfd65a8589205e05db91bb2&amp;chksm=eb6684ccdc110ddab4cf0ba94a7d1f76a550539837d8cf11192bed7b9653963fa2e701a832d7&amp;scene=126&amp;sessionid=1681407391#rd</a></blockquote><p style=" padding: 0pt; margin-bottom: 26px; white-space: normal; border: 0px; line-height: 28px; ;  color: rgb(85, 85, 85); background-color: rgb(255, 255, 255); ">Linux是一个多用户的系统，一旦人家取得你的root用户之后，他就可以在你的系统上为所欲为了，由于单用户对系统有完全的控制权限，如果操作不当或被他人进入，那么后果将不堪设想，如何防止入行单用户了，有以下几个注意的方面。</p><p style=" padding: 0pt; margin-bottom: 26px; white-space: normal; border: 0px; line-height: 28px; ;  color: rgb(85, 85, 85); background-color: rgb(255, 255, 255); ">　　1、对/etc/inittab文件进行保护，如果把id:3:initdefault中的3改为成1，就可以每次启动直接进入到单用户方式。对/etc/inittab文件，以root身份进入通过chown 700 /etc/inittab把属性设为其它用户不能修改就行了。</p><p style=" padding: 0pt; margin-bottom: 26px; white-space: normal; border: 0px; line-height: 28px; ;  color: rgb(85, 85, 85); background-color: rgb(255, 255, 255); ">　　2、如果是使用的lilo方式进行引导，可能通过linuxconf或直接修改lilo.conf把引导时等待输入时间设置为0或最短时行。这种情况下，如果进入单用户方式，可以用软盘进行引导。</p><p style=" padding: 0pt; margin-bottom: 26px; white-space: normal; border: 0px; line-height: 28px; ;  color: rgb(85, 85, 85); background-color: rgb(255, 255, 255); ">　　3、如果使用是GRUB方式进行引导，最简单的方法是使用GRUB密码，对启动选项进行保护。</p><p style=" padding: 0pt; margin-bottom: 26px; white-space: normal; border: 0px; line-height: 28px; ;  color: rgb(85, 85, 85); background-color: rgb(255, 255, 255); ">　　4、为了防止他人远程进行破坏，使系统重启，除了对ROOT的密码和/etc目录下的文件进行有效管理之外，还应当对CMOS进行密码设置，这样即使把系统改成单用户方式了,也无法直接的启动计算机进行操作。</p><p><br/></p>
+        
+</body>
+</html>

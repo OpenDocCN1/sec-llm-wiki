@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>【Jsonp callback 解析漏洞：或致跨域读取数据】</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>【Jsonp callback 解析漏洞：或致跨域读取数据】</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA4ODc0MTIwMw==&amp;mid=200506645&amp;idx=1&amp;sn=903ffbdd57358da1832260993dc174ae&amp;chksm=1e2259292955d03f212c4f80a19fb110e880fa08ebcc3f050fc60c07d1c5343bd1d6b768d622&amp;scene=126&amp;sessionid=1681379283#rd">http://mp.weixin.qq.com/s?__biz=MzA4ODc0MTIwMw==&amp;mid=200506645&amp;idx=1&amp;sn=903ffbdd57358da1832260993dc174ae&amp;chksm=1e2259292955d03f212c4f80a19fb110e880fa08ebcc3f050fc60c07d1c5343bd1d6b768d622&amp;scene=126&amp;sessionid=1681379283#rd</a></blockquote><p><span style="">利用 Adobe Flash Player较早版本解析漏洞，攻击者可针对json端点构造恶意callback参数值，使服务器端返回的jsonp数据被解析为flash，进而绕过同源策略跨域读取jsonp端点域中其他页面的数据，甚至以用户身份执行敏感操作。建议用户更新Adboe Flash Player至最新版本，站长可过滤Jsonp callback返回（如长度等），在jsonp应答callback前添加/**/。</span></p><p><span style=""><span style="">详情参见：http://miki.it/blog/2014/7/8/abusing-jsonp-with-rosetta-flash/。</span></span></p>
+        
+</body>
+</html>

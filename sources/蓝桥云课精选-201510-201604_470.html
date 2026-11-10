@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>你知道你的电脑 1 秒钟能做多少事情吗？</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>你知道你的电脑 1 秒钟能做多少事情吗？</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzkwODM4NDM5OA==&amp;mid=2247503888&amp;idx=1&amp;sn=042af8a37d80342a178244f3f4abbad2&amp;chksm=c0c851f1f7bfd8e7c60ec3f6048a8a1144eb17c92e82c9bbd678a861ef13bd7880e8cfb3f0e3&amp;scene=126&amp;sessionid=1681309786#rd">http://mp.weixin.qq.com/s?__biz=MzkwODM4NDM5OA==&amp;mid=2247503888&amp;idx=1&amp;sn=042af8a37d80342a178244f3f4abbad2&amp;chksm=c0c851f1f7bfd8e7c60ec3f6048a8a1144eb17c92e82c9bbd678a861ef13bd7880e8cfb3f0e3&amp;scene=126&amp;sessionid=1681309786#rd</a></blockquote><p>让我们来看看你有多么了解电脑！所有这些程序的数值都是可变的。你的任务是：在程序花费1秒运行之前猜测它的大概值。</p><p><br/></p><p>你并不需要猜出一个精确值：选择范围在1和10亿之间。你只要能猜出正确的数量级，就算正确！下面是一些注意事项：</p><p><br/></p><blockquote><ul class=" list-paddingleft-2" style="list-style-type: circle;"><li><p>如果答案是38,000，那么你选择10,000或100,000，我们就认为都是正确答案。误差只要在10倍范围内就ok:)</p></li><li><p>我们知道不同的计算机有不同的磁盘、网络和CPU速度！我们会告诉运行10次/秒和10万次/秒的代码之间的差别。更新的电脑不会让你的代码运行速度快1000倍:)</p></li><li><p>也就是说，所有这一切都是运行在一台新的拥有一个快速的SSD和一个凑合的网络连接的笔记本电脑上的。 C代码用gcc -O2编译。</p></li></ul></blockquote><p><br/></p><p>祝你好运！</p><p><img class="aligncenter size-full wp-image-28713" title="1-second-your-computer-do" data-src="http://mmbiz.qpic.cn/mmbiz/bLmy0N4HIacdPWKpYLOkCibbxRI6WeF6QVevDErYIJHTpq5WZIbmZVY7oWsWvwo1rBtCvgHrAvmecsmpYTRdOOg/0?wx_fmt=png" width="660" height="323" data-type="png" data-ratio="-0.00035398246973662804" data-w="627.777777671814" style="max-width: 628px; margin: 0px auto; padding: 5px; border: 1px solid rgb(230, 230, 230); display: block; text-align: center;" src="../Images/99d1c66d9ac645e3495335e027b057f4.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/bLmy0N4HIacdPWKpYLOkCibbxRI6WeF6QVevDErYIJHTpq5WZIbmZVY7oWsWvwo1rBtCvgHrAvmecsmpYTRdOOg/0?wx_fmt=png"/></p><p><br/></p><section class="yead_editor" label="Copyright &#xA9; 2015 Yead All Rights Reserved." style="margin: 5px auto;white-space: normal;"><section class="yead_bdc" style="line-height: 30px; border: 2px solid rgb(78, 153, 223); border-radius: 0.8em; font-family: inherit; font-weight: inherit; text-align: center; text-decoration: inherit; color: rgb(51, 51, 51); box-sizing: border-box; background-color: rgb(255, 255, 255);"><section style="padding:10px;box-sizing:border-box"><section class="yead_bgc" style="width: 0.5em; height: 0.5em; float: left; border-radius: 100%; box-sizing: border-box; background-color: rgb(78, 153, 223);"/><section class="yead_bgc" style="width: 0.5em; height: 0.5em; float: right; border-radius: 100%; box-sizing: border-box; background-color: rgb(78, 153, 223);"/><section style="clear:both;box-sizing:border-box"/></section><section style="padding-right:20px;padding-left:20px;box-sizing:border-box"><section class="yead_color" style="box-sizing: border-box; color: rgb(78, 153, 223); text-align: left;"><span style="font-size: 16px;">欢迎来到第一个程序！这一个只是让你练练手的：1秒能完成多少循环？ （结果可能比你想象得更多！）</span></section></section><section style="padding:10px;box-sizing:border-box"><section class="yead_bgc" style="width: 0.5em; height: 0.5em; float: left; border-radius: 100%; box-sizing: border-box; background-color: rgb(78, 153, 223);"/><section class="yead_bgc" style="width: 0.5em; height: 0.5em; float: right; border-radius: 100%; box-sizing: border-box; background-color: rgb(78, 153, 223);"/><section style="clear:both;box-sizing:border-box"/></section></section></section><p><strong>猜猜下面的程序每秒执行多少次循环：</strong><br/></p><blockquote><pre><span style="font-size: 12px;">#include &lt;stdlib.h&gt;
+
+// Number to guess: How many iterations of
+// this loop can we go through in a second?
+
+int main(int argc, char **argv) {
+    int NUMBER, i, s;
+    NUMBER = atoi(argv[1]);
+
+    for (s = i = 0; i &lt; NUMBER; ++i) {
+        s += 1;
+    }
+
+    return 0;
+}</span></pre></blockquote><p><br/></p><p><span style="color: rgb(227, 108, 9);">准确答案：550,000,000</span></p><p><br/></p><p><strong>猜猜下面的程序每秒执行多少次循环：</strong></p><blockquote><pre><span style="font-size: 12px;">#!/usr/bin/env python
+
+# Number to guess: How many iterations of an
+# empty loop can we go through in a second?
+
+def f(NUMBER):
+    for _ in xrange(NUMBER):
+        pass
+
+import sys
+f(int(sys.argv[1]))</span></pre></blockquote><p><br/></p><p><span style="color: rgb(227, 108, 9);">准确答案：68,000,000</span></p><p><br/></p><p>当我看着代码的时候，我想的是1毫秒完成多少次——我以为是微不足道的，但事实是，即使是Python，你也可以在1毫秒的时间内执行68,000次空循环迭代。</p><p><br/></p><section class="yead_editor" label="Copyright &#xA9; 2015 Yead All Rights Reserved." style="margin: 5px auto;white-space: normal;"><section class="yead_bdc" style="line-height: 30px; border: 2px solid rgb(78, 153, 223); border-radius: 0.8em; font-family: inherit; font-weight: inherit; text-align: center; text-decoration: inherit; color: rgb(51, 51, 51); box-sizing: border-box; background-color: rgb(255, 255, 255);"><section style="padding:10px;box-sizing:border-box"><section class="yead_bgc" style="width: 0.5em; height: 0.5em; float: left; border-radius: 100%; box-sizing: border-box; background-color: rgb(78, 153, 223);"/><section class="yead_bgc" style="width: 0.5em; height: 0.5em; float: right; border-radius: 100%; box-sizing: border-box; background-color: rgb(78, 153, 223);"/><section style="clear:both;box-sizing:border-box"/></section><section style="padding-right:20px;padding-left:20px;box-sizing:border-box"><section class="yead_color" style="box-sizing: border-box; color: rgb(78, 153, 223);"><p style="color: rgb(78, 153, 223); line-height: 30px; text-align: left; white-space: normal; background-color: rgb(255, 255, 255);">下面让我们来探讨一个更接近现实的用例。在Python中字典几乎是无处不在的，那么在1秒时间内我们可以用Python添加多少元素呢？</p><p style="color: rgb(78, 153, 223); line-height: 30px; white-space: normal; text-align: left; background-color: rgb(255, 255, 255);">然后再来看一个更复杂的操作——使用Python的内置HTTP请求解析器来解析请求。</p></section></section><section style="padding:10px;box-sizing:border-box"><section class="yead_bgc" style="width: 0.5em; height: 0.5em; float: left; border-radius: 100%; box-sizing: border-box; background-color: rgb(78, 153, 223);"/><section class="yead_bgc" style="width: 0.5em; height: 0.5em; float: right; border-radius: 100%; box-sizing: border-box; background-color: rgb(78, 153, 223);"/><section style="clear:both;box-sizing:border-box"/></section></section></section><p><strong>猜猜下面的程序每秒执行多少次循环：</strong><br/></p><blockquote><pre><span style="font-size: 12px;">#!/usr/bin/env python
+
+# Number to guess: How many entries can
+# we add to a dictionary in a second?
+
+# Note: we take `i % 1000` to control
+# the size of the dictionary
+
+def f(NUMBER):
+    d = {}
+    for i in xrange(NUMBER):
+        d[i % 1000] = i
+
+import sys
+f(int(sys.argv[1]))</span></pre></blockquote><p><br/></p><p><span style="color: rgb(227, 108, 9);">准确答案：11,000,000</span></p><p><br/></p><p><strong>猜猜下面的程序每秒处理多少次HTTP请求：</strong></p><blockquote><pre><span style="font-size: 12px;">#!/usr/bin/env python
+
+# Number to guess: How many HTTP requests
+# can we parse in a second?
+
+from BaseHTTPServer import BaseHTTPRequestHandler
+from StringIO import StringIO
+
+class HTTPRequest(BaseHTTPRequestHandler):
+    def __init__(self, request_text):
+        self.rfile = StringIO(request_text)
+        self.raw_requestline = self.rfile.readline()
+        self.error_code = self.error_message = None
+        self.parse_request()
+
+    def send_error(self, code, message):
+        self.error_code = code
+        self.error_message = message
+
+request_text = """GET / HTTP/1.1
+Host: localhost:8001
+Connection: keep-alive
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36
+Accept-Encoding: gzip, deflate, sdch
+Accept-Language: en-GB,en-US;q=0.8,en;q=0.6
+"""
+
+def f(NUMBER):
+    for _ in range(NUMBER):
+        HTTPRequest(request_text)
+
+import sys
+f(int(sys.argv[1]))</span></pre></blockquote><p><br/></p><p><span style="color: rgb(227, 108, 9);">准确答案：25,000</span></p><p><br/></p><p>我们每秒可以解析25,000个小的HTTP请求！有一件事我要在这里指出的是，这里请求解析的代码是用纯Python编写的，而不是C。</p><p><br/></p><section class="yead_editor" label="Copyright &#xA9; 2015 Yead All Rights Reserved." style="margin: 5px auto;white-space: normal;"><section class="yead_bdc" style="line-height: 30px; border: 2px solid rgb(78, 153, 223); border-radius: 0.8em; font-family: inherit; font-weight: inherit; text-align: center; text-decoration: inherit; color: rgb(51, 51, 51); box-sizing: border-box; background-color: rgb(255, 255, 255);"><section style="padding:10px;box-sizing:border-box"><section class="yead_bgc" style="width: 0.5em; height: 0.5em; float: left; border-radius: 100%; box-sizing: border-box; background-color: rgb(78, 153, 223);"/><section class="yead_bgc" style="width: 0.5em; height: 0.5em; float: right; border-radius: 100%; box-sizing: border-box; background-color: rgb(78, 153, 223);"/><section style="clear:both;box-sizing:border-box"/></section><section style="padding-right:20px;padding-left:20px;box-sizing:border-box"><section class="yead_color" style="box-sizing: border-box; color: rgb(78, 153, 223); text-align: left;">接下来，我们要试试下载网页与运行Python脚本！提示：少于1亿:)</section></section><section style="padding:10px;box-sizing:border-box"><section class="yead_bgc" style="width: 0.5em; height: 0.5em; float: left; border-radius: 100%; box-sizing: border-box; background-color: rgb(78, 153, 223);"/><section class="yead_bgc" style="width: 0.5em; height: 0.5em; float: right; border-radius: 100%; box-sizing: border-box; background-color: rgb(78, 153, 223);"/><section style="clear:both;box-sizing:border-box"/></section></section></section><p><strong>猜猜下面的程序每秒可以完成多少次HTTP请求：</strong></p><blockquote><pre><span style="font-size: 12px;">#!/usr/bin/env python
+
+# Number to guess: How many times can we
+# download google.com in a second?
+
+from urllib2 import urlopen
+
+def f(NUMBER):
+    for _ in xrange(NUMBER):
+        r = urlopen("http://google.com")
+        r.read()
+
+import sys
+f(int(sys.argv[1]))</span></pre></blockquote><p><br/></p><p><span style="color: rgb(227, 108, 9);">准确答案：4</span></p><p><br/></p><p><strong>猜猜下面的程序每秒可以执行多少次循环：</strong></p><blockquote><pre><span style="font-size: 12px;">#!/bin/bash
+
+# Number to guess: How many times can we start
+# the Python interpreter in a second?
+
+NUMBER=$1
+
+for i in $(seq $NUMBER); do
+    python -c '';
+done</span></pre></blockquote><p><br/></p><p><span style="color: rgb(227, 108, 9);">准确答案：77</span></p><p><br/></p><p>启动程序实际上昂贵在其本身，而不是启动Python。如果我们只是运行/bin/true，那么1秒能做500次，所以看起来运行任何程序只需要大约1毫秒时间。当然，下载网页的快慢很大程度上取决于网页大小，网络连接速度，以及服务器间的距离，不过今天我们不谈网络性能。我的一个朋友说，高性能的网络完成网络往返甚至可能只要250纳秒（！！！），但这是在计算机位置更相邻，硬件更好的情况下。</p><p><br/></p><section class="yead_editor" label="Copyright &#xA9; 2015 Yead All Rights Reserved." style="margin: 5px auto;white-space: normal;"><section class="yead_bdc" style="line-height: 30px; border: 2px solid rgb(78, 153, 223); border-radius: 0.8em; font-family: inherit; font-weight: inherit; text-align: center; text-decoration: inherit; color: rgb(51, 51, 51); box-sizing: border-box; background-color: rgb(255, 255, 255);"><section style="padding:10px;box-sizing:border-box"><section class="yead_bgc" style="width: 0.5em; height: 0.5em; float: left; border-radius: 100%; box-sizing: border-box; background-color: rgb(78, 153, 223);"/><section class="yead_bgc" style="width: 0.5em; height: 0.5em; float: right; border-radius: 100%; box-sizing: border-box; background-color: rgb(78, 153, 223);"/><section style="clear:both;box-sizing:border-box"/></section><section style="padding-right:20px;padding-left:20px;box-sizing:border-box"><section class="yead_color" style="box-sizing: border-box; color: rgb(78, 153, 223); text-align: left;">1秒时间能够在磁盘中写入多少字节？我们都知道写到内存中时速度会更快，但是究竟会快多少呢？对了，下面的代码运行在带有SSD的计算机上。</section></section><section style="padding:10px;box-sizing:border-box"><section class="yead_bgc" style="width: 0.5em; height: 0.5em; float: left; border-radius: 100%; box-sizing: border-box; background-color: rgb(78, 153, 223);"/><section class="yead_bgc" style="width: 0.5em; height: 0.5em; float: right; border-radius: 100%; box-sizing: border-box; background-color: rgb(78, 153, 223);"/><section style="clear:both;box-sizing:border-box"/></section></section></section><p><strong>猜猜下面的程序每秒可以写入多少字节数据：</strong><br/></p><blockquote><pre><span style="font-size: 12px;">#!/usr/bin/env python
+
+# Number to guess: How many bytes can we write
+# to an output file in a second?
+# Note: we make sure everything is sync'd to disk
+# before exiting
+import tempfile
+import os
+
+CHUNK_SIZE = 1000000
+s = "a" * CHUNK_SIZE
+
+def cleanup(f, name):
+    f.flush()
+    os.fsync(f.fileno())
+    f.close()
+    try:
+        os.remove(name)
+    except:
+        pass
+
+def f(NUMBER):
+    name = './out'
+    f = open(name, 'w')
+    bytes_written = 0
+    while bytes_written &lt; NUMBER:
+        f.write(s)
+        bytes_written += CHUNK_SIZE
+    cleanup(f, name)
+
+import sys
+f(int(sys.argv[1]))</span></pre></blockquote><p><br/></p><p><span style="color: rgb(227, 108, 9);">准确答案：342,000,000</span></p><p><br/></p><p><strong>猜猜下面的程序每秒可以写入多少字节数据：</strong></p><blockquote><pre><span style="font-size: 12px;">#!/usr/bin/env python
+
+# Number to guess: How many bytes can we write
+# to a string in memory in a second?
+
+import cStringIO
+
+CHUNK_SIZE = 1000000
+s = "a" * CHUNK_SIZE
+
+def f(NUMBER):
+    output = cStringIO.StringIO()
+    bytes_written = 0
+    while bytes_written &lt; NUMBER:
+        output.write(s)
+        bytes_written += CHUNK_SIZE
+
+import sys
+f(int(sys.argv[1]))</span></pre></blockquote><p><br/></p><p><span style="color: rgb(227, 108, 9);">准确答案：2,000,000,000</span></p><p><br/></p><section class="yead_editor" label="Copyright &#xA9; 2015 Yead All Rights Reserved." style="margin: 5px auto;white-space: normal;"><section class="yead_bdc" style="line-height: 30px; border: 2px solid rgb(78, 153, 223); border-radius: 0.8em; font-family: inherit; font-weight: inherit; text-align: center; text-decoration: inherit; color: rgb(51, 51, 51); box-sizing: border-box; background-color: rgb(255, 255, 255);"><section style="padding:10px;box-sizing:border-box"><section class="yead_bgc" style="width: 0.5em; height: 0.5em; float: left; border-radius: 100%; box-sizing: border-box; background-color: rgb(78, 153, 223);"/><section class="yead_bgc" style="width: 0.5em; height: 0.5em; float: right; border-radius: 100%; box-sizing: border-box; background-color: rgb(78, 153, 223);"/><section style="clear:both;box-sizing:border-box"/></section><section style="padding-right:20px;padding-left:20px;box-sizing:border-box"><section class="yead_color" style="box-sizing: border-box; color: rgb(78, 153, 223); text-align: left;">下面轮到文件了！有时候，运行一个大型的grep之后，它可以永恒跑下去。在1秒时间内，grep可以搜索多少字节？<br style="white-space: normal;"/><p>请注意，在这么做的时候，grep正在读取的字节已经在内存中。</p><p>文件列表同样需要时间！1秒能列出多少文件？</p></section></section><section style="padding:10px;box-sizing:border-box"><section class="yead_bgc" style="width: 0.5em; height: 0.5em; float: left; border-radius: 100%; box-sizing: border-box; background-color: rgb(78, 153, 223);"/><section class="yead_bgc" style="width: 0.5em; height: 0.5em; float: right; border-radius: 100%; box-sizing: border-box; background-color: rgb(78, 153, 223);"/><section style="clear:both;box-sizing:border-box"/></section></section></section><p><strong>猜猜下面的程序每秒可以搜索多少字节的数据：</strong><br/></p><blockquote><pre><span style="font-size: 12px;">#!/bin/bash 
+
+# Number to guess: How many bytes can `grep`
+# search, unsuccessfully, in a second?
+# Note: the bytes are in memory
+
+NUMBER=$1
+
+cat /dev/zero | head -c $NUMBER | grep blah
+exit 0</span></pre></blockquote><p><br/></p><p><span style="color: rgb(227, 108, 9);">准确答案：2,000,000,000</span></p><p><br/></p><p><strong>猜猜下面的程序每秒可以列出多少文件：</strong></p><blockquote><pre><span style="font-size: 12px;">#!/bin/bash
+
+# Number to guess: How many files can `find` list in a second?
+# Note: the files will be in the filesystem cache.
+
+find / -name '*' 2&gt; /dev/null | head -n $1 &gt; /dev/null</span></pre></blockquote><p><br/></p><p><span style="color: rgb(227, 108, 9);">准确答案：325,000</span></p><p><br/></p><section class="yead_editor" label="Copyright &#xA9; 2015 Yead All Rights Reserved." style="margin: 5px auto;white-space: normal;"><section class="yead_bdc" style="line-height: 30px; border: 2px solid rgb(78, 153, 223); border-radius: 0.8em; font-family: inherit; font-weight: inherit; text-align: center; text-decoration: inherit; color: rgb(51, 51, 51); box-sizing: border-box; background-color: rgb(255, 255, 255);"><section style="padding:10px;box-sizing:border-box"><section class="yead_bgc" style="width: 0.5em; height: 0.5em; float: left; border-radius: 100%; box-sizing: border-box; background-color: rgb(78, 153, 223);"/><section class="yead_bgc" style="width: 0.5em; height: 0.5em; float: right; border-radius: 100%; box-sizing: border-box; background-color: rgb(78, 153, 223);"/><section style="clear:both;box-sizing:border-box"/></section><section style="padding-right:20px;padding-left:20px;box-sizing:border-box"><section class="yead_color" style="box-sizing: border-box; color: rgb(78, 153, 223); text-align: left;">序列化是一个普遍要花费大量时间的地方，让人很蛋疼，特别是如果你反复结束序列化/反序列化相同数据的时候。这里有几个基准：转换64K大小的JSON格式数据，与同样大小的msgpack格式数据。</section></section><section style="padding:10px;box-sizing:border-box"><section class="yead_bgc" style="width: 0.5em; height: 0.5em; float: left; border-radius: 100%; box-sizing: border-box; background-color: rgb(78, 153, 223);"/><section class="yead_bgc" style="width: 0.5em; height: 0.5em; float: right; border-radius: 100%; box-sizing: border-box; background-color: rgb(78, 153, 223);"/><section style="clear:both;box-sizing:border-box"/></section></section></section><p><strong>猜猜下面的程序每秒可以执行多少次循环：</strong><br/></p><blockquote><pre><span style="font-size: 12px;">#!/usr/bin/env python
+
+# Number to guess: How many times can we parse
+# 64K of JSON in a second?
+
+import json
+
+with open('./setup/protobuf/message.json') as f:
+    message = f.read()
+
+def f(NUMBER):
+    for _ in xrange(NUMBER):
+        json.loads(message)
+
+import sys
+f(int(sys.argv[1]))</span></pre></blockquote><p><br/></p><p><span style="color: rgb(227, 108, 9);">准确答案：449</span></p><p><br/></p><p><strong>猜猜下面的程序每秒可以执行多少次循环：</strong></p><blockquote><pre><span style="font-size: 12px;">#!/usr/bin/env python
+
+# Number to guess: How many times can we parse
+# 46K of msgpack data in a second?
+
+import msgpack
+
+with open('./setup/protobuf/message.msgpack') as f:
+    message = f.read()
+
+def f(NUMBER):
+    for _ in xrange(NUMBER):
+        msgpack.unpackb(message)
+
+import sys
+f(int(sys.argv[1]))</span></pre></blockquote><p><br/></p><p><span style="color: rgb(227, 108, 9);">准确答案：4,000</span></p><p><br/></p><section class="yead_editor" label="Copyright &#xA9; 2015 Yead All Rights Reserved." style="margin: 5px auto;white-space: normal;"><section class="yead_bdc" style="line-height: 30px; border: 2px solid rgb(78, 153, 223); border-radius: 0.8em; font-family: inherit; font-weight: inherit; text-align: center; text-decoration: inherit; color: rgb(51, 51, 51); box-sizing: border-box; background-color: rgb(255, 255, 255);"><section style="padding:10px;box-sizing:border-box"><section class="yead_bgc" style="width: 0.5em; height: 0.5em; float: left; border-radius: 100%; box-sizing: border-box; background-color: rgb(78, 153, 223);"/><section class="yead_bgc" style="width: 0.5em; height: 0.5em; float: right; border-radius: 100%; box-sizing: border-box; background-color: rgb(78, 153, 223);"/><section style="clear:both;box-sizing:border-box"/></section><section style="padding-right:20px;padding-left:20px;box-sizing:border-box"><section class="yead_color" style="box-sizing: border-box; color: rgb(78, 153, 223); text-align: left;">数据库。没有任何类似于PostgreSQL花里胡哨的东西，我们做了2份有1000万行数据的SQLite表，一个是有索引的，另一个是未建索引的。</section></section><section style="padding:10px;box-sizing:border-box"><section class="yead_bgc" style="width: 0.5em; height: 0.5em; float: left; border-radius: 100%; box-sizing: border-box; background-color: rgb(78, 153, 223);"/><section class="yead_bgc" style="width: 0.5em; height: 0.5em; float: right; border-radius: 100%; box-sizing: border-box; background-color: rgb(78, 153, 223);"/><section style="clear:both;box-sizing:border-box"/></section></section></section><p><strong>猜猜下面的程序每秒可以执行多少次查询：</strong><br/></p><blockquote><pre><span style="font-size: 12px;">#!/usr/bin/env python
+
+# Number to guess: How many times can we
+# select a row from an **indexed** table with 
+# 10,000,000 rows?
+
+import sqlite3
+
+conn = sqlite3.connect('./indexed_db.sqlite')
+c = conn.cursor()
+def f(NUMBER):
+    query = "select * from my_table where key = %d" % 5
+    for i in xrange(NUMBER):
+        c.execute(query)
+        c.fetchall()
+
+import sys
+f(int(sys.argv[1]))</span></pre></blockquote><p><br/></p><p><span style="color: rgb(227, 108, 9);">准确答案：53,000</span></p><p><br/></p><p><strong>猜猜下面的程序每秒执行多少次查询：</strong></p><blockquote><pre><span style="font-size: 12px;">#!/usr/bin/env python
+
+# Number to guess: How many times can we
+# select a row from an **unindexed** table with 
+# 10,000,000 rows?
+
+import sqlite3
+
+conn = sqlite3.connect('./unindexed_db.sqlite')
+c = conn.cursor()
+def f(NUMBER):
+    query = "select * from my_table where key = %d" % 5
+    for i in xrange(NUMBER):
+        c.execute(query)
+        c.fetchall()
+
+import sys
+f(int(sys.argv[1]))</span></pre></blockquote><p><br/></p><p><span style="color: rgb(227, 108, 9);">准确答案：2</span></p><p><br/></p><section class="yead_editor" label="Copyright &#xA9; 2015 Yead All Rights Reserved." style="margin: 5px auto;white-space: normal;"><section class="yead_bdc" style="line-height: 30px; border: 2px solid rgb(78, 153, 223); border-radius: 0.8em; font-family: inherit; font-weight: inherit; text-align: center; text-decoration: inherit; color: rgb(51, 51, 51); box-sizing: border-box; background-color: rgb(255, 255, 255);"><section style="padding:10px;box-sizing:border-box"><section class="yead_bgc" style="width: 0.5em; height: 0.5em; float: left; border-radius: 100%; box-sizing: border-box; background-color: rgb(78, 153, 223);"/><section class="yead_bgc" style="width: 0.5em; height: 0.5em; float: right; border-radius: 100%; box-sizing: border-box; background-color: rgb(78, 153, 223);"/><section style="clear:both;box-sizing:border-box"/></section><section style="padding-right:20px;padding-left:20px;box-sizing:border-box"><section class="yead_color" style="box-sizing: border-box; color: rgb(78, 153, 223); text-align: left;">下面要说Hash算法！在这里，我们将比较MD5和bcrypt。用MD5你在1秒时间内可以哈希到相当多的东西，而用bcrypt则不能。</section></section><section style="padding:10px;box-sizing:border-box"><section class="yead_bgc" style="width: 0.5em; height: 0.5em; float: left; border-radius: 100%; box-sizing: border-box; background-color: rgb(78, 153, 223);"/><section class="yead_bgc" style="width: 0.5em; height: 0.5em; float: right; border-radius: 100%; box-sizing: border-box; background-color: rgb(78, 153, 223);"/><section style="clear:both;box-sizing:border-box"/></section></section></section><p><strong>猜猜下面的程序每秒可以哈希多少字节的数据：</strong><br/></p><blockquote><pre><span style="font-size: 12px;">#!/usr/bin/env python
+
+# Number to guess: How many bytes can we md5sum in a second?
+
+import hashlib
+
+CHUNK_SIZE = 10000
+s = 'a' * CHUNK_SIZE
+
+def f(NUMBER):
+    bytes_hashed = 0
+    h = hashlib.md5()
+    while bytes_hashed &lt; NUMBER:
+        h.update(s)
+        bytes_hashed += CHUNK_SIZE
+    h.digest()
+import sys
+f(int(sys.argv[1]))</span></pre></blockquote><p><br/></p><p><span style="color: rgb(227, 108, 9);">准确答案：455,000,000</span></p><p><br/></p><p><strong>猜猜下面的程序每秒可以哈希多少字节的密码：</strong></p><blockquote><pre><span style="font-size: 12px;">#!/usr/bin/env python
+
+# Number to guess: How many passwords
+# can we bcrypt in a second?
+
+import bcrypt
+
+password = 'a' * 100
+
+def f(NUMBER):
+    for _ in xrange(NUMBER):
+        bcrypt.hashpw(password, bcrypt.gensalt())
+
+import sys
+f(int(sys.argv[1]))</span></pre></blockquote><p><br/></p><p><span style="color: rgb(227, 108, 9);">准确答案：3</span></p><p><br/></p><section class="yead_editor" label="Copyright &#xA9; 2015 Yead All Rights Reserved." style="margin: 5px auto;white-space: normal;"><section class="yead_bdc" style="line-height: 30px; border: 2px solid rgb(78, 153, 223); border-radius: 0.8em; font-family: inherit; font-weight: inherit; text-align: center; text-decoration: inherit; color: rgb(51, 51, 51); box-sizing: border-box; background-color: rgb(255, 255, 255);"><section style="padding:10px;box-sizing:border-box"><section class="yead_bgc" style="width: 0.5em; height: 0.5em; float: left; border-radius: 100%; box-sizing: border-box; background-color: rgb(78, 153, 223);"/><section class="yead_bgc" style="width: 0.5em; height: 0.5em; float: right; border-radius: 100%; box-sizing: border-box; background-color: rgb(78, 153, 223);"/><section style="clear:both;box-sizing:border-box"/></section><section style="padding-right:20px;padding-left:20px;box-sizing:border-box"><section class="yead_color" style="box-sizing: border-box; color: rgb(78, 153, 223); text-align: left;">接下来，我们要说一说内存访问。 现在的CPU有L1和L2缓存，这比主内存访问速度更快。这意味着，循序访问内存通常比不按顺序访问内存能提供更快的代码。</section></section><section style="padding:10px;box-sizing:border-box"><section class="yead_bgc" style="width: 0.5em; height: 0.5em; float: left; border-radius: 100%; box-sizing: border-box; background-color: rgb(78, 153, 223);"/><section class="yead_bgc" style="width: 0.5em; height: 0.5em; float: right; border-radius: 100%; box-sizing: border-box; background-color: rgb(78, 153, 223);"/><section style="clear:both;box-sizing:border-box"/></section></section></section><p><strong>猜猜下面的程序每秒可以向内存写入多少字节数据：</strong><br/></p><blockquote><pre><span style="font-size: 12px;">#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+
+// Number to guess: How big of an array (in bytes)
+// can we allocate and fill in a second?
+
+// this is intentionally more complicated than it needs to be
+// so that it matches the out-of-order version
+
+int main(int argc, char **argv) {
+    int NUMBER, i;
+    NUMBER = atoi(argv[1]);
+
+    char* array = malloc(NUMBER);
+    int j = 1;
+    for (i = 0; i &lt; NUMBER; ++i) {
+        j = j * 2;
+        if (j &gt; NUMBER) {
+            j = j - NUMBER;
+        }
+        array[i] = j;
+    }
+
+    printf("%d", array[NUMBER / 7]);
+    // so that -O2 doesn't optimize out the loop
+
+    return 0;
+}</span></pre></blockquote><p><br/></p><p><span style="color: rgb(227, 108, 9);">准确答案：376,000,000</span></p><p><br/></p><p><strong>猜猜下面的程序每秒可以向内存写入多少字节数据：</strong></p><blockquote><pre><span style="font-size: 12px;">#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+
+// Number to guess: How big of an array (in bytes)
+// can we allocate and fill with 5s in a second?
+// The catch: We do it out of order instead of in order.
+int main(int argc, char **argv) {
+    int NUMBER, i;
+    NUMBER = atoi(argv[1]);
+
+    char* array = malloc(NUMBER);
+    int j = 1;
+    for (i = 0; i &lt; NUMBER; ++i) {
+        j = j * 2;
+        if (j &gt; NUMBER) {
+            j = j - NUMBER;
+        }
+        array[j] = j;
+    }
+
+    printf("%d", array[NUMBER / 7]);
+    // so that -O2 doesn't optimize out the loop
+
+    return 0;
+}</span></pre></blockquote><p><br/></p><p><span style="color: rgb(227, 108, 9);">准确答案：68,000,000</span></p><p><br/></p><p>欢迎大家去试一试，给我们留下宝贵的意见。</p><p><br/></p><p><span style="font-size: 14px; color: rgb(127, 127, 127);">译文链接：http://www.codeceo.com/article/1-second-your-computer-do.html<br/>英文原文：DO YOU KNOW HOW MUCH YOUR COMPUTER CAN DO IN A SECOND?<br/>翻译作者：码农网 – 小峰</span></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz/bLmy0N4HIaca48FuHSCnx3UhxA7x43zRC0ictOGM1e6wP43RUssmxM5Dtly2dSV423XZNOY2Qx6pDGoLpqibPn5Q/0?wx_fmt=jpeg" data-ratio="0.6679920477137177" data-w="" src="../Images/5be9cad5a12e5977c988df5721cb95dc.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/bLmy0N4HIaca48FuHSCnx3UhxA7x43zRC0ictOGM1e6wP43RUssmxM5Dtly2dSV423XZNOY2Qx6pDGoLpqibPn5Q/0?wx_fmt=jpeg"/></p><section style="margin: 0px; padding: 0px; max-width: 100%; white-space: normal; border: 0px; color: rgb(68, 68, 68); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; font-size: 13px; line-height: 24px; height: 10px; box-sizing: border-box !important; word-wrap: break-word !important; background: url(http://mmbiz.qpic.cn/mmbiz/bLmy0N4HIac9gxpM1oWCpMftlTcboJg5CJvicEkOAHgKhhZR8ZOCSgZ0MRfKMHLS0PP73aElC60ibRAqbyxqQXKQ/0?wx_fmt=png) repeat-x rgb(251, 19, 122);"/><p style=""><br style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;"/></p><p style=""><span style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important; color: rgb(255, 0, 0);"><strong style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;">一、IT技术领域：</strong></span></p><p style="">回复"<span style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important; color: rgb(255, 192, 0);"><strong style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;">1</strong></span>",查看【Linux】“Linux学习资源推荐”；<br style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;"/></p><p style="">回复"<span style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important; color: rgb(255, 192, 0);"><strong style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;">2</strong></span>",查看【Python】“Python语言十分钟快速入门”；</p><p style="">回复"<span style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important; color: rgb(255, 192, 0);"><strong style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;">3</strong></span>",查看【Java】“写好Java代码的30条经验总结”；</p><p style="">回复"<span style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important; color: rgb(255, 192, 0);"><strong style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;">4</strong></span>",查看【PHP】“你不得不知道的20个优秀PHP框架”；</p><p style="">回复"<span style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important; color: rgb(255, 192, 0);"><strong style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;">5</strong></span>",查看【WEB】“Web开发者不可不知的15条编码原则”；</p><p style="">回复"<span style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important; color: rgb(255, 192, 0);"><strong style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;">6</strong></span>",查看【C】“C语言谜题”；</p><p style="">回复"<span style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important; color: rgb(255, 192, 0);"><strong style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;">7</strong></span>",查看【Android】“移动终端开发必备知识”；</p><p style=""><br style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;"/></p><p style=""><strong style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important; color: rgb(255, 0, 0);">二、程序员技能：</strong></p><p style="">回复"<span style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important; color: rgb(255, 192, 0);"><strong style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;">算法</strong></span>",查看【算法】“各语言排序算法源代码”；</p><p style="">回复"<span style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important; color: rgb(255, 192, 0);"><strong style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;">git</strong></span>",查看【git】“简明 Git 命令速查表（中文版）”；</p><p style="">回复"<span style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important; color: rgb(255, 192, 0);"><strong style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;">sql</strong></span>",查看【数据库】“Mysql中常用的sql语句汇总”；</p><p style=""><br style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;"/></p><p style=""><span style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important; color: rgb(255, 0, 0);"><strong style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;">三、程序员：</strong></span></p><p style="">回复"<span style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important; color: rgb(255, 192, 0);"><strong style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;">kh</strong></span>",查看程序员的4大<strong style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;">困惑</strong>：</p><p style="">回复"<span style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important; color: rgb(255, 192, 0);"><strong style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;">gjh</strong></span>",查看那些<strong style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;">高级黑</strong>程序员的段子：</p>
+        
+</body>
+</html>

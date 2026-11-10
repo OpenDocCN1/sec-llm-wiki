@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Android版Chrome浏览器存在地址栏欺骗漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Android版Chrome浏览器存在地址栏欺骗漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxMjE3ODU3MQ==&amp;mid=205980555&amp;idx=4&amp;sn=981210491fb0737010a467c47d8f73d0&amp;chksm=1206666f2571ef79edf603e43647f69e3e5e80f2d8665335ef4f23b834099acd0490f501675d&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzAxMjE3ODU3MQ==&amp;mid=205980555&amp;idx=4&amp;sn=981210491fb0737010a467c47d8f73d0&amp;chksm=1206666f2571ef79edf603e43647f69e3e5e80f2d8665335ef4f23b834099acd0490f501675d&amp;scene=27#wechat_redirect</a></blockquote><p>Android版的Chrome浏览器存在一个可以被攻击者利用的安全漏洞，它可以把用户引向恶意网页，并且从表面上看，资源是从合法位置加载的。</p><p><br/></p><p>安全研究人员已经发现，浏览器不会正确处理204”No 
+Content”的response，此时允许显示任意HTML代码，但是地址栏显示一个合法的来源。</p><p><br/></p><p><img title="t0140d25ffc64fd428c.jpg" style="border-width: 0px; max-width: 600px; width: auto !important; visibility: visible !important;" data-src="http://mmbiz.qpic.cn/mmbiz/CZIjfFlatazjKuTE0p2rz6WRs0ryLNiaPNwGPfIHyoCM743XBja1atX7icTy6VQbF7VLfeO4d5UKTNDrAOQGaLpA/0?wx_fmt=jpeg&amp;wxfrom=5" width="203" height="333" data-w="297" data-ratio="1.8114478114478114" data-type="jpeg" data-s="300,640" source="lib" format="jpeg" file_id="205076826" url="http://mmbiz.qpic.cn/mmbiz/CZIjfFlatazjKuTE0p2rz6WRs0ryLNiaPNwGPfIHyoCM743XBja1atX7icTy6VQbF7VLfeO4d5UKTNDrAOQGaLpA/0?wx_fmt=jpeg" src="../Images/f6aa1778dbea90735541640f065130f1.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/CZIjfFlatazjKuTE0p2rz6WRs0ryLNiaPNwGPfIHyoCM743XBja1atX7icTy6VQbF7VLfeO4d5UKTNDrAOQGaLpA/0?wx_fmt=jpeg&amp;wxfrom=5"/></p><p><br/></p><p><strong><span style="COLOR: rgb(112,48,160)">Poc是可用的</span></strong></p><p><br/></p><p>该漏洞被证实存在于Lollipop(Android 5.0)和更在版本的Android系统中，漏洞发现者是Rafay 
+Baloch，来自巴基斯坦的安全研究人员，他是在三星Galaxy S5产品中发现漏洞的。</p><p><br/></p><p>Beardsley说，这个问题是由于HTTP 204 
+error处理不当引起的（服务器收到请求，但是没有返回任何信息），然后和”window.open”活动结合，导致网页加载了错误的内容。</p><p><br/></p><p>“攻击者可以利用这个漏洞使用电子邮件、文字或链接的网络钓鱼，让受害者进入被攻击者控制的不被信任的网页的私有证书。”Beardsley在周一的安全公告中写到。</p><p><br/></p><p>Baloch的加载伪造Google登录页面存在缺陷的示范中指出，内容是从”https://www.google.com/csi”加载的，这是一个在Google服务器中并不存在的位置。</p><p><br/></p><p>结果是浏览器的地址栏发布的内容是从Google域加载、假冒Google登录页面，但是实际上资源是由攻击者提供的服务器提供的。</p><p><br/></p><p><span style="COLOR: rgb(112,48,160)"><strong>Glitch仍可利用。</strong></span></p><p><br/></p><p>Baloch说，概念验证的成功取决于触发超时时间是否正确，Joe Vennix发现设置时间在1500~2000最佳。</p><p><br/></p><p>如果超时被触发的太快，比如，在从gmail.com接受到了”no 
+content”HTTP响应之前，欺诈网页呈现出了空白的地址，这个现象目前就发生在Android 5.1和Windows中。</p><p><br/></p><p>地址栏最初显示的URL的资源并不存在服务器上，然后会变成空白。</p><p>虽然这种行为可以提醒用户并组织他们进入凭证，在很多情况下，地址栏被忽视，并加载一个看似合法的域名，让用户信任加载内容的合法性。</p><p><br/></p><p>如果一个随机钓鱼域名明显的提示了恶意活动，空白的地址栏，可能因为它让人迷惑，所以在很多情况下并不会让人怀疑。</p><p><br/></p><p>该漏洞与2月9日报告给Android安全团队，补丁与4月在Lollipop和KitKat问世。</p><p><br/></p>
+        
+</body>
+</html>

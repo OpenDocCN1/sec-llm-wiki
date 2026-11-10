@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Windows Session 模拟用户登录操作</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Windows Session 模拟用户登录操作</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA4MDMwMjQ3Mg==&amp;mid=402979484&amp;idx=1&amp;sn=28471b4570181c83fc79cbf41a4c99ac&amp;chksm=0256027b35218b6db6deb6d588ef65b3d2164922fcf94cf5a3233c04400f6afac964b89a7849&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA4MDMwMjQ3Mg==&amp;mid=402979484&amp;idx=1&amp;sn=28471b4570181c83fc79cbf41a4c99ac&amp;chksm=0256027b35218b6db6deb6d588ef65b3d2164922fcf94cf5a3233c04400f6afac964b89a7849&amp;scene=27#wechat_redirect</a></blockquote><p>工具作用：<br/>　　在渗透过程中，如果 Windows 会话存在多个，又是 DMZ 区，利用此工具可以查看本机的其他<br/>在线/离线的会话， 并且创建用指定会话的资源管理器(exporer)来创建一个进程。 当然能做的事情多的去了．<br/><br/>注意事项：<br/>　　除了 Administrator 这个用户模拟其他用户，需要 Administrator 对其他用户进行 at 计划任务！ ！<br/>因为 Administrator 的账户特殊性，所以必须要这样做。后期如果有想法，可以自己编写一个服务启动的方<br/>式，绕过这个 bug,其他用户可以任意模拟 Administrator 用户！<br/><br/>运行方式:<br/>　　session.exe pid(其他会话的资源管理器进程 id) 系统命令<br/><br/>模拟渗透环境如下：<br/><br/>1：当前机器上有 2 个会话：</p><p><img data-w="" data-ratio="0.5665467625899281" data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IGurRxnK9wicj7c9vjD1WdmO1mXKaibk2xRvFRKdibU3aRM6DUAZiclvMqK4VyOlPWN4AiaibvNJto0xF3w/0?wx_fmt=png" src="../Images/23b9d8524dc5303e99631be7b2100bcb.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IGurRxnK9wicj7c9vjD1WdmO1mXKaibk2xRvFRKdibU3aRM6DUAZiclvMqK4VyOlPWN4AiaibvNJto0xF3w/0?wx_fmt=png"/><br/>成功通过 at \\LocalHost 计划任务，模拟至另外用户的会话并且执行命令<br/><br/>2：其他用户至 Administrator 用户</p><p><img data-w="" data-ratio="0.5485611510791367" data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IGurRxnK9wicj7c9vjD1WdmOJ1kwXXddnTCVBACrhJyukX1OibDQmxicBfGg4A1ibree70WL6ewcibqDqA/0?wx_fmt=png" src="../Images/1ac1ba6cf90829459bfbd4d0a137e570.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IGurRxnK9wicj7c9vjD1WdmOJ1kwXXddnTCVBACrhJyukX1OibDQmxicBfGg4A1ibree70WL6ewcibqDqA/0?wx_fmt=png"/><br/>成功模拟登录，并且创建进程为 test.exe 的程序！<br/><br/>目前只在 Windows 2008 机器上测试成功，理论上除 xp/2003 以上，都支持。如果在测试的过程中发现什么<br/>问题，请反馈</p><p>下载地址：http://pan.baidu.com/s/1c1nykYc 密码：hke0</p>
+        
+</body>
+</html>

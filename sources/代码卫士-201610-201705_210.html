@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Apache SVN系统遭受SHA-1碰撞影响</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Apache SVN系统遭受SHA-1碰撞影响</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485576&amp;idx=2&amp;sn=c9657c028b44507572e9866c55cd07a7&amp;chksm=ea9739e2dde0b0f49eeb4c5782224c4ff20b16e45adffd967183e9a11b0c9b28ad177bdaf857&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485576&amp;idx=2&amp;sn=c9657c028b44507572e9866c55cd07a7&amp;chksm=ea9739e2dde0b0f49eeb4c5782224c4ff20b16e45adffd967183e9a11b0c9b28ad177bdaf857&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiamTPn1kBddgeOjOicDmiaeypuW9AMzeVFv9gBrUNqSUL1TR8xuP559PbMfklB3O54sAefxXha6uJumw/0?wx_fmt=jpeg" data-ratio="0.5588235294117647" data-w="340" src="../Images/4ef0d34d0e37d8b6563760b9676067ad.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiamTPn1kBddgeOjOicDmiaeypuW9AMzeVFv9gBrUNqSUL1TR8xuP559PbMfklB3O54sAefxXha6uJumw/0?wx_fmt=jpeg"/></p><p><br/></p><p><strong>上周谷歌和CWI宣布成功实现了SHA-1碰撞攻击，它似乎对使用Apache SVN软件版本管理和版本控制系统产生了严重影响。</strong></p><p><br/></p><p>WebKit网络浏览器引擎的开发人员在试图将SHA-1碰撞的测试添加到项目时发现了严重问题。上传谷歌提供的示例碰撞PDF文件会导致他们的SVN库损坏并阻止进一步的提交。</p><p><br/></p><p>谷歌已向受SHA影响的网站发布更新告警SVN用户注意相关风险，Apache SVN开发人员已创建一个工具，阻止提交如谷歌等提供的PDF文件。目前谷歌仅发布了两个证明SHA-1碰撞是有可能发生的PDF文档（也就是有相同SHA-1哈希但内容不同的文件）。不过90天后，谷歌将会公布能够让任何人都创建此类PDF文档的代码。</p><p><br/></p><p>找到SHA-1碰撞仍然需要有重要的资源。攻击者至少要花费11万美元获取亚马逊云服务的计算能力，但是碰撞仍然要比暴力攻击快1万倍。</p><p><br/></p><p>SHA-1碰撞攻击还影响Git分布式版本控制系统，后者依靠SHA-1来识别并检查文件对象和提交的完整性。</p><p><br/></p><p>Linux内核创始人Linus Torvalds表示，“天并没有塌下来”，Git最终会过渡到更加安全的加密哈希功能。</p><p><br/></p><p>除了对版本控制系统产生影响外，碰撞攻击还为数字证书、邮件签名、软件更新、供应商签名、备份系统和ISO校验和带来严重威胁。主要供应商已经开始远离SHA-1加密，如谷歌、Facebook、微软和Mozilla。</p>
+        
+</body>
+</html>

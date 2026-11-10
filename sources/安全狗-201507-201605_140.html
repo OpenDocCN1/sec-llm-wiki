@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>大批WordPress网站被渗透 成为DDOS攻击源</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>大批WordPress网站被渗透 成为DDOS攻击源</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NTc2NDM4MQ==&amp;mid=401872577&amp;idx=3&amp;sn=7e5faad04a7228c29cf6d82fb8973831&amp;chksm=34f337330384be252292c1029656ee57c04b5b7611849479c013512b8a2f01dcf25333e35159&amp;scene=126&amp;sessionid=1681368375#rd">http://mp.weixin.qq.com/s?__biz=MjM5NTc2NDM4MQ==&amp;mid=401872577&amp;idx=3&amp;sn=7e5faad04a7228c29cf6d82fb8973831&amp;chksm=34f337330384be252292c1029656ee57c04b5b7611849479c013512b8a2f01dcf25333e35159&amp;scene=126&amp;sessionid=1681368375#rd</a></blockquote><p>近日，Sucuri的安全研究人员发现，数万WordPress站点被利用于实施第7层DDos攻击。共有两万六千个不同的WordPress站点
+持续向同一个网站以每秒一万到一万一千次的频率发送HTTPS请求，最多时能达到两万次每秒。更严重是，如果Pingback功能默认开启，全球任何一个WordPress站点都可能被渗透，成为DDos攻击网络的一个源头。</p><p><br/></p><p>HTTP Flood是针对Web服务在第七层协议发起的大规模流量攻击，不仅可以直接导致被攻击的Web前端响应缓慢，还间接攻击到后端的Java等业务层逻辑以及更后端的数据库服务，增大它们的压力，甚至对日志存储服务器都带来影响。</p><p><br/></p><p>建议所有基于Wordpress的网站尽快禁用Pingback。虽然无法保证网站免于遭受攻击，但会终止黑客利用您的网站来攻击其它目标。</p><p><br/></p><p>最好的做法是，如果你确定不用pingbacks，就和xmlrpc一并关闭。如果需要使用，可以简单修改.htaccess文件，只允许白名单中的IP来存取文件。流行插件Jetpack也可用于流量监控。</p><p><br/></p><p style="text-align: center; text-indent: 0;"><img data-w="" data-ratio="0.5953237410071942" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz/qXZ5RodNbbGnGYiaMgX3oCA4hYM30voLPqJjQcDfibnSJQ8vKSoOW8cx4MbPibEfBIX7ib7YocjVAkl4tkgAQ5spcA/0?wx_fmt=png" border="0" width="600" src="../Images/97255601d7308258bc5d6d15f9b0c1a7.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qXZ5RodNbbGnGYiaMgX3oCA4hYM30voLPqJjQcDfibnSJQ8vKSoOW8cx4MbPibEfBIX7ib7YocjVAkl4tkgAQ5spcA/0?wx_fmt=png"/></p><p><br/></p><p>WordPress的pingback服务可被DDoS攻击利用，这个漏洞早有披露，但至今仍有大量网站存在此问题，原因在于网站所有者很少刻意防
+止网站被僵尸网络捕获。而由于这种DDoS攻击中流量来自数千个不同IP，基于网络的防火墙也无法识别和拦截，只能限制每个IP地址的访问频率。</p><p><br/></p><p style="text-align: center; text-indent: 0;"><img data-w="" data-ratio="0.44064748201438847" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz/qXZ5RodNbbGnGYiaMgX3oCA4hYM30voLPrvJLPZibhxCBatzO2tlIskia1pwLylDNc3IVRSLjZNESBV40EpAGDPeA/0?wx_fmt=png" border="0" width="600" src="../Images/cff08031654b13a8ad1b0878a8d0696a.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qXZ5RodNbbGnGYiaMgX3oCA4hYM30voLPrvJLPZibhxCBatzO2tlIskia1pwLylDNc3IVRSLjZNESBV40EpAGDPeA/0?wx_fmt=png"/></p><p>研究人员还发现，大多数实施攻击的源网站托管在知名VPS/云服务提供商：亚马逊的AWS、Digital Ocean、谷歌云、微软的Azure、HETZNER、OVH和Linode。（Freebuf）</p><p><br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>PWN学习001</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>PWN学习001</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI5MTM4NzYwNw==&amp;mid=2247484041&amp;idx=1&amp;sn=f6718b195ab36afbce215e9794fb8871&amp;chksm=ec102331db67aa27942b5ca2edb12a35b611cb5671503b72cdbbab7b97a93701a166ed9a5a66&amp;scene=126&amp;sessionid=1681663703#rd">http://mp.weixin.qq.com/s?__biz=MzI5MTM4NzYwNw==&amp;mid=2247484041&amp;idx=1&amp;sn=f6718b195ab36afbce215e9794fb8871&amp;chksm=ec102331db67aa27942b5ca2edb12a35b611cb5671503b72cdbbab7b97a93701a166ed9a5a66&amp;scene=126&amp;sessionid=1681663703#rd</a></blockquote><h2 style="color: rgb(34, 34, 34); border-bottom-color: rgb(238, 238, 238); border-bottom-width: 1px; border-bottom-style: solid; padding-bottom: 5px; margin-bottom: 14px; font-size: 18px; margin-top: 30px; font-family: 'microsoft yahei'; line-height: 24px; white-space: normal;"><span data-mce-style="color: #003366;" style="color: rgb(0, 51, 102);"><strong>简介</strong></span></h2><p style="margin-bottom: 14px;"><span data-mce-style="color: #003366;" style="color: rgb(0, 51, 102);"><strong>PWN是CTF中的一种题目，利用溢出等等攻击手段达到入侵设备的一个简称，不必深究它到底是什么意思，学完下面这个网站上的几道题目，自然就懂了。</strong></span></p><p style="margin-bottom: 14px;">练习网站： http://pwnable.kr/play.php</p><p style="margin-bottom: 14px;">打开网站第一题（fd）。</p><p style="margin-bottom: 14px;"><img class="aligncenter wp-image-3602 size-full" data-ratio="1.196078431372549" data-src="http://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHLyErtEXw0JFVGYryicsTwBpFKZ0VK4icTUvMicuqNfHpMFYZYgyEqA5H1mfWdicviaQC4gNib4SpJf9lRA/0?wx_fmt=png" data-type="png" data-w="153" height="183" style="padding: 5px; border: none; display: block; margin-left: auto; margin-right: auto; text-align: center;" width="153" src="../Images/1c59442e52c2d73d59ed63a8f59bfc49.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHLyErtEXw0JFVGYryicsTwBpFKZ0VK4icTUvMicuqNfHpMFYZYgyEqA5H1mfWdicviaQC4gNib4SpJf9lRA/0?wx_fmt=png"/></p><p style="margin-bottom: 14px;"><img class="aligncenter wp-image-3603 size-full" data-ratio="0.6598984771573604" data-src="http://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHLyErtEXw0JFVGYryicsTwBpB8nvsjgqGlWZGrFibgx3ib1uODmdHE6b0l9BYwCRmuoLg7vWLRBBagCw/0?wx_fmt=png" data-type="png" data-w="591" height="390" style="padding: 5px; border: none; display: block; margin-left: auto; margin-right: auto; text-align: center;" width="591" src="../Images/a70c0e64e1b210694c4e8b4a1af3599e.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHLyErtEXw0JFVGYryicsTwBpB8nvsjgqGlWZGrFibgx3ib1uODmdHE6b0l9BYwCRmuoLg7vWLRBBagCw/0?wx_fmt=png"/></p><hr style="cursor: default;"/><p style="margin-bottom: 14px;">看到有一个ssh fd@pwnable.kr -p 2222 密码是：guest,我们先连接过去。</p><p style="margin-bottom: 14px;"><img class="aligncenter wp-image-3604 size-full" data-ratio="0.5967302452316077" data-src="http://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHLyErtEXw0JFVGYryicsTwBp6DxwlgZQsKEjeukNXqZj8Sk1LfwJQbFFB7CY4o2ApY0oAjwBH4gpzg/0?wx_fmt=png" data-type="png" data-w="734" height="438" style="padding: 5px; border: none; display: block; margin-left: auto; margin-right: auto; text-align: center;" width="734" src="../Images/fe441a1bf949c425fb54a66eb510d8c2.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHLyErtEXw0JFVGYryicsTwBp6DxwlgZQsKEjeukNXqZj8Sk1LfwJQbFFB7CY4o2ApY0oAjwBH4gpzg/0?wx_fmt=png"/></p><p style="margin-bottom: 14px;">查看一下目录有什么内容，如下图，看到有三个文件，fd , fd.c , flag。</p><p style="margin-bottom: 14px;">由权限可知道，我们不能读取flag文件，题目思路尝试执行fd，查看fd.c 进行读取flag。</p><p style="margin-bottom: 14px;"><img class="aligncenter wp-image-3605 size-full" data-ratio="0.24053452115812918" data-src="http://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHLyErtEXw0JFVGYryicsTwBpGV1gqsqaU0G1TARPdq2PyQRFvqRCgSqzUTLjuyNWR0qD4dbgyQnOVQ/0?wx_fmt=png" data-type="png" data-w="449" height="108" style="padding: 5px; border: none; display: block; margin-left: auto; margin-right: auto; text-align: center;" width="449" src="../Images/208ee95d0d923648329d9db511b26a1f.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHLyErtEXw0JFVGYryicsTwBpGV1gqsqaU0G1TARPdq2PyQRFvqRCgSqzUTLjuyNWR0qD4dbgyQnOVQ/0?wx_fmt=png"/></p><p style="margin-bottom: 14px;">查看源码：</p><pre class="EnlighterJSRAW" data-enlighter-language="c" style="margin: 15px auto; font-stretch: normal; border-width: 0px 1px 1px; border-style: dotted; border-color: rgb(229, 229, 229); padding: 5px 10px; white-space: pre-wrap; word-wrap: break-word; font-family: 'Source Code Pro', 'Liberation Mono', 'Courier New', Courier, monospace !important; font-size: 0.7em !important; line-height: 0.9em !important; color: rgb(0, 0, 0) !important; background-color: rgb(249, 249, 249) !important;">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+
+char buf[32];
+
+int main(int argc, char* argv[], char* envp[])
+{
+    if(argc&lt;2)
+    {
+        printf("pass argv[1] a number\n");
+        
+        return 0;
+    
+    }
+    int fd = atoi( argv[1] ) - 0x1234;
+    int len = 0;
+    len = read(fd, buf, 32);if(!strcmp("LETMEWIN\n", buf))
+    {
+        printf("good job :)\n");
+        system("/bin/cat flag");
+        exit(0);
+    }
+    printf("learn about Linux file IO\n");
+    return 0;
+
+}</pre><p style="margin-bottom: 14px;">从源码分析，可知，这个程序接收一个参数argv[1]，这个参数转换成整数int型，然后减去0x1234，然后读入buf，输入：LETMEWIN，进行字符串比较，如果正确就读入flag这个文件。</p><pre class="EnlighterJSRAW" data-enlighter-language="c" style="margin: 15px auto; font-stretch: normal; border-width: 0px 1px 1px; border-style: dotted; border-color: rgb(229, 229, 229); padding: 5px 10px; white-space: pre-wrap; word-wrap: break-word; font-family: 'Source Code Pro', 'Liberation Mono', 'Courier New', Courier, monospace !important; font-size: 0.7em !important; line-height: 0.9em !important; color: rgb(0, 0, 0) !important; background-color: rgb(249, 249, 249) !important;">stdin            0　　　　　　标准输入
+stdout           1　　　　　　标准输出
+stderr           2　　　　　　标准错误输出</pre><p style="margin-bottom: 14px;">所以我们只有让fb 等于0 再想buf里面写入我们相要写的内容LETMEWIN，然后就成功了。</p><p style="margin-bottom: 14px;"><strong>怎么让fb 为 0 呢?</strong></p><p style="margin-bottom: 14px;">fd = atoi( argv[1] ) - 0x1234;</p><p style="margin-bottom: 14px;">所以只要把我们的输入的值为0x1234就可以了，输入对应的十进制4660即可。</p><p style="margin-bottom: 14px;"><img class="aligncenter wp-image-3606 size-full" data-ratio="0.2977867203219316" data-src="http://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHLyErtEXw0JFVGYryicsTwBpuP9LXrWqFAkFcACznkj97Wwu48K3A0KlkmXgZGvGsoJb2rIqicHPl8A/0?wx_fmt=png" data-type="png" data-w="497" height="148" style="padding: 5px; border: none; display: block; margin-left: auto; margin-right: auto; text-align: center;" width="497" src="../Images/78b6a77804da070fa1791945ea71a4b9.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHLyErtEXw0JFVGYryicsTwBpuP9LXrWqFAkFcACznkj97Wwu48K3A0KlkmXgZGvGsoJb2rIqicHPl8A/0?wx_fmt=png"/></p><hr style="cursor: default;"/><h2 style="color: rgb(34, 34, 34); border-bottom-color: rgb(238, 238, 238); border-bottom-width: 1px; border-bottom-style: solid; padding-bottom: 5px; margin-bottom: 14px; font-size: 18px; margin-top: 30px;"><strong>总结</strong></h2><ol style="margin: 16px;" class=" list-paddingleft-2"><li><p>先运行程序。</p></li><li><p>查看源码。</p></li><li><p>找到溢出点。</p></li><li><p>输入对应字符。</p></li><li><p>获取flag。</p></li></ol>
+        
+</body>
+</html>

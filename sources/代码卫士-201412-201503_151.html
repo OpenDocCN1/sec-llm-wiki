@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>华硕路由器出现Root命令执行漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>华硕路由器出现Root命令执行漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247486043&amp;idx=7&amp;sn=f37dedf3b88622f47e17a14020c482f0&amp;chksm=ea973b31dde0b22737ee5f061be38ca130ec28eac6651e700d4c91a73c549c0d23234acefe8e&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247486043&amp;idx=7&amp;sn=f37dedf3b88622f47e17a14020c482f0&amp;chksm=ea973b31dde0b22737ee5f061be38ca130ec28eac6651e700d4c91a73c549c0d23234acefe8e&amp;scene=27#wechat_redirect</a></blockquote><p style="white-space: normal; ">许多华硕（ASUS）路由器的固件中存在一个严重的安全漏洞，允许未经认证的命令执行。这个漏洞可能存在于当前所有路由器固件版本，并且已存在一个针对性exploit。</p><p style="white-space: normal; "><br/></p><p style="white-space: normal; ">安全研究人员Joshua Drake发布了一个漏洞公告，详细说明了这个漏洞的情况并指出最佳防御措施是移除远程命令执行功能。罪魁祸首是一个名为infosvr的服务，这一服务旨在帮助管理员发现并在网络段上配置路由器。</p><p style="white-space: normal; "><br/></p><p style="white-space: normal; ">Drake表示，华硕的几款路由器包含一个名为infosvr的服务，监听LAN界面上的UDP广播端口999。华硕的其中一个工具利用infosvr通过在本地子网上自动定位路由器来减轻路由器配置。这个服务通过root权限运行，并且包含一个未经认证的命令执行漏洞。</p><p style="white-space: normal; "><br/></p><p style="white-space: normal; ">据悉，这一漏洞影响华硕路由器的所有固件版本，并且存在一个代码段中，而这个代码段与processPacket函数有关。</p><p style="white-space: normal; "><br/></p><p style="white-space: normal; ">Drake还表示，这个代码段从执行几个OpCode值开始，但设计并不要求认证。然后，它会调用memcpy并且对不是零的返回值进行可疑检查。这说明，代码作者打算用memcmp替代。也就是说，即便这个检查被正确执行，知道设备的MAC地址也不足以进行充分认证。</p><p style="white-space: normal; "><br/></p><p style="white-space: normal; ">Drake认为解决漏洞的最有效方法是禁用infosvr进程，这可通过路由器每次重启时停止进程来实现。他同时建议将远程命令功能从固件中全部删除。他指出，即便远程命令执行功能有强大的认证防护，向整个局域网发布密码也非可取之道。如果真的需要命令执行，也应该通过SSH或者类似的安全机制来实施。</p><p style="white-space: normal; "><br/></p><p style="white-space: normal; ">据悉，所有已知路由器固件版本（RT-AC66U、RT-N66U等）均受影响。</p><p style="white-space: normal; "><br/></p><p style="white-space: normal; ">本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。</p><p><br/></p>
+        
+</body>
+</html>

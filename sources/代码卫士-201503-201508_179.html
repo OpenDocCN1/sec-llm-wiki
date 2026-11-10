@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>黑客利用Magento不明漏洞盗取支付卡信息</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>黑客利用Magento不明漏洞盗取支付卡信息</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485936&amp;idx=1&amp;sn=57892e5c17f2db2f682d299fd39a1cc1&amp;chksm=ea97389adde0b18ca9aef62754791257f28904c80246c44f52d79435079bb94377c89db434f9&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485936&amp;idx=1&amp;sn=57892e5c17f2db2f682d299fd39a1cc1&amp;chksm=ea97389adde0b18ca9aef62754791257f28904c80246c44f52d79435079bb94377c89db434f9&amp;scene=27#wechat_redirect</a></blockquote><p>Sucuri安全公司研究人员发现攻击者可利用恶意代码从Magento（麦进斗）电商平台上盗取支付卡信息。</p><p><br/></p><p>安全研究人员指出，攻击者似乎在利用Magento核心组件中的漏洞发动攻击，而且他们对平台的运作方式相当熟悉。攻击者能够收集到用户向Magento平台提交的所有信息以盗取信用卡数据，方法是将恶意代码注入网站，但具体操作流程不得而知。</p><p><br/></p><p>安全研究人员表示，攻击者能够收集所有的POST请求，通过收集支付卡信息的恶意代码进行解析，支付卡信息随后被存储到虚假图像文件中以便进行加密及解密。</p><p><br/></p><pre>$y0 = ‘/home/cloudpanel/htdocs/www.site_name_removed.ca/skin/adminhtml/default/default/images/icon_feed_bg.gif';</pre><p>安全研究人员发现一个通过向Magento Checkout模块注入代码以盗取Magento数据的恶意代码样本。支付卡信息会在交易处理之前进行收集，随后通过电子邮件的方式以明文形式返回给攻击者。</p><p><br/></p><p>研究人员认为攻击者对Magento平台的了解很深刻。攻击者了解模块的运作方式以及构建模块的代码，他所需做的就是利用模块自身的变量，而变量中
+存储的所有敏感数据都未受保护。为了不被发现，攻击者使用的攻击将痕迹删除并且伪造用户代理。它还会修改图像文件的时间戳并写出虚假的JPEG头。</p><p><br/></p><p>此前，Sucuri公司曾从Magento票据模块中发现其票据信息被以明文形式盗取的漏洞，不过严重程度要比本次攻击低。</p><p><br/></p><p>本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。</p>
+        
+</body>
+</html>

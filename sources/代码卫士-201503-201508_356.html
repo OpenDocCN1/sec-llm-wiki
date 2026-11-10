@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>利用富可视IN312HD投影仪漏洞入侵主机网络</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>利用富可视IN312HD投影仪漏洞入侵主机网络</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485974&amp;idx=2&amp;sn=adcfb4d86c67c8aaddb6d1198d71f1f6&amp;chksm=ea973b7cdde0b26afb31af52ced571b471f6833aad748ddbe3d0768aef6f4154fb8925564ff7&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485974&amp;idx=2&amp;sn=adcfb4d86c67c8aaddb6d1198d71f1f6&amp;chksm=ea973b7cdde0b26afb31af52ced571b471f6833aad748ddbe3d0768aef6f4154fb8925564ff7&amp;scene=27#wechat_redirect</a></blockquote><p>在学校教室很常见的富可视IN312HD投影仪出现漏洞。厂商已发现影响投影仪固件的几个验证漏洞。通过利用这些漏洞，攻击者可入侵主机网络。</p><p><br/></p><p>易受攻击的固件（版本0.26）在富可视IN312HD投影仪上运行，就像许多物联网设备一样，它暴露了一个可修改设置的网络界面。管理面板要求获
+得管理员密码以访问投影仪的配置，但影响固件的验证绕过漏洞允许攻击者通过猜测用户登录之后被导向的页面名称(main.html)修改任何参数。这意味
+着只需使用恰当的URL，攻击者就可绕过登录页面。受限的页面并不包含对任何登录或未验证用户的控制。如果成功登录，它只会检查输入的密码而不会生成会话
+cookie。URL允许另外的预先认证路径访问受限部分。</p><p><br/></p><p>一旦绕过认证机制，攻击者就可获取并修改网络设置（即网络掩码、DNS服务器、网关）或者包括密码在内的无线配置。安全人士指出，固件同时缺
+乏”webctrl.cgi.elf”CGI文件的验证。该文件用来执行”changes.webctrl.cgi.elf” 
+CGI文件并可再次修改设备参数，包括DHCP的设置以及远程强制富可视IN3128HD投影仪重启。</p><p><br/></p><p>截止本文发表之时，富可视仍未提出对易受攻击固件的更新。安全专家建议投影仪所有者断开与公共网络的网络连接。</p><p><br/></p>本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。
+        
+</body>
+</html>

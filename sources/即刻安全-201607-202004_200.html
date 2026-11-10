@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>如何在Ubuntu下安装Metasploit？</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>如何在Ubuntu下安装Metasploit？</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI5MTM4NzYwNw==&amp;mid=2247483846&amp;idx=1&amp;sn=f065166c0780294bc4a2fd635333cb38&amp;chksm=ec10207edb67a968d065533a54e8312d3ab10ab3c3d751d4d9ec4405466ccc37f7bf20b725d2&amp;scene=126&amp;sessionid=1681663731#rd">http://mp.weixin.qq.com/s?__biz=MzI5MTM4NzYwNw==&amp;mid=2247483846&amp;idx=1&amp;sn=f065166c0780294bc4a2fd635333cb38&amp;chksm=ec10207edb67a968d065533a54e8312d3ab10ab3c3d751d4d9ec4405466ccc37f7bf20b725d2&amp;scene=126&amp;sessionid=1681663731#rd</a></blockquote><p>在正式开始安装之前，我们先来更新下我们的 kali 确保它处于最新的安装包：</p><pre class="lang:default decode:true ">sudo apt-get update
+sudo apt-get upgrade</pre><p>在更新完成后下面我们来安装一些必要的库文件，这些库文件的安装与否将直接影响到 metasploit 的安装：<strong><br/> </strong></p><pre class="lang:default decode:true ">sudo apt-get install build-essential libssl-dev libreadline-dev libpq5 libpq-dev libreadline5 libpcap-dev openjdk-7-jre git-core autoconf postgresql libsqlite3-dev pgadmin3 curl zlib1g-dev libxml2-dev curl zlib1g-dev libxslt1-dev vncviewer libyaml-dev</pre><p>接着我们先来安装 Nmap ，当使用 metasploit 进行扫描时需要调用它：</p><pre class="lang:default decode:true ">sudo apt-get install nmap</pre><p>接着我们切换到 postgresql 用户，并创建用户及 metasploit 需要进行存储的数据库：</p><pre class="lang:default decode:true">sudo -s
+su postgres</pre><p> 切换成功后我们就可以添加用户及创建数据库了：</p><pre class="lang:default decode:true ">createuser msf -P -S -R -D
+createdb -O msf msf
+exit</pre><p>做完以上工作下面我们就可以去 <strong>Git</strong> 上下载 metasploit framework 啦！<strong><br/> </strong></p><pre class="lang:default decode:true ">cd /opt
+
+sudo git clone https://github.com/rapid7/metasploit-framework.git
+
+cd metasploit-framework</pre><p>接着我们继续来安装 <strong>gems </strong>(Gem是一个管理Ruby库和程序的标准包):</p><pre class="lang:default decode:true ">sudo bash -c 'for MSF in $(ls msf*); do ln -s /opt/metasploit-framework/$MSF /usr/local/bin/$MSF;done'
+gem install bundler
+bundle install</pre><p>安装 metasploit 的图形化界面工具 <strong><span class="td_text_highlight_marker_red td_text_highlight_marker">Armitage</span></strong><span class="td_text_highlight_marker_red td_text_highlight_marker"> ：</span></p><pre class="lang:default decode:true ">curl -# -o /tmp/armitage.tgz http://www.fastandeasyhacking.com/download/armitage-latest.tgz
+
+sudo tar -xvzf /tmp/armitage.tgz -C /opt
+
+sudo ln -s /opt/armitage/armitage /usr/local/bin/armitage
+
+sudo ln -s /opt/armitage/teamserver /usr/local/bin/teamserver
+
+sudo sh -c "echo java -jar /usr/local/share/armitage/armitage.jar \$\* &gt; /usr/local/share/armitage/armitage"
+
+sudo perl -pi -e 's/armitage.jar/\/usr\/local\/share\/armitage\/armitage.jar/g' /usr/local/share/armitage/teamserver</pre><p>下面我们来创建一个 database.yml 文件，并写入 metasploit 调用时的配置参数确保正常启动：</p><p> <br/></p><pre class="lang:default decode:true ">sudo nano /opt/metasploit-framework/config/database.yml</pre><p>模仿 YAML 文件的格式，并正确填写我们之前配置的基本参数设置：</p><p> <br/></p><pre class="lang:default decode:true ">production:
+adapter: postgresql
+database: msf
+username: msf
+password:                   #密码
+host: 127.0.0.1
+port: 5432
+pool: 75
+timeout: 5</pre><p>最后我们创建一个环境变量，当 Armitage 和 MSF 启动时将会被加载：</p><pre class="lang:default decode:true ">sudo sh -c "echo export MSF_DATABASE_CONFIG=/opt/metasploit-framework/config/database.yml &gt;&gt; /etc/profile"
+source /etc/profile</pre>
+        
+</body>
+</html>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CoreBot:窃取信息的新型恶意软件</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>CoreBot:窃取信息的新型恶意软件</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485893&amp;idx=3&amp;sn=7211a6b2190e58d95a3cd1ce4c4a3fe0&amp;chksm=ea9738afdde0b1b99ed7d66b14343832f3f9fba5b5114069730d31740fd9f3db504ece87e3d8&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485893&amp;idx=3&amp;sn=7211a6b2190e58d95a3cd1ce4c4a3fe0&amp;chksm=ea9738afdde0b1b99ed7d66b14343832f3f9fba5b5114069730d31740fd9f3db504ece87e3d8&amp;scene=27#wechat_redirect</a></blockquote><p>IBM X-Force团队在分析业务端点时发现了一款窃取信息的新型恶意软件。</p><p><br/></p><p><strong>深入分析</strong><strong>CoreBot</strong><strong>攻击</strong></p><p>根据研究发现，信息窃取是在病毒释放器到达受害者计算及其执行的，它开启了“进程分析以将恶意软件写入磁盘并予以发布。”这一进程同时还生成了一个
+GUID，“通过Windows 
+Registry中的运行键定义其持久性。”在这个阶段只有CoreBot的主要模块显示在受害者的计算机上。这个核心模块在注册表设置后通过随机生成的
+域与命令和控制服务器进行交流以获取指令。这个命令和控制服务器随后会发出新指令和插件完成这些任务。</p><p><br/></p><p><strong>CoreBot</strong><strong>能够下载其它恶意软件并自行更新</strong></p><p>IBM研究人员表示“通过使用Windows PowerShell、微软的任务自动化及配置管理框架，CoreBot能够从互联网上获取到其它恶意软件，下载到受感染的计算机上并执行。”CoreBot还通过这一相同进程进行自我更新。</p><p><br/></p><p>IBM团队发现在所观察到的多数案例中，CoreBot都通过一个名为Stealer的插件攻击受害者计算机上的敏感信息。这个插件旨在从浏览器、FTP客户端、邮件应用程序、网络邮件账户、私人证书、和加密币钱包窃取密码，并从其它多种桌面软件中窃取凭证。</p><p><br/></p><p>IBM安全研究人员表示，CoreBot“当前无法从网络浏览器中拦截实时数据”，而且大多数杀毒引擎以通用名称amer!ac 和Eldorado将其检测出。</p><p><br/></p>本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。
+        
+</body>
+</html>

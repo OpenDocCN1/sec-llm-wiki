@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Firefox 0day漏洞可窃取敏感数据及密码</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Firefox 0day漏洞可窃取敏感数据及密码</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485908&amp;idx=2&amp;sn=c023945eae907f7448fcf14d06ffe70b&amp;chksm=ea9738bedde0b1a8e5b956ef5a123f746f171ea99d18d8ac9209e2063e127453e9a4b4d9819b&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485908&amp;idx=2&amp;sn=c023945eae907f7448fcf14d06ffe70b&amp;chksm=ea9738bedde0b1a8e5b956ef5a123f746f171ea99d18d8ac9209e2063e127453e9a4b4d9819b&amp;scene=27#wechat_redirect</a></blockquote><p><strong>Mozilla发布了Firefox39.0.3版本，修复被利用的重要0day漏洞。</strong></p><p><strong><br/></strong></p><p>上周三Firefox收到一个0day漏洞报告。一名用户称在一家俄罗斯新闻站点中所展示的广告是一个恶意代码。这个恶意代码旨在窃取被感染系统中
+的敏感文件。而且它非常狡猾地避免在目标系统上留下痕迹。Mozilla公司指出，这个0day漏洞源于执行JS语境分离（“同源策略”）以及
+Firefox 
+PDF阅读器的机制交互。该漏洞存在于PDF阅读器中，因此它并不影响安卓版本的Firefox以及不包含阅读器组件的Mozilla产品。
+Mozilla证实称已发现的0day攻击针对托管在Windows以及Linux系统的某些文件。</p><p><br/></p><p>该漏洞的编号为CVE-2015-4495，专家表示它并不能被利用执行任意代码。该漏洞可被利用向本地文件语境中注入JS有效负载。目前已发现攻击者利用该漏洞窃取本地文件。</p><p><br/></p><p>截止目前并未发现有相关攻击针对Apple设备，不过Mozilla表示由于有效负载可被修改，因此Mac系统也可能成为攻击目标。</p><p><br/></p><p>那么，恶意软件在查找哪些文件呢？</p><p>Mozilla表示，在Windows系统上，恶意软件寻找的是subversion、s3browser以及Filezilla配置的文
+件，.purple以及Psi+账户信息以及来自八个不同流行FTP客户端的站点配置文件。在Linux系统上，恶意软件寻找的是普通的全球配置文件如
+/etc/passwd，而在所有它能够访问的用户目录，寻找的是.bash_history，.mysql_history，.ssh配置文件以及密
+钥，remina、Filezilla、以及Psi+文本文件的配置文件，以及名称中含有“pass”以及“acess”的文本文件，以及所有的
+shell脚本。</p><p><br/></p><p>此外，Mozilla并未排除该恶意软件部署在其它类型站点的可能性。</p><p><br/></p><p>Windows以及Linux版本的Firefox用户应当尽快修复受影响文件的密码及密钥。不过广告拦截软件会缓解此类攻击带来的影响。</p><p><br/></p><p>Mozilla已在Firefox39.0.3以及Firefox ESR 38.1.1版本中修复了该漏洞。用户应当立即更新版本修复漏洞。</p><p><br/></p>本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。
+        
+</body>
+</html>

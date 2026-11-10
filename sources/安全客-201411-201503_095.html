@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Jetty Web Server存在共享缓存区远程泄露漏洞[CVE-2015-2080]</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Jetty Web Server存在共享缓存区远程泄露漏洞[CVE-2015-2080]</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA5ODA0NDE2MA==&amp;mid=202981710&amp;idx=1&amp;sn=e50ad901b9af8cf907784bbe06d3858a&amp;chksm=197a71212e0df83742b09a3c60b3f98fbb19b3dea6dceedfb8d1348a19e989f86ba027e01ebe&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA5ODA0NDE2MA==&amp;mid=202981710&amp;idx=1&amp;sn=e50ad901b9af8cf907784bbe06d3858a&amp;chksm=197a71212e0df83742b09a3c60b3f98fbb19b3dea6dceedfb8d1348a19e989f86ba027e01ebe&amp;scene=27#wechat_redirect</a></blockquote><p style="text-indent: 2em; text-align: left;"><span style="">GDS安全公司发现了一个Jetty web server共享缓存区远程泄露漏洞，通过该漏洞一个没有认证过的攻击者可以远程获取之前合法用户向服务器发送的请求。<span style=""><strong>简而言之，攻击者可以从存在漏洞的服务器远程获取缓存区的敏感信息，包括http头的信息（cookies、认证的tokens、防止CSRF的tokens等等）以及用户POST的数据（用户名、密码等）。</strong></span></span></p><p style="text-indent: 2em; text-align: left;"><span style="">漏
+洞的根源在于当header中被插入恶意的字符并提交到服务器后，会从异常处理代码中获得共享缓冲区大约16 
+bytes的数据。因此攻击者可以通过提交一个精心构造的请求来获取异常并偏移到共享缓冲区中，共享缓冲区中存的是用户先前提交的数据，Jetty服务器
+会根据用户提交的请求返回大约16 bytes的数据块，这里面会包含敏感信息。</span></p><p style="text-indent: 2em; text-align: left;"><span style="font-size: 16px;"><strong><span style="">受影响的版本</span></strong></span></p><p style="text-indent: 2em; text-align: left;"><span style="">该漏洞影响Jetty 的9.2.3~9.2.8版本，GDS同时发现Jetty的beta版本9.3.x也受到该漏洞的影响。</span></p><p style="text-indent: 2em; text-align: left;"><span style="font-size: 16px;"><strong><span style="">漏洞验证</span></strong></span></p><p style="text-indent: 2em; text-align: left;"><span style="">GDS给出了一个漏洞验证的脚本，下载地址</span></p><p style="text-indent: 2em; text-align: left;"><span style="">https://github.com/GDSSecurity/Jetleak-Testing-Script</span></p><p style="text-indent: 2em; text-align: left;"><strong><span style="">验证方法</span></strong></p><table class="syntaxhighlighter bash" cellpadding="0" cellspacing="0"><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div></td><td class="code"><div class="line number1 index0 alt2"><code class="bash plain">$ python jetleak_tester.py http:</code><code class="bash plain">//</code><code class="bash plain">[ENTER HOSTNAME] 80</code></div></td></tr></tbody></table><p style="text-indent: 2em; text-align: left;"><span style="">如果存在漏洞会显示</span></p><p style="text-indent: 2em; text-align: left;"><span style="">This version of Jetty is VULNERABLE to JetLeak!</span></p><p style="text-indent: 2em; text-align: left;"><span style="">如果不存在漏洞</span></p><p style="text-indent: 2em; text-align: left;"><span style="">This version of Jetty is NOT vulnerable to JetLeak.</span></p>
+        
+</body>
+</html>

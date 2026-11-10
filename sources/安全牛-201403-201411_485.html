@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>携程被曝高危漏洞 用户信用卡信息可能泄露</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>携程被曝高危漏洞 用户信用卡信息可能泄露</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5Njc3NjM4MA==&amp;mid=200160805&amp;idx=1&amp;sn=64761da41c31e6fb6fb9ec4494a4bef7&amp;chksm=28fe86f61f890fe03dbe9951ee974471a3ca333efcbba452bbf6d9ff94e1205d1591ab1b6341&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5Njc3NjM4MA==&amp;mid=200160805&amp;idx=1&amp;sn=64761da41c31e6fb6fb9ec4494a4bef7&amp;chksm=28fe86f61f890fe03dbe9951ee974471a3ca333efcbba452bbf6d9ff94e1205d1591ab1b6341&amp;scene=27#wechat_redirect</a></blockquote><p>国内第三方漏洞报告平台乌云网今晚在其官网上公布了一个安全漏洞信息，携程安全支付日志可遍历下载，导致大量用户银行卡信息泄露(包含持卡人姓名身份证、银行卡号、卡CVV码、6位卡Bin)。目前漏洞细节已通知厂商并且等待厂商处理中。互联网公司用户信息安全再遭质疑。</p><p><br/></p><p>经携程反馈，相关部门已经在第一时间展开技术排查并在消息发布两个小时内进行了漏洞弥补工作。目前没有用户受到该漏洞的影响而造成相应财产损失的情况发现。 携程对于乌云平台发现的漏洞信息表示非常重视和感谢并将对于提供漏洞信息者给与重奖。对于此次漏洞事件如果有新的进展将持续通报。</p><p><span style="color: rgb(51, 51, 51); font-family: Arial, Helvetica, sans-serif, 宋体; font-size: 14px; line-height: 22px;  background-color: rgb(255, 255, 255);"><br/></span></p><p><span style="color: rgb(51, 51, 51); font-family: Arial, Helvetica, sans-serif, 宋体; font-size: 14px; line-height: 22px;  background-color: rgb(255, 255, 255);"/></p><h3>漏洞简要描述：</h3><p>携程将用于处理用户支付的服务接口开启了调试功能，使所有向银行验证持卡所有者接口传输的数据包均直接保存在本地服务器。<br style="margin: 0px; padding: 0px; "/>(类似IIS或Apache的访问日志，记录URL POST内容)。<br style="margin: 0px; padding: 0px; "/><br style="margin: 0px; padding: 0px; "/>同时因为保存支付日志的服务器未做校严格的基线安全配置，存在目录遍历漏洞，导致所有支付过程中的调试信息可被任意骇客读取。<br style="margin: 0px; padding: 0px; "/><br style="margin: 0px; padding: 0px; "/>其中泄露的信息包括用户的：<br style="margin: 0px; padding: 0px; "/>持卡人姓名<br style="margin: 0px; padding: 0px; "/>持卡人身份证<br style="margin: 0px; padding: 0px; "/>所持银行卡类别（比如，招商银行信用卡、中国银行信用卡）<br style="margin: 0px; padding: 0px; "/>所持银行卡卡号<br style="margin: 0px; padding: 0px; "/>所持银行卡CVV码<br style="margin: 0px; padding: 0px; "/>所持银行卡6位Bin(用于支付的6位数字)</p><p><span style="color: rgb(51, 51, 51); font-family: Arial, Helvetica, sans-serif, 宋体; font-size: 14px; line-height: 22px;  background-color: rgb(255, 255, 255);"><br/></span><br/></p>
+        
+</body>
+</html>

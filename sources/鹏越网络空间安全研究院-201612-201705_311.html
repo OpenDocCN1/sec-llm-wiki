@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>【鹏越·学霸专区】密码学入门系列之 希尔密码(古典)</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>【鹏越·学霸专区】密码学入门系列之 希尔密码(古典)</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzIyMTQyOTc2OQ==&amp;mid=2247487914&amp;idx=5&amp;sn=f3e9ad1693553ff026686fd719dd5235&amp;chksm=e83db8ccdf4a31dab6e67c62684c3e4ffd3a1743744ef8ffe859b6f13998c3ba414bc4ca73ea&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzIyMTQyOTc2OQ==&amp;mid=2247487914&amp;idx=5&amp;sn=f3e9ad1693553ff026686fd719dd5235&amp;chksm=e83db8ccdf4a31dab6e67c62684c3e4ffd3a1743744ef8ffe859b6f13998c3ba414bc4ca73ea&amp;scene=27#wechat_redirect</a></blockquote><h2 style="line-height: 25.6px; white-space: normal;"><img width="100%" data-src="http://mmbiz.qpic.cn/mmbiz/FtS4KIeWBfNqBXs3FbCfcU58S6FjAe4s4E5LUEeFHTWiaJfNWMTZJN2PLRg2TtMUD06a7gGicLe6zN55icSLeLquw/0?wx_fmt=gif" class="" data-type="gif" data-ratio="0.10714285714285714" data-w="756" style="white-space: pre-wrap; font-size: 14px; color: rgb(102, 102, 102); font-family: 微软雅黑, 宋体, Arial; line-height: 1.6; width: auto; background-color: rgb(255, 255, 255);" src="../Images/38117b4dd20040b811f73948c9d7b29b.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/FtS4KIeWBfNqBXs3FbCfcU58S6FjAe4s4E5LUEeFHTWiaJfNWMTZJN2PLRg2TtMUD06a7gGicLe6zN55icSLeLquw/0?wx_fmt=gif"/></h2><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/FtS4KIeWBfP04iaBl98vZicjKnAGrZVGWBqleCOVRJmoP0UzrTfoLvCqskPTK5vYaeSJVA32tHWZmtHV23OMbcEQ/0?wx_fmt=png" style="font-size: 12px; text-indent: 24px; line-height: 1.6; width: 100%; height: auto;" data-ratio="0.46511627906976744" data-w="516" src="../Images/d45ff4530610a0dbb320e1efe9f3b50d.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/FtS4KIeWBfP04iaBl98vZicjKnAGrZVGWBqleCOVRJmoP0UzrTfoLvCqskPTK5vYaeSJVA32tHWZmtHV23OMbcEQ/0?wx_fmt=png"/><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/FtS4KIeWBfP04iaBl98vZicjKnAGrZVGWBNwJicH9x3uIWibZvoUPl6YehmgxKBjoKQ4pJcooIHwLlZJAFCsDsHydg/0?wx_fmt=png" style="width: 100%; height: auto;" data-ratio="0.6019230769230769" data-w="520" src="../Images/54fa0fe37847bbaec6bab48c1702a613.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/FtS4KIeWBfP04iaBl98vZicjKnAGrZVGWBNwJicH9x3uIWibZvoUPl6YehmgxKBjoKQ4pJcooIHwLlZJAFCsDsHydg/0?wx_fmt=png"/></p><p>  <br style="border: 0px;"/></p><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/FtS4KIeWBfP04iaBl98vZicjKnAGrZVGWBaadREEnZlkGYXspHzAq0pm5FVkiacfibWDic7VCDfdfWRMkESk0RgdZYQ/0?wx_fmt=png" style="width: 100%; height: auto;" data-ratio="0.9420849420849421" data-w="518" src="../Images/bc6ada086a0c18155045da59a0795edf.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/FtS4KIeWBfP04iaBl98vZicjKnAGrZVGWBaadREEnZlkGYXspHzAq0pm5FVkiacfibWDic7VCDfdfWRMkESk0RgdZYQ/0?wx_fmt=png"/></p><p>  <br style="border: 0px;"/></p><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/FtS4KIeWBfP04iaBl98vZicjKnAGrZVGWBpksDN6mU09K9AnxhFZmS7NAr01HaM7SJGiaGYDIXZfB8C1rNX7xJxqQ/0?wx_fmt=png" style="width: 100%; height: auto;" data-ratio="0.8548672566371681" data-w="565" src="../Images/e2c4032b29913e2c580da4793624c8c5.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/FtS4KIeWBfP04iaBl98vZicjKnAGrZVGWBpksDN6mU09K9AnxhFZmS7NAr01HaM7SJGiaGYDIXZfB8C1rNX7xJxqQ/0?wx_fmt=png"/></p><p><span style="font-size: 20px;"/></p><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/FtS4KIeWBfP04iaBl98vZicjKnAGrZVGWB3J2UTwoloNQm3d2sej9PyfYB3oibCLFWnQHMgTeR0JyKDyA2kx6YpgQ/0?wx_fmt=png" style="width: 100%; height: auto;" data-ratio="0.3717277486910995" data-w="573" src="../Images/3778aa83e80369f76e944ce494ae47d9.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/FtS4KIeWBfP04iaBl98vZicjKnAGrZVGWB3J2UTwoloNQm3d2sej9PyfYB3oibCLFWnQHMgTeR0JyKDyA2kx6YpgQ/0?wx_fmt=png"/></p><p><br style="border: 0px;"/>  大家的想法不错, 但是请注意:<br style="border: 0px;"/>  <br style="border: 0px;"/>  我们上面的那个例子 矩阵[3,6]的逆矩阵为[7/9, -2/3] , 发现了吧, 我们如果硬是去按常规方法计算M的逆矩阵的话, 你得到的<br style="border: 0px;"/>                         [2,7]          [-2/9, 1/3] <br style="border: 0px;"/>  很可能是一个含有分式的矩阵. 这显然是不符合要求的.(为什么? )<br style="border: 0px;"/>  __asm<br style="border: 0px;"/>  {<br style="border: 0px;"/>      cmp you, "想知道为什么"<br style="border: 0px;"/>      jnz @F<br style="border: 0px;"/>  ]<br style="border: 0px;"/>  有的人会说,就算有分式又怎么样? 虽然分式在计算机中以浮点数体现, 但我还是让B乘以这个浮点数表示的M^1, 然后对结果进行<br style="border: 0px;"/>  四舍五入, 不久OK了? 不错这样是可以达到效果. 但是! 有以下几个缺点:<br style="border: 0px;"/>  1): 平白无辜的扯到了浮点运算, 还要进行四舍五入, 降低了算法效率使其看起来相当愚蠢.<br style="border: 0px;"/>  2): 解密秘匙体现的局限性, 其实是这个意思: 假如现在为二战时期, 我们需要派一位特工在盟军的两个司令部之间传达密钥. 而且<br style="border: 0px;"/>      规定密钥只能以A~Z这26个字母的形式体现. 也即你的秘匙只能是字母构成的, 接受方得到秘匙后按照Z26表对应将A当作0,B当作1,<br style="border: 0px;"/>      ... Z当作25 来翻译, 然后解密. 这种情况下, 上面的分式就不好表示了. 当然在真实情况下, 密钥是怎么个传输法, 那还要区<br style="border: 0px;"/>      别对待.<br style="border: 0px;"/>  <br style="border: 0px;"/>  <br style="border: 0px;"/>  @@:<br style="border: 0px;"/>  于是, 我们想对于一个矩阵能否有另外一种的逆使得其各元素皆为Z26范围中的元素同时可以顺利地完成解密了?  当然有.<br style="border: 0px;"/>  <br style="border: 0px;"/>  方法一: 最小公倍数法<br style="border: 0px;"/>  <br style="border: 0px;"/>  这种方法是在前面的矩阵逆的基础上来做文章的. 如下.<br style="border: 0px;"/>  <br style="border: 0px;"/>  我们接着上面那个带分式的M^-1来说, 大家观察一下, 很容易知道, 其中的分母9 其实为 原矩阵M的行列式值: 9 = 3*7 - 2*6;<br style="border: 0px;"/>  那我们将M^-1乘以9, 不就可以消掉分母了吗? 呵呵. 不行的. <br style="border: 0px;"/>  <br style="border: 0px;"/>  我们要想消掉分母, 肯定得乘以一个数, 那到底要乘以多少了.  这里因为我们是Z26的字母表. 我们要保证乘以一个数之后, 原来的明文<br style="border: 0px;"/>  字母所增大的部分一定得是26的整数倍. 也即如下<br style="border: 0px;"/>  <br style="border: 0px;"/>  第一步:<br style="border: 0px;"/>  设a为明文中的一个字母. x 为 需要对当前的M^-1乘以的倍数. t为任意整数.<br style="border: 0px;"/>  <br style="border: 0px;"/>  ax = a + 26t. 恒成立. ==&gt;&gt;   t = a(x-1)/26  . <br style="border: 0px;"/>  要想t为整数, 则 x = 26p+1 .p &gt;=1. 这里我们一般取p =1 即可. 因此 x = 27.(及字母表个数加一)<br style="border: 0px;"/>  <br style="border: 0px;"/>  第二步:<br style="border: 0px;"/>  要消掉分母, 我们必须乘以分母D(M)的倍数. 其中D(M)为M的行列式值.<br style="border: 0px;"/>  <br style="border: 0px;"/>  得结果:<br style="border: 0px;"/>  <br style="border: 0px;"/>  所求 x = 最小公倍数( 27, D(M) )  .<br style="border: 0px;"/>  <br style="border: 0px;"/>  具体到上例中, x = 最小公倍数(27,9) = 27.<br style="border: 0px;"/>  <br style="border: 0px;"/>  我们将上面的M^-1 乘以27 得到: [21, -18]<br style="border: 0px;"/>                                [-6, 9  ]<br style="border: 0px;"/>  <br style="border: 0px;"/>  到了这一步, 我们得到了含负数的希尔逆矩阵.(注意: 从这里开始我们区别对待两种逆矩阵).<br style="border: 0px;"/>  而负数还是不能用Z26中的字母表示, 怎么办? 没关系, 对于负数我们加上26即可.  因为我们加上的是26,<br style="border: 0px;"/>  所以对于最终的取模是没有影响的. 因此我们得到:<br style="border: 0px;"/>  <br style="border: 0px;"/>  希尔逆矩阵 M^-1 = [21,8]<br style="border: 0px;"/>                    [20,9]<br style="border: 0px;"/>  <br style="border: 0px;"/>  <br style="border: 0px;"/>  方法二:纯整数初等变化法 (这个名字和上面那个最小公倍数法都是我自己想出来的名字, 可能不好听. 呵呵.)<br style="border: 0px;"/>  <br style="border: 0px;"/>  这一种方法的思想就是元素的模逆. 因为我们这里是Z26, 我们不关心元素的实际大小, 只关心它对26取模后的数值.<br style="border: 0px;"/>  <br style="border: 0px;"/>  因此, 在对原矩阵M求逆时, 我们先将M变为增广矩阵A, 再对A的每一列进行循环, 在第j列中, 从第j行开始, 每个元素<br style="border: 0px;"/>  遍历, 依次检查是否对26存在模逆. 否的话, 检查下一个, 是的话,乘以其模逆, 于是该元素结果得1, 再得到其行数为 i , <br style="border: 0px;"/>  将此行与第j行互换(目的就是为了形成对角线的n个1), 然后对余下的行, 用此行乘以余下行的第j个元素的值去依次减余下的行,<br style="border: 0px;"/>  这样就使得当前第j列的n-1个0得以生成. 如果某列一直检查下去都没有元素存在模逆的话, 则该矩阵M不存在希尔逆矩阵.<br style="border: 0px;"/>  <br style="border: 0px;"/>  文字有时还是不如代码好说话, 看代码吧:<br style="border: 0px;"/>  <br style="border: 0px;"/>  (这次的希尔密码辅助软件,我使用的是C#.我嫌用C弄一些框框太麻烦,所以选择了简单的C#,弄一些框框是为了看中间过程.<br style="border: 0px;"/>   同时, 也能布置大家一个作业: 即读懂附件中的C#代码, 用C或C++重写之. 呵呵, 我想未装.NET Framework的非Vista朋友<br style="border: 0px;"/>  如果为了使用附件中的bin的话, 还是得自己用其他语言重写一边的吧 (-_*,坏笑中 ~~~))<br style="border: 0px;"/>  <br style="border: 0px;"/>  //检查元素a是否对n存在模逆<br style="border: 0px;"/>  <br/></p><p>代码:</p><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/FtS4KIeWBfP04iaBl98vZicjKnAGrZVGWBy4bozS5sTHT2SWxTgzHDxh8lY7KkGzZGjJp8ibibu2w4eNXWxowwOYLw/0?wx_fmt=png" data-ratio="0.45528455284552843" data-w="492" style="width: 100%; height: auto;" src="../Images/1b673b0a49c151e0afc7ac04985db4df.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/FtS4KIeWBfP04iaBl98vZicjKnAGrZVGWBy4bozS5sTHT2SWxTgzHDxh8lY7KkGzZGjJp8ibibu2w4eNXWxowwOYLw/0?wx_fmt=png"/></p><p><span style="font-family: Simsun; font-size: 12px; line-height: normal;  background-color: rgb(255, 255, 255);">  //得到元素a对n的模逆</span><br style="border: 0px; font-family: Simsun; font-size: 12px; line-height: normal; white-space: normal; background-color: rgb(255, 255, 255);"/><span style="font-family: Simsun; font-size: 12px; line-height: normal;  background-color: rgb(255, 255, 255);">  </span></p><p>代码:</p><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/FtS4KIeWBfP04iaBl98vZicjKnAGrZVGWB2e563BQlz0Juicgia7VN7vQIG0nXdgV8Jicpu4ibksdUHXm6icWCgMUrUWg/0?wx_fmt=png" style="width: 100%; height: auto;" data-ratio="0.8008915304606241" data-w="673" src="../Images/7929ebe3d03d516f421733bf791dfcb7.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/FtS4KIeWBfP04iaBl98vZicjKnAGrZVGWB2e563BQlz0Juicgia7VN7vQIG0nXdgV8Jicpu4ibksdUHXm6icWCgMUrUWg/0?wx_fmt=png"/></p><p><span style="font-family: Simsun; font-size: 12px; line-height: normal;  background-color: rgb(255, 255, 255);">  </span><br style="border: 0px; font-family: Simsun; font-size: 12px; line-height: normal; white-space: normal; background-color: rgb(255, 255, 255);"/><span style="font-family: Simsun; font-size: 12px; line-height: normal;  background-color: rgb(255, 255, 255);">  //使用纯整数初等变换法计算M的希尔逆矩阵.</span><br style="border: 0px; font-family: Simsun; font-size: 12px; line-height: normal; white-space: normal; background-color: rgb(255, 255, 255);"/><span style="font-family: Simsun; font-size: 12px; line-height: normal;  background-color: rgb(255, 255, 255);">  </span></p><p>代码:</p><pre dir="ltr" style="margin-top: 0px; margin-bottom: 0px; padding: 6px; border: 1px inset; width: 850px; overflow: auto; background-color: rgb(222, 223, 223);">        public bool Calc_M_1()
+          {
+              int[,] A = new int[nRank, nRank * 2];
+              int[] T = new int[nRank*2];
+              int i,j,k;
+              //construct the [M|E] matrix A
+              for (i = 0; i &lt; nRank;++i)
+              {
+                  for (j = 0; j &lt; nRank * 2;++j)
+                  {
+                      if (j&lt;nRank)
+                      {
+                          A[i, j] = nMatrix[i, j];
+                      }
+                      else
+                      {
+                          if (nRank == j-i)
+                          {
+                              A[i, j] = 1;
+                          }
+                          else
+                          {
+                              A[i, j] = 0;
+                          }
+                      }
+                  }
+              }
+  
+              //begin to metamorphose A
+              int a_1 = 0;
+              for (j = 0; j &lt; nRank;++j)
+              {
+                  //step1: get one reversiable element
+                  for (i = j; i &lt; nRank /*+ 1*/; ++i)
+                  {
+                      if (CheckReverse(A[i,j]))
+                      {
+                          a_1 = GetReverse(A[i, j]);
+                          for (k = 0; k &lt; nRank * 2;++k)
+                          {
+                              A[i, k] *= a_1;
+                              A[i, k] %= (int)zt; 
+                              T[k] = A[i, k];
+                              A[i, k] = A[j, k];
+                              A[j, k] = T[k];
+                          }
+                          goto step2;
+  
+                      }
+                      if (nRank - 1 == i) //last element of the column, still no one is reversiable
+                      {
+                          return false;
+                      }
+  
+                  }
+  
+              step2:    //create the n-1 zeros of the column
+                  for (i = 0; i &lt; nRank ; ++i)
+                  {
+                      if (i != j)
+                      {
+                          int t = A[i, j]; //first element of Row i .
+                          for (k = 0; k &lt; nRank * 2; k++)
+                          {                            
+                              A[i, k] -= t * A[j, k];
+                              A[i, k] %= (int)zt;
+                              if (A[i, k]&lt;0)
+                              {
+                                  A[i, k] += (int)zt;
+                              }
+                          }
+                      }
+                  }
+              }
+              //construct M_1
+              for (i = 0; i &lt; nRank;++i)
+              {
+                  for (j = 0; j &lt; nRank;++j)
+                  {
+                      nDeMatrix[i,j] = A[i,j+nRank];
+                  }
+              }
+              return true;
+          }</pre><p><span style="font-family: Simsun; font-size: 12px; line-height: normal;  background-color: rgb(255, 255, 255);">  </span><br style="border: 0px; font-family: Simsun; font-size: 12px; line-height: normal; white-space: normal; background-color: rgb(255, 255, 255);"/><span style="font-family: Simsun; font-size: 12px; line-height: normal;  background-color: rgb(255, 255, 255);"> </span><br style="border: 0px; font-family: Simsun; font-size: 12px; line-height: normal; white-space: normal; background-color: rgb(255, 255, 255);"/><span style="font-family: Simsun; font-size: 12px; line-height: normal;  background-color: rgb(255, 255, 255);"> </span><span style="font-size: 16px;"><span style="font-family: Simsun; line-height: normal; background-color: rgb(255, 255, 255);"> 总结: 大概就讲这么多吧. 附件为辅助软件和C#源码.大家可以对这源码看文章. 也希望大家指出不足之处. 谢谢.  </span><br style="border: 0px; font-family: Simsun; font-size: 12px; line-height: normal; white-space: normal; background-color: rgb(255, 255, 255);"/><span style="font-family: Simsun; line-height: normal; background-color: rgb(255, 255, 255);">--------------------------------------------------------------------------------</span><br style="border: 0px; font-family: Simsun; font-size: 12px; line-height: normal; white-space: normal; background-color: rgb(255, 255, 255);"/><span style="font-family: Simsun; line-height: normal; background-color: rgb(255, 255, 255);">【版权声明】: 本文原创于看雪技术论坛, 转载请注明作者并保持文章的完整, 谢谢!</span></span></p><p style="font-size: 16px; line-height: 25.6px; white-space: normal; max-width: 100%; min-height: 1em; color: rgb(62, 62, 62); box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);"><img class="" width="507" height="40" data-src="http://mmbiz.qpic.cn/mmbiz/p6Vlqvia1UiczXekp7873CLQuhqrGuCtelN2mDQzDKqHW2g6VEVSJ59JSU82eyxiaUoUowV81jfIESQ0PaYchZhCQ/0?wx_fmt=gif" data-ratio="0.05813953488372093" data-w="430" style="line-height: 28.4444px; text-indent: 32px; width: 555.556px;" src="../Images/9d483ca725839a61561a44a341d5a6b8.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/p6Vlqvia1UiczXekp7873CLQuhqrGuCtelN2mDQzDKqHW2g6VEVSJ59JSU82eyxiaUoUowV81jfIESQ0PaYchZhCQ/0?wx_fmt=gif"/></p><p style="white-space: normal; line-height: 28.4444px; text-align: center;"><span style="font-size: 20px;"><strong><span style="line-height: 28.4444px; color: rgb(255, 41, 65);"/></strong></span></p><p style="white-space: normal; line-height: 28.4444px; text-align: center;"><span style="font-size: 20px;"><strong><span style="line-height: 28.4444px; color: rgb(255, 41, 65);">温馨提醒：</span></strong></span></p><p style="white-space: normal; line-height: 28.4444px; text-indent: 2em;"><span style="font-size: 18px;"><strong><span style="line-height: 28.4444px;"/></strong></span><strong style="font-size: 18px; line-height: 28.4444px;"><span style="line-height: 28.4444px;">现在关注“<span style="line-height: 28.4444px; color: rgb(0, 82, 255);">鹏越网络空间安全研究院</span>”在对话框输入“<span style="line-height: 28.4444px; color: rgb(0, 82, 255);">工控</span>”、“<span style="line-height: 28.4444px; color: rgb(0, 82, 255);">培训</span>”、“<span style="line-height: 28.4444px; color: rgb(0, 82, 255);">CTF</span>” 、“</span></strong><strong style="font-size: 18px; line-height: 28.4444px;"><span style="line-height: 28.4444px; color: rgb(0, 82, 255);">物联网</span></strong><strong style="font-size: 18px; line-height: 28.4444px;"><span style="line-height: 28.4444px;">”、 “</span></strong><strong style="font-size: 18px; line-height: 28.4444px;"><span style="line-height: 28.4444px; color: rgb(0, 82, 255);">人工智能</span></strong><strong style="font-size: 18px; line-height: 28.4444px;"><span style="line-height: 28.4444px;">”等关键字，可以有相关的合辑内容推送，之后我们还会推出更多方便搜索和阅读的服务，敬请期待！</span></strong><span style="font-size: 18px;"><strong><span style="line-height: 28.4444px;"/></strong></span></p><p style="white-space: normal; line-height: 28.4444px;"><span style="font-size: 14px; color: rgb(51, 51, 51); white-space: pre; font-family: 'microsoft yahei'; line-height: 26px; background-color: rgb(255, 255, 255);"/></p><p style="line-height: 25.6px; white-space: normal;"><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz/FtS4KIeWBfNsemEUfYbf3zrArYmJxf9NelFgSUyS6cAibwUoJhZnCkaPiaicibz56skJqQliauGGaIiaWTjm0MCX0wvw/0?wx_fmt=png" data-ratio="0.22807017543859648" data-w="570" style="width: 556px;" src="../Images/051c9420c40364c00a7655e373b03443.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/FtS4KIeWBfNsemEUfYbf3zrArYmJxf9NelFgSUyS6cAibwUoJhZnCkaPiaicibz56skJqQliauGGaIiaWTjm0MCX0wvw/0?wx_fmt=png"/><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz/FtS4KIeWBfN22CUib7gLTs3yKASWYZqVOqDclNibhe1bEVrVc1h55sqly4cybc4lQqxL8pF8qczQdbHKdb1Pp7Pw/0?wx_fmt=jpeg" data-ratio="0.546875" data-w="640" src="../Images/c7fbd8fcec26994d45b088dc493649c5.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/FtS4KIeWBfN22CUib7gLTs3yKASWYZqVOqDclNibhe1bEVrVc1h55sqly4cybc4lQqxL8pF8qczQdbHKdb1Pp7Pw/0?wx_fmt=jpeg"/><br/></p><p style="line-height: 25.6px; white-space: normal;"><span style="line-height: 25.6px;">点击下方”阅读原文“获得更多资讯：</span></p><p><br/></p>
+        
+</body>
+</html>

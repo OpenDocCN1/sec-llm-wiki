@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>在qt的QOpenGLWidget开启opengl的抗锯齿</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>在qt的QOpenGLWidget开启opengl的抗锯齿</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzIxNDcwOTcwOQ==&amp;mid=2247493751&amp;idx=6&amp;sn=7a85d21b075a962fed2f65175c8908ab&amp;chksm=97a1ccd5a0d645c35d933bccb90720be69e24a0eb8066351300788ebd6556ed399ef5cd87f2e&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzIxNDcwOTcwOQ==&amp;mid=2247493751&amp;idx=6&amp;sn=7a85d21b075a962fed2f65175c8908ab&amp;chksm=97a1ccd5a0d645c35d933bccb90720be69e24a0eb8066351300788ebd6556ed399ef5cd87f2e&amp;scene=27#wechat_redirect</a></blockquote><p><span style="color: rgb(0, 0, 0);font-family: PingFang SC, Microsoft YaHei, Helvetica Neue, Helvetica, Arial, sans-serif;font-size: 14px;font-style: normal;font-variant-ligatures: normal;font-variant-caps: normal;font-weight: 400;letter-spacing: normal;orphans: 2;text-align: left;text-indent: 0px;text-transform: none;widows: 2;word-spacing: 0px;-webkit-text-stroke-width: 0px;background-color: rgb(255, 255, 255);text-decoration-thickness: initial;text-decoration-style: initial;text-decoration-color: initial;display: inline !important;float: none;">在QOpenGLWidget的构造函数添加下面几句代码即可</span></p><section class="code-snippet__fix code-snippet__js"><ul class="code-snippet__line-index code-snippet__js"><li/><li/><li/></ul><pre class="code-snippet__js" data-lang="javascript"><code><span class="code-snippet_outer">QSurfaceFormat surfaceFormat;</span></code><code><span class="code-snippet_outer">surfaceFormat.setSamples(<span class="code-snippet__number">4</span>);<span class="code-snippet__comment">//多重采样</span></span></code><code><span class="code-snippet_outer">setFormat(surfaceFormat); <span class="code-snippet__comment">//setFormat是QOpenGLWidget的函数</span></span></code></pre></section><p style="text-align: center;margin-bottom: 0em;"><img class="rich_pages wxw-img" data-galleryid="" data-ratio="0.7093862815884476" data-s="300,640" data-type="png" data-w="554" data-src="https://mmbiz.qpic.cn/mmbiz_png/fAG5BYsI9fW5bhfmI7mic85MicxXfElVyy8ezUZhFgg5AggxUysGypXprFVAIhsFI9lnkr1kqmQzJgFXFia7YmVvQ/640?wx_fmt=png" style="" src="../Images/206bcbc0e73791c64ec62f607bd8ad0d.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/fAG5BYsI9fW5bhfmI7mic85MicxXfElVyy8ezUZhFgg5AggxUysGypXprFVAIhsFI9lnkr1kqmQzJgFXFia7YmVvQ/640?wx_fmt=png"/></p>
+        
+</body>
+</html>

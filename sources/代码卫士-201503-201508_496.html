@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>恶意软件利用Windows产品ID躲避检测</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>恶意软件利用Windows产品ID躲避检测</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247486007&amp;idx=4&amp;sn=605976be814ebf4cb511fa5e401cb0f6&amp;chksm=ea973b5ddde0b24bc59f22a39b2301b69512785c689388c7c4047237ccd369344f6b1e4aa689&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247486007&amp;idx=4&amp;sn=605976be814ebf4cb511fa5e401cb0f6&amp;chksm=ea973b5ddde0b24bc59f22a39b2301b69512785c689388c7c4047237ccd369344f6b1e4aa689&amp;scene=27#wechat_redirect</a></blockquote><p>SANS安全研究员Lenny Zeltser表示，恶意软件作者正在利用Windows独特的产品号码生成互斥值来躲避安全研究人员的检测。</p><p><br/></p><p>互斥值用能够准确地检测出是否有多个相似进程在运行。恶意软件（包括臭名昭著的BackOff在内）在过去的几年内一直在使用互斥，它为安全研究人员提供了识别系统感染的方式。</p><p><br/></p><p>现在出现了一种名为“TreasureHunter”的新木马，它通过动态而非静态互斥值阻止安全机构使用号码作为确定是否被攻陷的指标。Zeltser表示，使用Windows产品ID生成的值是唯一的，“希望使用互斥对象的恶意软件作者需要一种命名这些对象的预测性方法，因此多个在被感染主机上运行的恶意代码示例能够指向相同的互斥。一种典型的实现方式是对互斥的名称进行硬编码。TreasureHunter决定使用更为复杂的方法，基于系统的产品ID来生成互斥名称。这使样本会在事件响应工具或者反恶意软件工具尝试使用静态对象名称作为攻陷指标的情况下逃避检测。”</p><p><br/></p><p>Zelter指出TreasureHunter使用代码来阅读包括HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\DigitalProductId在内的注册地址以找出Windows ID。</p><p><br/></p><p>TreasureHunter将ID修改为它通过确定性算法生成的互斥值格式，Zeltser表示他“没有耐心也没有理由对此进行逆向工程。”</p><p><br/></p><p>Zeltser指出多数恶意软件不会使用静态的硬编码互斥值，因为它将自己限制为只做感染标记使用。他表示“在很多情况下，试图通过互斥来对系统进行免疫太过于简单化。许多恶意软件样本根本不会使用感染标记或者动态生成互斥值，而是会将它们硬编码到恶意程序中。”</p><p><br/></p><p>然而，互斥作为恶意软件检测的附加层很有用，尤其是将生成的标记在执行前分配给程序。那些标记能够对数据库进行检查，如果杀毒产品无法确认是否存在恶意程序时。</p><p><br/></p><p>本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。</p><p><br/></p>
+        
+</body>
+</html>

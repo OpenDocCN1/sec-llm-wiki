@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>聊聊GitHub“被黑”</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>聊聊GitHub“被黑”</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA3NTEzMTUwNA==&amp;mid=200033003&amp;idx=1&amp;sn=1dfdf63448e75ea338014aa8076fc997&amp;chksm=116dddf4261a54e25cd5fc03313ca27765dc5cf63d7883fe6e711c1a9bbbaa9cf3bf245f8243&amp;scene=126&amp;sessionid=1681664032#rd">http://mp.weixin.qq.com/s?__biz=MzA3NTEzMTUwNA==&amp;mid=200033003&amp;idx=1&amp;sn=1dfdf63448e75ea338014aa8076fc997&amp;chksm=116dddf4261a54e25cd5fc03313ca27765dc5cf63d7883fe6e711c1a9bbbaa9cf3bf245f8243&amp;scene=126&amp;sessionid=1681664032#rd</a></blockquote><p>GitHub（github.com）是全球最出名的源码托管平台，码农们最常用的，包括我们。GitHub通过Git版本控制器进行管理，码农的社交模式颠覆了曾经的Google Code。<br/></p><p><br/></p><p>好，无聊的开头做完后……<br/></p><p><br/></p><p>3天前，<strong>知道创宇安全研究团队</strong>内部发了个GitHub被黑的文章，Egor Homakov这个22岁小伙在自己博客上写的：</p><p>http://homakov.blogspot.com/2014/02/how-i-hacked-github-again.html<br/></p><p>用了5个Bug进行了一次完美的入侵测试，当然这次并<span style="color: rgb(192, 0, 0);"><strong>没把GitHub真的黑掉</strong></span>，而是曝光了GitHub的关键缺陷：<strong>可以控制任意目标用户的代码</strong>。</p><p><br/></p><p>Homakov激动坏了……</p><p><br/></p><p>不过可惜，故事就这样结束了……</p><p><br/></p><p>如果Homakov是渗透师，通过这个缺陷是可以“黑遍全球”的。不过成本比较高，因为这种攻击是一种<strong>被动式攻击</strong>，需要诱骗目标用户访问黑客准备的链接才可以成功。</p><p><br/></p><p>今天我看到陈皓已经发了篇总结出来了：<strong>《从“黑掉Github”学Web安全开发》</strong>。大家可以在本文的最后点击“<span style="color: rgb(192, 0, 0);"><strong>阅读原文</strong></span>”查看，写的很清晰，码农很喜欢：）</p><p><br/></p><p>我今天主要是聊聊这件事的一些延伸。</p><p><br/></p><p><strong>一. 可以黑遍全球</strong></p><p><br/></p><p>恩，标题党。</p><p><br/></p><p>不过这个道理很浅显，假如Homakov真的是一名邪恶的渗透师，他通过<strong>社工+这个缺陷</strong>的结合，将全球流行的一些源码给控制了，并植入后门代码，之后就是滚雪球效应了，但凡使用这些源码的服务将一一沦陷，然后是用户沦陷……</p><p><br/></p><p>Homakov发现的这个关键缺陷是5个Bug的结合，本身就是一个奇葩组合：这5个Bug缺一不可。怪不得Homakov会显得如此兴奋，换做是我也一样。但如果他真的是名邪恶的渗透师，待他真的黑遍全球的时候再来曝光，估计会兴奋到爆……<br/></p><p><br/></p><p><strong>二. GitHub对待安全的态度</strong><br/></p><p><br/></p><p>Homakov通过这个缺陷拿到GitHub给的$4000奖金，这个过程他只用了4小时。不过黑客们还是不以为然的，很多时候人品非常的关键……</p><p><br/></p><p>在GitHub奖金榜上（https://bounty.github.com/），我看到Homakov排第一：</p><p><img src="../Images/b3b2b3c2aea93c72bac996a674cc6d6f.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/kicMePHlP6TCMvejmLWl8YkuFc1s5Axh89pUiaWouay1CiaibFmCzsOdgMdbIm2j1KAS4jCwkTxy6m0ibIWk4IajrFA/0"/></p><p><br/></p><p>我把每个人的漏洞描述都过了遍，真心觉得赞（就连Cookie的一点点点小问题就给了100刀，而跳转漏洞给了500刀，极其鸡肋的XSS漏洞也给了200刀），对GitHub官方点个赞，虽然这个奖励相比之下太少了（和Google/Facebook等比，人家是土豪……）。</p><p><br/></p><p>黑客通过官方奖励现金（甚至是高额现金）的方式，是可以成为土豪的……<br/></p><p><br/></p><p>最后，GitHub“被黑”，这是一个非常可惜的故事。<br/></p><p><br/></p><p>----------------------------</p><p>余弦，黑客，来自知道创宇的懒人。</p><p>在微博、知乎、豆瓣、GitHub、我的博客（evilcos.me）等都可以找到“余弦”。<br/></p><p>欢迎感兴趣的人收听我这个微信公众号：“<span style="color: rgb(192, 0, 0);"><strong>lazy-thought</strong></span>”。</p>
+        
+</body>
+</html>

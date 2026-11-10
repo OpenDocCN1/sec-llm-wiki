@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Spring Framework 身份认证绕过漏洞预警(CVE-2023-20860)</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Spring Framework 身份认证绕过漏洞预警(CVE-2023-20860)</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI3NzMzNzE5Ng==&amp;mid=2247485743&amp;idx=1&amp;sn=92585738ccd95aebd967ebe5f9737452&amp;chksm=eb668c2cdc11053a7ae181c7fa6bf4b1fd9af0ca9492dbee8958196620978d4cb4d4362dffed&amp;scene=126&amp;sessionid=1681407021#rd">http://mp.weixin.qq.com/s?__biz=MzI3NzMzNzE5Ng==&amp;mid=2247485743&amp;idx=1&amp;sn=92585738ccd95aebd967ebe5f9737452&amp;chksm=eb668c2cdc11053a7ae181c7fa6bf4b1fd9af0ca9492dbee8958196620978d4cb4d4362dffed&amp;scene=126&amp;sessionid=1681407021#rd</a></blockquote><p>漏洞描述<br/>SpringFramework存在身份认证绕过漏洞，当SpringSecurity使用mvcRequestMatcher配置并将"**"作为匹配模式时，在SpringSecurity和 Spring MVC 之间会发生模式不匹配，最终可能导致身份认证绕过。</p><p><img class="rich_pages wxw-img" data-ratio="0.5714285714285714" data-src="https://mmbiz.qpic.cn/mmbiz_png/ibhQpAia4xu005DqUTEAqIwcA6jSfcsOLpgtFiaWMfWtxia8fBVhHJWuocZNUtqy1VdU4zvjGJdGy3GQOqhrUUQXIw/640?wx_fmt=png" data-type="png" data-w="700" height="429" style="top: 121px;left: 203px;width: 700px;height: 400px;cursor: pointer;display: block;" title="点击查看图片来源" width="715.43597560976" src="../Images/eb91dd2c303899bd3c22f6f89e5df1e3.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/ibhQpAia4xu005DqUTEAqIwcA6jSfcsOLpgtFiaWMfWtxia8fBVhHJWuocZNUtqy1VdU4zvjGJdGy3GQOqhrUUQXIw/640?wx_fmt=png"/><br/>影响版本<br/>Spring Framework 6.0.x &lt;= 6.0.6<br/><br/>Spring Framework 5.3.x &lt;= 5.3.25<br/></p><p>（其他低于5.3.x的系列版本不受此漏洞影响）<br/><br/></p><p>处置建议<br/><br/>目前官方已有可更新版本，建议用户升级至: <br/><br/>Spring Framework 6.0.x &gt;= 6.0.7<br/><br/>Spring Framework 5.3.x &gt;= 5.3.26<br/><br/>https://spring.io/<br/></p><p style="display: none;"><mp-style-type data-value="3"/></p>
+        
+</body>
+</html>

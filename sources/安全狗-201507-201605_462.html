@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>苹果APP Store和iTunes Store曝高危漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>苹果APP Store和iTunes Store曝高危漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NTc2NDM4MQ==&amp;mid=209408635&amp;idx=3&amp;sn=d1c8f26e340d0cb17e53b9be63a240ff&amp;chksm=2f7c7389180bfa9f7a6e8b1569c2cd606271563e20b9a29f3ae343e85578ee597b691c3fdc7b&amp;scene=126&amp;sessionid=1681368451#rd">http://mp.weixin.qq.com/s?__biz=MjM5NTc2NDM4MQ==&amp;mid=209408635&amp;idx=3&amp;sn=d1c8f26e340d0cb17e53b9be63a240ff&amp;chksm=2f7c7389180bfa9f7a6e8b1569c2cd606271563e20b9a29f3ae343e85578ee597b691c3fdc7b&amp;scene=126&amp;sessionid=1681368451#rd</a></blockquote><p><strong>苹果官方App Store 和iTunes Store中发现一个高危漏洞，影响数百万苹果用户。</strong><br style="box-sizing: border-box;"/></p><p><strong><br/></strong></p><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz/qXZ5RodNbbHQFOz8KBgK9fPQPcPiapgrcuiaGhlgfUwL7OCyYn2IuaibAdd9Je3ic2ycaHXJcv25YKLmhJXvsbHshg/0?wx_fmt=png" data-ratio="0.5395256916996047" data-w="" src="../Images/ddc9108c5df31807665f05c6294f1cab.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qXZ5RodNbbHQFOz8KBgK9fPQPcPiapgrcuiaGhlgfUwL7OCyYn2IuaibAdd9Je3ic2ycaHXJcv25YKLmhJXvsbHshg/0?wx_fmt=png"/><br/></p><p><br/></p><p>漏洞实验室（Vulnerability-Lab）创始人兼安全研究员Benjamin Kunz Mejri 在苹果App Store购买清单模块中发现了一个应用程序端输入验证web漏洞，发送者和接收者都能远程利用该漏洞。预估该漏洞的危险级别为高危，Benjamin于2015年6月9日报告给苹果的安全团队，并且苹果公司在一个月内修复了该问题。</p><p><br/></p><p><span style="font-size: 20px;"><strong>漏洞利用</strong></span></p><p>远程攻击者可以利用该漏洞将设备的名称字段替换成一个恶意脚本代码，从而操纵设备的名称字段。如果攻击者在App Store 和iTunes Store中购买产品，内部应用程序服务就会利用设备名称字段（实际上是恶意代码），然后生成一个购买清单发给卖方账户。</p><p><br/></p><p>研究员指出：</p><pre><span style="font-size: 12px; background-color: rgb(191, 191, 191);">购买清单会涉及到买方和卖方，所以该漏洞会对买方、卖方、苹果网站管理员/开发者产生重大的影响。该问题的影响（或者危害）是，买方可以卖方的名称入侵苹果的网上商城。</span></pre><p><br/></p><p>通过利用该漏洞，攻击者可以执行下面的攻击操作：</p><pre><span style="font-size: 12px; background-color: rgb(191, 191, 191);">会话劫持
+持续重定向到外部资源
+持续性钓鱼攻击
+持续性操纵被感染服务器模块</span></pre><p><strong><span style="font-size: 20px;">POC</span></strong><br/></p><p><strong>利用该漏洞需要的条件是：低权限的苹果web应用程序用户（App Store/iCloud）账号和低（或者中）等用户间交互作用。</strong><br/></p><p><br/></p><p><strong>漏洞利用方法：</strong></p><pre><span style="font-size: 12px; background-color: rgb(191, 191, 191);">1. 在设备名称字段中注入恶意脚本代码
+2. 在App Store 或者iTunes Store上购买一个产品
+3. 选择任意app或者视频，购买，下载
+4. 下载完成之后，购买清单会发到你的邮箱
+5. 应用程序端的注入脚本代码会在电子邮件到达收件箱的时候执行，并且会修改设备名称和设备的各项参数
+6. 成功复制该远程漏洞</span></pre><p><span style="color: rgb(88, 88, 88); font-family: 微软雅黑; font-size: 14px; line-height: 26px;  background-color: rgb(255, 255, 255);"><img data-type="gif" data-src="http://mmbiz.qpic.cn/mmbiz/qXZ5RodNbbE7NsyMib7uRhk3eQcQ9xUBPvyiaoJ7ALQm3M7v9H4zrLgr28mZwUpLuFpQOtbuaF02TRUibALZtMWhw/0?wx_fmt=gif" data-ratio="0.6679841897233202" data-w="" src="../Images/3afa5734480214e367d0b3d029aefd2a.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qXZ5RodNbbE7NsyMib7uRhk3eQcQ9xUBPvyiaoJ7ALQm3M7v9H4zrLgr28mZwUpLuFpQOtbuaF02TRUibALZtMWhw/0?wx_fmt=gif"/><br/></span><br/></p>
+        
+</body>
+</html>

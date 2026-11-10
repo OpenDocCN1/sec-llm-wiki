@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Linux惊现“毁灭级”漏洞 可被利用攻击一切连网设备</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Linux惊现“毁灭级”漏洞 可被利用攻击一切连网设备</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5Njc3NjM4MA==&amp;mid=200913422&amp;idx=1&amp;sn=51b8fb9503bf3c6da02f307f7c80c5cb&amp;chksm=28e902dd1f9e8bcba7e00f5a19e33b5fdce7ea3bab24c8a092c7a92661be60738734033f75b7&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5Njc3NjM4MA==&amp;mid=200913422&amp;idx=1&amp;sn=51b8fb9503bf3c6da02f307f7c80c5cb&amp;chksm=28e902dd1f9e8bcba7e00f5a19e33b5fdce7ea3bab24c8a092c7a92661be60738734033f75b7&amp;scene=27#wechat_redirect</a></blockquote><p><strong>安全牛</strong>消息：Red Hat 安全团队在 Linux 中广泛使用的 Bash shell 中发现了一个“毁灭级”安全漏洞。该漏洞被称作“BashBug”或“Shellshock”，这是继“心脏滴血”漏洞之后，又一个危险级别为“毁灭级”的漏洞。安全人员表示，“心脏滴血”能够允许黑客监控用户电脑，但不会取得控制权。而Bash只需要剪切和粘贴一行代码，即可控制用户电话。<br/><br/>Bash是一款在很多Unix电脑中用于控制命令提示符的软件，当用户正常访问，该漏洞允许攻击者的代码像在 shell 中一样执行。而且，极为严重的是该漏洞已经在 Linux 中存在很久，所以要全部修补有漏洞的机器，几乎不可能完成。<br/><br/>美国应急响应机构US-CERT发出警告称，这一漏洞可能影响基于Unix的操作系统，包括Linux和Mac OS X。Red Hat 和 Fedora 已经发布了针对该漏洞的修补程序，但苹果公司尚未发布修补程序。<br/><br/><strong>漏洞修复</strong>：<br/><br/>SCANV网站安全中心建议用户和管理员立即升级系统，更新Bash！<br/><br/><br/>红帽系列linux可通过更新 bash 并重启系统来解决这个问题：<br/><br/># yum update bash<br/><br/>或者：<br/><br/># yum update bash-4.1.2-15.el6_5.1<br/><br/>此举只是更新了 bash 包，还需要重启系统才能生效。<br/><br/><br/>Ubuntu 用户可以通过如下命令打补丁，无需重启：<br/><br/>apt-get update<br/><br/>apt-get install bash</p><p><strong>－－－<br/></strong></p><p><span style="color:#7F7F7F">要闻、干货、原创、专业</span></p><p><span style="color:#7F7F7F">关注“信息安全知识”</span></p><p><span style="color:#7F7F7F">我们是安全牛！<br/></span></p><p style="text-align:center"><img data-w="200" data-ratio="1" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/kuIKKC9tNkB8pQ3CTSGictAAAJL9tlrp5fY1dZLqqu1hlZys3BibaYTwKE2lXQe9tzpegvCECZqhNSg0icku7teTw/0" src="../Images/b7c37b7066302548960da8a2e74a40e4.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/kuIKKC9tNkB8pQ3CTSGictAAAJL9tlrp5fY1dZLqqu1hlZys3BibaYTwKE2lXQe9tzpegvCECZqhNSg0icku7teTw/0"/></p><p><br/></p>
+        
+</body>
+</html>

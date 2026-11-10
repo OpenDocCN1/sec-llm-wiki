@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Samba软件RCE漏洞存7年 数千台Linux计算机可遭远程访问</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Samba软件RCE漏洞存7年 数千台Linux计算机可遭远程访问</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485521&amp;idx=1&amp;sn=87f47b6a5996dffbd655c53b4fb41a36&amp;chksm=ea97393bdde0b02d847bc6c9ee44de934c5d36a495605d3eb5c3e5adc3349380b86de1edb914&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485521&amp;idx=1&amp;sn=87f47b6a5996dffbd655c53b4fb41a36&amp;chksm=ea97393bdde0b02d847bc6c9ee44de934c5d36a495605d3eb5c3e5adc3349380b86de1edb914&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKiammLlwialI7AFR1u8ibKosslXNWhNKnn0Dtia3EX5ZCoVM1C2Irmk2n6W7cLSK2WF5lMwlCEuJpQ3VLw/0?wx_fmt=png" data-ratio="0.521978021978022" data-w="728" src="../Images/061fb88b457b297f8cb9b81a8a7c6aff.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKiammLlwialI7AFR1u8ibKosslXNWhNKnn0Dtia3EX5ZCoVM1C2Irmk2n6W7cLSK2WF5lMwlCEuJpQ3VLw/0?wx_fmt=png"/></p><p><br/></p><p><strong>Samba软件中出现一个潜伏7年的远程代码执行漏洞，远程攻击者能够控制受影响的Linux和Unix设备。</strong></p><p><br/></p><p>Samba是一款开源软件（对SMB网络协议的重实现），在主要操作系统上运行，包括Windows、Linux、Unix、UNIX、IBM System 390和OpenVMS。</p><p><br/></p><p>Samba能让非Windows操作系统如GNU/Linux或Mac OS X和Windows操作系统共享网络共享文件夹、文件和打印机。这个漏洞编号是CVE-2017-7494，影响Samba 3.5.0（发布于2010年3月1日）以上版本。</p><p><br/></p><p><strong>Linux版本的“永恒之蓝”？</strong></p><p><br/></p><p>Shodan引擎显示，超过48.5万台启用了Samba的计算机暴露在互联网端口445上，而且来自Rapid7的研究人员指出，超过10.4万台暴露在互联网上的端点运行易受影响的Samba，其中9.2万台运行不受支持的Samba版本。</p><p><br/></p><p>由于Samba是实现在Linux和UNIX系统上的SMB协议，因此一些专家认为它是Linux版本的“永恒之蓝”。</p><p><br/></p><p>要知道，易受攻击的系统数量庞大以及该漏洞易被利用，因此Samba缺陷可被大规模蠕虫利用。家庭NAS设备也易受该缺陷影响。</p><p><br/></p><p><strong>利用代码已发布（附Metasploit模块）</strong></p><p><br/></p><p>这个缺陷的原因在于Samba处理共享库的方式。远程攻击者能利用这个Samba任意模块加载漏洞将共享库上传至一个可写共享并引发服务器加载并执行恶意代码。</p><p><br/></p><p>该漏洞利用起来很容易。只需一行代码就能在受影响系统执行恶意代码。</p><p><br/></p><p>simple.create_pipe("/path/to/target.so")</p><p><br/></p><p>然而，Samba利用已被迁移到渗透测试框架Metasploit中，这样研究人员和黑客就能轻松利用该缺陷。</p><p><br/></p><p><strong> 修复及缓解措施</strong></p><p><br/></p><p> Samba的维护人员已在新版本4.6.4、4.5.10和4.4.14中以及老旧的、不再支持的Samba中修复该问题，并督促使用易受攻击Samba的人员尽快安装补丁。</p><p><br/></p><p>不过如果你无法立即更新到最新的Samba版本，也可将如下内容添加至Samba配置文件smb.conf中作为应变措施：</p><p><br/></p><p>nt pipe support =no</p><p><br/></p><p>添加后，重启网络的SMB守护进程 (smbd) 就可以了。这个变化会阻止客户端完全访问某些网络及其并禁用一些联网Windows系统的功能。</p><p><br/></p><p>Linux版本厂商包括Red Hat和Ubuntu已经为用户发布修复版本，NAS设备消费者们可能不会如此快速地更新因此他们面临的风险更大。</p><p><br/></p><p>思科表示鉴于多数NAS设备运行Samba并且存储有非常值钱的数据，因此这个漏洞“有可能成为规模最大的Linux勒索软件蠕虫”。网件为CVE-2017-7494发布了安全公告，表示其大量路由器和NAS产品机型因使用Samba版本3.5.0及以后版本而受影响。不过目前仅为运行OS6.x版本的ReadyNAS产品发布了固件修复。</p><p><br/></p><p><br/></p><p><strong style="line-height: 25.6px; white-space: normal;">本文由360代码卫士编译，不代表360观点，转载请注明“转自360代码卫士www.codesafe.cn”。</strong></p>
+        
+</body>
+</html>

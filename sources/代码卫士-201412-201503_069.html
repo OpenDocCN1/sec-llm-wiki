@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>勒索软件攻击通过更改加密密钥冻结数据库备份</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>勒索软件攻击通过更改加密密钥冻结数据库备份</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247486026&amp;idx=6&amp;sn=6583731239b7c12e79963fd8042561de&amp;chksm=ea973b20dde0b2369be2fac7db822f70ffeb85e56f308914e311582917f2f9c8059605880bb9&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247486026&amp;idx=6&amp;sn=6583731239b7c12e79963fd8042561de&amp;chksm=ea973b20dde0b2369be2fac7db822f70ffeb85e56f308914e311582917f2f9c8059605880bb9&amp;scene=27#wechat_redirect</a></blockquote><p>网络犯罪分子在攻陷web应用程序并修改数据库的加密设置后，对数据库备份发起了数据库勒索行为。安全咨询高科桥公司指出，攻击首先会在网站发动攻击以访问数据库服务器。一旦进入数据库服务器，攻击者会改变数据库使用的加密设置并将密钥存储在一个HTTPS服务器的某个地方，这一行为显然逃脱了一些管理员的视线。</p><p><br/></p><p>为实现攻击，犯罪分子会将密钥从远程服务器删除，正是在这个时候，网络运行人员注意到网站下线了。不久，一份要求支付访问密钥的勒索软件便会到来。</p><p><br/></p><p>攻击者似乎深谙恢复点对象，因为高桥科表示，它所观察到的攻击发生在勒索要求发生前的六个月。这会让受害者对恢复点对象进行思考，因为他们既可以通过他们知道的密钥还原备份也可以继续在数据库六个月未更新的情况下运行。</p><p><br/></p><p>高科桥表示，“web应用程序被攻陷发生在六个月之前，而且在将服务器脚本插入数据库且在获得这些数据并解密之前，一些服务器脚本被修改成加密数据”，公司将这一攻击描述为无声的“及时烧录”进程。</p><p><br/></p><p>高科桥指出，“在六个月的事件里，黑客在静静地等待着，而备份被数据库的新近版本在重写。在某一天，黑客从远程服务器中将密钥删除。数据库变得没有半点用处、网站不能提供服务、而黑客要求为加密密钥支付赎金。”</p><p><br/></p><p>其中有两个任何杀毒平台均未发现的phpBB后门，包括一个被添加密码类的安装补丁config.php文件在内。这个密码类通过将加密密钥存储至远程服务器的PHP mcrypt_encrypt()函数对数据进行解密及加密。</p><p><br/></p><p>研究人员表示，攻击者通过一个被攻陷的FTP密码实施入侵。此外，不支付赎金“几乎不可能”恢复数据库备份，并且web主机将会在不知情的情况下被控制。系统管理员可以依靠文件完整性监控来对抗此类攻击，虽然这种方法在web应用程序中很少被使用。</p><p><br/></p><p>本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。</p><p><br/></p>
+        
+</body>
+</html>

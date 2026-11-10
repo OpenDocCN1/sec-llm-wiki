@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>只有一半的USB设备无法打漏洞补丁，问题是没人知道是哪一半</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>只有一半的USB设备无法打漏洞补丁，问题是没人知道是哪一半</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5Njc3NjM4MA==&amp;mid=201344570&amp;idx=1&amp;sn=0723ccc74481b40646d9f9093a7ea0d7&amp;chksm=2f10f6e918677fff2dd6ea5746a774bce28d64ab6c0243240ac1e1332517cd45492b9e2cb7e4&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5Njc3NjM4MA==&amp;mid=201344570&amp;idx=1&amp;sn=0723ccc74481b40646d9f9093a7ea0d7&amp;chksm=2f10f6e918677fff2dd6ea5746a774bce28d64ab6c0243240ac1e1332517cd45492b9e2cb7e4&amp;scene=27#wechat_redirect</a></blockquote><p>好消息是，前两个月曝出的USB设备漏洞只存在于一半现有的USB设备中。坏消息则是，几乎没有办法知道是哪一半设备，除非把每一个USB设备都打开一次。</p><p><br/>上周三在东京召开的PacSec安全会议上，BadUSB漏洞的发现者德国人Karsten Nohl，提交了此漏洞的新发现。Nohl与另外两位研究人员一起分析了全球最大的八个厂商的USB控制芯片，结果发现：大约有一半的芯片可以免遭攻击，但对于普通用户来说，如何得知他的USB设备是否有漏洞实际上是不可能的。</p><p><br/> “并不是把U盘插入计算机，它就能告诉你，这是Cypress的芯片或Phison的芯片，”Nohl表示，“你只能把它打开，然后自己去做分析……可怕的是，我们无法给出安全设备的列表。”</p><p><br/>Nohl在今年8月份的黑帽大会上提交了BadUSB，利用了USB控制芯片的固件可以被重新编写的漏洞。由于是芯片本身的问题，因此可以隐形的在计算机上传播，防病毒软件无法检测到。它还可以冒充键盘，给计算机输入指令。</p><p><br/>Nohl的研究团队测试的8个芯片厂商分别是：Phison, Alcor, Renesas, ASmedia, Genesys Logic, FTDI, Cypress和Microchip。他们查看了各个芯片版本的说明书，插在计算机上测试并重写固件。</p><p><br/>他们发现有的芯片可以被重写，如台湾厂商Phison。有的则不能，如ASmedia。而另一家台湾厂商Genesys的USB2标准无法重写，但更新的USB3标准却又可以重写。另一些类型的USB设备如集线器、键盘、摄像头和鼠标等，结果更是混乱。有的有漏洞，有的没有，还有的不确定。</p><p><br/>这些发现已经远远超过当初的研究，Nohl一开始只测试了全球市场份额最大的Phison。（<em>关注“<strong>信息安全知识</strong>”，回复“<strong>usbchip</strong>”可查看所有芯片的测试报告地址</em>）</p><p><br/>问题在于Nohl的测试数据对消费者并无帮助，USB设备上可没有“Intel Inside”的标识。而且即使是相同USB设备中的芯片也经常更换，这主要取决半导体供应商不同时期给的价格而定。今年早期的一个分析发现，金士顿使用了6种不同公司的USB芯片。</p><p><br/>也就是说，要想对付BadUSB，设备厂商需要在他们的产品上注明使用的芯片。即使厂商愿意这样做，也需要建立一个标签机制。考虑到各种难度和害怕黑客攻击利用，Nohl才没有发布概念性利用代码。但另外两名独立研究人员，为了进一步研究问题并推动厂商解决问题，于上个月发布了概念性利用代码。</p><p><br/>至少有一个公司已经行动起来，USB设备厂商Ironkey要求任何芯片固件的更新都要有一个加密签名，其他的厂商也应该这样做。</p><p><br/>Nohl这次研究是为了反驳之前有人指责Nohl光盯着Phison一家厂商。有些人认识到USB设备是不安全的，但有些人却只认为Phison芯片是不安全的。“后者应该清醒过来，与前者保持同等的意识，因为危险到处都在，”Nohl如是说。<br/><br/></p><p><strong>－－－</strong></p><p><span style="color:#7F7F7F">要闻、干货、原创、专业</span></p><p><span style="color:#7F7F7F">关注“信息安全知识”</span></p><p><span style="color:#7F7F7F">我们是安全牛！<br/></span></p><p style="text-align:center"><img data-src="http://mmbiz.qpic.cn/mmbiz/kuIKKC9tNkB8pQ3CTSGictAAAJL9tlrp5fY1dZLqqu1hlZys3BibaYTwKE2lXQe9tzpegvCECZqhNSg0icku7teTw/640" width="auto" style="width: auto ! important; visibility: visible ! important; height: auto ! important;" data-w="200" data-ratio="1" data-s="300,640" src="../Images/d0d113cb1efcb0dee69dd963f0bd33dd.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/kuIKKC9tNkB8pQ3CTSGictAAAJL9tlrp5fY1dZLqqu1hlZys3BibaYTwKE2lXQe9tzpegvCECZqhNSg0icku7teTw/640"/></p><p><br/></p>
+        
+</body>
+</html>

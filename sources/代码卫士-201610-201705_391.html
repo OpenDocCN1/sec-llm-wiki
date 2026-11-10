@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>在Win10更新时按下 Shift+F10绕过安全机制</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>在Win10更新时按下 Shift+F10绕过安全机制</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485629&amp;idx=3&amp;sn=b525d1c7ee4918875058401fc3e6bc81&amp;chksm=ea9739d7dde0b0c1dc177a1e8b21179381840e457d0a8d5fdd468fc4ec4d7de4b0bdc5750d6e&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485629&amp;idx=3&amp;sn=b525d1c7ee4918875058401fc3e6bc81&amp;chksm=ea9739d7dde0b0c1dc177a1e8b21179381840e457d0a8d5fdd468fc4ec4d7de4b0bdc5750d6e&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKial6CzMtG6zt9IiaQUbeXZmJQhIVK5Uf6Ug7UGnAoXGPtjgVxOvC4liaXl8nX5n8uibeHk7co4oiaqY67A/0?wx_fmt=png" data-ratio="0.521978021978022" data-w="728" src="../Images/f9557b1e854d10ca8ca12d6cb770ff8b.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKial6CzMtG6zt9IiaQUbeXZmJQhIVK5Uf6Ug7UGnAoXGPtjgVxOvC4liaXl8nX5n8uibeHk7co4oiaqY67A/0?wx_fmt=png"/><br/></p><p><br/></p><p><strong>如果你的电脑安全依靠的是Windows BitLocker Hard Drive Encryption软件的话，可要小心了，因为只要能物理接近你的电脑，任何人都能够在几秒内访问你的文件。攻击者需要做的不过是在Win 10更新过程中按下SHIFT + F10。</strong></p><p><br/></p><p>安全研究员Sami Laiho发现了这个能轻易绕过BitLocker的方法，攻击者只要在Win 10安装新操作系统时按下Shift + F10就能以系统权限打开命令行界面（CLI）。随后CLI会给予攻击者对电脑硬盘的完全权限，即使受害者已经启动BitLocker磁盘加密功能也无济于事。</p><p><br/></p><p>Laiho解释称安装Win 10更新时，操作系统会禁用BitLocker，而Windows PE会安装主要的Win 10操作系统新镜像。</p><p><br/></p><p>Shift+10的功能也存在于Windows之前的版本中，而且也可被用于绕过Win 7和Win 8的BitLocker功能，不过这个功能随着Win 10更新的推出后成为真正的缺陷。</p><p><br/></p><p>攻击者需要在短时间内物理接近目标电脑，绕过BitLocker加密，随后获取对电脑的管理员访问权限。这个问题也可能影响运行Win 10的物联网设备。</p><p><br/></p><p>令人担忧的是，多数用户都有在Win 10系统更新期间离开电脑的习惯，因为更新需要很长的时间进行安装。在此期间，任何内部人员或者恶意作者都能够打开CLI调试器界面并以用户管理员权限的身份实施恶意任务，尽管有BitLocker的存在也无济于事，而且也无需任何其它软件就可完成。</p><p><br/></p><p>在测试过程中，Laiho成功地在Win 10 TRM更新至版本1511或1607期间以及更新至更新Win10 Insiders Build期间（截止2016年10月）调出了CLI故障解决界面。Laiho已将问题报告给微软，后者正在着手解决。</p><p><br/></p><p>Laiho建议用户在更新期间不要离开电脑。Windows安全专家也建议用户停留在Win 10 LTSB状态，因为Win 10的LTSB版本并不会自动进行更新。有SCCM（系统中心配置管理器）的Win10用户能够通过在更新在%windir%\Setup\Scripts\文件夹中添加DisableCMDRequest.tag 文件名的方式拦截对CLI的访问。</p>
+        
+</body>
+</html>

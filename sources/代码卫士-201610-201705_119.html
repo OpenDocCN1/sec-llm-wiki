@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>VMware修复Pwn2Own披露的缺陷</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>VMware修复Pwn2Own披露的缺陷</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485555&amp;idx=4&amp;sn=664b5371b34daf1378cfc1a19998bac3&amp;chksm=ea973919dde0b00f6601f1890652e692013a2898e527d9452ad3dd849452ae57707b1ac20c33&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485555&amp;idx=4&amp;sn=664b5371b34daf1378cfc1a19998bac3&amp;chksm=ea973919dde0b00f6601f1890652e692013a2898e527d9452ad3dd849452ae57707b1ac20c33&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiam7uHCc80VtTfib2EI2iao9T5KQ8vsa9hibol9ibPLDZ1YEcu5NREpsbkWDzbAuxo8ibAgZwNdh3VSNZfw/0?wx_fmt=jpeg" data-ratio="0.5887850467289719" data-w="535" src="../Images/20acbf925dc5179d0840fde0373b6668.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiam7uHCc80VtTfib2EI2iao9T5KQ8vsa9hibol9ibPLDZ1YEcu5NREpsbkWDzbAuxo8ibAgZwNdh3VSNZfw/0?wx_fmt=jpeg"/></p><p><br/></p><p><strong>VMware为ESXi、Workstation和Fusion产品发布更新以解决Pwn2Own 2017赛事中找到的多个严重和高危漏洞。</strong></p><p><br/></p><p>Pwn2Own参与人员在VMware虚拟机逃逸利用方面获得了20多万美元的奖励。奇虎360的研究人员因发现可造成虚拟机逃逸的Edge利用代码而获得10.5万美元的奖励，腾讯安全团队Team Sniper因发现可通过两个漏洞实现一个Workstation利用而获得10万美元的奖金。</p><p><br/></p><p>VMware指出，奇虎360团队利用了一个堆缓冲区溢出（CVE-2017-4902）和SVGA中的未初始化栈内存使用（CVE-2017-4903），位于客户操作系统中的攻击者能够在主机上执行代码。</p><p><br/></p><p>腾讯Team Sniper利用的是一个存在于XHCI控制器中的未初始化内存使用问题（CVE-2017-4904），也可导致位于客户操作系统的攻击者在主机上执行代码。该团队发现的另外一个被评为“中危”的信息泄露弱点也是因未初始化的内存使用（CVE-2017-4905）引发的。</p><p><br/></p><p>这些漏洞影响ESXi 6.0和6.5、所有操作系统上的Workstation 12.x、以及OS X上的Fusion 8.x。CVE-2017-4904和CVE-2017-4905还影响ESXi 5.5，不过第一个漏洞仅可被用于DoS攻击中而不能执行代码。</p><p><br/></p><p>这并非VMware首次修复由此类赛事披露的漏洞。去年该公司解决了一个在PwnFest黑客竞赛中发现的Workstation和Fusion漏洞。该公司还为最近披露的Apache Struts2漏洞发布了补丁并将这个漏洞的危险级别列为“毁灭级”。</p><p><br/></p><p><br/></p><p><strong style="white-space: normal;">本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。</strong></p>
+        
+</body>
+</html>

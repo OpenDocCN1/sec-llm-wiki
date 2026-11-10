@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>小米预装的安全应用程序中存在漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>小米预装的安全应用程序中存在漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxOTM1MDQ1NA==&amp;mid=2451175020&amp;idx=1&amp;sn=54bc26f004afc7d36cfc8b64357302e7&amp;chksm=8c2500b5bb5289a3ba453872ca893e271fb7f97b2c99889ff68bb2cb6fbf6c981e8605bd5534&amp;scene=126&amp;sessionid=1681276383#rd">http://mp.weixin.qq.com/s?__biz=MzAxOTM1MDQ1NA==&amp;mid=2451175020&amp;idx=1&amp;sn=54bc26f004afc7d36cfc8b64357302e7&amp;chksm=8c2500b5bb5289a3ba453872ca893e271fb7f97b2c99889ff68bb2cb6fbf6c981e8605bd5534&amp;scene=126&amp;sessionid=1681276383#rd</a></blockquote><div><p><img class="item item-image" data-ratio="0.113523" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/V9abY6oHTkrCBiaSZeAFREow43fylzibRZq2TebD8FrcusVqOmygetPMicxt5MU097meoZdBvDUiadcWUNg8ByoHmQ/640?wx_fmt=jpeg" data-type="2" style="width:599.000000px;" src="../Images/b47ccfc2f4ad41f7b39d7e193bab6429.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/V9abY6oHTkrCBiaSZeAFREow43fylzibRZq2TebD8FrcusVqOmygetPMicxt5MU097meoZdBvDUiadcWUNg8ByoHmQ/640?wx_fmt=jpeg"/></p><p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">清明三天在外，手机编辑，见谅</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">本文原文链接:</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">https://research.checkpoint.com/vulnerability-in-xiaomi-pre-installed-security-app/</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">在外没细翻，感兴趣请直接点击阅读原文观看，以下全文粗翻，大概看看意思即可。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">智能手机通常附带预先安装的应用程序，其中一些是有用的，还有一些根本就没有被使用过。然而，用户不希望预装的应用程序对他们的隐私和安全构成实际的负担。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">Check Point Research最近在世界上最大的移动厂商小米的预装应用程序中发现了一个漏洞，小米拥有近8%的市场份额排名第三在手机市场。具有讽刺意味的是，它是预先安装的安全应用程序‘MIUI安全组件’(com.miui.guardprovider)，它应该通过检测恶意软件来保护手机，而恶意软件实际上会让用户受到攻击。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">简单地说，由于进出警卫提供商的网络流量不安全，威胁行为者可以连接到与受害者相同的Wi-Fi网络，并实施中间人攻击(MITM)。然后，作为第三方sdk更新的一部分，他可以禁用恶意软件保护，并注入他选择的任何恶意代码，例如窃取数据、植入勒索软件或跟踪或安装任何其他类型的恶意软件。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">Check Point负责任地向小米透露了这个漏洞，小米随后发布了一个补丁。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p><img class="item item-image" data-ratio="1.116041" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/V9abY6oHTkrCBiaSZeAFREow43fylzibRZ2qBYxYlX4ah9dsJgibYJcS4ibfYPp86WsXfCcBUUINGwc1FF0nVZYHGQ/640?wx_fmt=jpeg" data-type="2" style="width:293.000000px;" src="../Images/0ef2f31d96aa900c89682e2f213cfa23.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/V9abY6oHTkrCBiaSZeAFREow43fylzibRZ2qBYxYlX4ah9dsJgibYJcS4ibfYPp86WsXfCcBUUINGwc1FF0nVZYHGQ/640?wx_fmt=jpeg"/><span style=" display:block;color:#BFBFBF;font-size:14px;line-height:1.6;margin-bottom:14px; " helvetica="" neue="" sc="" sans="" gb="" yahei="" ui="" arial="" sans-serif="" class="item item-image-desc">小米预装的安全应用，被称为“MIUI安全组件”
+
+</span></p><p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">小米的MIUI安全组件是小米所有主流手机中的一个预装应用程序，它使用多个第三方软件开发工具包(Sdk)作为其提供的安全服务的一部分，包括各种类型的设备保护、清理和升级。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">这款应用包括三个不同的反病毒品牌，用户可以选择使用这些品牌来保护自己的手机，这三个品牌分别是：AVASION、AVL和腾讯。在选择应用程序时，用户选择这些提供者中的一个作为默认的反病毒引擎来扫描设备。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">在解释潜在的攻击场景之前，重要的是要指出在同一个应用程序中使用几个SDK实际上存在一些隐藏的缺点。由于它们都共享应用程序上下文和权限，这些主要缺点是：</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">一个SDK中的问题会危及其他所有SDK的保护。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">一个SDK的私有存储数据不能隔离，因此可以由另一个SDK访问。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;"> </span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">通过小米这个app的案例，我们在下面展示了在集成两个SDK和有问题的行为时，远程代码执行(RCE)攻击是如何发生的。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">简单地说，由于</span><span style="letter-spacing:2px;color:#000000;">guardprovider</span><span style="letter-spacing:2px;color:#000000;">的网络流量由于任何小米设备都是不安全的，这使得它可以通过中间人攻击(Mitm)被拦截，并作为第三方sdk更新的一部分注入流氓代码。让我们来看看可能的攻击场景。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">第1阶段：捕捉AVARCH更新</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">默认情况下，应用程序的安全扫描器设置为一个庞大的程序，该应用程序通过下载宏达-Android-VPs-v4-Relase.apk保护提供者私有目录的apk文件：/data/com.miui.guardprovider/app_dex/vps_update_&lt;时间戳&gt;.apk.</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">然后，该APK文件将在设备扫描之前由ALargeSDK加载和执行，并包含下载该文件时的时间戳。例如,vps_update_20190205-124933.apk。</span></p>
+<p><img class="item item-image" data-ratio="0.061089" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/V9abY6oHTkrCBiaSZeAFREow43fylzibRZDbnhowFa6gUA20y3mRRfib015Uh7jiaxhoFRt2F1LQvSdWQK0L0Mq1LQ/640?wx_fmt=jpeg" data-type="2" style="width:753.000000px;" src="../Images/54587bec16cd82b2a9776c0a55cd7994.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/V9abY6oHTkrCBiaSZeAFREow43fylzibRZDbnhowFa6gUA20y3mRRfib015Uh7jiaxhoFRt2F1LQvSdWQK0L0Mq1LQ/640?wx_fmt=jpeg"/><span style=" display:block;color:#BFBFBF;font-size:14px;line-height:1.6;margin-bottom:14px; " helvetica="" neue="" sc="" sans="" gb="" yahei="" ui="" arial="" sans-serif="" class="item item-image-desc">一个庞大的更新文件</span></p><p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">不幸的是，由于更新机制使用不安全的HTTP连接来下载该文件，威胁参与者可以通过MITM攻击检测AVARCH更新的时间，并预测磁盘的APK文件名将是什么。攻击者只需拦截http：/au.ff.avast.sec.miui.com/android/avast-Andro-VPs-v4-Relase.apk连接。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p><img class="item item-image" data-ratio="0.151344" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/V9abY6oHTkrCBiaSZeAFREow43fylzibRZqmKVyto3efDIRjicZdda9oO8V14MGwhbFtaiaicBERgicooYVc3aBJzsTg/640?wx_fmt=jpeg" data-type="2" style="width:707.000000px;" src="../Images/0f669e6004cb3b517160906bf2eabb2d.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/V9abY6oHTkrCBiaSZeAFREow43fylzibRZqmKVyto3efDIRjicZdda9oO8V14MGwhbFtaiaicBERgicooYVc3aBJzsTg/640?wx_fmt=jpeg"/><span style=" display:block;color:#BFBFBF;font-size:14px;line-height:1.6;margin-bottom:14px; " helvetica="" neue="" sc="" sans="" gb="" yahei="" ui="" arial="" sans-serif="" class="item item-image-desc">巨大的更新流量
+
+</span></p><p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">请记住这一点，因为在攻击的第二步中，将使用AVAXAGE更新的预测文件名。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">通过初始拦截，MITM攻击者能够通过将“404错误”响应为“404错误”来防止将来的大规模更新。http：/au.ff.avast.sec.miui.com/android/vps_v4_info.vpx请求。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;">第二阶段：通过一个AVL更新路径-遍历漏洞覆盖ALargeUpdateAPK</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;">一旦攻击者开始主动阻止连接到AWARCH服务器，用户就会将默认的防病毒切换到另一种-在这个场景中-AVL反病毒。记住，AVL防病毒SDK也是卫队提供程序的内置部分。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;">在AVL成为默认杀毒软件后，它将立即用其病毒数据库更新应用程序。它通过请求配置文件来检查是否存在新的病毒签名(例如http：/update.avlyun.sec.miui.com/avl_antiy/miuistd/siglib/20180704.cj.conf)。这个.conf文件有一个纯文本格式，指示带有新签名的ZIP存档的URL、大小和MD5散列。</span></p>
+<p><img class="item item-image" data-ratio="0.145562" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/V9abY6oHTkrCBiaSZeAFREow43fylzibRZaI57kfyBgUEIicv0dPGRAE3GcCoQmJuqy23MH2iaR9v6pyyCKjia1xLBg/640?wx_fmt=jpeg" data-type="2" style="width:845.000000px;" src="../Images/6b27433a7ee8ed97790b194366e018ce.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/V9abY6oHTkrCBiaSZeAFREow43fylzibRZaI57kfyBgUEIicv0dPGRAE3GcCoQmJuqy23MH2iaR9v6pyyCKjia1xLBg/640?wx_fmt=jpeg"/><span style=" display:block;color:#BFBFBF;font-size:14px;line-height:1.6;margin-bottom:14px; " helvetica="" neue="" sc="" sans="" gb="" yahei="" ui="" arial="" sans-serif="" class="item item-image-desc">更新配置文件</span></p><p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">在处理配置文件之后，avl将下载读更新url字段并将其解压缩到卫队提供程序目录。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">再次，MITM攻击者能够更改.conf文件的内容，因为它是通过非安全连接下载的，使用is_new=0若要显示新更新的存在，并提供到精心编制的ZIP文件的URL链接，请执行以下操作。</span></p>
+<p><img class="item item-image" data-ratio="0.143365" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/V9abY6oHTkrCBiaSZeAFREow43fylzibRZoXYuU9MpoGicJmxYJB8PiaPFbozPhgqc8MUHpxptrGHwkzVVw5s5dXiaQ/640?wx_fmt=jpeg" data-type="2" style="width:844.000000px;" src="../Images/0df985b93120eadaedfe53e845761644.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/V9abY6oHTkrCBiaSZeAFREow43fylzibRZoXYuU9MpoGicJmxYJB8PiaPFbozPhgqc8MUHpxptrGHwkzVVw5s5dXiaQ/640?wx_fmt=jpeg"/><span style=" display:block;color:#BFBFBF;font-size:14px;line-height:1.6;margin-bottom:14px; " helvetica="" neue="" sc="" sans="" gb="" yahei="" ui="" arial="" sans-serif="" class="item item-image-desc">修补AVL更新配置文件。</span></p><p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">事实证明，AVLSDK易受另一个安全问题的影响，这有助于攻击者执行攻击的第二阶段：解压缩过程中的路径遍历。因此，攻击者能够使用精心编制的存档覆盖应用程序沙箱中的任何文件，包括与另一个SDK相关的文件。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">因此，巧尽心思构建的APK作为“../app_dex/vps_update_20190205-124933.apk”进入ZIP签名存档将成功地覆盖以前从AVASCH下载的更新，因为两个反病毒SDK组件在各自的sdk中使用相同的沙箱。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">如果您还记得，在MITM攻击的第一步就检测到了上一次AVARCH更新的APK文件名。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p><img class="item item-image" data-ratio="0.098655" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/V9abY6oHTkrCBiaSZeAFREow43fylzibRZDc3JVXXLzGcbb9WInQxQBicQHtUmpQqO10KAa9sicReS0j6ghsHNWJ0w/640?wx_fmt=jpeg" data-type="2" style="width:669.000000px;" src="../Images/1cc589806fdde7004b397fab6ab5858b.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/V9abY6oHTkrCBiaSZeAFREow43fylzibRZDc3JVXXLzGcbb9WInQxQBicQHtUmpQqO10KAa9sicReS0j6ghsHNWJ0w/640?wx_fmt=jpeg"/><span style=" display:block;color:#BFBFBF;font-size:14px;line-height:1.6;margin-bottom:14px; " helvetica="" neue="" sc="" sans="" gb="" yahei="" ui="" arial="" sans-serif="" class="item item-image-desc">使用AVL签名构建的存档。</span></p><p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">攻击者现在所需要做的就是释放广域网通信，阻止AVL的通信，直到用户再次选择AVARCH作为主动反病毒。当发生这种情况时，构建的恶意APK文件将由AawySDK加载并执行。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">攻击是成功的，因为在加载之前，之前还没有验证过之前的AawyUPDATE的签名文件，而卫队提供程序在第一次下载时已经检查了它。因此，它假定没有理由再次验证它。通过这种方式，可以下载并运行精心构建的恶意文件，因为他实际上是在警卫的背上偷偷溜来跑去的。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;"> </span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">结语</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">用户信任智能手机制造商的预装应用是完全可以理解的，特别是当这些应用声称保护手机本身的时候。然而，小米的“警卫供应商”发现了这一漏洞，这就引发了一个令人担忧的问题，那就是由谁来保护守护者。虽然监护人不一定需要保护，显然在应用程序的开发方面，即使是智能手机厂商内置的应用程序，也不能太小心。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">上述攻击场景还说明了在一个应用程序中使用多个SDK的危险。虽然每个SDK中的小错误往往是一个独立的问题，但是当多个SDK在同一个应用程序中实现时，可能会有更严重的漏洞出现。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;">上期精彩请看历史文章列表</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">感谢您的长按扫码关注，更多干货请看历史文章</span></p>
+<p><img class="item item-image" data-ratio="0.201439" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/V9abY6oHTkrCBiaSZeAFREow43fylzibRZ1p4EcjR3M8mDhDHkLQWOibCTgwVUCqPpFLFrgsjYOicdTcAwLFZ333ow/640?wx_fmt=jpeg" data-type="2" style="width:556.000000px;" src="../Images/1d897c2d084f586c7535a973ce086b43.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/V9abY6oHTkrCBiaSZeAFREow43fylzibRZ1p4EcjR3M8mDhDHkLQWOibCTgwVUCqPpFLFrgsjYOicdTcAwLFZ333ow/640?wx_fmt=jpeg"/></p><p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#000000;">望老板们点个赞，转个发，让我开个锅</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+</div>
+        
+</body>
+</html>

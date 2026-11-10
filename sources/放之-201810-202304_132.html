@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>wrk: Modern HTTP benchmarking tool</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>wrk: Modern HTTP benchmarking tool</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=Mzg3ODAzNjg5OA==&amp;mid=2247483747&amp;idx=1&amp;sn=246a2375e3982fd941b6e6ab2603062a&amp;chksm=cf1893aef86f1ab880a88f17b15920a5386588e9a8d86351175a9016f4eefdb1c95f94e96112&amp;scene=126&amp;sessionid=1681322250#rd">http://mp.weixin.qq.com/s?__biz=Mzg3ODAzNjg5OA==&amp;mid=2247483747&amp;idx=1&amp;sn=246a2375e3982fd941b6e6ab2603062a&amp;chksm=cf1893aef86f1ab880a88f17b15920a5386588e9a8d86351175a9016f4eefdb1c95f94e96112&amp;scene=126&amp;sessionid=1681322250#rd</a></blockquote><p><img class="" data-ratio="0.3584905660377358" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/rmc0P5ibISkCn1ekJLPubQGb6HTqxKv94EtajWeVwDqgvCjQHzUU9EAXnebI8IqtUpicQvpntrp1QajPxkEPYqQw/640?wx_fmt=png" data-type="png" data-w="954" style="text-align: center;white-space: normal;" src="../Images/95a8ab5b50572f373da48c94a1f35ec8.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/rmc0P5ibISkCn1ekJLPubQGb6HTqxKv94EtajWeVwDqgvCjQHzUU9EAXnebI8IqtUpicQvpntrp1QajPxkEPYqQw/640?wx_fmt=png"/></p><p><br/></p><p>首先这是一个Benchmarking 测试工具，安装的话mac很简单, brew install wrk 即可。或者把代码拉到本地make一下即可。</p><p><br/></p><pre class="highlight" style="padding: 9.5px;font-family: Monaco, Menlo, Consolas, &quot;Courier New&quot;, monospace;font-size: 13px;border-radius: 4px;margin-top: 0px;margin-bottom: 10px;line-height: 20px;word-break: break-all;overflow-wrap: break-word;white-space: pre-wrap;background-color: rgb(245, 245, 245);border-width: 1px;border-style: solid;border-color: rgba(0, 0, 0, 0.15);text-align: start;"><code style="font-family: Monaco, Menlo, Consolas, &quot;Courier New&quot;, monospace;font-size: 12px;color: inherit;border-radius: 3px;background-color: transparent;border-width: 0px;border-style: initial;border-color: initial;">wrk &lt;选项&gt; &lt;目标地址&gt;                            
+  Options:                                            
+    -c, --connections &lt;N&gt;  跟服务器建立并保持的TCP连接数量  
+    -d, --duration    &lt;T&gt;  压测时间           
+    -t, --threads     &lt;N&gt;  使用多少个线程进行压测   
+                                                      
+    -s, --script      &lt;S&gt;  指定Lua脚本路径       
+    -H, --header      &lt;H&gt;  为每一个HTTP请求添加HTTP头      
+        --latency          在压测结束后，打印延迟统计信息   
+        --timeout     &lt;T&gt;  超时时间     
+    -v, --version          打印正在使用的wrk的详细版本信息
+                                                      
+  &lt;N&gt;代表数字参数，支持国际单位 (1k, 1M, 1G)
+  &lt;T&gt;代表时间参数，支持时间单位 (2s, 2m, 2h)</code></pre><p><br/></p><p>同时wrk不仅仅支持命令行，还支持脚本方式去做压测。拿这个例子来说：</p><p><br/></p><p style="text-align: center;"><img class="" data-ratio="0.5553191489361702" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/rmc0P5ibISkCn1ekJLPubQGb6HTqxKv94R0l7p2vSWnoME62oVZwLL8IH26GO6O1w1PlEbW0Nr611oWicZ0AZJLw/640?wx_fmt=png" data-type="png" data-w="2820" style="" src="../Images/e94a4fa1ab6a783175f7329683ed1002.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/rmc0P5ibISkCn1ekJLPubQGb6HTqxKv94R0l7p2vSWnoME62oVZwLL8IH26GO6O1w1PlEbW0Nr611oWicZ0AZJLw/640?wx_fmt=png"/></p><p style="text-align: left;">这个只是针对GET接口做测试，如果是POST接口呢，显然无法通过简单的命令行完成操作，这个时候就需要采用脚本方式了。根据https://github.com/wg/wrk/tree/master/scripts 上的例子可以看出来只需要编写对应的脚本即可。</p><p style="text-align: left;"><br/></p><p style="text-align: center;"><img class="" data-ratio="0.3163163163163163" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/rmc0P5ibISkCn1ekJLPubQGb6HTqxKv94YD9AjhC1YyvAib08vUcPky3o7cuTqCoBggUFpNMjP76uyPBcv2cfVfA/640?wx_fmt=png" data-type="png" data-w="1998" style="" src="../Images/546158865a54274140eb7f9516cfc5d4.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/rmc0P5ibISkCn1ekJLPubQGb6HTqxKv94YD9AjhC1YyvAib08vUcPky3o7cuTqCoBggUFpNMjP76uyPBcv2cfVfA/640?wx_fmt=png"/></p><p style="text-align: left;">但是我并没有进行测试哦，根据示例的scripts可以看到，还可以进行pipline操作，token认证等等。可谓居家必备之良器。</p><p><br/></p><p>资源地址:</p><p>* https://github.com/wg/wrk/</p><p><br/></p><p><br/></p>
+        
+</body>
+</html>

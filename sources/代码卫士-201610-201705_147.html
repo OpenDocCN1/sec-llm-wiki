@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>无需密码轻松劫持Windows权限用户会话</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>无需密码轻松劫持Windows权限用户会话</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485562&amp;idx=3&amp;sn=7bac07b6c028b5b31457c14fac2042f4&amp;chksm=ea973910dde0b006cd9aa112ea262690b0edce5c5fcd969f88313be0cfe0c3fb195b6e137398&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485562&amp;idx=3&amp;sn=7bac07b6c028b5b31457c14fac2042f4&amp;chksm=ea973910dde0b006cd9aa112ea262690b0edce5c5fcd969f88313be0cfe0c3fb195b6e137398&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKianEET89WsBFticic30TMWdZfibattfRGMBzxlNm1syicTaf4nrWyiaCYqnlauOAKVic45svrSyOQeIAe07A/0?wx_fmt=png" data-ratio="0.521978021978022" data-w="728" src="../Images/c1ed2ffda09c94fb9046092e48bba124.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKianEET89WsBFticic30TMWdZfibattfRGMBzxlNm1syicTaf4nrWyiaCYqnlauOAKVic45svrSyOQeIAe07A/0?wx_fmt=png"/></p><p><br/></p><p><strong>你可能了解一个事实：拥有系统权利和权限的本地Windows用户能够为其它用户重设密码，不过你是否知道一个本地用户也能劫持其它用户的会话包括域管理员/系统用户而无需知道密码？</strong></p><p><br/></p><p>以色列安全研究员Alexander Korznikov最近展示了本地权限用户甚至能够劫持更高权限的已登录Windows用户的会话且无需知道用户密码，只需利用内置命令行工具即可。</p><p><br/></p><p>这种方法几乎对所有的Windows操作系统都有效，而且无需拥有任何特别权限。Korznikov自己也无法确定它是一个Windows功能还是安全权限。这个问题实际上之前就有人曾提到过。法国安全研究人员Benjamin Delpy曾在6年前在博客上披露了一个类似的用户会话劫持技术。</p><p><br/></p><p>Korznikov将该攻击称作“权限升级和会话劫持”，攻击者能够劫持高权限用户的会话并获取访问应用程序和其它敏感数据的未经授权权限。要成功利用，攻击者需要物理接近目标设备，不过是在被黑设备上使用远程桌面协议（RDP）会话；这种攻击也能远程操作。</p><p><br/></p><p>Korznikov已经发布了几个视频验证演示如何成功实施会话劫持（使用任务管理器、服务创建以及命令行），并且还提供了PoC利用代码。</p><p><br/></p><p>Korznikov成功地在最新的Windows 10、Windows 7、Windows Server 2008和Windows Server 2012 R2上测试了这个缺陷。不过另外一名研究员在推特上证实称这个缺陷适用于所有的Windows版本，即使工作站是在锁定的状态下也不例外。</p><p><br/></p><p>虽然微软并不认为这是一个安全漏洞而且一些专家认为拥有管理员权限的Windows用户能做任何事情，但Korznikov通过一个简单的攻击场景解释了为何内鬼能轻易利用这个缺陷。他指出，“一些银行员工拥有访问计费系统及其凭证的权限能够登录。某一天他上班后登录到计费系统并开始工作。午餐时间他锁定了自己的工作站并出去吃午饭。这时候系统管理员就能利用这个利用代码访问这名员工的工作站。银行规定管理员账户应该不能访问计费系统，但通过窗口中的几个内置命令，这个系统管理员就能够劫持员工的桌面。然后系统管理员就能够在计费系统中以计费员工账户的身份实施恶意行为。”</p><p><br/></p><p>同样，攻击者也能够利用系统内存来追溯用户的明文密码，不过跟运行tscon.exe和一个会话号而不留下任何痕迹且不使用任何外部工具来说，是个漫长而又复杂的过程。</p><p><br/></p><p>6年前微软就已被告知该问题的存在，可以断定微软并不认为这是一个安全漏洞，因为它要求对电脑获取本地管理员权限，这似乎正是其操作系统的正常运行方式。</p><p><br/></p><p><br/></p><p><strong style="white-space: normal;">本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。</strong></p>
+        
+</body>
+</html>

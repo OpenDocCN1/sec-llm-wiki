@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>视频监控设备充斥着0day漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>视频监控设备充斥着0day漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485705&amp;idx=3&amp;sn=88df5954f15667cf515bf33352c489b4&amp;chksm=ea973863dde0b175bac31fd7e4c8e1b588ff10616438ffacb314f8e85ddedf9df53f76ba7856&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485705&amp;idx=3&amp;sn=88df5954f15667cf515bf33352c489b4&amp;chksm=ea973863dde0b175bac31fd7e4c8e1b588ff10616438ffacb314f8e85ddedf9df53f76ba7856&amp;scene=27#wechat_redirect</a></blockquote><p style="text-indent: 2em;"><strong>Netgear公司网络摄像机系列ReadyNAS和录像公司NUUO</strong><strong>多款设备出现多个web界面漏洞。受影响的NUUO产品为NVRmini 2、 NVRsolo和Crystal。</strong></p><p style="text-indent: 2em;">有关机构披露了6个通用漏洞（CVE），有输入验证问题，也有缓冲区溢出问题。</p><p style="text-indent: 2em;">CVE-2016-5674，在web管理界面隐藏的一个页面，看起来像是开发期间有人所写，忘记删除。攻击者可以通过任意的“log”参数访问PHP系统：</p><p style="text-indent: 2em;">http://&lt;IP&gt;/__debugging_center_utils___.php?log=something%3b&lt;payload&gt;</p><p style="text-indent: 2em;">另外还有一个隐藏页面，__nvr_status___.php（记为CVE-2016-5677），有信息泄露的风险。这也是工程师忘记删除的调试工具。</p><p style="text-indent: 2em;">CVE-2016-5675，handle_daylightsaving.php页面没有管理好NTPServer参数，攻击者可以利用它作为根用户运行代码。</p><p style="text-indent: 2em;">另外受影响设备的CGI二进制系统可以被任何人调用，运行web界面（CVE-2016-5676）； NUUO 设备中有太多硬编码凭证（CVE-2016-5678）；CVE-2016-5679本地操作系统指令漏洞（只有管理员可以远程攻击）。</p><p style="text-indent: 2em;">如果到目前为止，这些设备还没有资格注册“SOHOpeless”标签，还存在缓冲区溢出漏洞CVE-2016-5680，这又是一个任意代码运行漏洞。</p><p style="text-indent: 2em;">这些漏洞由Agile信息安全公司的Pedro Ribeiro发现。他表示由于厂商知情后都当了缩头乌龟，他才和相关部门合作进行了披露。</p>
+        
+</body>
+</html>

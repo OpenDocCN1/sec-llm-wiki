@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CVE-2014-4487 – IOHIDLibUserClient堆溢出漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>CVE-2014-4487 – IOHIDLibUserClient堆溢出漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2MDA0MTYyMQ==&amp;mid=210357098&amp;idx=7&amp;sn=819c24fb72c711fe545aabf91ae11eb1&amp;chksm=6312d59054655c86bb638fd1c08e377d702428b5355be147cb3e244f4efd84562929c359562c&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2MDA0MTYyMQ==&amp;mid=210357098&amp;idx=7&amp;sn=819c24fb72c711fe545aabf91ae11eb1&amp;chksm=6312d59054655c86bb638fd1c08e377d702428b5355be147cb3e244f4efd84562929c359562c&amp;scene=27#wechat_redirect</a></blockquote><h5 style=""><strong style="padding: 0px; margin: 0px;">漏洞描述</strong></h5><p style="">通过查看IOHIDFamily的代码，检查IOHIDLibUserClient的15号处理函数_getElements。该函数的入参是1个uint64，指定要获取的element是哪个队列的。出参是一个struct结构，无固定长度。</p><p style=""><br/></p><pre style=""><code style=""><span style="font-size: 12px;">    { //    kIOHIDLibUserClientGetElements
+    (IOExternalMethodAction) &amp;IOHIDLibUserClient::_getElements,
+    1, 0,
+    0, kIOUCVariableStructureSize
+    },</span></code></pre><p style=""><br/></p><p style="">_getElements在处理的时候，如果出参是structureOutputDescriptor，则会先IOMalloc用户指定长度的缓冲区然后再去填充elements数据。</p><p style=""><br/></p><pre style=""><code style=""><span style="font-size: 12px;">IOReturn IOHIDLibUserClient::_getElements(IOHIDLibUserClient * target, void * reference __unused, IOExternalMethodArguments * arguments)
+{
+    if ( arguments-&gt;structureOutputDescriptor )
+        return target-&gt;getElements((uint32_t)arguments-&gt;scalarInput[0], arguments-&gt;structureOutputDescriptor, &amp;(arguments-&gt;structureOutputDescriptorSize));
+    else
+        return target-&gt;getElements((uint32_t)arguments-&gt;scalarInput[0], arguments-&gt;structureOutput, &amp;(arguments-&gt;structureOutputSize));
+}
+
+IOReturn IOHIDLibUserClient::getElements (uint32_t elementType, void *elementBuffer, uint32_t *elementBufferSize)
+{
+...
+        elementLength = mem-&gt;getLength();
+        if ( elementLength )
+        {
+            <span style="font-size: 12px; color: rgb(255, 0, 0);">// 根据用户指定的大小来分配内存</span>
+            elementData = IOMalloc( elementLength );
+
+            if ( elementData )
+            {
+                bzero(elementData, elementLength);
+
+                <span style="font-size: 12px; color: rgb(255, 0, 0);">// 向分配的堆中填充数据，elementLength更新为实际填充的数据长度</span>
+                ret = getElements(elementType, elementData, &amp;elementLength);
+
+                if ( elementBufferSize )
+                    *elementBufferSize = elementLength;
+
+                mem-&gt;writeBytes( 0, elementData, elementLength );
+
+                <span style="font-size: 12px; color: rgb(255, 0, 0);">// 释放刚分配的堆</span>
+                IOFree( elementData, elementLength );
+...
+}</span></code></pre><p style=""><br/></p><p style=""><span style="padding: 0px; margin: 0px;"/><br style="padding: 0px; margin: 0px;"/>getElements在填充elements的时候根本没有检查输入缓冲区的大小，从而会导致缓冲区溢出。</p><p style=""><br/></p><pre style=""><code style=""><span style="font-size: 12px;">IOReturn IOHIDLibUserClient::getElements (uint32_t elementType, void *elementBuffer, uint32_t *elementBufferSize)
+{
+    OSArray *                array;
+    uint32_t                i, bi, count;
+    IOHIDElementPrivate *    element;
+    IOHIDElementStruct *    elementStruct;
+
+    <span style="font-size: 12px; color: rgb(255, 0, 0);">// 仅仅检查了是否有长度</span>
+    if (elementBuffer &amp;&amp; elementBufferSize &amp;&amp; !*elementBufferSize)
+        return kIOReturnBadArgument;
+
+    if (!fNub || isInactive())
+        return kIOReturnNotAttached;
+
+    <span style="font-size: 12px; color: rgb(255, 0, 0);">// 这里的hierarchElements是可控数据（通过创建IOHIDDevice时指定ReportDescriptor）</span>
+    if ( elementType == kHIDElementType )
+        array = fNub-&gt;_reserved-&gt;hierarchElements;
+    else
+        array = fNub-&gt;_reserved-&gt;inputInterruptElementArray;
+
+    if ( !array )
+        return kIOReturnError;
+
+    if ( elementBuffer )
+        bzero(elementBuffer, *elementBufferSize);
+
+    count = array-&gt;getCount();
+    bi = 0;
+
+    for ( i=0; i&lt;count; i++ )
+    {
+        element = OSDynamicCast(IOHIDElementPrivate, array-&gt;getObject(i));
+
+        if (!element) continue;
+
+        <span style="font-size: 12px; color: rgb(255, 0, 0);">// 填充数据之前根本没有对size进行检查</span>
+        // Passing elementBuffer=0 means we are just attempting to get the count;
+        elementStruct = elementBuffer ? &amp;(((IOHIDElementStruct *)elementBuffer)[bi]) : 0;
+
+        if ( element-&gt;fillElementStruct(elementStruct) )
+            bi++;
+    }
+...
+}</span></code></pre><h4 style=""><strong style="padding: 0px; margin: 0px;">利用思路</strong></h4><p><strong style="padding: 0px; margin: 0px;"><br/></strong></p><p style="">比较传统的思路是控制堆溢出的数据和长度，来覆盖分配的堆之后的一些内容再进一步转换成内存读写的利用。不过该漏洞的覆盖数据不是非常容易控制，可以换一种利用思路。注意到elementLength在调用getElements后会被改写，并且被传递到IOFree函数用于释放刚刚分配的内存。从而使我们可以分配一个较小的堆，随后让系统释放一个较大的堆，此时我们再通过heap风水分配一个较大的堆时就可以覆盖原来较小的堆之后的堆数据，从而进一步转换成任意内存读写的漏洞。</p><p style=""><br/></p><h4 style=""><strong style="padding: 0px; margin: 0px;">漏洞可达性</strong></h4><p><strong style="padding: 0px; margin: 0px;"><br/></strong></p><p style="">该漏洞的触发还有一些额外的可达性要求：</p><p style=""><br/></p><ul style="" class=" list-paddingleft-2"><li><p>首先必须要自己创建一个IOHID的设备才能打开对应的IOHIDLibUserClient。而IOHID设备的创建可以通过”IOHIDResource”服务的0号调用函数来完成，注意该调用必须要有Root权限！</p></li><li><p>此外，前文提到必须要传入structureOutputDescriptor才能走到存在漏洞的代码，而通常调用IOConnectCallMethod方法时对于大于4096长度的缓冲区才会创建memory descriptor。不过通过直接调用更底层的io_connect_method函数可以直接控制。</p></li></ul><p><br/></p><section class="135editor" style="white-space: normal; font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; color: rgb(62, 62, 62); line-height: 25.6px; border: 0px none; padding: 0px; box-sizing: border-box; margin: 0px;"><section style="margin: 96px 16px 16px; border: 1px solid rgb(159, 136, 127); text-align: center; border-radius: 8px; font-size: 18px; font-weight: inherit; text-decoration: inherit; box-sizing: border-box; padding: 0px;"><section style="margin-top: -3.3em; margin-right: auto; margin-left: auto; color: inherit; box-sizing: border-box; padding: 0px;"><img data-src="http://mmbiz.qpic.cn/mmbiz/SxfwWH2vIIgbCoo6viasTySVCjgUkEGGVVvVvDm2hMkZZwVXCPhxxVf7BDcjAkI23x74zmBCRnHloyL7aoNakRA/0?wx_fmt=png" url="http://mmbiz.qpic.cn/mmbiz/SxfwWH2vIIgbCoo6viasTySVCjgUkEGGVVvVvDm2hMkZZwVXCPhxxVf7BDcjAkI23x74zmBCRnHloyL7aoNakRA/0?wx_fmt=png" file_id="210256975" format="png" source="lib" data-type="png" data-s="300,640" data-ratio="1" data-w="108" width="108px" style="border-radius: 100%; border: 2px solid rgb(159, 136, 127); box-shadow: rgb(201, 201, 201) 0px 2px 2px 2px; color: inherit; width: 108px !important; visibility: visible !important; background-image: none; background-attachment: scroll; background-size: initial; background-origin: initial; background-clip: initial; background-position: 0% 0%; background-repeat: repeat;" src="../Images/1372d481b8ed26cd3ac25e3ab160427b.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/SxfwWH2vIIgbCoo6viasTySVCjgUkEGGVVvVvDm2hMkZZwVXCPhxxVf7BDcjAkI23x74zmBCRnHloyL7aoNakRA/0?wx_fmt=png"/></section><section class="135brush" data-brushtype="text" data-style="text-align: left; font-size: 14px; color: inherit;" style="margin: 8px 15px; line-height: 1.4; color: inherit; box-sizing: border-box; padding: 0px;"><p style="text-align: left; font-size: 14px; color: inherit;"><span style="color: inherit; line-height: 1.4; font-weight: inherit; text-align: center; text-decoration: inherit;">本公众号是盘古实验室的官方公众号, 将会定期分享盘古实验室的技术分享以及最新的研究成果。</span><span style="color: inherit; line-height: 1.4; font-size: 18px; font-weight: inherit; text-align: center; text-decoration: inherit;"><br/></span></p><p style="text-align: left;"><span style="font-size: 14px;">识别下图二维码或者添加微信号: <span style="color: rgb(31, 73, 125);"/><strong><span style="color: rgb(31, 73, 125);">PanguLab</span></strong> 关注盘古实验室。</span></p><p style="text-align: left; font-size: 14px; color: inherit;"><br/></p></section><section style="margin: 10px 15px; border-top-width: 1px; border-top-style: solid; border-color: rgb(159, 136, 127); color: inherit; box-sizing: border-box; padding: 0px;"><p style="color: inherit;"><img data-src="http://mmbiz.qpic.cn/mmbiz/SxfwWH2vIIgwgMtjpQV7YjeOpq2fb1JtJNicrZ5Kssf3PY8BHfRztoRkeO0U5ib0rk6U7aViaVnGqeDxV4wr5W5qw/0?wx_fmt=jpeg" url="http://mmbiz.qpic.cn/mmbiz/SxfwWH2vIIgwgMtjpQV7YjeOpq2fb1JtJNicrZ5Kssf3PY8BHfRztoRkeO0U5ib0rk6U7aViaVnGqeDxV4wr5W5qw/0?wx_fmt=jpeg" file_id="210274785" format="jpeg" source="lib" data-type="jpeg" data-s="300,640" data-ratio="1" data-w="442" width="200px" style="margin-right: auto; margin-bottom: 0.3em; margin-left: auto; color: inherit; font-weight: inherit; line-height: inherit; text-decoration: inherit; width: 442px; visibility: visible !important;" src="../Images/346f90c481168585c1f9240bee64ac57.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/SxfwWH2vIIgwgMtjpQV7YjeOpq2fb1JtJNicrZ5Kssf3PY8BHfRztoRkeO0U5ib0rk6U7aViaVnGqeDxV4wr5W5qw/0?wx_fmt=jpeg"/></p></section></section></section><p style="white-space: normal; font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;;"><br/></p><p style="white-space: normal;"><br/></p><p><br/></p><section class="135editor" style="white-space: normal; font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; color: rgb(62, 62, 62); line-height: 25.6px; border: 0px none; padding: 0px; box-sizing: border-box; margin: 0px;"><section style="border: 0px; text-align: center; box-sizing: border-box; padding: 0px; margin: 0px;"><section style="display: inline-block; color: inherit; box-sizing: border-box; padding: 0px; margin: 0px;"><section style="font-size: 16.3636px; display: inline-block; color: inherit; box-sizing: border-box; padding: 0px; margin: 0px;"><p style="word-wrap: normal; color: inherit;"><strong style="color: inherit;">·END·</strong></p></section></section></section></section><p><br/></p><p><br/></p>
+        
+</body>
+</html>

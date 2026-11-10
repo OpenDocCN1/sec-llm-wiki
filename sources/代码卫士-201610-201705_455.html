@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>网站缓存加速工具Memcached中出现多个RCE漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>网站缓存加速工具Memcached中出现多个RCE漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485650&amp;idx=2&amp;sn=b88126f638311f1fab8a6fe79e4e8c33&amp;chksm=ea9739b8dde0b0ae390101448887b93e245243501e1f7b98947329202e89b8da372f989925bd&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485650&amp;idx=2&amp;sn=b88126f638311f1fab8a6fe79e4e8c33&amp;chksm=ea9739b8dde0b0ae390101448887b93e245243501e1f7b98947329202e89b8da372f989925bd&amp;scene=27#wechat_redirect</a></blockquote><p><strong>思科渗透测试员</strong><strong>Aleksandar Nikolich</strong><strong>在</strong><strong>Memcached</strong><strong>中发现了三个远程代码执行漏洞，其中一个漏洞修复。</strong></p><p><strong><br/></strong></p><p>Memcached 是一个高性能的分布式内存对象缓存系统，用于动态Web应用以减轻数据库负载。它通过在内存中缓存数据和对象来减少读取数据库的次数，从而提高动态、数据库驱动网站的速度。Memcached基于一个存储键/值对的hashmap。其守护进程（daemon ）是用C写的，但是客户端可以用任何语言来编写，并通过memcached协议与守护进程通信。</p><p><br/></p><p>很多大型公司都在使用这款网站缓存加速工具，如Facebook、推特、YouTube和Reddit。Nikolich表示这些漏洞可攻陷多个讲Memcache服务器暴露到互联网的站点。他表示攻击者能进一步利用这些漏洞绕过利用代码防御地址空间布局随机化（ASLR）。他指出，“Memcached中存在的多个整数溢出漏洞能被利用，在目标系统中实现远程代码执行。这些漏洞出现在Memcached的多个函数中。那些将Memcached跟SASL验证支持相连的系统也易受另外一个漏洞的攻击，原因在于Memcached处理SASL验证命令的方式。”</p><p><br/></p><p>这些整数溢出漏洞（CVE-2016-8704、CVE-2016-8705和CVE-2016-8706）影响的Memcached版本是1.4.31及之前版本。</p><p><br/></p><p>Nikolich表示攻击者能够将特殊编制的Memcached命令重复发送至目标服务器中。不过Memcached作者两天之后就推出了一个补丁，另外19个补丁于10月31日发布。补丁通告指出，如果用户并不使用二进制协议，一个权变措施就是通过-B
+ ascii启动Memcached。Nikolich提醒管理员要应用这个补丁，即使是Memcached服务器是在受信任的环境中使用，因为有权限的攻击者随后也会转移到这些网络。</p><p><br/></p><p>思科已发布Snort入侵检测规则来检测Memcached利用。</p><p><br/></p>
+        
+</body>
+</html>

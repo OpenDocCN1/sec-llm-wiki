@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>谷歌Admin App中存在0day漏洞可绕过安卓沙盒</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>谷歌Admin App中存在0day漏洞可绕过安卓沙盒</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485903&amp;idx=2&amp;sn=ead3bf64519a5126fd0258791d2431db&amp;chksm=ea9738a5dde0b1b37198d5483821e4471d8004ff6c2ef479c2b15b92ba1a79b34e75eef8ec43&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485903&amp;idx=2&amp;sn=ead3bf64519a5126fd0258791d2431db&amp;chksm=ea9738a5dde0b1b37198d5483821e4471d8004ff6c2ef479c2b15b92ba1a79b34e75eef8ec43&amp;scene=27#wechat_redirect</a></blockquote><p><strong>MWR</strong><strong>实验室披露了关于一个未修复漏洞的信息。该漏洞可允许攻击者轻易绕过安卓沙盒。</strong></p><p><strong><br/></strong></p><p>继Stagefright漏洞及其它安全漏洞之后，安卓操作系统中又出现了一个未修复漏洞，可允许黑客绕过安卓沙盒。该漏洞影响安卓操作系统的最新版本，而且很可能还影响之前的所有版本。</p><p><br/></p><p>谷歌中的这个漏洞跟谷歌Admin app处理一些URL的方式有关。攻击者能够使用移动设备上的app向Admin app发送一个具体的URL绕过同源策略并从Admin沙盒中获取数据。</p><p><br/></p><p>MWR实验室发布安全公告称，“谷歌Admin app通过接收来自相同设备上其他app的IPC电话来接收URL。Admin 
+app将会把这个URL加载到自身活动的webview中。如果攻击者使用了所控制文件的file:// 
+url，那么有可能攻击者会使用标志性链接绕过同源策略并从谷歌Admin沙盒中检索数据。”</p><p><br/></p><p>攻击者可通过将恶意移动app获取在目标设备上的方式利用该漏洞。公告指出，相同设备上的恶意app能够从谷歌Admin沙盒中读取任意文件数据，绕过安卓沙盒。</p><p><br/></p><p>漏洞产生的原因是谷歌Admin app有一个接收名为setup_url额外字符串的导出活动。</p><p><br/></p><p>MWR实验室于今年三月份将漏洞情况报告给谷歌，但截至目前漏洞仍然影响着安卓操作系统。MWR专家建议使用谷歌Admin app的专家不要安装任何不受信任的第三方app。</p><p><br/></p>本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。
+        
+</body>
+</html>

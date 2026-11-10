@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>ImageMagick CVE-2016–3714命令执行漏洞分析与修复</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>ImageMagick CVE-2016–3714命令执行漏洞分析与修复</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NDI5MTg4MA==&amp;mid=2247483677&amp;idx=1&amp;sn=466b5fe4eb5579802ae6d6a96731cdb2&amp;chksm=eaaf925addd81b4c4be2e00df54887cc8ed111b6c66ab7dc79a4ddc1caf20915b6d035839dbf&amp;scene=126&amp;sessionid=1681322854#rd">http://mp.weixin.qq.com/s?__biz=MzI2NDI5MTg4MA==&amp;mid=2247483677&amp;idx=1&amp;sn=466b5fe4eb5579802ae6d6a96731cdb2&amp;chksm=eaaf925addd81b4c4be2e00df54887cc8ed111b6c66ab7dc79a4ddc1caf20915b6d035839dbf&amp;scene=126&amp;sessionid=1681322854#rd</a></blockquote><p><strong>首先要科普一下什么是<span style="line-height: 25.6px;">ImageMagick</span>？</strong></p><p>ImageMagick是一个免费的创建、编辑、合成图片的软件。它可以读取、转换、写入多种格式的图片。图片切割、颜色替换、各种效果的应用，图片的旋转、组合，文本，直线，多边形，椭圆，曲线，附加到图片伸展旋转。其全部源码开放，可以自由使用，复制，修改，发布。它遵守GPL许可协议。它可以运行于大多数的操作系统。</p><p>以C语言开发的ImageMagick软件套件可用来显示、转换及编辑图像，支持逾200种图像格式，并可跨平台运作，粗略统计至少有数百万台的网页服务器采用ImageMagick 。目前互联上有很多网站后台依赖于<span style="line-height: 25.6px;">ImageMagick的后端图像处理，这些网站以PHP、Ruby、Java、Nodejs为主，所以后端使用了ImageMagick的网站都会受到此漏洞影响。</span></p><p><span style="line-height: 25.6px;"><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz/OPYgDQ05GsibFrsdViaNyOMiaj6ZH8XMMr4zaGPicgz7LqFz0P1bROibolWtqBSfk2PV3StlKVE0WSpQBMYDY1HYetg/0?wx_fmt=jpeg" data-ratio="1.1097122302158273" data-w="" src="../Images/1bbf1ffa3425b1af6b14eaa261dc0098.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/OPYgDQ05GsibFrsdViaNyOMiaj6ZH8XMMr4zaGPicgz7LqFz0P1bROibolWtqBSfk2PV3StlKVE0WSpQBMYDY1HYetg/0?wx_fmt=jpeg"/><br/></span></p><p><strong>漏洞成因与检测方法：</strong></p><p>ImageMagick是开源的，任何人都可以直接从官网获取到其源代码。此次出现问题代码就在：</p><p>https://github.com/ImageMagick/ImageMagick/blob/e93e339c0a44cec16c08d78241f7aa3754485004/MagickCore/delegate.c</p><p>这里使用了<span style="line-height: 1.6;">使用 system(sanitize_command)指令调用来处理 HTTPS 请求，而对用户传入的参数没有做好过滤，导致能注入任意指令执行。</span></p><blockquote><p><span style=""/><span style="line-height: 1.6; background-color: rgb(214, 214, 214);">&lt;delegate decode=\"https\" command=\"&amp;quot;wget&amp;quot; -q -O &amp;quot;%o&amp;quot; &amp;quot;https:%M&amp;quot;\"/&gt;</span><span style=""/></p></blockquote><p>因此可以在传递的链接中直接利用管道命令来构造PoC：</p><blockquote><span style="background-color: rgb(214, 214, 214);">convert 'https://example.com"|ls "-l' out.png</span></blockquote><p>到这里已经可以看到，本次漏洞应该属于本地的命令执行，当然如果攻击者构造攻击场景诱导用户触发PoC，<strong><span style="color: rgb(255, 76, 65);">如在图片中插入攻击性的代码也可以导致远程命令执行的效果，所以这个漏洞有可能进化成一个很严重的命令执行漏洞。</span></strong></p><p><strong>漏洞影响范围：</strong></p><p>采用<span style="line-height: 25.6px;">ImageMagick技术的网站都会受到影响，目前国内采用这一技术常见的如：Discuz！、Wordpress、phpBB、MediaWiki等。</span></p><p>在这里要感谢 imagetragick.com(官网) 针对此问题已经放出一个sh脚本，可以在本地运行测试PoC,该检测PoC的获取链接：</p><p>https://github.com/ImageTragick/PoCs</p><p><strong>修复建议：</strong><br/></p><p>目前ImageMagick官网最新版本仍然存在问题，并未完全修复。<strong><br/></strong></p><p><span style="line-height: 25.6px;">imagetragick.com(官网)提供了一个修复方法：</span></p><blockquote><p>配置策略文件禁用ImageMagick。</p><p>具体策略可在“/etc/ImageMagick/policy.xml”文件中添加如下代码，禁用掉来自EPHEMERAL, URL, MVG, and MSL中夹带任何参数：</p></blockquote><blockquote><pre style="">&lt;policymap&gt;
+  &lt;policy domain="coder" rights="none" pattern="EPHEMERAL" /&gt;
+  &lt;policy domain="coder" rights="none" pattern="URL" /&gt;
+  &lt;policy domain="coder" rights="none" pattern="HTTPS" /&gt;
+  &lt;policy domain="coder" rights="none" pattern="MVG" /&gt;
+  &lt;policy domain="coder" rights="none" pattern="MSL" /&gt;
+&lt;/policymap&gt;</pre></blockquote><p><br/></p><p><br/></p>
+        
+</body>
+</html>

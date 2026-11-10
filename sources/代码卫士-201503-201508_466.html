@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Drupal漏洞允许攻击者伪造密码重设URL</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Drupal漏洞允许攻击者伪造密码重设URL</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247486000&amp;idx=2&amp;sn=4981e22cf877940796cc9bf1d7e42a4a&amp;chksm=ea973b5adde0b24c475b3a45f87d046165d10c5e59209b9fd00d4b16fe65d1eae13406ceab79&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247486000&amp;idx=2&amp;sn=4981e22cf877940796cc9bf1d7e42a4a&amp;chksm=ea973b5adde0b24c475b3a45f87d046165d10c5e59209b9fd00d4b16fe65d1eae13406ceab79&amp;scene=27#wechat_redirect</a></blockquote><p>目前可下载Drupal 6.35及7.35版本内容管理系统（CMS）。这些安全发布解决了两个相对重要的漏洞问题。</p><p><br/></p><p>其中一个漏洞可在某种情况下被利用并伪造密码重设URL。攻击者可利用这个漏洞在不知道用户密码的情况下访问用户账户。</p><p><br/></p><p>最有价值的Drupal网站是那些可通过同一密码登陆多个账户的网站。在Drupal 
+7中，这个漏洞只有在网站管理员导入或者从程序上以能会为多个账户产生同一个密码哈希值方式编辑账户的时候才可被利用。在Drupal 
+6中，漏洞被利用的情景是管理员用同一个密码创建了多个新的用户账户，或者数据库中的密码哈希字段是空值。</p><p><br/></p><p>“拥有空值密码哈希值、或者数据库中的密码字段含有一个可猜测字符串的Drupal 6站点中尤其容易受到这个漏洞的影响。这适用于使用外部身份认证的站点，这样密码字段可被设置为固定的无效价值，”Drupal在一份安全公告中表示。</p><p><br/></p><p>Drupal 6.35及7.35版本中修复的公开重定向漏洞与“destination”参数有关，它通常会在URL执行完某个动作时，在URL中将用户重定向至一个新页面。</p><p><br/></p><p>“在某种情况下，恶意用户能够使用这个参数构建一个URL，将用户重定向至一个第三方网站，因此将用户暴露给潜在的社会工程攻击，”Drupal表
+示，“另外，Drupal 6及7中与URL相关的API功能可能会被在不需要的情况下诱骗通过外部URL，以此导致一个额外的公开重定向漏洞。”</p><p><br/></p><p>这些漏洞影响6.35版本以前的Drupal 6.x版本以及7.35版本以前的Drupal 7.x版本。建议用户立即更新安装。</p><p><br/></p><p>访问绕过问题由Daniël Smidt发现，而开放重定向问题归功于Drupal安全团队。</p><p><br/></p><p>目前有超过110万网站在使用Drupal。Drupal表示，版本7最为流行，下载次数约为983,000次。</p><p/><p>本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。</p>
+        
+</body>
+</html>

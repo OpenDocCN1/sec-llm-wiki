@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>洋葱路由的.onion域隐藏DNS足迹保护用户隐私</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>洋葱路由的.onion域隐藏DNS足迹保护用户隐私</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485886&amp;idx=5&amp;sn=be9761e2a835688629494155baa6711b&amp;chksm=ea9738d4dde0b1c2e8a4599f742f1d71c62c08224cf3612ea847ac234b8d91664f70440cf0a7&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485886&amp;idx=5&amp;sn=be9761e2a835688629494155baa6711b&amp;chksm=ea9738d4dde0b1c2e8a4599f742f1d71c62c08224cf3612ea847ac234b8d91664f70440cf0a7&amp;scene=27#wechat_redirect</a></blockquote><p>IANA（互联网地址编码分配机构，为全球分配IP的组织）批准.onion成为洋葱路由（TOR）社区的专用域名，旨在帮助TOR用户摆脱被犯罪分子利用用户留下的DNS足迹窥探的困扰。</p><p><br/></p><p>相关专家在一份名为《互联网草稿》的文件中指出，.onion域从功能上讲与已知服务的身份相呼应，因此结合了地理位置跟验证的功能。对于TOR用
+户来讲，这是一种额外的保护措施。如果DNS服务器得到一个.onion请求，它必须返回一个NXDOMAIN（即：无此域名）的回应，而注册人员无法注
+册.onion域名（因此用户收到的任何关于提供.onion的电子邮件或者是垃圾邮件或者是欺诈邮件）。密码是抵达.onion地址的基本要
+求：.onion域是自我验证的，因为它们是在建立连接时从服务器使用的加密密钥中以客户端验证的方式衍生而来。</p><p><br/></p><p>文件指出，特殊用途的指定源于.onion域是如何被拥有的：“.onion名称的‘所有权’是完全从公钥/私钥密钥对的控制中衍生而来，它与名称
+的算法推导一致。”不过专家指出，世界上并不存在十全十美的事情，并告警称TOR-plus-.onion也可能被攻陷，包括：</p><p>l  服务器泄露自己的身份，如在应用程序层信息中泄露；以及</p><p>l  在应用程序协议或其执行中的出错信息。</p><p>文件告警称用户应当警惕像.onion域的域名（example.onion.tld跟正确的example.onion），而且指出用户应当更新
+旧的TOR客户端，因为旧的客户端会尝试通过DNS解析“.onion”名称，因此而暴露客户端正在使用Tor访问某一服务的消息，恶意解析者可能会捕获
+并记录此类泄露。</p><p><br/></p><p>这一批准与互联网架构委员会在面对无处不在的监控之际，推行自上而下重新思考互联网的做法相符。</p><p><br/></p>本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。
+        
+</body>
+</html>

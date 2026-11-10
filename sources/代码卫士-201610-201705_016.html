@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>取证工具存在缺陷 黑客可控制证据</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>取证工具存在缺陷 黑客可控制证据</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485531&amp;idx=3&amp;sn=e42e3d89e388a980e2d3ddfb486dc1aa&amp;chksm=ea973931dde0b027f6e351dd2f5e31d3204b4969ac16dc4eba240cd76077b9e2b3f469d92056&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485531&amp;idx=3&amp;sn=e42e3d89e388a980e2d3ddfb486dc1aa&amp;chksm=ea973931dde0b027f6e351dd2f5e31d3204b4969ac16dc4eba240cd76077b9e2b3f469d92056&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKialgOw9L1DnFX04B0fVdx8CkVMltjLpTqAEicl1nCbKrs3cA8epvAfWxUAwooiavk3OKWKQMTmRIL7Sw/0?wx_fmt=jpeg" data-ratio="0.5642857142857143" data-w="560" src="../Images/859838a269dc5b442f2496c82fe617f7.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKialgOw9L1DnFX04B0fVdx8CkVMltjLpTqAEicl1nCbKrs3cA8epvAfWxUAwooiavk3OKWKQMTmRIL7Sw/0?wx_fmt=jpeg"/></p><p><br/></p><p><strong>研究人员告警称，Guidance软件公司的取证工具EnCase取证成像器中存在一个漏洞，可被黑客利用控制调查人员的计算机以及证据。不过该厂商认为攻击是“边缘案例”不打算于近期修复。</strong></p><p><br/></p><p>Guidance软件公司的取证产品为各国政府、执法机构和私营企业所使用，包括美国司法部、美国国土安全部、伦敦警察厅、微软、IBM、苹果以及Facebook。</p><p><br/></p><p>该公司的EnCase取证成像器是一款独立工具，旨在获得本地驱动的取证图像并查看和浏览潜在的证据文件。来自SEC的研究人员分析该产品后发现它受一个潜在的严重漏洞影响。该漏洞能让恶意攻击者通过一个特别编制的图像文件在运行EnCase取证成像器的系统上执行任意代码。</p><p><br/></p><p>SEC指出的一个攻击场景是，犯罪分子准备了带有特别编制图像的一个USB，如被执法部门突袭，那么调查人员拿走USB并通过成像器分析。当调查人员使用该工具的选项在驱动中搜索LVM2逻辑卷时，嫌疑人的恶意图像就会触发恶意软件执行。如果调查人员的计算机联网，那么这款恶意软件就能让攻击者访问设备以及存储在计算机上的文件，以及删除或控制证据。如果调查人员的计算机未联网，那么攻击者能创建一款实施预定行为的恶意软件（如删除跟某个扩展或名称相关的文件）。</p><p><br/></p><p>研究人员指出，EnCase取证成像器未能检测从LVM2分区的逻辑卷定义中复制的字符串长度。当成像器用于分析一个特别编制的LVM2分区时，部分栈会被攻击者控制的数据覆盖。这样攻击者就能覆盖代码指针。当程序执行转移到这个指针指定的地址后，攻击者就控制了剩余的程序执行。</p><p><br/></p><p>研究人员已开发出一个PoC利用代码，不过目前不会公开。</p><p><br/></p><p>这并非SEC在EnCase取证成像器中发现的唯一一个漏洞。2016年11月末，SEC披露了影响该软件的DoS和堆溢出漏洞的详情。这些问题至今仍未被修复。</p><p><br/></p><p>Guidance软件公司表示已看到这次和之前披露的漏洞，但认为都是“极其边缘的案例”，并表示如真有问题的话，会直接跟消费者一起解决。</p><p><br/></p><p><br/></p><p><strong style="white-space: normal;">本文由360代码卫士编译，不代表360观点，转载请注明“转自360代码卫士www.codesafe.cn”。</strong></p>
+        
+</body>
+</html>

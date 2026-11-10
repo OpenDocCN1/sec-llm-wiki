@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>web漏洞测试靶场WackoPicko</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>web漏洞测试靶场WackoPicko</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA4MDMwMjQ3Mg==&amp;mid=218148794&amp;idx=1&amp;sn=64539a576f41ca5c3beca310e1ab841f&amp;chksm=1752575d2025de4b2e1450c4bd89e2d69cab105380db4643dc7827d2a05c66b5704097a7c740&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA4MDMwMjQ3Mg==&amp;mid=218148794&amp;idx=1&amp;sn=64539a576f41ca5c3beca310e1ab841f&amp;chksm=1752575d2025de4b2e1450c4bd89e2d69cab105380db4643dc7827d2a05c66b5704097a7c740&amp;scene=27#wechat_redirect</a></blockquote><h3>搭建</h3><p>首先是下载代码</p><pre><code>git clone https:<span class="hljs-comment">//github.com/adamdoupe/WackoPicko</span></code></pre><p>然后把代码放到web目录，最好是根目录，不然就要改代码路径,然后需要配置一下数据库</p><pre><code>vim include/ourdb.php</code></pre><p>主要是账号密码</p><pre><code class="lang-php"><span class="hljs-preprocessor">&lt;?php</span><span class="hljs-variable">$username</span> = <span class="hljs-string">"wackopicko"</span>;<span class="hljs-variable">$pass</span> = <span class="hljs-string">"webvuln!@#"</span>;<span class="hljs-variable">$database</span> = <span class="hljs-string">"wackopicko"</span>;<span class="hljs-keyword">require_once</span>(<span class="hljs-string">"database.php"</span>);<span class="hljs-variable">$db</span> = <span class="hljs-keyword">new</span> DB(<span class="hljs-string">"localhost"</span>, <span class="hljs-variable">$username</span>, <span class="hljs-variable">$pass</span>, <span class="hljs-variable">$database</span>);<span class="hljs-preprocessor">?&gt;</span></code></pre><p>然后把数据库文件 current.sql 导入。然后就可以用啦。</p><p><br/></p><p>小歪说道：如果要是练习的话，还有很多类似的靶场，比如dvwa，pentester lab等等，都是不错的环境。dvwa包含暴力破解，sql注入，xss等等，pentester lab就更多了，有兴趣的可以下载来玩一玩。</p><p>dvwa：http://www.dvwa.co.uk/<br/></p><p>pentester lab：https://pentesterlab.com/exercises/<br/></p><p><br/>  </p>
+        
+</body>
+</html>

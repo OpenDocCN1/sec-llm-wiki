@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>德国美诺洗碗机存在目录遍历漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>德国美诺洗碗机存在目录遍历漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485557&amp;idx=4&amp;sn=0203a76a81e6f2944b90327ce3182c29&amp;chksm=ea97391fdde0b009816f2442691cce0b1abc1695281b0e481adba47f4e032b8eb1e38367eb3d&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485557&amp;idx=4&amp;sn=0203a76a81e6f2944b90327ce3182c29&amp;chksm=ea97391fdde0b009816f2442691cce0b1abc1695281b0e481adba47f4e032b8eb1e38367eb3d&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiamdAKoQmTjw6a3XeCUp6PkahicCibmiaYBpN5jjbwuGgqrv1107mES8zKp9mL2PMCliarXrzNQVVMjVAw/0?wx_fmt=jpeg" data-ratio="0.5370370370370371" data-w="648" src="../Images/53f19ccf26659de09d56d768c467178a.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiamdAKoQmTjw6a3XeCUp6PkahicCibmiaYBpN5jjbwuGgqrv1107mES8zKp9mL2PMCliarXrzNQVVMjVAw/0?wx_fmt=jpeg"/></p><p><br/></p><p><strong>德国美诺的一款洗碗机披上了物联网的外衣，让它拥有了一台网络服务器，不过现在出现了漏洞并被指坐视不管。</strong></p><p><br/></p><p>这个漏洞编号为CVE-2017-7240“美诺专业版PG 8528---网络服务器目录遍历”。相应的嵌入式网络服务器PST10 网络服务器主要窃听端口80且易受目录遍历攻击，因此未经验证的攻击者可能能够利用这个漏洞访问敏感信息从而协助后续攻击。</p><p><br/></p><p>验证这个漏洞很容易：GET/../../../../../../../../../../../../etc/shadow HTTP/1.1试一下局域网上洗碗机的任何IP地址。</p><p><br/></p><p>目录遍历攻击可导致攻击者访问目录，一旦入侵目录，就可以插入恶意代码并让网络服务器予以执行。目前尚不清楚美诺用来编制网络服务器的库是什么，也就是说供应商无法提供洗碗机的修复方案。最佳方案就是确保洗碗机不要暴露在网上。而且由于美诺是一个家电公司而非IT公司，因此它并没有报告或修复问题的流程。</p><p><br/></p><p>研究人员将这台洗碗机的网络服务器问题告知美诺，但美诺并未做出任何回应。他首次发出通知的时间是2016年11月。</p><p><br/></p><p>或许该奉劝家电制造商一句话：不要尝试联网了，你根本不在行。</p><p><br/></p><p><br/></p><p><strong style="white-space: normal;">本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。</strong></p>
+        
+</body>
+</html>

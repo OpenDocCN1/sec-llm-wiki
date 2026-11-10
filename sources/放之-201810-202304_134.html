@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Iterm2 配置 rz sz</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Iterm2 配置 rz sz</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=Mzg3ODAzNjg5OA==&amp;mid=2247483724&amp;idx=1&amp;sn=a12259a260846e8515bbcb5f1a8ba70b&amp;chksm=cf189381f86f1a97309479fcd24475bac15bedaffe277629261c19519aa1c608d8583bcb7ef4&amp;scene=126&amp;sessionid=1681322250#rd">http://mp.weixin.qq.com/s?__biz=Mzg3ODAzNjg5OA==&amp;mid=2247483724&amp;idx=1&amp;sn=a12259a260846e8515bbcb5f1a8ba70b&amp;chksm=cf189381f86f1a97309479fcd24475bac15bedaffe277629261c19519aa1c608d8583bcb7ef4&amp;scene=126&amp;sessionid=1681322250#rd</a></blockquote><p style="text-align: center;"><br/></p><p style="text-align: center;">Mac 上没有一个像Xshell这样好用的，无奈rz， sz走起。配置一波即可使用</p><p style="text-align: center;">https://github.com/mmastrac/iterm2-zmodem</p><ol class=" list-paddingleft-2" style="list-style-type: decimal;"><li><p style="text-align: left;">git clone https://github.com/mmastrac/iterm2-zmodem</p></li><li><p style="text-align: left;">cd iterm2-zmodem &amp;&amp; sudo  mv *.sh /usr/local/bin</p></li><li><p style="text-align: left;"> 配置Trigger，按照下图配置即可</p></li></ol><p style="text-align: left;"><br/></p><pre style="box-sizing: border-box;font-family: SFMono-Regular, Consolas, &quot;Liberation Mono&quot;, Menlo, Courier, monospace;font-size: 13.6px;margin-bottom: 16px;margin-top: 0px;overflow-wrap: normal;background-color: rgb(246, 248, 250);border-radius: 3px;line-height: 1.45;overflow: auto;padding: 16px;color: rgb(36, 41, 46);">    Regular expression: rz waiting to receive.\*\*B0100
+    Action: Run Silent Coprocess
+    Parameters: /usr/local/bin/iterm2-send-zmodem.sh
+    Instant: checked
+
+    Regular expression: \*\*B00000000000000
+    Action: Run Silent Coprocess
+    Parameters: /usr/local/bin/iterm2-recv-zmodem.sh
+    Instant: checked</pre><p style="text-align: left;"><br/></p><p style="text-align: center;"><img class="" data-ratio="0.6209150326797386" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/rmc0P5ibISkATCvTLafUrlHY4oN27yQU43YrGiaaPYicQemNdO1u4V098dHF3OeKX1ydFQYwRJaiarZetKfER6j0HQ/640?wx_fmt=png" data-type="png" data-w="1836" style="" src="../Images/f290c846a01a109edf187211f3f5b672.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/rmc0P5ibISkATCvTLafUrlHY4oN27yQU43YrGiaaPYicQemNdO1u4V098dHF3OeKX1ydFQYwRJaiarZetKfER6j0HQ/640?wx_fmt=png"/></p><p><br/></p><p><br/></p><p><br/></p><p><br/></p><p><br/></p>
+        
+</body>
+</html>

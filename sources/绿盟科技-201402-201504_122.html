@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>数据泄漏后遗症——撞库攻击篇</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>数据泄漏后遗症——撞库攻击篇</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5ODYyMTM4MA==&amp;mid=200878533&amp;idx=1&amp;sn=6c2b41655ce3e8e1daa34c6cfb89f863&amp;chksm=28ca706e1fbdf97886877bd66fce14853fee2b9cc619ae3231cdcbe2efed08f8a2cc01a4a0d6&amp;scene=126&amp;sessionid=1681372672#rd">http://mp.weixin.qq.com/s?__biz=MjM5ODYyMTM4MA==&amp;mid=200878533&amp;idx=1&amp;sn=6c2b41655ce3e8e1daa34c6cfb89f863&amp;chksm=28ca706e1fbdf97886877bd66fce14853fee2b9cc619ae3231cdcbe2efed08f8a2cc01a4a0d6&amp;scene=126&amp;sessionid=1681372672#rd</a></blockquote><p>京东的撞库事件，还有之前的CSDN、如家用户数据的泄露，把数据泄漏再一次搬到了大荧幕面前，其严重的影响使得用户谈之色变。绿盟科技今天带着大家来谈一谈数据泄漏的一种后遗症——撞库。</p><p><br/></p><p>对于大多数用户来说，“撞库”也许是一个专有的名词，其实理解起来并不难，黑客通过收集互联网上已泄露的用户+密码信息，生成对应的列表，暴力尝试登陆其他网站后，得到一系列可以登陆的用户，从而进入黑色产业链，牟取暴利。</p><p><br/></p><p>现在互联网如此发达，用户在登陆多个网站的时候，为了方便记录，经常采用相同的用户名和密码，一旦有一个网站的信息被泄露，后果可想而知。</p><p><br/></p><p>黑客要想撞库成功，一定要有一定数量的用户账号和密码信息，这就不得不提到撞库的亲兄弟“拖库”了。</p><p><br/></p><p>“拖库”是指黑客入侵有价值的网络站点，把注册用户的资料数据库全部盗走的行为。黑客在拖库拿到数据库信息后，随后进行了洗库，提取了重要的账号密码信息，通过黑色产业链变现（金融信息、游戏账号、个人信息），然后把得到用户和密码等信息进行整理，形成庞大的社会工程库，然后对其他网站进行尝试登录，一旦登录成功，后果将非常严重。所以撞库的实质就是，以大量的用户信息为基础，利用用户的注册习惯，批量尝试登录其他网站。</p><p><br/></p><p><br/></p><p style="text-align: center;"><img width="504" height="207" style="width: 389px;" data-src="http://mmbiz.qpic.cn/mmbiz/IpYUt4DIvZdXJh4omHKniaxoric0Kf9XCHABDzddr4icUiaXQsoRCQToI1qfrs6YGWFPbx4x3QvJsCmkD4aibg9fvIA/0" data-s="300,640" data-ratio="0.5809768637532133" data-w="389" src="../Images/19b0affa0c1dd2de04765af58d681106.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/IpYUt4DIvZdXJh4omHKniaxoric0Kf9XCHABDzddr4icUiaXQsoRCQToI1qfrs6YGWFPbx4x3QvJsCmkD4aibg9fvIA/0"/></p><p>突出的特点是，它可以在不攻破目标系统的前提下，获取某些用户的信息。</p><p><br/></p><p>说了这么多，大家对撞库有了一个基本的了解，绿盟科技WAF团队后续会对撞库攻击进行预研，提升攻防实力，为企业提供更有力的安全防护。</p><p><img data-src="http://mmbiz.qpic.cn/mmbiz/IpYUt4DIvZcz5qO2OuqP5CM7o38N50mNzA2WJ4xkue9qn3H7F5DFJnGBBZR2Eyo45PK6dYwFZ067GTJ9Y9wHlA/0" data-ratio="0.5841584158415841" data-w="" src="../Images/2ae0fad31f483a3d7157c8a4c08e2bf8.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/IpYUt4DIvZcz5qO2OuqP5CM7o38N50mNzA2WJ4xkue9qn3H7F5DFJnGBBZR2Eyo45PK6dYwFZ067GTJ9Y9wHlA/0"/></p>
+        
+</body>
+</html>

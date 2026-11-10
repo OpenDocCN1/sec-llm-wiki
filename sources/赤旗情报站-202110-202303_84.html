@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>【安全快讯】Windows Installer 权限提升漏洞（0day）</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>【安全快讯】Windows Installer 权限提升漏洞（0day）</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzU4NzA5Nzg2Nw==&amp;mid=2247483866&amp;idx=1&amp;sn=1b19c336d9503dc992a62f4f5426cbe1&amp;chksm=fdf073beca87faa89fdaac6738fc0669d920a3060e29554539215d9ddbcbdccb7f6071376f0b&amp;scene=126&amp;sessionid=1681273644#rd">http://mp.weixin.qq.com/s?__biz=MzU4NzA5Nzg2Nw==&amp;mid=2247483866&amp;idx=1&amp;sn=1b19c336d9503dc992a62f4f5426cbe1&amp;chksm=fdf073beca87faa89fdaac6738fc0669d920a3060e29554539215d9ddbcbdccb7f6071376f0b&amp;scene=126&amp;sessionid=1681273644#rd</a></blockquote><p style="text-align: center;"><img class="rich_pages wxw-img js_insertlocalimg" data-ratio="0.60234375" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/EYVtYiaBrdR1W7wPTa5mxpsH3CTUuBFRar3a2HJQugqt6tuPDYoZuMMBwxFLhvZyFKE46tk4zFNZUZGBwXukOyg/640?wx_fmt=jpeg" data-type="jpeg" data-w="1280" style="" src="../Images/27dc1351057790f1dbd1f144bc6151ce.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/EYVtYiaBrdR1W7wPTa5mxpsH3CTUuBFRar3a2HJQugqt6tuPDYoZuMMBwxFLhvZyFKE46tk4zFNZUZGBwXukOyg/640?wx_fmt=jpeg"/></p><p>安全研究员 Abdelhamid Naceri 发现 Microsoft Windows Installer 的修复补丁 CVE-2021-41379 带来了另一个特权提升漏洞。</p><p><br/></p><p>Naceri 在 GitHub 发布了程序样本和说明，<span style="background-color: rgb(255, 169, 0);">它 “通过覆盖 Edge 的提权服务 DACL，将自身复制到 elevation_service.exe 并执行，以获得提升的权限”。</span>该漏洞影响 Windows 10， Windows 11 和 Windows Server 2022。</p><p><br/></p><p>SYSTEM 权限是 Windows 用户可用的最高用户权限，可以执行任何操作系统命令。</p><p><br/></p><p>通过利用这种零日漏洞，对受感染系统具有有限访问权限的攻击者可以轻松提升其特权，以帮助在受害者网络中横向传播。</p><p><br/></p><p>BleepingComputer 已经测试了 Naceri 的漏洞，并使用它从具有低级别“标准”权限的帐户成功打开具有 SYSTEM 权限的命令提示符。</p><p><br/></p><p>“由于此漏洞的复杂性，在撰写本文时可用的最佳解决方法是等待 Microsoft 发布安全补丁，”Naceri 解释说。“任何直接修补二进制文件的尝试都会破坏 Windows 安装程序。所以你最好等待，看看微软将如何再次破解补丁。”</p><p><br/></p><p>微软目前尚未发布补丁。腾讯安全团队给出的临时缓解方法为：关闭 MicrosoftEdgeElevationService 服务（Ctrl + Q 搜索 “服务”，然后禁用上述服务）。建议谨慎处理不明程序或文档，小心中招。</p><p><br/></p><p><br/></p><p>参考链接：</p><p>Malware now trying to exploit new Windows Installer zero-day (bleepingcomputer.com)</p><p>https://www.bleepingcomputer.com/news/security/malware-now-trying-to-exploit-new-windows-installer-zero-day/</p><p><br/></p><p><br/></p><p><a target="_blank" href="https://mp.weixin.qq.com/s?__biz=MzI5ODk3OTM1Ng==&amp;mid=2247499714&amp;idx=1&amp;sn=cf92451432fdd43a85d8eb452323f51b&amp;scene=21#wechat_redirect" textvalue="腾讯" linktype="text" imgurl="" imgdata="null" tab="innerlink" data-linktype="2">腾讯</a></p>
+        
+</body>
+</html>

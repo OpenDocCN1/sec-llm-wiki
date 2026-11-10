@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>解决Cobalt Strike登录慢的方法</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>解决Cobalt Strike登录慢的方法</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=Mzg2OTU4OTM0Ng==&amp;mid=2247487613&amp;idx=1&amp;sn=629fe071057f6537bcf15afa135e64d3&amp;chksm=ce9b9870f9ec11660eafc27706b09a7757b8d354eed61f7aa7c1237051ba5994681e8d1dc15e&amp;scene=126&amp;sessionid=1681664661#rd">http://mp.weixin.qq.com/s?__biz=Mzg2OTU4OTM0Ng==&amp;mid=2247487613&amp;idx=1&amp;sn=629fe071057f6537bcf15afa135e64d3&amp;chksm=ce9b9870f9ec11660eafc27706b09a7757b8d354eed61f7aa7c1237051ba5994681e8d1dc15e&amp;scene=126&amp;sessionid=1681664661#rd</a></blockquote><p data-mpa-powered-by="yiban.io">        我们搭建了CS服务器后，使用过一段时候后再登录会进行内容的同步，使得我们接收到监听上线消息后，需要很长时间才能登录进入CS，所以我们需要来解决一下。<br/></p><p style="text-align: center;"><img class="rich_pages wxw-img" data-galleryid="" data-ratio="0.5618055555555556" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/nMQkaGYuOibBmUAyvPOvfqw59JX0dZiawVNjxGglIy8ZbICiciaYZWYsSdudiaaVnicW82MnnM5pKaGiaKicw4IFPyhlhw/640?wx_fmt=png" data-type="png" data-w="2880" style="" src="../Images/7b0418db25acee58acba194cd72f084b.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/nMQkaGYuOibBmUAyvPOvfqw59JX0dZiawVNjxGglIy8ZbICiciaYZWYsSdudiaaVnicW82MnnM5pKaGiaKicw4IFPyhlhw/640?wx_fmt=png"/></p><p><br/></p><p>        通过上面的小窗口，我们可以发现syncing archives，我们登录进入CS服务器内，找到data目录，找到archives.bin文件进行备份，然后删除原有的archives.bin即可，或者直接修改为其他名字，然后重启CS，再登录瞬间流畅。<br/></p><p style="text-align: center;"><img class="rich_pages wxw-img" data-galleryid="" data-ratio="0.5357142857142857" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/nMQkaGYuOibBmUAyvPOvfqw59JX0dZiawVwib9vialVZJ8HA34sWE9rDeELNlBEGF1ReGLciaK1ChiaHGNIk9TysJ1YQ/640?wx_fmt=png" data-type="png" data-w="2072" style="" src="../Images/3ba6045138aa65366425e0c7517cdfbb.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/nMQkaGYuOibBmUAyvPOvfqw59JX0dZiawVwib9vialVZJ8HA34sWE9rDeELNlBEGF1ReGLciaK1ChiaHGNIk9TysJ1YQ/640?wx_fmt=png"/></p><p><br/></p><p>当然这里有个问题，重启之后，以前的shell记录全都没了，你之前执行的命令可就都找不到了，要是项目没结束建议不要这么做，测试了下恢复备份的文件也不能还原之前的记录，这波血亏。<br/></p><p><br/></p>
+        
+</body>
+</html>

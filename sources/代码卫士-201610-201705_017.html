@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>华硕修复RT路由器中的多个漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>华硕修复RT路由器中的多个漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485532&amp;idx=1&amp;sn=2b060c131714655f145c9181380fa42d&amp;chksm=ea973936dde0b0208d1abbc84d7ee3b9d00a9b9cdc2d55b143e915290df8b73bfc8467c7443e&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485532&amp;idx=1&amp;sn=2b060c131714655f145c9181380fa42d&amp;chksm=ea973936dde0b0208d1abbc84d7ee3b9d00a9b9cdc2d55b143e915290df8b73bfc8467c7443e&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiak1dyicMQ0DwN7cqU7TJTRINmSkmiah0E46RRpEonwmHH1W31VrgnweNRwnmHF4x5HMia36evXH9s35w/0?wx_fmt=jpeg" data-ratio="0.8" data-w="300" src="../Images/196ef84d13d5ce16ea3eb80c66d7cb3a.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiak1dyicMQ0DwN7cqU7TJTRINmSkmiah0E46RRpEonwmHH1W31VrgnweNRwnmHF4x5HMia36evXH9s35w/0?wx_fmt=jpeg"/></p><p><br/></p><p><strong>未运行最新固件版本的华硕 RT-AC和RT-N设备易受一系列CSRF、JSONP和XSS漏洞的影响，恶意攻击者能披露信息、更改设备设置或注入代码。</strong></p><p><br/></p><p>华硕在2017年3月份的固件更新（设备版本3.0.0.4.380.7378）中解决了以上提及的问题，不过本周才公布了某些详情。来自Nightwatch网络安全公司的研究人员表示，多个问题影响RT路由器的网络接口，尽管通常网络接口只能从局域网而非互联网上访问。这些漏洞“能便于攻击者通过由位于同一网络的用户所访问的恶意站点、或运行在同一网络的恶意移动app或桌面app攻击路由器。”</p><p><br/></p><p>华硕在支持站点上公布的详情显示新发布的固件版本供解决了五个问题。另外更新还增加了对暴力攻击的日志信息并解决了几个非安全性问题。</p><p><br/></p><p>第一个漏洞编号为CVE-2017-5891，包含一个登录页面CSRF和保存设置CSRF问题，导致恶意站点能登录并更改路由器设置。网络接口的登录页面跟可保存设置的多个页面一样存在的问题是没有部署CSRF防御措施。因此，恶意站点能在用户不知情的情况下提交登录请求，不过只有在知道路由器用户名和密码的情况下才可。未修改默认凭证 (admin/admin) 的设备一定存在风险。一旦登录成功，恶意站点能够在用户不知情的情况下更改路由器中的任意设置。</p><p><br/></p><p>第二个漏洞编号为CVE-2017-5892，原因是路由器中存在的两个JSONP端点，它能“检测到哪个华硕路由器正在运行并披露一些信息”，加上“路由器界面中存在多个JSONP端点，因此能披露路由器的多种信息”。被泄露的数据包括网络信息、2.4 GHz 和5 GHz带宽上的周边访问点、设备在网络上的网络地图、原始数据、外部IP地址和WebDAV信息。另外一个相关的问题是路由器中存在XML端点，它会披露路由器的无线密码。不过要利用这个问题，要求移动或桌面app在局域网运行，因为XML无法在浏览器中跨源加载。</p><p><br/></p><p>第三个问题存在于HTTPD中，是一个会话劫持漏洞，影响运行3.0.0.4.380.7378固件版本之前的RT-N和RT-AC路由器，以及运行3.0.0.4.380.7266固件版本之前的RT-AC68W路由器；影响运行3.0.0.4.380.9488固件版本之前的RT-N路由器；以及运行380.65_2 Asuswrt-Merlin版本之前的路由器。这个漏洞的编号是CVE-2017-6549，它能让远程攻击者通过发送某些HTTP头中的cgi_logout和asusrouter-Windows-IFTTT-1.0窃取任何活跃的管理员会话。</p><p><br/></p><p>第四个是XSS漏洞，存在于之前提及的固件版本中的HTTPD中，编号为CVE-2017-6547。它能让攻击者通过请求长于50个字符的文件名称注入任意JavaScript。</p><p><br/></p><p>最后一个漏洞是缓冲溢出漏洞 (CVE-2017-6548)，存在于以上提及的固件版本中的networkmap中，它能让“远程攻击者通过特别编制的多播消息中的长主机或端口在路由器中注入任意代码”。</p><p><br/></p><p>受影响用户应该尽快更新最新固件版本，同时更改默认凭证。</p><p><br/></p><p><br/></p><p><strong style="white-space: normal;">本文由360代码卫士编译，不代表360观点，转载请注明“转自360代码卫士www.codesafe.cn”。</strong></p>
+        
+</body>
+</html>

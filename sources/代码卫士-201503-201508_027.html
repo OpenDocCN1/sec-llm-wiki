@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>信息安全人员：随机数并不等同于熵</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>信息安全人员：随机数并不等同于熵</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485906&amp;idx=4&amp;sn=2b79b57c1285095202614c8147870d88&amp;chksm=ea9738b8dde0b1ae44be5dcfee360e87974aff767cea571d351635b71163067f6ea6ae156382&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485906&amp;idx=4&amp;sn=2b79b57c1285095202614c8147870d88&amp;chksm=ea9738b8dde0b1ae44be5dcfee360e87974aff767cea571d351635b71163067f6ea6ae156382&amp;scene=27#wechat_redirect</a></blockquote><p>伪随机数字生成器(PRNGs)的随机性一直是令密码学底层研究人员头疼的事。</p><p><br/></p><p>安全研究员Bruce Potter十多年前就展示过如何使用蓝牙引发战争，他表示设计和实现上的问题破坏了常见加密库的有效性。</p><p><br/></p><p>如今Potter的研究成果（在黑帽大会上展示）更会让人摸不着头脑。他指出一部分问题是人们常常会合并“熵”和“随机性”，但实际上两者完全不同：熵是对不确定结果的度量，而随机性是对熵的长期评估。</p><p><br/></p><p>Potter提供的测试显示了从1.94 比特/秒到12.6 
+比特/秒的常见熵源。他指出尽管被卸载，Linux服务器的操作系统活动都会阻碍熵，“内核每次启动一个进程要消耗256比特熵，所以即使不加密也会对熵
+池产生持续的压力”。结果就是服务器很难在需要时找到好的种子。使用PRNG要求太多对系统管理员详细信息的关注。以使用OpenSSL的Apache服
+务器为例。</p><p><br/></p><p>OpenSSL在每次运行时仅播种一次内部PRNG，对于一些长时间运行的程序比如web服务器、Apache服务器来说，Apache会从相同的
+并且从未重播种的PRNG中选取需要的随机数和密钥。OpenSSL使用随机数文件/dev/urandom时不检查熵的质量，当其用于数据库或者命令行
+时也是如此。</p><p><br/></p><p>Potter的开源测试版本libWesEntropy可以在Whitewood Encryption下载。</p><p><br/></p>本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>西部数据云服务设备可遭本地或远程攻击</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>西部数据云服务设备可遭本地或远程攻击</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485877&amp;idx=3&amp;sn=224728e1ae8f5c8414a6885dd08543ce&amp;chksm=ea9738dfdde0b1c9e92fc87c9abbc45c0607c0c154afafc447b8e0fbcdcf5c5d9cf5af4afe46&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485877&amp;idx=3&amp;sn=224728e1ae8f5c8414a6885dd08543ce&amp;chksm=ea9738dfdde0b1c9e92fc87c9abbc45c0607c0c154afafc447b8e0fbcdcf5c5d9cf5af4afe46&amp;scene=27#wechat_redirect</a></blockquote><p><strong>来自</strong><strong>VerSprite</strong><strong>安全公司的研究人员在西部数据“我的云</strong><strong>NAS</strong><strong>（网络附加存储）”硬盘驱动器中发现了一些漏洞。</strong></p><p><strong><br/></strong></p><p>西部数据宣称“我的云NAS”可当做个人云服务器使用，可放置在家中并通过本地网络、甚至是互联网连接访问。跟其它云储存系统的工作原理相同，它仅需知道服务器的位置是在桌上或客厅便可。</p><p><br/></p><p>研究人员表示，西部数据“我的云”设备运行的版本是Debian Linux，允许用户通过两种方式与之交互：一种是网络访问UI，另一种是RESTful API。对这些系统进入点分析后，研究人员找到两个重大漏洞：命令注入和跨站点请求伪造漏洞。</p><p><br/></p><p><strong>命令注入得到未清洁</strong><strong>API</strong><strong>的许可</strong></p><p><strong><br/></strong></p><p>命令注入漏洞仅能由拥有设备验证权限的用户利用，方法是上传超过2GB且拥有恶意文件名的大文件。由于“我的云”API并没有清洁这些文件名称，攻击者能够插入多种命令，并轻易获得访问设备的根权限。</p><p><br/></p><p>如果攻击者不能物理接近设备，研究人员还详细说明了这个利用的一个变体。攻击者将带有恶意名称的2GB文件放入设备的“公共”文件夹。这个文件夹默认创建并且所有联网设备都可从本地网络访问。</p><p><br/></p><p>不管验证用户何时通过Windows、Linux或Mac My Cloud客户端app导航至公共文件夹，文件名称中的命令都会在验证用户的许可下被执行。在这种情况下，文件名称可能包含着为攻击者创建新的根级别用户的指令。</p><p><br/></p><p><strong>通过</strong><strong>My Cloud Web app</strong><strong>发动</strong><strong>CSRF</strong><strong>攻击</strong></p><p><strong><br/></strong></p><p>研究人员发现的CSRF漏洞存在于设备的网络app中，这款app“并不区分真实和伪造的HTTP请求”，从而为基本的CSRF攻击创造了条件。</p><p><br/></p><p>这个漏洞的利用会稍难一点，因为需要启动互联网访问、有效会话cookie和WD My Cloud的主机名或IP地址访问。安全研究人员表示，通过利用社工技巧和WebRTC，漏洞被利用的几率大幅提升，这就允许黑客执行逆向shell攻击。</p><p><br/></p><p>VerSprite证实称，固件版本04.01.03和04.01.04-422易受攻击，不过西部数据已经开始准备将于几天后发布的补丁。</p><p><br/></p>本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。
+        
+</body>
+</html>

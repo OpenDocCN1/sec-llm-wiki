@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>重要更新：三个热门PHP库出现RCE漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>重要更新：三个热门PHP库出现RCE漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485606&amp;idx=3&amp;sn=1685f8bfd85792aa5eeebacdd63b4d0c&amp;chksm=ea9739ccdde0b0da8e4fc66193fedf8311f834acb4f8929111dfc1286e77d301f79188d4e85f&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485606&amp;idx=3&amp;sn=1685f8bfd85792aa5eeebacdd63b4d0c&amp;chksm=ea9739ccdde0b0da8e4fc66193fedf8311f834acb4f8929111dfc1286e77d301f79188d4e85f&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKiamt0ic3TmqgmsTfIvB8mAdRJ5llOhxFQAiaia3ZpZ8k67dW4qsb1P7wice7FuzPaib9HZDYeCwV7F4ibicAg/0?wx_fmt=png" data-ratio="0.521978021978022" data-w="728" src="../Images/499499aa888ccba6776c05c16a4727df.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKiamt0ic3TmqgmsTfIvB8mAdRJ5llOhxFQAiaia3ZpZ8k67dW4qsb1P7wice7FuzPaib9HZDYeCwV7F4ibicAg/0?wx_fmt=png"/><br/></p><p><br/></p><p><strong>前几天Dawid Golunski表示，最流行的PHP开源库之一PHPMailer中出现了一个重要漏洞，允许远程攻击者在网络服务器环境下通过攻陷app的方式执行任意代码。</strong></p><p><br/></p><p>这个漏洞(CVE-2016-10033)影响全球900多万用户的安全，随后在5.2.18版本被修复。不过Golunski设法绕过了这个修复版本并且发现了一个新的漏洞(CVE-2016-10045)，它又影响着数以百万计的网站和流行开源应用程序如WordPress、Drupal、1CRM、SugerCRM、Yii和Joomla，导致它们易受远程代码执行攻击。最后PHPMailer在5.2.20版本中修复了这个漏洞。5.2.20版本之前的所有版本均受影响，因此强烈建议网络管理员和开发人员更新至最新版本。</p><p><br/></p><p>此外，Golunski还在PHP的另外两个邮件库SwiftMailer和ZendMail中发现了可同样引发远程代码执行攻击的漏洞。</p><p><br/></p><p><strong>SwiftMailer中的RCE漏洞</strong></p><p><br/></p><p>SwiftMailer也是很多主要开源计划如顶级PHP程序框架Yii2、Laravel、Symfony等使用的流行PHP库。这个远程代码执行漏洞(CVE-2016-10074)的利用方式跟PHPMailer中的漏洞一样，可针对使用SwiftMailer类的网站组件发动攻击。攻击者能够在网络服务器的环境下远程执行任意代码，而这个代码又可被进一步利用访问托管着使用易受攻击库版本的网络服务器。</p><p><br/></p><p>这个漏洞影响所有的库版本，包括最新发布的版本5.4.5-DEV。不过Golunski将漏洞告知SwiftMailer团队后，开发人员在一天内就发布了新版本5.4.5将漏洞修复。</p><p><br/></p><p>GitHub上的变更日志指出，“邮件传输(Swift_Transport_MailTransport)容易传递任意shell参数，如果’Form’、’ReturnPath’或’Sender’头来自非信任来源，可能会引发远程代码执行”。</p><p><br/></p><p><strong>ZendMail中的RCE漏洞</strong></p><p><br/></p><p>ZendMail是一款非常流行的PHP程序框架Zend Framework的一个组件，其安装量超过9500万次。</p><p><br/></p><p>漏洞CVE-2016-10034的利用方式跟PHPMailer和SwiftMailer一致。研究人员将该问题告知ZendMail后，开发人员已发布修复版本。</p><p><br/></p><p>Golunski已发布PoC演示视频展示上述三个攻击，并公布了这些漏洞的利用方式；不久他将发布安全白皮书。</p>
+        
+</body>
+</html>

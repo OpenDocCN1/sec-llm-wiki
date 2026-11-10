@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CDP 之我见！</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>CDP 之我见！</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2MzM0NjcxNw==&amp;mid=2247483976&amp;idx=1&amp;sn=533dd875bce982f653dd47e8b44d5605&amp;chksm=eabc0d3addcb842c12c61d8fae4f438b3594a4da7a2642651ff13ed69d10af687925442d2cdc&amp;scene=126&amp;sessionid=1681653875#rd">http://mp.weixin.qq.com/s?__biz=MzI2MzM0NjcxNw==&amp;mid=2247483976&amp;idx=1&amp;sn=533dd875bce982f653dd47e8b44d5605&amp;chksm=eabc0d3addcb842c12c61d8fae4f438b3594a4da7a2642651ff13ed69d10af687925442d2cdc&amp;scene=126&amp;sessionid=1681653875#rd</a></blockquote><p><img data-type="gif" data-src="http://mmbiz.qpic.cn/mmbiz/M8lZIYZticqSUBxpojuz0dvFDdU3BkVJ2mNfvorv6uNqHGpL9MAhb4mlh288yS4iaQiarSWUkdK4sBKZsHl77Qx3w/0?wx_fmt=gif" data-ratio="0.18977272727272726" data-w="880" src="../Images/d2a69632c76edce79e3c1160ca61e023.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/M8lZIYZticqSUBxpojuz0dvFDdU3BkVJ2mNfvorv6uNqHGpL9MAhb4mlh288yS4iaQiarSWUkdK4sBKZsHl77Qx3w/0?wx_fmt=gif"/></p><p style="text-indent: 2em; line-height: 2em;"><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/M8lZIYZticqQicQyjWiam6UBFaxJDQ5xgckncNBm8GibyCEqdpkP5ah46XNszAicvWvZeKWtNJuV8qte08iaxzWcicvvA/0?wx_fmt=jpeg" data-ratio="0.5555555555555556" data-w="900" src="../Images/cb74ec560e779312be971046cbe1a9d0.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/M8lZIYZticqQicQyjWiam6UBFaxJDQ5xgckncNBm8GibyCEqdpkP5ah46XNszAicvWvZeKWtNJuV8qte08iaxzWcicvvA/0?wx_fmt=jpeg"/></p><p style="text-indent: 2em; line-height: 2em;">针对 CDP 技术的兴起，RPO=0.RTO=0 的宣传资料满天飞，几乎所有的
+用户都会欣然接受，这让我想到了一个故事，鲁迅写的血馒头，说人血馒头可
+以治疗肺痨，竟然还真有人信？其实这不能怪他，因为他确实真的很需要，在
+没有选择的情况下，死马当活吗医还是有一定的希望的。 </p><p style="text-indent: 2em; line-height: 2em;">针对 CDP（continual data protection）技术和备份技术，这里做一个分析。
+作为一个备份厂商的售前，兴冲冲的向你的客户介绍产品的时候，客户问你
+CDP 和备份比较，备份有哪些优势？是不是无从下嘴？要做出科学的对比，当
+然要建立在两种技术都充分理解的基础之上。 </p><p style="text-indent: 2em; line-height: 2em;">先不从技术角度来说，我们可以设想一下，CDP 如果像某些厂商宣传的那
+样，即可做到 RPO 为 0，也可以做到 RTO 为 0，而且价格还很便宜，那么其
+他的备份厂商还有活着的必要吗？既然那么牛，CDP 厂商为啥还出个备份功
+能？那些金融、运营商为啥还花费巨资建立容灾和备份呢？ </p><p style="text-indent: 2em; line-height: 2em;">首先必须承认 RPO 很重要，CDP 也是有理论支撑的；目前 CDP 采用的技
+术是异步数据同步（Near CDP）和同步数据同步技术（True CDP），通过日志记
+录数据同步复制的过程，按照日志时间点进行回滚实现恢复的技术，有点数据
+库常识的工程师一定都能理解，跟数据库的日志记录方式如出一辙。</p><p style="text-indent: 2em; line-height: 2em;"> 个人认为这个技术的产生是容灾厂商跟备份厂商竞争，避免自己的短腿，
+产生的一个附属品。但是目前市面上的 CDP 技术还存在着技术缺陷，比如：</p><p style="text-indent: 2em; line-height: 2em;"> 1、 性能差 。先不说 CDP 实时读写占用生产服务器的性能，CDP 技术首先第一
+点就是要保证数据的一致性，就是生产环境的数据和存储的数据必
+须是实时同步的，某个时间点，备份数据和生产数据完全是一致
+的，但是由于网络的延时很难实现，这样就必须有个角色出来进行
+协调，类似于仲裁的功能（也就是我们说的 CDP 服务器），当一条
+新数据需要写入到生产环境的时候，确保该数据在生产服务器和存
+储同时落到磁盘，然后给 CDP 服务器返回一个值，告诉他这个数据
+有效，这样数据一致性解决了，每一条数据都需要这样操作，如果
+数据写入很频繁，这种机制就有问题，更何况，如果有很多服务器
+都做 CDP，那 CDP 服务器会告诉你，等会再写，我处理不过来
+了。我亲自听一个银行的客户用的某康 CDP，客户说之前用着还可
+以，现在成了业务扩展的瓶颈，使用吧，服务器数据量增加 CDP 服
+务器计算不过来，业务非常受影响，不用吧，花了很多钱买的，进
+退两难。 </p><p style="text-indent: 2em; line-height: 2em;">2、 容量大。 虽然说现在存储不那么昂贵了，但是要是凭空多出 N 倍数据容量的
+存储也是头疼的事，尤其是在云中，成本高出很多。
+因为 CDP 的恢复方式经过日志回滚，其实是一种合并的方式，原备
+份数据不能删除，需要再复制一全备副本进行数据合并，生成第三
+个合并后的新数据，所以数据最少要占用 3 倍的空间，而且连续记
+录日志的方式，就相当于把传统备份（拍照片）换成了 CDP（录像
+机录制视频），日志的容量可能远远超过数据的容量，所以 CDP 一
+个很常见的问题就是，不能长时间进行 CDP 保护。</p><p style="text-indent: 2em; line-height: 2em;"> 3、 风险大。 往往 CDP 的恢复是通过日志进行回滚，回滚就意味着要覆盖原有的
+数据，如果核心业务某人误操作删除一条数据，让你回滚整个数据
+库，你敢操作吗？活生生的例子是有的，因为 oracle 删除数据进行
+回滚，导致 Oracle 逻辑错误，整个数据库都瘫痪了。 </p><p style="text-indent: 2em; line-height: 2em;">4、 操作复杂和稳定性差。 越复杂的技术，稳定性越差，相信大家都有共同感受，如果不能体
+会，大家可以尝试设置一下 CDP 备份和恢复就体会到了，如果一个
+服务器使用 CDP 保护还能接受，那尝试把所有业务系统都 CDP 保
+护，可以尝试计算一下实施和维护的工作量。
+此外，大量的的 CDP 产生大量的 CDP 日志，数据是保护了，一味
+的靠日志堆积进行数据保护，数据是保护了，请问您的这些日志谁
+来保护？传统的重复数据删除技术也面临这个问题，日志坏掉一点
+点，所有数据均丢失。 </p><p style="text-indent: 2em; line-height: 2em;">5、 CDP 灾难恢复能力弱。 无论是文件还是数据块的 CDP，都是应用层面的数据复制，更有甚
+者说是字节级别的数据复制（请问有哪些应用是按照字节产生数据
+的？）CDP 的部署需要安装相应的环境，插件组件必不可少，主要
+还要安装操作系统，如果原生产磁盘坏掉了，请问如何 CDP？数据
+不是没有丢吗？首先硬盘的故障真不是稀罕事，那你想想恢复的过
+程是什么样的？一旦系统瘫痪，换硬盘，重新安装操作系统，重新
+部署应用，再 CDP 回滚，再进行数据验证，整个过程一切顺利，保
+守估计 24 个小时，医院、银行估计也受不起这个损失。 </p><p style="text-indent: 2em; line-height: 2em;">6、 CDP 结合快照貌似很合理。 因为以上种种 CDP 弊端，所以 CDP 结合快照技术就产生了，可以
+使用备份常用的底层技术快照，可以进行一段时间快照一次，甚至
+一分钟快照一次，只快照不做数据的备份处理，数据要是没了，快
+照有啥用？想想 VMware 有完善快照技术，为啥自己还设计出一个
+VADP，为啥有这么多针对 VMware 备份的产品就知道了。 </p><p style="text-indent: 2em; line-height: 2em;">总结：
+CDP 需要，但是只是少数的核心业务服务器需要，只能做短暂的 CDP，整
+个 IT 架构必须结合传统的业务数据备份和灾难恢复备份补充。 </p><p style="text-indent: 2em; line-height: 2em;">注意：顺便说一下 CDP 不是容灾，不是数据复制；数据复制技术很成熟
+了，作为云产品和异地容灾还是很不错的。</p><p style="text-indent: 2em; line-height: 2em;"><br/></p><p style="text-indent: 2em; line-height: 2em;">作者简介：宋大鹏，曾任职某国际知名备份厂商，资深售后工程师，十余年备份行业经验。</p><p style="text-indent: 2em; line-height: 2em;"><br/></p><p><img data-type="gif" data-src="http://mmbiz.qpic.cn/mmbiz/M8lZIYZticqSFHBq5tcGYLREEMiavsyuk4Xomhtzmw8BXKp6tdFImNNpfHicEvkNK1kARbWbGkUjla6O8Mhrl6Y9Q/0?wx_fmt=gif" data-ratio="0.046511627906976744" data-w="430" src="../Images/5c3751317a75f56be97b10da72716982.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/M8lZIYZticqSFHBq5tcGYLREEMiavsyuk4Xomhtzmw8BXKp6tdFImNNpfHicEvkNK1kARbWbGkUjla6O8Mhrl6Y9Q/0?wx_fmt=gif"/></p><p style="text-indent: 2em; line-height: 2em;">欢迎关注：大兵说安全。<br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz/M8lZIYZticqSUBxpojuz0dvFDdU3BkVJ2icJ6Z9G93AmH9fxHwxaKuYJLic7TQiawoiaYKeqXtKyzbGoqPLWzpKR0BQ/0?wx_fmt=jpeg" data-ratio="1" data-w="258" src="../Images/e2691d2369626253af9b7bd6d7f607c9.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/M8lZIYZticqSUBxpojuz0dvFDdU3BkVJ2icJ6Z9G93AmH9fxHwxaKuYJLic7TQiawoiaYKeqXtKyzbGoqPLWzpKR0BQ/0?wx_fmt=jpeg"/></p><p style="text-indent: 2em; line-height: 2em;"><br/></p>
+        
+</body>
+</html>

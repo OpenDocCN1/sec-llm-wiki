@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>WhatsApp Web存在漏洞 影响2亿用户</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>WhatsApp Web存在漏洞 影响2亿用户</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485888&amp;idx=2&amp;sn=f7f4dc3aa297fdd170e0508221fe2804&amp;chksm=ea9738aadde0b1bcf3cc90b0bea0a5e5335f97f0728f2f0227967a67649505caa281c17cd1d1&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485888&amp;idx=2&amp;sn=f7f4dc3aa297fdd170e0508221fe2804&amp;chksm=ea9738aadde0b1bcf3cc90b0bea0a5e5335f97f0728f2f0227967a67649505caa281c17cd1d1&amp;scene=27#wechat_redirect</a></blockquote><p>Check Point的安全专家在WhatsApp Web中发现了一个可被攻击者利用且可攻陷2亿用户的漏洞。</p><p><br/></p><p>WhatsApp 
+Web允许WhatsApp用户从桌面访问信息。攻击者可利用所存在的漏洞诱骗用户在电脑上执行任意代码，且利用的方法很简单，只要将一张包含恶意代码的
+vCard联系人卡片发送给用户，一旦用户打开，联系人卡片就会披露给一份可执行文件，通过传播僵尸软件、勒索软件、远程访问木马及其他恶意软件的方式攻
+陷电脑。攻击者能通过‘&amp;’字符作为分隔符将命令注入vCard的“name”属性中。Windows会自动解析组成vCard的多个属性并试图
+执行包括被注入命令在内的内容。专家指出，“通过手动拦截并编造XMPP请求到WhatsApp服务器，就有可能控制联系人卡片文件的文件扩展。”此外，
+攻击者还能通过一个图标利用漏洞并传播恶意二进制。实际上这种简单的伎俩为网络犯罪分子跟垃圾邮件发送者提供了无穷的机会轻易实施“WhatsApp钓鱼
+攻击”。该漏洞的大规模利用可能因未意识到附件的恶意本质，或已感染了数百万用户。</p><p><br/></p><p>Check Point于上个月月末将该漏洞报告给WhatsApp，后者迅速将其修复。WhatsApp Web v0.1.4481及之后版本包含了对本漏洞的修复。用户应尽快予修复。</p><p><br/></p>本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。
+        
+</body>
+</html>

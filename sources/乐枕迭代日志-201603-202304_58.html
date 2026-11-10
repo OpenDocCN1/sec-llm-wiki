@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>WordPress 4.7.0-4.7.1 内容注入漏洞分析</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>WordPress 4.7.0-4.7.1 内容注入漏洞分析</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA3NTMyNDg3OQ==&amp;mid=2652519146&amp;idx=1&amp;sn=6c567941c68c6eb2024f3de0f596e2f1&amp;chksm=849cd64ab3eb5f5ca0be1afd7d14c3d0d0a71cb460d379fa65d2d0a2c92ea31d94d1dec23227&amp;scene=126&amp;sessionid=1681322364#rd">http://mp.weixin.qq.com/s?__biz=MzA3NTMyNDg3OQ==&amp;mid=2652519146&amp;idx=1&amp;sn=6c567941c68c6eb2024f3de0f596e2f1&amp;chksm=849cd64ab3eb5f5ca0be1afd7d14c3d0d0a71cb460d379fa65d2d0a2c92ea31d94d1dec23227&amp;scene=126&amp;sessionid=1681322364#rd</a></blockquote><p>WordPress 4.7.0-4.7.1 REST API权限验证绕过，攻击者可利用该漏洞修改文章内容，并通过XSS实施进一步攻击，在一定条件下可写入webshell。</p><h2><br/><span style="font-size: 20px;"/></h2><h2><span style="font-size: 20px;">Patch</span></h2><p><a/></p><hr/><p><a/><br/></p><p><a>https://github.com/WordPress/WordPress/commit/e357195ce303017d517aff944644a7a1232926f7</a></p><p><a><br/></a></p><p><img data-src="http://mmbiz.qpic.cn/mmbiz_png/WdJky8oWwZw7qdQXR7NT6FmwB4yWmVR9gXvtQXLw7usZLGeoB0aY9vE1T7AcsjiboTED9V5GI8jvL1dicEcaUBdw/0?wx_fmt=png" data-type="png" data-ratio="0.2857142857142857" data-w="1288" src="../Images/1607b9ca334ed38812583962446875b7.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/WdJky8oWwZw7qdQXR7NT6FmwB4yWmVR9gXvtQXLw7usZLGeoB0aY9vE1T7AcsjiboTED9V5GI8jvL1dicEcaUBdw/0?wx_fmt=png"/></p><p><br/></p><p>通过REST API修改文章时，<code><span style="background-color: rgb(214, 214, 214);">update_item_permissions_check</span></code>函数用于验证权限（上图左）。</p><p><br/></p><p>该函数先验证了文章是否存在，再验证有无更新权限，这里令<code><span style="background-color: rgb(214, 214, 214);">get_post()</span></code>获取文章失败即可绕过该验证。</p><p><br/></p><p>跟进<code><span style="background-color: rgb(214, 214, 214);">get_post()</span></code>函数</p><p><br/></p><p><code><span style="background-color: rgb(214, 214, 214);">/wp-includes/post.php</span></code> line 515 关键代码如下</p><p><br/></p><pre><code>function get_post( $post = null, $output = OBJECT, $filter = 'raw' ) {
+...
+$_post = WP_Post::get_instance( $post );
+if ( ! $_post )
+    return null;
+...
+}</code></pre><p><br/></p><p>跟进<code><span style="background-color: rgb(214, 214, 214);">get_instance()</span></code></p><p><code><span style="background-color: rgb(214, 214, 214);"><br/></span></code></p><pre><code>public static function get_instance( $post_id ) {
+    global $wpdb;
+
+    if ( ! is_numeric( $post_id ) || $post_id != floor( $post_id ) || ! $post_id ) {
+        return false;
+    ...
+}</code></pre><p><br/></p><p>这里看到输入<code><span style="background-color: rgb(214, 214, 214);">$post_id</span></code>不为纯数字时返回false。</p><p><br/></p><p>现在我们可以构造一个json消息，令<code><span style="background-color: rgb(214, 214, 214);">{"id":"1a"}</span></code>。
+这样<code><span style="background-color: rgb(214, 214, 214);">$request['id']</span></code>获取到<code>1a</code>这个值，传入<code><span style="background-color: rgb(214, 214, 214);">get_post()</span></code>函数导致<code><span style="background-color: rgb(214, 214, 214);">$post==null</span></code>，即可绕过<code><span style="background-color: rgb(214, 214, 214);">update_item_permissions_check()</span></code>验证。 <br/></p><p><br/></p><p>随后<code><span style="background-color: rgb(214, 214, 214);">update_item()</span></code>在修改内容时对这个<code><span style="background-color: rgb(214, 214, 214);">id</span></code>参数做了integer casting，将<code><span style="background-color: rgb(214, 214, 214);">1a</span></code>变为<code><span style="background-color: rgb(214, 214, 214);">1</span></code>，从而顺利获取到文章内容并进行后续操作。</p><p><br/></p><pre><code>public function update_item( $request ) {
+    $id   = (int) $request['id'];
+    $post = get_post( $id );
+...
+}</code></pre><h2><br/></h2><h2><span style="font-size: 20px;">PoC</span></h2><hr/><p><br/></p><p><a>https://github.com/Xyntax/POC-T/blob/2.0/script/wp-4.7.1-restapi.py</a></p><p><a><br/></a></p><p><img data-src="http://mmbiz.qpic.cn/mmbiz_png/WdJky8oWwZw7qdQXR7NT6FmwB4yWmVR9dhib87nJtSrRcH6A6Vd4icNHIicyzb84HeJQJyIic2E6Mibonx1PKkm8YQA/0?wx_fmt=png" data-type="png" data-ratio="0.45726495726495725" data-w="702" src="../Images/d15057f05fa363164bd8359eb35b6df9.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/WdJky8oWwZw7qdQXR7NT6FmwB4yWmVR9dhib87nJtSrRcH6A6Vd4icNHIicyzb84HeJQJyIic2E6Mibonx1PKkm8YQA/0?wx_fmt=png"/></p><h2><br/></h2><h2><span style="font-size: 20px;">Ref</span></h2><hr/><p><br/></p><ul class=" list-paddingleft-2"><li><p>https://blog.sucuri.net/2017/02/content-injection-vulnerability-wordpress-rest-api.html</p></li><li><p>https://cxsecurity.com/ascii/WLB-2017020021</p></li></ul><p><br/></p>
+        
+</body>
+</html>

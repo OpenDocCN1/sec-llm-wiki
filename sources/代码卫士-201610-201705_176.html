@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>白宫员工使用的Confide安全app 易受攻击</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>白宫员工使用的Confide安全app 易受攻击</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485569&amp;idx=3&amp;sn=3634313e15edc4285989fb860a32be9e&amp;chksm=ea9739ebdde0b0fd8c7db644a9790e7cabbf4b0594066f89eb422c98a26ce25f5c8e48854be3&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485569&amp;idx=3&amp;sn=3634313e15edc4285989fb860a32be9e&amp;chksm=ea9739ebdde0b0fd8c7db644a9790e7cabbf4b0594066f89eb422c98a26ce25f5c8e48854be3&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKianC9HnJx3GGhOicTbZ5ib1cMibZnRB5hjic696AIBmTFUCGiaiaffUFWvETywYcqDRgEtiaYyAcLDzsOpYYA/0?wx_fmt=png" data-ratio="0.521978021978022" data-w="728" src="../Images/fae4099f47b6710c4ed12809a426412f.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKianC9HnJx3GGhOicTbZ5ib1cMibZnRB5hjic696AIBmTFUCGiaiaffUFWvETywYcqDRgEtiaYyAcLDzsOpYYA/0?wx_fmt=png"/></p><p><br/></p><p><strong>美国白宫和国会人员使用的名为Confide的安全app并不如公司宣传的那么安全。</strong></p><p><br/></p><p>据悉，美国总统特朗普的助手通过Confide进行秘密沟通，公司声称会向用户提供“军事级别的端对端加密”，且任何人都无法拦截并读取“阅后即消失”的聊天内容。</p><p><br/></p><p>然而，两个独立的研究结果对此提出质疑。来自IOActive的研究人员经过对该app在Windows、MacOS X和安卓系统上的版本1.4.2分析后发现存在多个严重漏洞。</p><p><br/></p><p><strong>漏洞可被利用更改机密信息</strong></p><p><br/></p><p>这些漏洞能让攻击者：</p><p><br/></p><p>* 通过劫持账户会话或猜测密码的方式模拟通讯录，因为Confide无法阻止对账户密码的暴力攻击。</p><p><br/></p><p>* 监控用户的联系人详情，包括真实姓名、邮件地址和电话号码。</p><p><br/></p><p>* 拦截对话并解密信息。由于这款app的通知系统并不要求任何有效的SSL服务器证书来通信，攻击者可实施中间人攻击从而代替合法收信人抓取信息。</p><p><br/></p><p>* 在不必解密的情况下，更改传输中的消息或附件内容。</p><p><br/></p><p>* 发送恶意信息从而导致app崩溃、变慢或者干扰app。 </p><p><br/></p><p>研究人员能利用这些弱点访问在两天内（2月22日至2月24日）创建的7000个账户记录，这些账户记录来源于包含80万至100万个记录的数据库。</p><p><br/></p><p><strong>泄露特朗普一名助手和多名DHS员工的详情</strong></p><p><br/></p><p>从这个为期只有2天的样本中，研究人员甚至还能找到下载Confide的特朗普的一名助手和多名国土安全局员工的详情。</p><p><br/></p><p>IOActive公司的研究人员从中共发现了11个问题，开发人员立即予以修复。来自Quarkslab公司的研究人员还在iOS app版本中发现了一系列设计漏洞，能导致黑客读取用户信息，而app并不会在更改密钥时通知用户。</p><p><br/></p><p><strong>Confide公司也能读取用户信息</strong></p><p><br/></p><p>研究人员指出，Confide服务器可执行中间人攻击读取用户信息，而这款app的其它安全功能如信息删除和阻止截屏也会失效。</p><p><br/></p><p>Quarkslab公司的研究人员表示Confide公司的服务器还能生成自己的密钥对，也就是说在请求收信人的公钥时能将公钥传输给一个客户端。这个客户端会不知不觉地加密能被服务器解密的信息。最后当服务器将信息发送给收信人时，它就能利用自己的密钥重新加密发送给实际收信人的信息。</p><p><br/></p><p>Confide的联合创始人兼总裁回应称，“研究人员故意破坏了他们自己系统的安全性绕过了Confide的多个保护层，包括应用程序签名、代码混淆和证书锁定。他们声称所演示的攻击并不适用于合法的Confide用户，合法用户能从我们所部署的多层安全保护中受益。破坏你自己系统的安全或者完全控制一台设备能让整个设备变得易受攻击，而不仅仅是Confide app。”</p><p><br/></p><p>Confide已推出更新版本的app，包括对这些严重漏洞的修复方案，并向用户保证称并没有发生这些漏洞被利用的情况。跟其它安全类消息app不同，Confide app在此之前并未公开其代码，并且几乎没有透露关于app所使用的加密协议详情。</p>
+        
+</body>
+</html>

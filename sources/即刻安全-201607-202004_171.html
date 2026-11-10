@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>关于Pentest BOX的一些疑问解答及默认启动命令讲解（上）</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>关于Pentest BOX的一些疑问解答及默认启动命令讲解（上）</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI5MTM4NzYwNw==&amp;mid=2247483915&amp;idx=1&amp;sn=cbae7951680e2768f40905c38adf223d&amp;chksm=ec1023b3db67aaa567c190f13f432c7c129b564ead348c35d73d4f342ee72bee9be420d8f21b&amp;scene=126&amp;sessionid=1681663719#rd">http://mp.weixin.qq.com/s?__biz=MzI5MTM4NzYwNw==&amp;mid=2247483915&amp;idx=1&amp;sn=cbae7951680e2768f40905c38adf223d&amp;chksm=ec1023b3db67aaa567c190f13f432c7c129b564ead348c35d73d4f342ee72bee9be420d8f21b&amp;scene=126&amp;sessionid=1681663719#rd</a></blockquote><h2>关于Pentest BOX的一些疑问解答及默认启动命令讲解（三）</h2><p><br/></p><h2><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;"><strong>下面针对一下问题，对以下网友疑惑进行解答：</strong></span></h2><p><br/></p><h2><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;"><strong>问题一：ettercap无法运行，缺少packet.dll.wpcap.dll ?</strong></span></h2><p><br/></p><p>解答：在群里已经上传打包dll文件。将dll文件复制到相应的文件目录即可。</p><p><br/></p><ol style="list-style-type: decimal;" class=" list-paddingleft-2"><li><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">packet.dll丢失修复方法：</span></strong></p></li></ol><pre class="lang:vim decode:true ">1. 退出正在运行的所有程序。并将xapofx1_5.dll文件复制到系统目录下
+
+Windows 95/98/Me系统，则复制到C:\WINdows\system32\ 目录下。
+
+Windows NT/2000系统，则复制到C:\WINNT\system32\ 目录下。
+
+Windows XP系统，则复制到C:\WINdows\system32\ 目录下。
+
+Windows 7/8系统，则复制到C:\WINdows\system32\目录下。
+
+2. 单击开始，然后单击运行。
+
+3. 输入 regsvr32 xapofx1_5.dll，然后单击确定。
+
+4. 当收到“DllRegisterServer in Rld.dll succeeded”即成功修复。</pre><p>下载链接：http://www.33lc.com/soft/32448.html<br data-mce-bogus="1"/></p><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">2.接下来可能会出现wpcap.dll丢失</span></strong></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;"><br/></span></strong></p><p>下载链接为：http://www.3987.com/xiazai/1/18/43559.html#down<br data-mce-bogus="1"/></p><p>同样复制到同样路径即可。</p><p><br/></p><p style="text-align: center;"><img class="size-full wp-image-2443 aligncenter" data-ratio="0.4577205882352941" data-src="http://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHJFqPsHb7pbzOn6icF4eicbBaYju0jUFYjwFxmQP1w4aDeJx8NgsFUwbz9s1bf8mcmfqOnKeZegLzbA/0?wx_fmt=png" data-type="png" data-w="544" height="249" width="544" src="../Images/db15bb87ddda0010c2c58fe78f922fc9.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHJFqPsHb7pbzOn6icF4eicbBaYju0jUFYjwFxmQP1w4aDeJx8NgsFUwbz9s1bf8mcmfqOnKeZegLzbA/0?wx_fmt=png"/></p><p><br/></p><p><br/></p><h2><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">问题二：输入’beef‘命令，为什么会提示以下命令提示？</span></strong></h2><p><br/></p><p style="text-align: center;"><img class="size-full wp-image-2444 aligncenter" data-ratio="0.1864406779661017" data-src="http://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHJFqPsHb7pbzOn6icF4eicbBacUjUlEIZYicvnDJJibVM9ib5XPsib3tsTiaXLKuSThdEicpvg9TSW7ZPodUg/0?wx_fmt=png" data-type="png" data-w="413" height="77" width="413" src="../Images/da9f1c1df72459b674723493238829b6.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHJFqPsHb7pbzOn6icF4eicbBacUjUlEIZYicvnDJJibVM9ib5XPsib3tsTiaXLKuSThdEicpvg9TSW7ZPodUg/0?wx_fmt=png"/></p><p style="text-align: center;"><br/></p><h2><strong><span style="color: rgb(0, 128, 0);" data-mce-style="color: #008000;">                                                                      <span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;"> 解答疑惑： 因为你没去看官方文档，默认启动命令根本不是所谓的’beef‘，而是‘beefproject’，</span></span></strong></h2><p style="text-align: center;"><img class="size-full wp-image-2445 aligncenter" data-ratio="0.8043184885290149" data-src="http://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHJFqPsHb7pbzOn6icF4eicbBaGyyYM9x25hvwCTZkaT6eZ0YJuQKvicZt1vBFH2HkqLBwqoAZGX7NptA/0?wx_fmt=png" data-type="png" data-w="741" height="596" width="741" src="../Images/b2d3d89140a17f344105672a9b40ca73.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHJFqPsHb7pbzOn6icF4eicbBaGyyYM9x25hvwCTZkaT6eZ0YJuQKvicZt1vBFH2HkqLBwqoAZGX7NptA/0?wx_fmt=png"/></p><p style="text-align: center;"><br/></p><h1><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">以下是官方给出的正确启动工具的命令以及介绍（内置默认工具名单列表）：</span></strong></h1><p><br/></p><p><strong><span style="color: rgb(0, 128, 0);" data-mce-style="color: #008000;">SQLMap：</span></strong><br/> 假设你想使用SQLMap,下面你可以看到它的描述在这个Web应用程序扫描部分,你会发现下面</p><pre class="lang:vim highlight:0 decode:true">C:\Users\Demon\Desktop
+&gt;sqlmap</pre><p>控制台上面有sqlmap告诉,如果你需要使用sqlmap sqlmap是别名。如果你不知道的工具,它的功能类型类似sqlmap - h在控制台,它将显示所有可能的功能的工具,sqlmap在我们的案例中。</p><p><br/></p><h1><span style="color: rgb(0, 128, 0);" data-mce-style="color: #008000;"><strong>Web漏洞扫描器</strong></span></h1><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">Burp Suite</span></strong> 是用于攻击web 应用程序的集成平台。它包含了许多工具，并为这些工具设计了许多接口，以促进加快攻击应用程序的过程。<br/> 所有的工具都共享一个能处理并显示HTTP 消息，持久性，认证，代理，日志，警报的一个强大的可扩展的框架。</p><pre class="lang:vim decode:true">C:\Users\Demon\Desktop
+&gt;burpsuite</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">Commix</span></strong>有一个简单的环境,它可以被使用,从web开发人员,渗透测试人员甚至安全研究人员测试web应用程序的视图找到错误,错误或漏洞相关命令注入攻击。</p><pre class="lang:vim decode:true ">C:\Users\Demon\Desktop
+&gt;commix</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">dotdotpwn</span></strong>——这是一个非常灵活的智能fuzzer发现遍历目录等软件的漏洞HTTP / FTP / TFTP服务器,网络平台如cms,erp,博客,等等。</p><pre class="lang:default decode:true ">C:\Users\Demon\Desktop
+&gt;dotdotpwn</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">fimap</span></strong>——fimap有点python工具可以找到,准备、审计、利用甚至谷歌自动在webapps本地和远程文件包含漏洞。fimap应该像sqlmap LFI / RFI代替sql注入漏洞。这是目前正在发展但它是可用的。</p><pre class="lang:vim decode:true ">C:\Users\Demon\Desktop
+&gt;fimap</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">Golismero</span></strong>——GoLismero安全性测试的是一个开源框架。这是目前针对网络安全,但它可以很容易地扩展到其他类型的扫描。</p><pre class="lang:vim decode:true ">C:\Users\Demon\Desktop
+&gt;golismero</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">jSQL</span></strong>——jSQL注入是一个轻量级应用程序用于查找数据库信息从一个遥远的服务器。jSQL是免费的,开放源码和跨平台(Windows、Linux、Mac OS X、Solaris)。</p><pre class="lang:default decode:true ">C:\Users\Demon\Desktop
+&gt;jSQL</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">Nikto</span></strong>——Nikto是一个开源的web服务器(GPL)扫描仪对web服务器执行全面测试多个项目,包括超过6700个有潜在危险的文件/程序,检查超过1250台服务器的过时的版本,和版本超过270服务器上的具体问题。</p><pre class="lang:vim decode:true ">C:\Users\Demon\Desktop
+&gt;nikto</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">PadBuster</span></strong>——自动化脚本执行Padding Oracle的攻击。</p><pre class="lang:vim decode:true ">C:\Users\Demon\Desktop
+&gt;padbuster</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">SqlMap</span></strong>——sqlmap是一个开源的渗透测试工具,自动检测和利用SQL注入漏洞的过程和接管的数据库服务器。它有一个强大的检测引擎,许多细分功能的最终渗透试验器和广泛的开关持续指纹数据库,从数据库获取数据,访问底层文件系统和操作系统上执行命令通过带外连接。</p><pre class="lang:vim decode:true ">C:\Users\Demon\Desktop
+&gt;sqlmap</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">Vega</span></strong> - Vega 是一个免费和开源的扫描仪和测试平台,测试web应用程序的安全。织女星可以帮助你找到并验证SQL注入、跨站脚本(XSS),不经意间透露敏感信息,和其他漏洞。它是用Java编写的,基于GUI的,运行在Linux上,OS X和窗户。</p><pre class="lang:vim decode:true ">C:\Users\Demon\Desktop
+&gt;vega</pre><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">Wpscan</span></strong>-----WPScan是一个黑盒WordPress漏洞扫描器,可以用来扫描远程WordPress安装发现安全问题。</p><pre class="lang:vim decode:true ">C:\Users\Demon\Desktop
+&gt;wpscan</pre><p><br/></p><p><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;"><strong>Yasuo</strong></span>
+ - 
+Yasuo是一个ruby脚本扫描脆弱的第三方web应用程序。工作时在网络安全评估(内部、外部redteam演出等),我们经常碰到脆弱的第三方web应用程序或web前端,让我们妥协远程服务器利用公开已知的漏洞。一些常见的和最喜欢的Apache
+ Tomcat应用程序管理界面,JBoss jmx控制台</p><pre class="lang:default decode:true ">C:\Users\Demon\Desktop
+&gt;yasuo</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">Zaproxy</span></strong>- OWASP Zed攻击代理(攻击)是一个易于使用的综合渗透测试工具在web应用程序中寻找漏洞。是设计用于与广泛的安全经验的人,因此是理想的开发和功能测试人员是渗透测试作为一个有用的补充有经验的笔测试人员工具箱。</p><pre class="lang:default decode:true ">C:\Users\Demon\Desktop
+&gt;zap</pre><h1> <br/></h1><h1><span style="color: rgb(0, 128, 0);" data-mce-style="color: #008000;">Web应用程序代理</span></h1><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">Burp Suite</span></strong> - Burp Suite是一个集成的平台进行安全性测试的web应用程序。它的各种工具无缝地协同工作,以支持整个测试过程,从最初的映射和分析应用程序的攻击表面,通过寻找和利用安全漏洞。</p><pre class="lang:default decode:true ">C:\Users\Demon\Desktop
+&gt;burpsuite</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">Zaproxy-</span></strong> OWASP Zed攻击代理(攻击)是一个易于使用的综合渗透测试工具在web应用程序中寻找漏洞。是设计用于与广泛的安全经验的人,因此是理想的开发和功能测试人员是渗透测试作为一个有用的补充有经验的笔测试人员工具箱。</p><pre class="lang:default decode:true">C:\Users\Demon\Desktop
+&gt;zap</pre><h1> <br/></h1><h1> <br/></h1><h1><span style="color: rgb(0, 128, 0);" data-mce-style="color: #008000;">CMS漏洞扫描器</span></h1><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">CMSmap</span></strong>——CMSmap python开源CMS扫描,自动检测安全漏洞的过程中最受欢迎的CMS。CMSmap的主要目的是为不同类型的cms集成常见漏洞在一个单一的工具。</p><pre class="lang:default decode:true ">C:\Users\Demon\Desktop
+&gt;cmsmap</pre><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">droopescan</span></strong>——基于插件的扫描仪，帮助安全研究人员识别问题<br/> Drupal。<br/> SilverStripe<br/> Wordpress</p><pre class="lang:default decode:true">C:\Users\Demon\Desktop
+&gt;droopescan</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">OWASP Joomla</span></strong>漏洞扫描器——Joomla！
+ 
+它可能是最广泛使用的CMS，由于其灵活性，用户友好性，可扩展性命名一些。因此，观察其漏洞，并添加像KB这样的漏洞到Joomla扫描器需要持续的活动。它将帮助Web开发人员和Web
+ 大师帮助识别他们部署的Joomla可能的安全弱点！ 网站。 没有Web安全扫描程序仅专用于一个CMS。</p><pre class="lang:default decode:true ">C:\Users\Demon\Desktop
+&gt;joomscan</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">Wpscan</span></strong>-----------WPScan是一个黑盒WordPress漏洞扫描器,可以用来扫描远程WordPress安装发现安全问题。</p><pre class="lang:default decode:true ">C:\Users\Demon\Desktop
+&gt;wpscan</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">VbScan</span></strong>——VBScan perl编程语言是一个开源项目的检测链入页面CMS漏洞和分析。<br/> 作者:Mohammad Reza Espargham</p><pre class="lang:default decode:true ">C:\Users\Demon\Desktop
+&gt;vbscan</pre><p><br/></p><h1><span style="color: rgb(0, 128, 0);" data-mce-style="color: #008000;">网络爬虫程序</span></h1><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">DirBuster</span></strong>——DirBuster是一个多线程java应用程序，旨在强制在Web /应用程序服务器上强制目录和文件名。<br/> 作者:OWASP.org<br/> 许可:Apache 2.0</p><pre class="lang:default decode:true ">C:\Users\Demon\Desktop
+&gt;dirbuster</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">Burp Suite</span></strong> ——Burp Suite 是一个集成的平台进行安全性测试的web应用程序。它的各种工具无缝地协同工作,以支持整个测试过程,从最初的映射和分析应用程序的攻击表面,通过寻找和利用安全漏洞。<br/> 作者:Portswigger</p><pre class="lang:default decode:true ">C:\Users\Demon\Desktop
+&gt;burpsuite</pre><h1> <br/></h1><h1><span style="color: rgb(0, 128, 0);" data-mce-style="color: #008000;">信息收集</span></h1><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">Angry IP Scanner</span></strong> -Angry IP Scanner (或者只是ipscan)是一个开源和跨平台的网络扫描器设计为快速和易于使用。它扫描IP地址和端口,以及许多其他功能。人们普遍使用的网络管理员,只是好奇的世界各地的用户,包括大型和小型企业、银行和政府机构。</p><pre class="lang:default decode:true ">C:\Users\Demon\Desktop
+&gt;ipscan</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">dnsrecon</span></strong>- DNS枚举脚本</p><p>许可:GPLv2</p><pre class="lang:default decode:true ">C:\Users\Demon\Desktop
+&gt;dnsrecon</pre><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">Golismero</span></strong>——GoLismero安全性测试的是一个开源框架。这是目前针对网络安全,但它可以很容易地扩展到其他类型的扫描。<br/> 许可:GPLv2</p><pre class="lang:default decode:true ">C:\Users\Demon\Desktop
+&gt;golismero</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">Instarecon</span></strong>自动化的基本数字侦察。伟大的目标获得最初的足迹,发现额外的子域。InstaRecon会做的事:<br/> DNS(直接、PTR MX,NS)查找<br/> 域名查询服务(域和IP)查找<br/> 谷歌在搜索的子域狗屁不是<br/> Shodan查找<br/> 在整个cidr反向DNS查找<br/> 许可:麻省理工学院的许可</p><pre class="lang:default decode:true ">C:\Users\Demon\Desktop
+&gt;instarecon</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">Nmap</span></strong>-Nmap(“网络映射器”)是一个免费和开源(许可证)实用程序用于网络发现和安全审计。许多系统和网络管理员也发现它有用的任务,比如网络库存,管理服务升级计划,和监控主机或服务正常运行时间。Nmap使用原始IP数据包在小说方面来确定网络上的主机可用,哪些服务(应用程序名称和版本)提供这些主机,操作系统(OS版本)他们正在运行,什么类型的数据包过滤器/防火墙正在使用,和几十个其他的特征。它旨在快速扫描大型网络,但对单一主机工作正常。Nmap运行在所有主要的电脑操作系统,和官方二进制包可供Linux,Windows,和Mac
+ OS 
+x除了经典Nmap命令行可执行文件,Nmap套件包括一个先进的GUI和结果查看器(Zenmap),一个灵活的数据传输,重定向,和调试工具(Ncat),比较扫描结果的一个实用程序(Ndiff)和数据包生成和响应分析工具(np)。</p><p>许可:GPLv2</p><p>为了使用Nmap，你需要首先安装WinPcap包捕获库，可以从Winpcap.org下载。</p><pre class="lang:default decode:true">cmd.exe
+C:\Users\Demon\Desktop
+&gt;nmap</pre><pre class="lang:default decode:true ">cmd.exe
+C:\Users\Demon\Desktop
+&gt;ncat</pre><pre class="lang:default decode:true ">cmd.exe
+C:\Users\Demon\Desktop
+&gt;ndiff</pre><pre class="lang:default decode:true ">cmd.exe
+C:\Users\Demon\Desktop
+&gt;nping</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">Responder</span></strong> --Responder 是一个LLMNR NBT-NS和mdn投毒者,内置HTTP / SMB /该软件/ FTP / LDAP流氓身份验证服务器支持NTLMv1 / NTLMv2 / LMv2,延长安全NTLMSSP和HTTP基本身份验证。<br/> 作者:SpiderLabs<br/> 许可:GPLv3</p><pre class="lang:default decode:true ">cmd.exe
+C:\Users\Demon\Desktop
+&gt;responder</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">SnmpWalk</span></strong>——SnmpWalk允许你检测一组变量可用于某一设备上阅读。你可以获得一个完整的列表或部分。通过分析网络设备扫描获得的结果使用SnmpWalk可以开发一个支持的mib列表,通过这种方式,获得完整的描述变量和可能的值。<br/> 作者:SnmpSoft公司</p><pre class="lang:default decode:true ">cmd.exe
+C:\Users\Demon\Desktop
+&gt;snmpwalk</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">SpiderFoot</span></strong>——SpiderFoot是一个开源情报自动化工具。它的目标是实现自动化的过程对给定目标收集情报,这可能是一个IP地址,域名、主机名或网络子网。SpiderFoot可以用来进攻,即作为黑盒的一部分渗透测试收集的信息目标或防守来识别你的组织是免费提供什么信息对你攻击者使用。</p><pre class="lang:default decode:true">cmd.exe
+C:\Users\Demon\Desktop
+&gt;spiderfoot</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">TestSSLServer</span></strong>——TestSSLServer是一个简单的命令行工具,联系一个SSL / TLS服务器(名称和端口给出参数),获得一些信息。<br/> 作者:托马斯Pornin</p><pre class="lang:default decode:true ">cmd.exe
+C:\Users\Demon\Desktop
+&gt;testsslserver</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">SSlStrip</span></strong>——它将透明地劫持HTTP交通网络上,注意HTTPS连接和重定向,然后这些链接映射到类似的HTTP链接或homograph-similar HTTPS连接。它还支持模式提供一个看起来像一个锁图标标识,选择性伐木、否认和会话。</p><p>许可:GPLv3</p><pre class="lang:default decode:true ">cmd.exe
+C:\Users\Demon\Desktop
+&gt;sslstrip</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">SSLyze</span></strong>——SSLyze是一个Python工具,可以分析一个服务器的SSL配置连接到它。设计为快速和全面的,应该帮助组织和测试人员识别SSL服务器配置错误影响他们。<br/> 许可:GPLv2</p><pre class="lang:default decode:true ">cmd.exe
+C:\Users\Demon\Desktop
+&gt;sslyze</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">SSLScan</span></strong>——SSLScan测试SSL / TLS启用服务发现支持密码套件。<br/> 许可:GPLv3</p><pre class="lang:default decode:true ">cmd.exe
+C:\Users\Demon\Desktop
+&gt;sslscan</pre><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">Sublist3r</span></strong>——Sublist3r是python工具,旨在列举子域的网站使用搜索引擎。它有助于渗透测试和bug猎人收集和收集他们的目标域的子域。Sublist3r目前支持以下搜索引擎:谷歌,雅虎,必应,百度,问。更多的搜索引擎可能被添加在未来。使用Netcraft和DNSdumpster
+ Sublist3r也收集子域。<br/> 许可:GPLv2</p><pre class="lang:default decode:true ">cmd.exe
+C:\Users\Demon\Desktop
+&gt;sublist3r</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">SubbruteSubBrute</span></strong>是一个社区驱动的项目的目标创造最快的和最精确的子域名枚举的工具。背后的一些魔法SubBrute是它使用解析器作为一种开放代理绕过DNS病原。这个设计还提供了一层匿名,SubBrute不直接发送交通目标的名字服务器。</p><p>许可:GPLv3</p><pre class="lang:default decode:true ">cmd.exe
+C:\Users\Demon\Desktop
+&gt;subbrute</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">Tekdefense</span></strong>-Automater-自动化是一个URL
+ 
+/域名,IP地址和Md5 hash OSINT工具旨在使分析过程更容易入侵分析师。给定一个目标(URL、IP或散列)或一个文件全自动化目标将返回相关的结果来源如下:IPvoid.com,Robtex.com,Fortiguard.com,unshorten。我,Urlvoid.com,Labs.alienvault.com,ThreatExpert
+ VxVault,VirusTotal。<br/> 作者:TekDefense.com</p><pre class="lang:default decode:true ">cmd.exe
+C:\Users\Demon\Desktop
+&gt;automater</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">UrlCrazy</span></strong>——生成和测试域输入错误和变化检测和执行错误蹲,URL劫持,钓鱼,和企业间谍活动。</p><p>许可:非商业性</p><pre class="lang:default decode:true ">cmd.exe
+C:\Users\Demon\Desktop
+&gt;urlcrazy</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">The Harvester </span></strong>——The Harvester 电子邮件帐户,子域名名称、虚拟主机、开放端口/横幅,和员工的名字从不同的公共资源(搜索引擎,pgp关键服务器)。<br/> 许可:GPLv2</p><pre class="lang:default decode:true ">cmd.exe
+C:\Users\Demon\Desktop
+&gt;theharvester</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">Wireshark</span></strong>——Wireshark是世界上最重要的网络协议分析仪。它让你看到发生了什么在您的网络在微观水平。这是事实上的标准(通常法理)在许多行业和教育机构。Wireshark发展繁荣的贡献全球网络专家。<br/> 许可:GPLv2</p><pre class="lang:default decode:true ">cmd.exe
+C:\Users\Demon\Desktop
+&gt;wireshark</pre><h1> <br/></h1><h1><span style="color: rgb(0, 128, 0);" data-mce-style="color: #008000;">开发工具</span></h1><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">Beef Project</span></strong>——beef是浏览器开发框架。这是一个渗透测试工具,它关注的是web浏览器。<br/> 作者:Wade Alcorn<br/> 许可:GPLv2</p><pre class="lang:default decode:true ">cmd.exe
+C:\Users\Demon\Desktop
+&gt;beefproject</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">CrackMapExec</span></strong>-其中的瑞士军刀Windows /活动目录环境。<br/> 多亏了托马斯。编译的版本。<br/> 作者:byt3bl33d3r</p><pre class="lang:default decode:true ">cmd.exe
+C:\Users\Demon\Desktop
+&gt;crackmapexec</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">Metasploit Framework</span></strong>——世界上最好用渗透测试框架。<br/> 作者:Rapid7<br/> 许可:BSD 3条款许可协议<br/> 请注意PentestBox的有两个版本,一个与Metasploit Metasploit和另一个。如果没有完成下载Metasploit变体在这里。</p><pre class="lang:default decode:true ">cmd.exe
+C:\Users\Demon\Desktop
+&gt;msfconsole</pre><pre class="lang:default decode:true ">cmd.exe
+C:\Users\Demon\Desktop
+&gt;msfvenom</pre><pre class="lang:default decode:true ">cmd.exe
+C:\Users\Demon\Desktop
+&gt;msfelfscan</pre><pre class="lang:default decode:true ">cmd.exe
+C:\Users\Demon\Desktop
+&gt;msfbinscan</pre><pre class="lang:default decode:true">cmd.exe
+C:\Users\Demon\Desktop
+&gt;msfpescan</pre><pre class="lang:default decode:true ">cmd.exe
+C:\Users\Demon\Desktop
+&gt;msfd</pre><pre class="lang:default decode:true ">cmd.exe
+C:\Users\Demon\Desktop
+&gt;msfmachscan</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">SqlMap</span></strong>——sqlmap是一个开源的渗透测试工具,自动检测和利用SQL注入漏洞的过程和接管的数据库服务器。它有一个强大的检测引擎,许多细分功能的最终渗透试验器和广泛的开关持续指纹数据库,从数据库获取数据,访问底层文件系统和操作系统上执行命令通过带外连接。<br/> 作者:Miroslav Stampar Bernardo Damele Assumpcao吉马良斯<br/> 许可:GPLv2</p><pre class="lang:default decode:true ">cmd.exe
+C:\Users\Demon\Desktop
+&gt;sqlmap</pre><h1> <br/></h1><h1><strong><span style="color: rgb(0, 128, 0);" data-mce-style="color: #008000;">密码破解</span></strong></h1><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">Burp Suite</span></strong>——Burp Suite是一个集成的平台进行安全性测试的web应用程序。它的各种工具无缝地协同工作,以支持整个测试过程,从最初的映射和分析应用程序的攻击表面,通过寻找和利用安全漏洞。</p><pre class="lang:default decode:true ">cmd.exe
+C:\Users\Demon\Desktop
+&gt;burpsuite</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">Findmyhash</span></strong>——findmyhash。py尝试不同类型的裂缝散列使用免费的在线服务。<br/> 作者:JulGor<br/> 许可:GPLv3</p><pre class="lang:default decode:true ">cmd.exe
+C:\Users\Demon\Desktop
+&gt;findmyhash</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">HashIdentifier</span></strong>——软件来识别不同类型的散列加密数据,尤其是密码使用。<br/> 作者:Zion3R<br/> 许可:GPLv3</p><pre class="lang:default decode:true ">cmd.exe
+C:\Users\Demon\Desktop
+&gt;hashidentifier</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">Hashcat</span></strong>——Hashcat是世界上最快的CPU-based密码恢复工具。<br/> 许可证</p><pre class="lang:default decode:true ">cmd.exe
+C:\Users\Demon\Desktop
+&gt;hashcat-cli32</pre><pre class="lang:default decode:true ">cmd.exe
+C:\Users\Demon\Desktop
+&gt;hashcat-cli64</pre><pre class="lang:default decode:true ">cmd.exe
+C:\Users\Demon\Desktop
+&gt;hashcat-cliXOP</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">LaZagne</span></strong>——LaZagne项目是一个开放源码应用程序用于检索大量的密码存储在本地计算机。每个软件存储密码使用不同的技术(明文、api、自定义算法、数据库等)。这个工具已经开发为目的的找到这些密码为最常用的软件。这时,它支持22个项目在使用微软的Windows操作系统和12在Linux
+ /类unix操作系统。<br/> 作者:AlessandroZ<br/> 许可:GPLv3</p><pre class="lang:default decode:true ">cmd.exe
+C:\Users\Demon\Desktop
+&gt;lazagne</pre><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">John the Ripper</span></strong>——John
+ the 
+Ripper是一个快速密码饼干,目前对于许多风格的Unix,窗户,DOS,BeOS和OpenVMS。它的主要目的是检测弱Unix密码。除了在各种Unix系统上最常见的几种crypt（3）密码哈希类型，支持开箱即用的是Windows
+ LM hash，以及社区增强版本中的大量其他哈希和密码。</p><pre class="lang:default decode:true ">cmd.exe
+C:\Users\Demon\Desktop
+&gt;johntheripper</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">Patator</span></strong>——Patator是出于对使用Hydra，Medusa，Ncrack，Metasploit模块和Nmap
+ NSE脚本的密码猜测攻击的挫折。 我选择了不同的方法，以便不创建另一个暴力的工具，并避免重复相同的缺点。 
+Patator是一个用Python编写的多线程工具，力求比其他前辈更可靠和更灵活。<br/> 作者:Sebastien MACKE<br/> 许可:GPLv2</p><pre class="lang:default decode:true ">cmd.exe
+C:\Users\Demon\Desktop
+&gt;patator</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">RainbowCrack</span></strong>——RainbowCrack是Philippe
+ Oechslin更快的时间存储器权衡技术的一般建议实现。 它裂纹散列与彩虹表.RainbowCrack使用时间内存权衡算法来破解哈希。 
+它不同于强力哈希饼干。强力哈希饼干生成所有可能的明文，并在飞行中计算相应的哈希，然后将哈希与要破解的哈希进行比较。 一旦找到匹配，找到明文。 
+如果所有可能的明文都被测试并且没有找到匹配，则找不到明文。 利用这种类型的散列破解，丢弃所有中间计算结果。<br/> 作者:RainbowCrack项目</p><pre class="lang:default decode:true ">cmd.exe
+C:\Users\Demon\Desktop
+
+&gt;rcrack</pre><pre class="lang:default decode:true ">cmd.exe
+C:\Users\Demon\Desktop
+
+&gt;rt2rtc</pre><pre class="lang:default decode:true">cmd.exe
+C:\Users\Demon\Desktop
+
+&gt;rtc2rt</pre><pre class="lang:default decode:true">cmd.exe
+C:\Users\Demon\Desktop
+
+&gt;rtgen</pre><pre class="lang:default decode:true">cmd.exe
+C:\Users\Demon\Desktop
+
+&gt;rtsort</pre><pre class="lang:default decode:true">cmd.exe
+C:\Users\Demon\Desktop
+
+&gt;rcrack_cl</pre><pre class="lang:default decode:true">cmd.exe
+C:\Users\Demon\Desktop
+
+&gt;rcrack_cl_gui</pre><pre class="lang:default decode:true">cmd.exe
+C:\Users\Demon\Desktop
+
+&gt;rcrack_cuda</pre><pre class="lang:default decode:true">cmd.exe
+C:\Users\Demon\Desktop
+
+&gt;rcrack_cuda_gui</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">THC Hydra</span></strong>- Hydra是一个并行登录饼干支持众多的协议攻击。非常快和灵活,很容易添加新的模块。这个工具可以让研究人员和安全顾问展示将是多么容易获得未授权访问远程系统。<br/> 请注意,PentestBox包含编译的版本THC-Hydra来自在这里.<br/> 许可:GPLv3</p><pre class="lang:default decode:true ">cmd.exe
+C:\Users\Demon\Desktop
+
+&gt;hydra</pre><pre class="lang:default decode:true">cmd.exe
+C:\Users\Demon\Desktop
+
+&gt;pw-inspector</pre><p><br/></p><p><strong><span style="color: rgb(255, 0, 0);" data-mce-style="color: #ff0000;">Zaproxy</span></strong>- OWASP Zed攻击代理(攻击)是一个易于使用的综合渗透测试工具在web应用程序中寻找漏洞。是设计用于与广泛的安全经验的人,因此是理想的开发和功能测试人员是渗透测试作为一个有用的补充有经验的笔测试人员工具箱。<br/> 作者:Simon Bennetts</p><pre class="lang:default decode:true">cmd.exe
+C:\Users\Demon\Desktop
+
+&gt;zap</pre><h1> </h1><p>未完待续~~~<br/></p>
+        
+</body>
+</html>

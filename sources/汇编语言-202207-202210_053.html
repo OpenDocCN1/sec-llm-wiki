@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Qt::QWindow多窗口争抢置顶状态解决方案</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Qt::QWindow多窗口争抢置顶状态解决方案</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzIxNDcwOTcwOQ==&amp;mid=2247493968&amp;idx=2&amp;sn=98f227ecaf3bc37a7208f6666fc564e9&amp;chksm=97a1cdf2a0d644e4729c3dbb08e7e5f0148c78f8d350c5021463be16d4e55c24d33cfb97dc36&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzIxNDcwOTcwOQ==&amp;mid=2247493968&amp;idx=2&amp;sn=98f227ecaf3bc37a7208f6666fc564e9&amp;chksm=97a1cdf2a0d644e4729c3dbb08e7e5f0148c78f8d350c5021463be16d4e55c24d33cfb97dc36&amp;scene=27#wechat_redirect</a></blockquote><p style="margin-bottom: 25px;text-align: left;line-height: 2em;"><span style="font-size: 14px;letter-spacing: 2px;">有时候我们会有这种需求，自己的桌面程序需要置顶，但是程序包含了很多窗口，可能我们要求窗口1，2都在其它桌面程序之上，但是窗口1必须随时在窗口2之上。</span></p><p style="margin-bottom: 25px;text-align: left;line-height: 2em;"><span style="font-size: 14px;letter-spacing: 2px;">Qt提供的置顶方式是在windowsflags上增加标签，setWindowFlags(Qt::WindowStaysOnTopHint);但是针对两个window窗口，当焦点切换的时候两个窗口会互相抢占置顶效果，达不到我们预期的效果。</span></p><p style="margin-bottom: 25px;text-align: left;line-height: 2em;"><span style="font-size: 14px;letter-spacing: 2px;">这个问题之前也思考了很久有什么比较巧妙的方案来实现，最后确定一个不算很完美的方案(如果有看到的朋友有更好的方案欢迎分享)：通过父子窗口的指定来完成。</span></p><p style="margin-bottom: 25px;text-align: left;line-height: 2em;"><span style="font-size: 14px;letter-spacing: 2px;">就像窗口布局一个label一样，label一定是在foreground，窗口自己在background。所以需要在上面的窗口指定为在下面的窗口为父窗口，则可以实现预期效果。</span></p><p style="margin-bottom: 25px;text-align: left;line-height: 2em;"><span style="font-size: 14px;letter-spacing: 2px;">请注意，两个窗口必须是window类型，也就是setWindowFlags(Qt::Window)或者setWindowFlags(Qt::Tool)。如果是widget指定了父窗口范围只能在父窗口内移动(或者说以父窗口的坐标系为相对坐标系)。具体代码就不po了，有需要和兴趣的大家可以自己写个demo测试一下，几行代码即可。</span></p><p style="text-align: center;margin-bottom: 0px;"><br/></p><p style="margin-bottom: 25px;text-align: left;line-height: 2em;"><br/></p>
+        
+</body>
+</html>

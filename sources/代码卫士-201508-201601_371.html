@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>黑客利用Imgur对4chan网站发动DDOS攻击</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>黑客利用Imgur对4chan网站发动DDOS攻击</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485877&amp;idx=2&amp;sn=bd9f8f0a9b8a682788c490118df87153&amp;chksm=ea9738dfdde0b1c998f85c913b6808c453404ea351d3aabaeadbea1f404a0a2e9a04c2301c9d&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485877&amp;idx=2&amp;sn=bd9f8f0a9b8a682788c490118df87153&amp;chksm=ea9738dfdde0b1c998f85c913b6808c453404ea351d3aabaeadbea1f404a0a2e9a04c2301c9d&amp;scene=27#wechat_redirect</a></blockquote><p><strong>一名Reddit用户发现一种攻击4chan网站基础架构的隐蔽方法：使用托管在Imgur上的图片经由Reddit发动攻击。</strong></p><p><strong><br/></strong></p><p>用户名为rt4nyp的Reddit用户发现了这个漏洞：每次一张Imgur图片被加载到/r/4chan sub-reddit上，就会有其它500多张图片也在后台加载。</p><p><br/></p><p>由于4chan网站的流量巨大，从Reddit上获取一定的额外流量会让4chan的服务器不堪重负，导致网站一天内崩溃好几次。另外，8chan网站也受影响，而且也遭受一定次数的停机。</p><p><br/></p><p><strong>恶意代码连同Imgur图像一起加载</strong></p><p><strong><br/></strong></p><p> rt4ny告警称，当他注意到Imgur图片以内联base64数据形式被加载时，少了一些东西。他仔细查看代码时发现末尾增加了一小段毫无关联
+的JS代码。这段代码秘密地存储在了浏览器localStorage的 
+“axni”参数中，目的是为了从“4cdns.org/pm.js.”中加载另外一个JS文件。它并非4chan的官方CDN，却极其相似。当刷新加载
+了“axni”变量的原始图片时，这个恶意代码不会再次加载以躲避检测。此外，存储在"4cdns.org/pm.js"上的JS文件也不会在浏览器中直
+接加载。</p><p><br/></p><p><strong>在隐藏的iframe中加载500多张 4chan图片</strong></p><p><strong><br/></strong></p><p>对pm.js文件分析后，rt4ny发现它利用一些狡猾的CSS离屏定位技术加载了不为用户所知的iframe，里面加载了数百份4chan图片，还有一份142KB大小的SWF文件。</p><p><br/></p><p>Imgur在当天知悉这个问题后予以修复。</p><p><br/></p>本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。
+        
+</body>
+</html>

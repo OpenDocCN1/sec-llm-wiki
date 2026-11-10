@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>物联网蠕虫能让城市漆黑一片</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>物联网蠕虫能让城市漆黑一片</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485643&amp;idx=3&amp;sn=9867231da584e97f8778bb834c15e21e&amp;chksm=ea9739a1dde0b0b71ca0b042e3af799878b53f45ab74eba6c72392bd81d3b2bb3c5f57597e29&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485643&amp;idx=3&amp;sn=9867231da584e97f8778bb834c15e21e&amp;chksm=ea9739a1dde0b0b71ca0b042e3af799878b53f45ab74eba6c72392bd81d3b2bb3c5f57597e29&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiakjmgscv3aSficr6X8nL3g6GyUkric0WIvicoQXiaqk3ibuKv3E9S6icTRNg1bZIoQm4tR92JxTezK7BGTQ/0?wx_fmt=jpeg" data-ratio="0.7723880597014925" data-w="268" src="../Images/6761bb98ca793d074a0d5a8365747f69.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiakjmgscv3aSficr6X8nL3g6GyUkric0WIvicoQXiaqk3ibuKv3E9S6icTRNg1bZIoQm4tR92JxTezK7BGTQ/0?wx_fmt=jpeg"/><br/></p><p><br/></p><p><strong>研究人员演示了物联网蠕虫如何可针对智能灯泡发动攻击从而导致整座城市的照明系统全线崩溃。这款恶意软件可自行传播，攻击者也可通过车辆或无人机进行传播。</strong></p><p><br/></p><p>研究人员在实验中使用的是当前全球非常受欢迎的智能照明产品飞利浦Hue。这款由安全专家开发的蠕虫依赖的是ZigBee无线技术。飞利浦Hue产品使用ZigBee通信作为ZLL（ZigBee照明链接，它是全球标准，允许消费者远程控制LED灯具、灯泡、计时器和开关）的一部分。ZigBee联盟指出，这种技术的可到达范围是室内70米室外400米。</p><p><br/></p><p>安全专家计算得知，在一个跟巴黎规模差不多大的城市（105平方公里），只需要1.5万个随机分布的智能灯泡就能让蠕虫从一个恶意灯泡开始蔓延至整座城市。研究人员经实验发现这款恶意软件也能通过驱车针对所有路上的飞利浦Hue灯泡发动攻击，此外无人机也可办到。</p><p><br/></p><p>一旦蠕虫感染一个灯泡，恶意软件就能让攻击者将灯泡随意点亮或熄灭，将它们永久性变砖块或者利用它们发动大规模的DDoS攻击。这些攻击并不需要提前了解目标灯泡，原因可能跟ZLL Touchlink协议有关。该协议用来设置个人局域网（PAN），新设备如灯泡和遥控器就能与它连接并接受密钥。拥有这个主密钥的设备能够强制灯泡重置成出厂状态或者强制其连入新的PAN。为了阻止这种滥用，Tounchlink使用的保护机制要求设备之间要特别贴近。问题是ZLL主密钥已被泄露，这样攻击者只要在所要求的范围内那么就可以任意控制智能灯泡。研究人员发现Atmel（Atmel 公司为全球性的业界领先企业，致力于设计和制造各类微控制器、电容式触摸解决方案、先进逻辑、混合信号、非易失性存储器和射频 (RF) 元件）实现飞利浦Hue使用的ZLL Touchlink协议中存在一个bug，因此就解决了这个难题。</p><p><br/></p><p>这个bug能让任何标准ZigBee发送器在长距离外触发出厂重置程序并且让目标灯泡跟控制器断开连接。发送器随后便可完全控制灯泡。攻击者能够通过恶意固件更新来攻陷智能灯泡。固件更新是通过ZigBee联盟提供的标准无线实施的。这个标准允许来自不同厂商的设备互相更新固件镜像。飞利浦采用全球AES-CCM密钥加密并验证新固件，但专家设法破解了这个密钥。</p><p><br/></p><p>一旦恶意固件被上传到一个灯泡，攻击者就能够执行任意代码。一旦恶意固件被安装，那么它就能禁用固件更新进程，从而阻止受害者刷新受感染的Hue灯泡。</p><p><br/></p><p>飞利浦和Atmel已在2016年7月份得知该问题。飞利浦于10月份发布了更新降低了最大感染范围至一米。</p>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Facebook语音聊天可遭中间人攻击</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Facebook语音聊天可遭中间人攻击</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485597&amp;idx=3&amp;sn=d44ec32cdbdad07ed2a2ab9a52585b6a&amp;chksm=ea9739f7dde0b0e144f769ccaee42bc16cebb84e34290c602fe9ce58093a0734f8db12deedeb&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485597&amp;idx=3&amp;sn=d44ec32cdbdad07ed2a2ab9a52585b6a&amp;chksm=ea9739f7dde0b0e144f769ccaee42bc16cebb84e34290c602fe9ce58093a0734f8db12deedeb&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKianXribT5aM5WcFA23IrJCH6zKsVBDu2v8nMEjOAfqOZjadIQD8pnYdXYSQpHUzxy4pBXnBxyoAa21g/0?wx_fmt=png" data-ratio="0.521978021978022" data-w="728" src="../Images/cf06bf5017e47127c3af6f81be317e00.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKianXribT5aM5WcFA23IrJCH6zKsVBDu2v8nMEjOAfqOZjadIQD8pnYdXYSQpHUzxy4pBXnBxyoAa21g/0?wx_fmt=png"/><br/></p><p><br/></p><p><strong>埃及研究员Mohamed A. Baset表示Facebook Messenger的语音记录功能可遭受中间人攻击，导致语音文件被抓取并导致个人语音信息遭窃听。目前漏洞尚未被修复。</strong></p><p><br/></p><p>发送给好友的录制音频片段即音频消息都会被上传到Facebook的CDN服务器上（<a rel="nofollow">https://z-1-cdn.fbsbx.com/...</a>），随后通过HTTPS音频文件就会到达发信人和收信人。</p><p><br/></p><p>位于同一网络的攻击者能够通过SSL Strip中间人攻击提取所有在整个过程中产生的音频文件的绝对链接（包括内嵌在URL中的秘密验证口令）。随后，攻击者会将这些绝对链接从HTTPS降级为HTTP，在无需验证的情况下直接下载这些音频文件。</p><p><br/></p><p>为何攻击者能够轻而易举地下载用户的音频文件呢？</p><p><br/></p><p>因为Facebook的CDN服务器并没有执行HTTP HSTS策略。该策略强迫浏览器或用户仅通过HTTPS跟服务器通信，并且它还会帮助网站阻止协议降级攻击。另外，Facebook缺乏恰当的验证。如果一份文件已在两名Facebook用户之间共享，那么其他人就无法访问即便有人拥有这两名用户文件的绝对URL也办不到。Mohamed举了一个例子，他将一份音频文件通过Facebook Messenger发送给一个朋友，随后他通过中间人攻击提取出这份文件的绝对链接，任何人包括并未验证的人都可以从Facebook服务器中下载。</p><p><br/></p><p>Mohamed将这个问题告知Facebook并得到后者的认可，但目前尚未修复。Facebook并未提供任何漏洞奖励计划，因为降级攻击并不在奖励计划内。</p>
+        
+</body>
+</html>

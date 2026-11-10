@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>JavaScript 中 this 的使用技巧总结</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>JavaScript 中 this 的使用技巧总结</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzkwODM4NDM5OA==&amp;mid=2247504171&amp;idx=1&amp;sn=794baeb071996036df2460c3ed378490&amp;chksm=c0c850caf7bfd9dcc2c4b62ebd1ebd423097352c07b5e3177a276436d53c56307b6c71d511c2&amp;scene=126&amp;sessionid=1681309754#rd">http://mp.weixin.qq.com/s?__biz=MzkwODM4NDM5OA==&amp;mid=2247504171&amp;idx=1&amp;sn=794baeb071996036df2460c3ed378490&amp;chksm=c0c850caf7bfd9dcc2c4b62ebd1ebd423097352c07b5e3177a276436d53c56307b6c71d511c2&amp;scene=126&amp;sessionid=1681309754#rd</a></blockquote><section class="yead_editor yead-selected" style="margin:5px auto;white-space: normal;" title="149&#xFF0C;&#x66F4;&#x65B0;&#x4E8E;2015-06-14 09:06"><section style="font-family: 微软雅黑; font-size: 13px; line-height: 24px; box-sizing: border-box;"><section style="margin-top: 0.8em; margin-bottom: 0.3em; border: none rgb(216, 40, 33); box-sizing: border-box;"><section style="text-align: center; text-decoration: inherit; color: rgb(255, 255, 255); box-sizing: border-box;"><section data-width="0px" class="yead_bdtc yead_bdbc" style="margin-left: 90px; border-top-width: 0px; border-bottom: 0.8em solid rgb(0, 187, 236); border-top-color: rgb(0, 187, 236); width: 0px; box-sizing: border-box; height: 10px; color: inherit; border-right: 0.8em solid transparent !important; border-left: 0.8em solid transparent !important;"/><section data-brushtype="text" class="yead_bdc yead_bgc" style="padding: 0.5em; border: 0px rgb(0, 187, 236); line-height: 1.2em; font-size: 1em; box-sizing: border-box; color: inherit; border-radius: 4px; background-color: rgb(0, 187, 236);"><strong style="border: 0px; color: inherit; box-sizing: border-box;">关注「实验楼」，每天分享一个IT项目教程</strong></section></section></section></section></section><p><br/></p><h1><span style="color: rgb(255, 104, 39);"><strong>tip</strong></span></h1><hr/><p><br/></p><p>首先，我知道这篇文章很无聊，无非就是关于 js 中的 this，并且也已经有千千万万的文章写过这部分内容了；</p><p><br/></p><p>但是，我还是想写一篇关于 js 中的 this 的文章，算是一个总结归纳吧；（大神们可以绕行看我的其他文章）</p><p><br/></p><p>在 js 中，this 这个上下文总是变化莫测，很多时候出现 bug 总是一头雾水，其实，只要分清楚不同的情况下如何执行就 ok 了。</p><p><br/></p><h1><span style="color: rgb(255, 104, 39);"><strong>全局执行</strong></span></h1><hr/><p><br/></p><p>首先，我们在全局环境中看看它的 this 是什么：</p><p><br/></p><p>first. 浏览器：</p><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">console.log(this);<br/><br/>// Window {speechSynthesis: SpeechSynthesis, caches: CacheStorage, localStorage: Storage, sessionStorage: Storage, webkitStorageInfo: DeprecatedStorageInfo…}</span></pre></blockquote><p><br/></p><p>可以看到打印出了 window 对象；</p><p><br/></p><p>second. node：</p><blockquote><pre><span style="font-size: 12px;">console.log(this);<br/>// global</span></pre></blockquote><p><br/></p><p>可以看到打印出了 global 对象；</p><p><br/></p><p>总结：在全局作用域中它的 this 执行当前的全局对象（浏览器端是 Window，node 中是 global）。</p><p><br/></p><h1><span style="color: rgb(255, 104, 39);"><strong>函数中执行</strong></span></h1><hr/><h2><strong><br/></strong></h2><h2><strong>1、纯粹的函数调用</strong></h2><p><br/></p><p>这是最普通的函数使用方法了：</p><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">function test() { <br/> console.log(this);
+};
+
+test();<br/> // Window {speechSynthesis: SpeechSynthesis, caches: CacheStorage, localStorage: Storage, sessionStorage: Storage, webkitStorageInfo: DeprecatedStorageInfo…}</span></pre></blockquote><p><br/></p><p>我们可以看到，一个函数被直接调用的时候，属于全局调用，这时候它的 this 指向 全局对象；</p><p><br/></p><h3><strong>严格模式 ‘use strict’;</strong></h3><p><br/></p><p>如果在严格模式的情况下执行纯粹的函数调用，那么这里的的 this 并不会指向全局，而是 undefined，这样的做法是为了消除 js 中一些不严谨的行为：</p><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">'use strict';<br/>function test() {  <br/>   console.log(this);
+};
+
+test();<br/>// undefined</span></pre></blockquote><p><br/></p><p>当然，把它放在一个立即执行函数中会更好，避免了污染全局：</p><blockquote><pre><span style="color: rgb(0, 122, 170); font-size: 12px;">(function (){  <br/>  "use strict";
+　console.log(this);
+})();<br/>// undefined</span></pre></blockquote><h2><br/></h2><h2><strong>2、作为对象的方法调用</strong></h2><p><br/></p><p>当一个函数被当作一个对象的方法调用的时候：</p><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">var obj = {
+  name: 'qiutc',
+  foo: function() {    <br/>    console.log(this.name);
+  }
+}
+
+obj.foo();<br/>// 'qiutc'</span></pre></blockquote><p><br/></p><p>这时候，this 指向当前的这个对象；</p><p><br/></p><p>当然，我们还可以这么做：</p><blockquote><pre><span style="color: rgb(0, 122, 170); font-size: 12px;">function test() {  <br/>  console.log(this.name);
+}<br/>var obj = {
+  name: 'qiutc',
+  foo: test
+}
+
+obj.foo();<br/>// 'qiutc'</span></pre></blockquote><p><br/></p><p>同样不变，因为在 js 中一切都是对象，函数也是一个对象，对于 test ，它只是一个函数名，函数的引用，它指向这个函数，当 foo = test，foo 同样也指向了这个函数。</p><p><br/></p><p>如果把对象的方法赋值给一个变量，然后直接调用这个变量呢：</p><blockquote><pre><span style="color: rgb(0, 122, 170); font-size: 12px;">var obj = {
+  name: 'qiutc',
+  foo: function() {   <br/>    console.log(this);
+  }
+}<br/><br/>var test = obj.foo;
+test();<br/>// Window</span></pre></blockquote><p><br/></p><p>可以看到，这时候 this 执行了全局，当我们把 test = obj.foo ，test 直接指向了一个函数的引用，这时候，其实和 obj 这个对象没有关系了，所以，它是被当作一个普通函数来直接调用，因此，this 指向全局对象。</p><p><br/></p><h3><strong>3、一些坑</strong></h3><p><br/></p><p>我们经常在回调函数里面会遇到一些坑：</p><blockquote><pre><span style="color: rgb(0, 122, 170); font-size: 12px;">var obj = {
+  name: 'qiutc',
+  foo: function() {    <br/>    console.log(this);
+  },
+  foo2: function() {    <br/>    console.log(this);
+    setTimeout(this.foo, 1000);
+  }
+}
+
+obj.foo2();</span></pre></blockquote><p><br/></p><p>执行这段代码我们会发现两次打印出来的 this 是不一样的：</p><p><br/></p><p>第一次是 foo2 中直接打印 this，这里指向 obj 这个对象，我们毋庸置疑；</p><p><br/></p><p>但是在 setTimeout 中执行的 this.foo ，却指向了全局对象，这里不是把它当作函数的方法使用吗？这一点经常让很多初学者疑惑；</p><p><br/></p><p>其实，setTimeout 也只是一个函数而已，函数必然有可能需要参数，我们把 this.foo 当作一个参数传给 setTimeout 这个函数，就像它需要一个 fun参数，在传入参数的时候，其实做了个这样的操作 fun = this.foo，看到没有，这里我们直接把 fun 指向 this.foo 的引用；执行的时候其实是执行了 fun() 所以已经和 obj 无关了，它是被当作普通函数直接调用的，因此 this 指向全局对象。</p><p><br/></p><p>这个问题是很多异步回调函数中普遍会碰到的；</p><p><br/></p><h4><strong>解决</strong></h4><p><br/></p><p>为了解决这个问题，我们可以利用 闭包 的特性来处理：</p><blockquote><pre><span style="color: rgb(0, 122, 170); font-size: 12px;">var obj = {
+  name: 'qiutc',
+  foo: function() {    <br/>    console.log(this);
+  },
+  foo2: function() {    <br/>    console.log(this);    <br/>    var _this = this;
+    setTimeout(function() {      <br/>      console.log(this);  // Window
+
+      console.log(_this);  // Object {name: "qiutc"}
+    }, 1000);
+  }
+}
+
+obj.foo2();</span></pre></blockquote><p><br/></p><p>可以看到直接用 this 仍然是 Window；因为 foo2 中的 this 是指向 obj，我们可以先用一个变量 _this 来储存，然后在回调函数中使用 _this，就可以指向当前的这个对象了；</p><p><br/></p><h3><strong>4、setTimeout 的另一个坑</strong></h3><p><br/></p><p>之前啊说过，如果直接执行回调函数而没有绑定作用域，那么它的 this 是指向全局对象(window)，在严格模式下会指向 undefined，然而在setTimeout 中的回调函数在严格模式下却表现出不同：</p><blockquote><pre><span style="color: rgb(0, 122, 170); font-size: 12px;">'use strict';<br/>function foo() {  <br/>   console.log(this);
+}
+
+setTimeout(foo, 1);<br/>// window</span></pre></blockquote><p><br/></p><p>按理说我们加了严格模式，foo 调用也没有指定 this，应该是出来 undefined，但是这里仍然出现了全局对象，难道是严格模式失效了吗？</p><p><br/></p><p>并不，即使在严格模式下，setTimeout 方法在调用传入函数的时候，如果这个函数没有指定了的 this，那么它会做一个隐式的操作—-自动地注入全局上下文，等同于调用 foo.apply(window) 而非 foo()；</p><p><br/></p><p>当然，如果我们在传入函数的时候已经指定 this，那么就不会被注入全局对象，比如： setTimeout(foo.bind(obj), 1);；</p><p><br/></p><p>http://stackoverflow.com/questions/21957030/why-is-window-still-defined-in-this-strict-mode-code</p><p><br/></p><h2><strong>5、作为一个构造函数使用</strong></h2><p><br/></p><p>在 js 中，为了实现类，我们需要定义一些构造函数，在调用一个构造函数的时候需要加上 new 这个关键字：</p><blockquote><pre><span style="color: rgb(0, 122, 170); font-size: 12px;">function Person(name) {<br/>  this.name = name;<br/>  console.log(this);
+}<br/>var p = new Person('qiutc');<br/>// Person {name: "qiutc"}</span></pre></blockquote><p><br/></p><p>我们可以看到当作构造函数调用时，this 指向了这个构造函数调用时候实例化出来的对象；</p><p><br/></p><p>当然，构造函数其实也是一个函数，如果我们把它当作一个普通函数执行，这个 this 仍然执行全局：</p><blockquote><pre><span style="color: rgb(0, 122, 170); font-size: 12px;">function Person(name) {<br/>  this.name = name; <br/>  console.log(this);
+}<br/>var p = Person('qiutc');<br/>// Window</span></pre></blockquote><p><br/></p><p>其区别在于，如何调用函数（new）。</p><p><span style="line-height: 1.6;"><br/></span></p><p><strong><span style="line-height: 1.6;">6、箭头函数</span></strong><br/></p><p><br/></p><p>在 ES6 的新规范中，加入了箭头函数，它和普通函数最不一样的一点就是 this 的指向了，还记得我们使用闭包来解决 this 的指向问题吗，如果用上了箭头函数就可以更完美的解决了：</p><blockquote><pre><span style="color: rgb(0, 122, 170); font-size: 12px;">var obj = {
+  name: 'qiutc',
+  foo: function() {   <br/>    console.log(this);
+  },
+  foo2: function() {    <br/>    console.log(this);
+    setTimeout(() =&gt; {     <br/>     console.log(this);  // Object {name: "qiutc"}
+    }, 1000);
+  }
+}
+
+obj.foo2();</span></pre></blockquote><p><br/></p><p>可以看到，在 setTimeout 执行的函数中，本应该打印出在 Window，但是在这里 this 却指向了 obj，原因就在于，给 setTimeout 传入的函数（参数）是一个箭头函数：</p><blockquote><p>函数体内的this对象，就是定义时所在的对象，而不是使用时所在的对象。</p></blockquote><p><br/></p><p>根据例子我们理解一下这句话：</p><p><br/></p><p>在 obj.foo2() 执行的时候，当前的 this 指向 obj；在执行 setTimeout 时候，我们先是定义了一个匿名的箭头函数，关键点就在这，箭头函数内的this 执行定义时所在的对象，就是指向定义这个箭头函数时作用域内的 this，也就是 obj.foo2 中的 this，即 obj；所以在执行箭头函数的时候，它的 this -&gt; obj.foo2 中的 this -&gt; obj；</p><p><br/></p><p>简单来说， 箭头函数中的 this 只和定义它时候的作用域的 this 有关，而与在哪里以及如何调用它无关，同时它的 this 指向是不可改变的。</p><p><br/></p><h2><strong>7、call, apply, bind</strong></h2><p><br/></p><p>在 js 中，函数也是对象，同样也有一些方法，这里我们介绍三个方法，他们可以更改函数中的 this 指向：</p><p><br/></p><p><strong>call</strong></p><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">fun.call(thisArg[, arg1[, arg2[, ...]]])</span></pre></blockquote><p><br/></p><p>它会立即执行函数，第一个参数是指定执行函数中 this 的上下文，后面的参数是执行函数需要传入的参数；</p><p><br/></p><p><strong>apply</strong></p><blockquote><pre><span style="color: rgb(0, 122, 170); font-size: 12px;">fun.apply(thisArg[, [arg1, arg2, ...]])</span></pre></blockquote><p><br/></p><p>它会立即执行函数，第一个参数是指定执行函数中 this 的上下文，第二个参数是一个数组，是传给执行函数的参数（与 call 的区别）；</p><p><br/></p><p><strong>bind</strong></p><blockquote><pre><span style="color: rgb(0, 122, 170); font-size: 12px;">var foo = fun.bind(thisArg[, arg1[, arg2[, ...]]]);</span></pre></blockquote><p><br/></p><p>它不会执行函数，而是返回一个新的函数，这个新的函数被指定了 this 的上下文，后面的参数是执行函数需要传入的参数；</p><p><br/></p><p>这三个函数其实大同小异，总的目的就是去指定一个函数的上下文（this），我们以 call 函数为例；</p><p><br/></p><h3><strong>8、为一个普通函数指定 this</strong></h3><p><br/></p><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">var obj = {
+  name: 'qiutc'<br/>};<br/>function foo() {  <br/>  console.log(this);
+}
+
+foo.call(obj);<br/>// Object {name: "qiutc"}</span></pre></blockquote><p><br/></p><p>可以看到，在执行 foo.call(obj) 的时候，函数内的 this 指向了 obj 这个对象，成功；</p><p><br/></p><h3><strong>9、为对象中的方法指定一个 this</strong></h3><p><br/></p><blockquote><pre><span style="color: rgb(0, 122, 170); font-size: 12px;">var obj = {
+  name: 'qiutc',
+  foo: function () {    <br/>    console.log(this);
+  }
+}var obj2 = {
+  name: 'tcqiu222222'};
+
+obj.foo.call(obj2);<br/>// Object {name: "tcqiu222222"}</span></pre></blockquote><p><br/></p><p>可以看到，执行函数的时候这里的 this 指向了 obj2，成功；</p><p><br/></p><h3><strong>10、为构造函数指定 this</strong></h3><p><br/></p><blockquote><pre><span style="color: rgb(0, 122, 170); font-size: 12px;">function Person(name) {  <br/>  this.name = name;  <br/>  console.log(this);
+}<br/>var obj = {
+  name: 'qiutc2222222'<br/>};<br/>var p = new Person.call(obj, 'qiutc');<br/>// Uncaught TypeError: Person.call is not a constructor(…)</span></pre></blockquote><p><br/></p><p>这里报了个错，原因是我们去 new 了 Person.call 函数，而非 Person ，这里的函数不是一个构造函数；</p><p><br/></p><p>换成 bind 试试：</p><blockquote><pre><span style="font-size: 12px; color: rgb(0, 122, 170);">function Person(name) { <br/> this.name = name; <br/> console.log(this);
+}<br/>var obj = {
+  name: 'qiutc2222222'<br/>};<br/>var Person2 = Person.bind(obj);<br/>var p = new Person2('qiutc');<br/>// Person {name: "qiutc"}<br/>console.log(obj);<br/>// Object {name: "qiutc2222222"}</span></pre></blockquote><p><br/></p><p>打印出来的是 Person 实例化出来的对象，而和 obj 没有关系，而 obj 也没有发生变化，说明，我们给 Person 指定 this 上下文并没有生效；</p><p><br/></p><p>因此可以得出： 使用 bind 给一个构造函数指定 this，在 new 这个构造函数的时候，bind 函数所指定的 this 并不会生效；</p><p><br/></p><p>当然 bind 不仅可以指定 this ，还能传入参数，我们来试试这个操作：</p><blockquote><pre><span style="color: rgb(0, 122, 170); font-size: 12px;">function Person(name) {<br/>  this.name = name;<br/>  console.log(this);
+}<br/>var obj = {
+  name: 'qiutc2222222'<br/>};<br/>var Person2 = Person.bind(obj, 'qiutc111111');<br/>var p = new Person2('qiutc');<br/>// Person {name: "qiutc111111"}</span></pre></blockquote><p><br/></p><p>可以看到，虽然指定 this 不起作用，但是传入参数还是起作用了；</p><p><br/></p><h3><strong>11、为箭头函数指定 this</strong></h3><p><br/></p><p>我们来定义一个全局下的箭头函数，因此这个箭头函数中的 this 必然会指向全局对象，如果用 call 方法改变 this 呢：</p><blockquote><pre><span style="color: rgb(0, 122, 170); font-size: 12px;">var afoo = (a) =&gt; {<br/>  console.log(a);  <br/>  console.log(this);
+}
+
+afoo(1);<br/>// 1<br/>// Window<br/><br/>var obj = {
+  name: 'qiutc'<br/>};
+
+afoo.call(obj, 2);<br/>// <br/>2// Window</span></pre></blockquote><p><br/></p><p>可以看到，这里的 call 指向 this 的操作并没有成功，所以可以得出： 箭头函数中的 this 在定义它的时候已经决定了（执行定义它的作用域中的 this），与如何调用以及在哪里调用它无关，包括 (call, apply, bind) 等操作都无法改变它的 this。</p><p><br/></p><p>只要记住箭头函数大法好，不变的 this。</p><p><br/></p><p><span style="font-size: 14px; color: rgb(136, 136, 136);">转载自：阿城的blog</span></p><p><span style="font-size: 14px; color: rgb(136, 136, 136);">文章地址：http://qiutc.me/post/this-this-this-in-javascript.html</span></p><p><span style="font-size: 14px; color: rgb(136, 136, 136);">作者：邱同城</span></p><p><span style="font-size: 14px; color: rgb(136, 136, 136);"/></p><section class="yead_editor" style="margin:5px auto;white-space: normal;" title="327&#xFF0C;&#x66F4;&#x65B0;&#x4E8E;2015-09-25 10:02"><blockquote class="yead_bdc" style="margin-top: 5px; margin-bottom: 5px; padding-right: 10px; max-width: 100%; border: 2px dashed rgb(153, 153, 153); color: rgb(62, 62, 62); font-size: 14px; line-height: 30px; box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);"><p><strong><span style="font-size: 14px;">推荐阅读：</span></strong></p><ul class=" list-paddingleft-2" style="list-style-type: square;"><li><h2><a href="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=2655932295&amp;idx=2&amp;sn=d0403f8200abbd7fb6ee7aab334152e4&amp;scene=21#wechat_redirect" target="_blank" data_ue_src="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=2655932295&amp;idx=2&amp;sn=d0403f8200abbd7fb6ee7aab334152e4&amp;scene=21#wechat_redirect"><span style="font-size: 14px; text-decoration: underline;">10+ 实用的 JavaScript 调试小技巧</span></a></h2></li><li><h2><a href="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=2655932051&amp;idx=2&amp;sn=0aacd016e4c5939f3734bba484f03c66&amp;scene=21#wechat_redirect" target="_blank" data_ue_src="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=2655932051&amp;idx=2&amp;sn=0aacd016e4c5939f3734bba484f03c66&amp;scene=21#wechat_redirect"><span style="font-size: 14px; text-decoration: underline;">基础 JavaScript 装逼指南</span></a></h2></li><li><h2><a href="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=405805704&amp;idx=2&amp;sn=43edf460739c03522ec42a582ddcd691&amp;scene=21#wechat_redirect" target="_blank" data_ue_src="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=405805704&amp;idx=2&amp;sn=43edf460739c03522ec42a582ddcd691&amp;scene=21#wechat_redirect"><span style="font-size: 14px; text-decoration: underline;">JavaScript：彻底理解同步、异步和事件循环</span></a></h2></li><li><h2><a href="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=2655932229&amp;idx=2&amp;sn=a693da50b1a33f5dc2d54378fb7d82f3&amp;scene=21#wechat_redirect" target="_blank" data_ue_src="http://mp.weixin.qq.com/s?__biz=MjM5OTMxMzA4NQ==&amp;mid=2655932229&amp;idx=2&amp;sn=a693da50b1a33f5dc2d54378fb7d82f3&amp;scene=21#wechat_redirect"><span style="font-size: 14px; text-decoration: underline;">看看国外的JavaScript题目,你能全部做对吗?</span></a></h2></li></ul></blockquote></section><section class="yead_editor" style="margin:5px auto;white-space: normal;" title="812&#xFF0C;&#x66F4;&#x65B0;&#x4E8E;2016-08-04 22:48"><section class="wx-bg" style="border-style: solid; -webkit-border-image: url(&quot;http://mmbiz.qpic.cn/mmbiz/ianq03UUWGmIpwAQC8PpNCD8pUpQqmshV4Q5wrbETPaZtT8Uu4se1m48yjbFuVx1c7icEtiaERuKiaNlAwF8iafFdFg/0?wx_fmt=png&quot;) 60 140 115 63 fill repeat; border-width: 30px 70px 68px 32px;"><section style="margin-bottom:-35px;font-size:14px;line-height:30px"><p>周末无聊学习啊，点击菜单【技术教程】，海量IT教程免费随便看~</p></section></section></section><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz/bLmy0N4HIaeKSsczbv1d2CjQRlQia15npPjq0B2m5ScmUcopIk45pp21quj2Tv6w6JjH77GMiaL5VIHP1A6aZlGQ/0?wx_fmt=jpeg" data-ratio="0.6666666666666666" data-w="720" style="width: 100%; height: auto;" src="../Images/503a1eeff49a08ff9e5afab24251e9cb.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/bLmy0N4HIaeKSsczbv1d2CjQRlQia15npPjq0B2m5ScmUcopIk45pp21quj2Tv6w6JjH77GMiaL5VIHP1A6aZlGQ/0?wx_fmt=jpeg"/><br/></p>
+        
+</body>
+</html>

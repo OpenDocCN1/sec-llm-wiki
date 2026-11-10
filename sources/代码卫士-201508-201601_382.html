@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>导致谷歌Chrome浏览器崩溃的16个字符</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>导致谷歌Chrome浏览器崩溃的16个字符</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485879&amp;idx=1&amp;sn=79a546bde4ea37755c733319f8f2708e&amp;chksm=ea9738dddde0b1cb08a33dbd02cd9d7a74cb85b5816ddb3140ca1a9f5708274de2fe2527545a&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485879&amp;idx=1&amp;sn=79a546bde4ea37755c733319f8f2708e&amp;chksm=ea9738dddde0b1cb08a33dbd02cd9d7a74cb85b5816ddb3140ca1a9f5708274de2fe2527545a&amp;scene=27#wechat_redirect</a></blockquote><p>一个简单的URL就能让最新版本的Chrome浏览器崩溃。步骤如下：</p><p><br/></p><ul class=" list-paddingleft-2"><li><p>输入一个由16个字符组成的字符串链接并点击回车键</p></li><li><p>点击16字字符串链接</p></li><li><p>见证结果</p><p><br/></p></li></ul><p>也就是说无需打开或点击恶意链接就可能导致Chrome浏览器崩溃。这是由安全研究员Andris Atteka发现的，他指出只要在URL字符串中添加一个NULL字符就能马上让Chrome浏览器崩溃。Atteka能通过含有26个字符的字符串让Chrome崩溃：</p><p><br/></p><p>http://biome3d.com/%%30%30</p><p><br/></p><p>不过，VentureBeat设法利用更少的字符就实现了这个目的：含16个字符的字符串（如下）。</p><p><br/></p><p>http://a/%%30%30</p><p><br/></p><p><strong>真相是什么？</strong></p><p>Atteka 
+表示，这个漏洞实际上是一个“DOS漏洞”而非缺陷。不过它仍然可能导致用户丢掉所有在Chrome浏览器中打开的标签和窗口。这个问题看似不大但实际上
+ 非常严重，因为有人可能会将该字符串发布到推特上，从而导致别人的推特时间轴加载该链接，最终使别人的Chrome浏览器崩溃。</p><p><br/></p><p>今年6月 
+份，Skype曾遭受类似漏洞的困扰，当时仅需包含8个字符的字符串”http://:”就能导致收信人的Skype立即崩溃，而无需显示这条信息。 
+Atteka将这个最新Chrome崩溃漏洞报告给了谷歌但未获得任何漏洞奖励，因为这个漏洞并非真正的安全威胁。不过谷歌还未发布相关漏洞。</p><p><br/></p><p>这个漏洞影响包括Chrome当前稳定版本Chrome 45在内的所有浏览器版本，并且会导致浏览器的Windows和Mac OS X版本崩溃。此外，Chrome的移动版本也受此影响。</p><p><br/></p><p>本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。</p>
+        
+</body>
+</html>

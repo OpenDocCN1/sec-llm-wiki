@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>隐藏病毒文件</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>隐藏病毒文件</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI3NzMzNzE5Ng==&amp;mid=2247484388&amp;idx=2&amp;sn=83c53a35ae3617132d5f03bd87e733f0&amp;chksm=eb6686e7dc110ff162cfcfe417341389234940e44faf787f3cd33f9f3d4d9611e000f291ca2b&amp;scene=126&amp;sessionid=1681407319#rd">http://mp.weixin.qq.com/s?__biz=MzI3NzMzNzE5Ng==&amp;mid=2247484388&amp;idx=2&amp;sn=83c53a35ae3617132d5f03bd87e733f0&amp;chksm=eb6686e7dc110ff162cfcfe417341389234940e44faf787f3cd33f9f3d4d9611e000f291ca2b&amp;scene=126&amp;sessionid=1681407319#rd</a></blockquote><p>C:\&gt;echo "This is test"&gt;sample.txt</p><p>C:\&gt;dir</p><p>2017/04/6 14:59                17 sample.txt</p><p>C:\&gt;echo "This is hidden"&gt;sample.txt:secret.txt</p><p>C:\&gt;dir                           (C盘下是找不到这个文件的)</p><p>2017/04/6 15:01                17sample.txt           (文件大小看上去没有变化)</p><p>C:\&gt;dir /r                      (/r 才显示）</p><p>2017/04/6 15:01                17 sample.txt</p><p>                                 19sample.txt:secret.txt:$DATA</p><p>C:\&gt;notepad sample.txt:secret.txt                  </p><p>把bad.exe文件关联good.exe，也就是在dos中运行good.exe文件的时候其实是运行了bad.exe，在目录下生成了一个good.exe的快捷方式。</p><p>C:\&gt;echo "This is test"&gt;test.txt</p><p>C:\&gt;type C:\bad.exe &gt;test.txt:bad.exe</p><p>C:\&gt;mklink good.exe test.txt:bad.exe</p><p>C:\&gt;good.exe</p><p><br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Censys：一款洞察互联网秘密的新型搜索引擎</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Censys：一款洞察互联网秘密的新型搜索引擎</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2MzA3OTgxOA==&amp;mid=402060135&amp;idx=1&amp;sn=bb0731fc3b4fa2d456113b02020c4e3d&amp;chksm=784301824f34889406e1204c7d651049678f4b16f513501715c8468bd0ee30fcd800e3c55102&amp;scene=126&amp;sessionid=1681404951#rd">http://mp.weixin.qq.com/s?__biz=MzI2MzA3OTgxOA==&amp;mid=402060135&amp;idx=1&amp;sn=bb0731fc3b4fa2d456113b02020c4e3d&amp;chksm=784301824f34889406e1204c7d651049678f4b16f513501715c8468bd0ee30fcd800e3c55102&amp;scene=126&amp;sessionid=1681404951#rd</a></blockquote><p>Censys是一款用以搜索联网设备信息的新型搜索引擎，安全专家可以使用它来评估他们实现方案的安全性，而黑客则可以使用它作为前期侦查攻击目标、收集目标信息的强大利器。</p><p><br/></p><p>Censys功能介绍</p><p><br/></p><p>现在，黑客和安全专家们拥有了一款新型强大的分析工具，那就是Censys搜索引擎，与最流行的搜索引擎Shodan非常类似。Censys是一款免费的搜索引擎，最初由密歇根大学的研究人员在10月发行，目前由谷歌提供支持。</p><p><br/></p><p>Censys搜索引擎能够扫描整个互联网，Censys 每天都会扫描IPv4地址空间，以搜索所有联网设备并收集相关的信息，并返回一份有关资源（如设备、网站和证书）配置和部署信息的总体报告。</p><p><br/></p><p>Censys官方网站上这样描述该搜索引擎：</p><p><br/></p><p>“Censys是一款搜索引擎，它允许计算机科学家了解组成互联网的设备和网络。Censys由因特网范围扫描驱动，它使得研究人员能够找到特定的主机，并能够针将设备、网站和证书的配置和部署信息创建到一个总体报告中。”</p><p>Censys原理及架构</p><p><br/></p><p>与Shodan类似，Censys维护着一个完整的数据库，里面保存着每个暴露在互联网上的设备信息。对于一个黑客来说，如果他想搜索一个特定的目标，并需要收集目标配置的信息，那么对他来说censys无疑是一款特权工具。同时，安全专家能够轻易锁定互联网上保护措施很差的设备。</p><p><br/></p><p><br/></p><p><br/></p><p>密歇根大学领导Censys项目的研究人员兼ZMap发明者Zakir Durumeric说道：</p><p><br/></p><p>“从ATM和银行保险箱到发电厂的工业控制系统，我们已经找到了它们中的所有信息。这令人感到非常担忧。”</p><p>Censys的开发是作为一个开源项目的一部分的，该项目旨在维护一个“联网设备的完整数据库”，目的是帮助安全专家来评估互联网上的产品和服务的安全性。</p><p><br/></p><p>Censys使用到了ZMap和ZGrab。其中，ZMap是一款网络扫描器，它能够扫描特定机器，以寻找可能被利用的安全漏洞，它分析了40亿个IP地址，并每天搜集这些IP地址上设备的信息；ZGrab是一款应用层扫描器。此外，这份研究论文中详细介绍了Censys的架构和所实现的功能。</p><p><br/></p><p>发现物联网设备重用密钥的功臣</p><p><br/></p><p>我建议感兴趣的读者阅读一下麻省理工学院关于Censys的技术评论《针对互联网上的肮脏秘密的搜索引擎》（“A Search Engine for the Internet’s Dirty Secrets”），但最有趣的是开发团队发布的Censys详细教程。</p><p><br/></p><p>目前，安全专家已经在使用Censys，最近SEC咨询部的研究人员发现，物联网设备重复使用了加密密钥，使得数百万设备处于危险之中（Freebuf相关报道）。专家们分析了4000固件，发现只有大约580个不同的私钥。使用Scan.io和Censys.io使得他们发现，相同密码集存在广泛重用的情况，其中580个密码中只有230个处于使用状态。</p><p><br/></p>
+        
+</body>
+</html>

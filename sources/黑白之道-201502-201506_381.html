@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>钓鱼邮件利用路由器CSRF漏洞劫持巴西网民DNS</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>钓鱼邮件利用路由器CSRF漏洞劫持巴西网民DNS</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxMjE3ODU3MQ==&amp;mid=203432809&amp;idx=5&amp;sn=5b6e2d3e85badd7669ff175ecbff291e&amp;chksm=1261468d2516cf9b3705036349d509bd94164d1955629d702bb6d7423f080de36ac77ee04dbe&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzAxMjE3ODU3MQ==&amp;mid=203432809&amp;idx=5&amp;sn=5b6e2d3e85badd7669ff175ecbff291e&amp;chksm=1261468d2516cf9b3705036349d509bd94164d1955629d702bb6d7423f080de36ac77ee04dbe&amp;scene=27#wechat_redirect</a></blockquote><p>   安全公司ProofPoint的研究人员于上周二发布了一个报告，报告中指出黑客正在通过更改DNS设置劫持巴西网民的网络连接。攻击者主要是利用家用路由器中存在的安全漏洞入侵，然后修改路由器DNS设置，这种攻击被称为pharming(网址嫁接攻击)。</p><p> </p><p>科普：网址嫁接攻击</p><p>  网址嫁接攻击是一种重新导向的诈骗技巧，由网络钓鱼衍生而来。主要通过在网页中植入木马或者利用域名服务器上的漏洞将受害者错误的引导到伪造的网站中，并伺机窃取证书和敏感信息。</p><p>  通常情况下，网址嫁接攻击的成功率非常高，一般不会被发现。通过更改路由器的DNS设置，受害者只要输入真实域名或者合法网站地址，攻击者就可将其重定向到一个伪造网站上。另外攻击者还可以利用pharming(网址嫁接攻击)发动中间人攻击，例如拦截网站上的邮件、登录名和密码，或者劫持用户的搜索结果等。</p><p>从钓鱼开始发起CSRF攻击</p><p>  安全研究人员从2014年12月份就开始观察这种行为了，他们发现攻击主要是从一封垃圾邮件开始的，并且查到这封垃圾邮件是从巴西最大的电信公司发出的，发送对象是UTStarcom和TP-Link家用路由器用户。这些邮件中都包含一个恶意链接，一旦受害者点击了这个链接，就会被重定向到一个含有该路由器跨站请求伪造(CSRF)漏洞利用程序(exploit)的页面上。</p><p>  攻击成功后，攻击者即获得了路由器控制台的访问权限，他们会使用默认密码或暴力破解设备，把路由器初始DNS服务器的IP地址更改为恶意的DNS IP地址。</p><p>以前，攻击者会把primary和secondaryDNS记录都修改掉，但是据最近的观察发现，攻击者只会更改primaryDNS，而secondary DNS则会设置成谷歌公共DNS 8.8.8.8。</p><p>  网址嫁接式攻击不易被发现，而且成功率非常高。所以建议用户使用老办法：更改路由器密码，越复杂越好。</p><p> </p>
+        
+</body>
+</html>

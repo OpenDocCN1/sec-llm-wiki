@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>台湾群晖公司云站中的OS X客户端存在漏洞可致主机被完全攻陷</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>台湾群晖公司云站中的OS X客户端存在漏洞可致主机被完全攻陷</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485956&amp;idx=2&amp;sn=d36f9e10949426974ffdd46ec681bba3&amp;chksm=ea973b6edde0b278933fd3cbffc73c94aa2e55a154d7ca7789bf3d5f57b795456043404289e4&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485956&amp;idx=2&amp;sn=d36f9e10949426974ffdd46ec681bba3&amp;chksm=ea973b6edde0b278933fd3cbffc73c94aa2e55a154d7ca7789bf3d5f57b795456043404289e4&amp;scene=27#wechat_redirect</a></blockquote><p>来自台湾企业群晖的云站产品的OS X同步客户端可被攻击者利用获取对这个存储设备的root权限从而将其完全攻陷。</p><p><br/></p><p>群晖云站被设置为一个私有的云解决方案可通过一个本地客户端在多个设备（智能手机、计算机、平板）中同步数据。它的功能包括文件版本管理、选择性同步以及加密。</p><p><br/></p><p><span style="color: rgb(0, 176, 80); ">本地用户可获取root权限</span><br/></p><p>Jeremy Kemp所汇报的安全弱点并不是由产品所使用的代码漏洞引发的，而是由赋予OS X客户端一个可执行文件不正确的默认许可导致的，它可允许用户更改云中文件的所有权。</p><p><br/></p><p>客户端1.1-2291及3.2-2475范围内的版本中，“client_chown”可执行文件以setuid（设置用户标识号）的root许可安装，意味着任何有访问权限的人都可修改文件。卡内基梅隆大学CERT表示，“本地标准OS X用户可获取任意系统文件的所有权，从而获取root权限并完全攻陷主机。”</p><p><br/></p><p><span style="color: rgb(0, 176, 80); ">CVSS评分为6.8</span></p><p>群晖通过为（3.2-3475）至3.2-3475没有“client_down”（目的是为了更加容易地更新云站客户端）版本发布更新的方式解决了这一问题。公司表示安全漏洞的影响程度为低。CERT将其编为CVE-2015-2851。根据CVSS的评分标准，这个漏洞的评分为6.8。公司建议受影响用户尽快将客户端更新至3.2-3475或之后版本。</p><p><br/></p><p>最近群晖为照片站及磁盘站管理器网络操作系统的多个产品发布了一系列更新，修复了多个安全漏洞。这些安全漏洞可能会赋予攻击者访问网络连接存储设备数据的完全访问权限。</p><p><br/></p><p>本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。</p><p><br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>渗透测试中常见的端口</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>渗透测试中常见的端口</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxMjE3ODU3MQ==&amp;mid=2650440964&amp;idx=2&amp;sn=13e2619254c9f8dfc41238cef69c769e&amp;chksm=83bbe0e0b4cc69f63d9f3c046c1316a4e9547621b860dee237c4038efad7128678cf0f8a5dec&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzAxMjE3ODU3MQ==&amp;mid=2650440964&amp;idx=2&amp;sn=13e2619254c9f8dfc41238cef69c769e&amp;chksm=83bbe0e0b4cc69f63d9f3c046c1316a4e9547621b860dee237c4038efad7128678cf0f8a5dec&amp;scene=27#wechat_redirect</a></blockquote><p style="line-height: 25.6px; white-space: normal;"><img data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLicbbooLjdrYZGYk72jOkHL33quwiaInPdk8KEna1MHzkUr8SyRFLJicgOAvsmmnR0mx8U5tLVMXPxlg/0?wx_fmt=gif" data-type="gif" data-ratio="0.1" data-w="500" src="../Images/bfdb8e6b5064b2f16eba66e913995d58.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLicbbooLjdrYZGYk72jOkHL33quwiaInPdk8KEna1MHzkUr8SyRFLJicgOAvsmmnR0mx8U5tLVMXPxlg/0?wx_fmt=gif"/></p><p style="white-space: normal;"><br/></p><p/><section class="entry-content ng-binding ng-scope" ng-bind-html="postContentTrustedHtml" ui-copyright-check="" data-entry-url="/p/24926870" data-author-name="ydxred" ng-if="ownPost(post) || !isCensoring"><p>1,web类(web漏洞/敏感目录)</p><br/>第三方通用组件漏洞struts thinkphp jboss ganglia zabbix <br/><pre><code class="language-text">80 web 
+80-89 web 
+8000-9090 web</code></pre><p>2,数据库类(扫描弱口令)</p><pre><code class="language-text">1433 MSSQL 
+1521 Oracle 
+3306 MySQL 
+5432 PostgreSQL 
+</code></pre><p>3,特殊服务类(未授权/命令执行类/漏洞)</p><pre><code class="language-text">443 SSL心脏滴血 
+873 Rsync未授权 
+5984 CouchDB http://xxx:5984/_utils/ 
+6379 redis未授权 
+7001,7002 WebLogic默认弱口令，反序列 
+9200,9300 elasticsearch 参考WooYun: 多玩某服务器ElasticSearch命令执行漏洞 
+11211 memcache未授权访问 
+27017,27018 Mongodb未授权访问 
+50000 SAP命令执行 
+50070,50030 hadoop默认端口未授权访问</code></pre><p>4,常用端口类(扫描弱口令/端口爆破)</p><pre><code class="language-text">21 ftp 
+22 SSH 
+23 Telnet 
+2601,2604 zebra路由，默认密码zebra
+3389 远程桌面</code></pre><p>端口合计详情</p><pre><code class="language-text">21 ftp 
+ 
+22 SSH 
+ 
+23 Telnet 
+ 
+80 web 
+ 
+80-89 web 
+ 
+161 SNMP 
+ 
+389 LDAP 
+ 
+443 SSL心脏滴血以及一些web漏洞测试 
+ 
+445 SMB 
+ 
+512,513,514 Rexec 
+ 
+873 Rsync未授权 
+ 
+1025,111 NFS 
+ 
+1433 MSSQL 
+ 
+1521 Oracle:(iSqlPlus Port:5560,7778) 
+ 
+2082/2083 cpanel主机管理系统登陆 （国外用较多）
+ 
+2222 DA虚拟主机管理系统登陆 （国外用较多） 
+ 
+2601,2604 zebra路由，默认密码zebra
+ 
+3128 squid代理默认端口，如果没设置口令很可能就直接漫游内网了 
+ 
+3306 MySQL 
+ 
+3312/3311 kangle主机管理系统登陆 
+ 
+3389 远程桌面 
+ 
+4440 rundeck 参考WooYun: 借用新浪某服务成功漫游新浪内网 
+ 
+5432 PostgreSQL 
+ 
+5900 vnc 
+ 
+5984 CouchDB http://xxx:5984/_utils/ 
+ 
+6082 varnish 参考WooYun: Varnish HTTP accelerator CLI 未授权访问易导致网站被直接篡改或者作为代理进入内网 
+ 
+6379 redis未授权 
+ 
+7001,7002 WebLogic默认弱口令，反序列 
+ 
+7778 Kloxo主机控制面板登录 
+ 
+8000-9090 都是一些常见的web端口，有些运维喜欢把管理后台开在这些非80的端口上 
+ 
+8080 tomcat/WDCP主机管理系统，默认弱口令 
+ 
+8080,8089,9090 JBOSS 
+ 
+8083 Vestacp主机管理系统 （国外用较多） 
+ 
+8649 ganglia 
+ 
+8888 amh/LuManager 主机管理系统默认端口 
+ 
+9200,9300 elasticsearch 参考WooYun: 多玩某服务器ElasticSearch命令执行漏洞 
+ 
+10000 Virtualmin/Webmin 服务器虚拟主机管理系统 
+ 
+11211 memcache未授权访问 
+ 
+27017,27018 Mongodb未授权访问 
+ 
+28017 mongodb统计页面 
+ 
+50000 SAP命令执行 
+ 
+50070,50030 hadoop默认端口未授权访问 
+</code></pre><p><br/></p></section><p/><p><br/></p><section class="" style="margin-top: 1em; margin-bottom: 0.5em; max-width: 100%; box-sizing: border-box; color: rgb(62, 62, 62); line-height: 25.6px; white-space: normal; font-size: 18.018px; font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; border-width: 0px; border-style: none; clear: both; word-wrap: break-word !important; overflow-wrap: break-word !important; background-color: rgb(255, 255, 255);"><section class="" style="padding-top: 3px; max-width: 100%; box-sizing: border-box; border-top-width: 2px; border-top-style: solid; border-color: rgb(95, 156, 239); font-size: 18px; font-family: inherit; text-decoration: inherit; color: rgb(255, 255, 255); word-wrap: break-word !important; overflow-wrap: break-word !important;"><section class="" style="padding-right: 0.5em; padding-left: 0.5em; max-width: 100%; box-sizing: border-box; display: inline-block; height: 2em; line-height: 2em; vertical-align: top; font-size: 20px; font-family: inherit; word-wrap: break-word !important; overflow-wrap: break-word !important; background-color: rgb(95, 156, 239);"><section class="" style="max-width: 100%; box-sizing: border-box; word-wrap: break-word !important; overflow-wrap: break-word !important;"><span style="max-width: 100%; font-size: 18px; box-sizing: border-box !important; word-wrap: break-word !important; overflow-wrap: break-word !important;"><strong class="" style="max-width: 100%; box-sizing: border-box; word-wrap: break-word !important; overflow-wrap: break-word !important;">你会喜欢</strong></span></section></section><section class="" style="max-width: 100%; box-sizing: border-box; width: 0px; display: inline-block; vertical-align: top; border-left-width: 0.8em; border-left-style: solid; border-left-color: rgb(95, 156, 239); border-top-width: 1em; border-top-style: solid; border-top-color: rgb(95, 156, 239); font-size: 20px; font-family: inherit; word-wrap: break-word !important; overflow-wrap: break-word !important; border-right-width: 0.8em !important; border-right-style: solid !important; border-right-color: transparent !important; border-bottom-width: 1em !important; border-bottom-style: solid !important; border-bottom-color: transparent !important;"/></section></section><p><br/></p><p><a href="http://mp.weixin.qq.com/s?__biz=MzAxMjE3ODU3MQ==&amp;mid=2650440661&amp;idx=3&amp;sn=7d3ea331e206797b1114d22ea6b918d3&amp;chksm=83bbe631b4cc6f272558f2c1849bc7880ad050fa8f7d4c1f9868b9075693dd7339a0041f9e3b&amp;scene=21#wechat_redirect" target="_blank" data_ue_src="http://mp.weixin.qq.com/s?__biz=MzAxMjE3ODU3MQ==&amp;mid=2650440661&amp;idx=3&amp;sn=7d3ea331e206797b1114d22ea6b918d3&amp;chksm=83bbe631b4cc6f272558f2c1849bc7880ad050fa8f7d4c1f9868b9075693dd7339a0041f9e3b&amp;scene=21#wechat_redirect">合法练习黑客技术？这15个网站也许可以帮到你</a><br/></p><p><a href="http://mp.weixin.qq.com/s?__biz=MzAxMjE3ODU3MQ==&amp;mid=400891711&amp;idx=1&amp;sn=37a823313c4accdf7a8b88bcb6bdb21e&amp;scene=21#wechat_redirect" target="_blank" data_ue_src="http://mp.weixin.qq.com/s?__biz=MzAxMjE3ODU3MQ==&amp;mid=400891711&amp;idx=1&amp;sn=37a823313c4accdf7a8b88bcb6bdb21e&amp;scene=21#wechat_redirect">2015年中国网站安全报</a>告</p><section style="max-width: 100%; color: rgb(62, 62, 62); line-height: 25.6px; white-space: normal; font-size: 18.018px; box-sizing: border-box !important; word-wrap: break-word !important; overflow-wrap: break-word !important; background-color: rgb(255, 255, 255);"><section label="Copyright © 2015 Yead All Rights Reserved." style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important; overflow-wrap: break-word !important;"><section style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important; overflow-wrap: break-word !important;"><section style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important; overflow-wrap: break-word !important;"><section style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important; overflow-wrap: break-word !important;"><section style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important; overflow-wrap: break-word !important;"><section label="Copyright © 2015 Yead All Rights Reserved." style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important; overflow-wrap: break-word !important;"><section style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important; overflow-wrap: break-word !important;"><section style="max-width: 100%; display: inline-block; box-sizing: border-box !important; word-wrap: break-word !important; overflow-wrap: break-word !important;"><p><br/></p><p style="max-width: 100%; min-height: 1em; width: 35px; float: left; transform: rotate(0deg); box-sizing: border-box !important; word-wrap: break-word !important; overflow-wrap: break-word !important;"><img data-ratio="1.266304347826087" data-src="http://mmbiz.qpic.cn/mmbiz/UV167rT9naICHpYkN8XdvXnKLGzucYkKjMtT2HrT1O0ubtRvXP7RVzJWnERiaP2dU82Rk02kvcSlTR6VYrkibhAA/0?" data-type="gif" data-w="184" style="display: block; box-sizing: border-box !important; word-wrap: break-word !important; overflow-wrap: break-word !important; visibility: visible !important; width: 35px !important;" width="35px" src="../Images/9d92a3ad6b4949e840b1ad8147072925.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/UV167rT9naICHpYkN8XdvXnKLGzucYkKjMtT2HrT1O0ubtRvXP7RVzJWnERiaP2dU82Rk02kvcSlTR6VYrkibhAA/0?"/></p><section style="margin-top: 20px; margin-left: -19px; padding-right: 15px; padding-left: 30px; max-width: 100%; border-radius: 10px; border-width: 1px; border-style: solid; border-color: rgb(204, 153, 153); line-height: 30px; float: left; min-height: 30px; min-width: 3em; box-sizing: border-box !important; word-wrap: break-word !important; overflow-wrap: break-word !important;"><p style="max-width: 100%; min-height: 1em; color: rgb(18, 149, 39); box-sizing: border-box !important; word-wrap: break-word !important; overflow-wrap: break-word !important;"><span style="max-width: 100%; font-size: 18px; box-sizing: border-box !important; word-wrap: break-word !important; overflow-wrap: break-word !important;"><span style="max-width: 100%; color: rgb(192, 0, 0);">亲喜欢吗？</span>记得<strong style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important; overflow-wrap: break-word !important;"><span style="max-width: 100%; color: rgb(192, 0, 0); box-sizing: border-box !important; word-wrap: break-word !important; overflow-wrap: break-word !important;">点赞</span></strong>|<strong style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important; overflow-wrap: break-word !important;"><span style="max-width: 100%; color: rgb(0, 176, 80); box-sizing: border-box !important; word-wrap: break-word !important; overflow-wrap: break-word !important;">留言</span></strong>|<strong style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important; overflow-wrap: break-word !important;"><span style="max-width: 100%; color: rgb(227, 108, 9); box-sizing: border-box !important; word-wrap: break-word !important; overflow-wrap: break-word !important;">分享</span></strong></span></p></section></section></section></section></section></section></section></section></section></section><p style="font-size: 16px; line-height: 25.6px; white-space: normal; max-width: 100%; min-height: 1em; color: rgb(62, 62, 62); box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);"><br style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;"/></p><p style="line-height: 25.6px; white-space: normal; max-width: 100%; min-height: 1em; color: rgb(62, 62, 62); font-size: 18.018px; box-sizing: border-box !important; word-wrap: break-word !important; overflow-wrap: break-word !important; background-color: rgb(255, 255, 255);"><span style="max-width: 100%; font-size: 18px; box-sizing: border-box !important; word-wrap: break-word !important; overflow-wrap: break-word !important;"><span style="max-width: 100%; font-size: 18.018px; color: rgb(68, 85, 102); font-family: 微软雅黑, Arial; line-height: 28px;">长按公众号，可“</span><span style="max-width: 100%; font-size: 18.018px; font-family: 微软雅黑, Arial; line-height: 28px; color: rgb(255, 41, 65);"><strong style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important; overflow-wrap: break-word !important;">置顶</strong></span><span style="max-width: 100%; font-size: 18.018px; color: rgb(68, 85, 102); font-family: 微软雅黑, Arial; line-height: 28px;">”</span><br style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important; overflow-wrap: break-word !important;"/></span></p><p style="white-space: normal; max-width: 100%; min-height: 1em; font-size: 14px; color: rgb(68, 85, 102); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;, Arial; line-height: 28px; box-sizing: border-box !important; word-wrap: break-word !important; overflow-wrap: break-word !important; background-color: rgb(254, 254, 254);"><span style="max-width: 100%; color: rgb(51, 51, 51); font-family: 微软雅黑, Arial, sans-serif; line-height: 26px; font-size: 18px; box-sizing: border-box !important; word-wrap: break-word !important; overflow-wrap: break-word !important; background-color: rgb(255, 255, 255);">----------------------------------</span></p><p style="margin-bottom: 1.5em; white-space: normal; max-width: 100%; min-height: 1em; font-size: 18px; line-height: 26px; font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;, Arial, sans-serif; color: rgb(51, 51, 51); box-sizing: border-box !important; word-wrap: break-word !important; overflow-wrap: break-word !important; background-color: rgb(255, 255, 255);"><span style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important; overflow-wrap: break-word !important;">要闻、干货、原创、专业<br style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important; overflow-wrap: break-word !important;"/>关注“黑白之道” 微信：i77169<br style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important; overflow-wrap: break-word !important;"/>华夏黑客同盟我们坚持，自由，免费，共享！</span></p><p style="font-size: 16px; line-height: 25.6px; white-space: normal; max-width: 100%; min-height: 1em; color: rgb(62, 62, 62); box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);"><img class="__bg_gif" data-ratio="0.64" data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLicC5yZICpV1JRibhFQUOCNVWibPgMDeS4UaqkmCUFsk3Pkw8J1oZnKMG9wNM80weibcEp8TghvqQhvBw/0?wx_fmt=gif" data-type="gif" data-w="500" style="box-sizing: border-box !important; word-wrap: break-word !important; visibility: visible !important; width: auto !important;" width="auto" src="../Images/fd756b7cc34202bbd838f7ee7f7f078d.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLicC5yZICpV1JRibhFQUOCNVWibPgMDeS4UaqkmCUFsk3Pkw8J1oZnKMG9wNM80weibcEp8TghvqQhvBw/0?wx_fmt=gif"/></p><p><br/></p>
+        
+</body>
+</html>

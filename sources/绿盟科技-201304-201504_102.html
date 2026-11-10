@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>【Web漏洞响应】Drupal惊爆SQL注入漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>【Web漏洞响应】Drupal惊爆SQL注入漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5ODYyMTM4MA==&amp;mid=201215838&amp;idx=2&amp;sn=1bf7b15167a05915b940990c9be5be0e&amp;chksm=28cd16f51fba9fe3c658a939a7f85dc67f955dbe6ce54009a641b29982f51aa67a286caa0721&amp;scene=126&amp;sessionid=1681372671#rd">http://mp.weixin.qq.com/s?__biz=MjM5ODYyMTM4MA==&amp;mid=201215838&amp;idx=2&amp;sn=1bf7b15167a05915b940990c9be5be0e&amp;chksm=28cd16f51fba9fe3c658a939a7f85dc67f955dbe6ce54009a641b29982f51aa67a286caa0721&amp;scene=126&amp;sessionid=1681372671#rd</a></blockquote><p><strong>漏洞概述</strong></p><p> </p><p>今日上午消息：连续多年荣获全球最佳CMS大奖，基于PHP语言最著名的开源WEB应用程序Drupal被爆出SQL注入漏洞（CVE-2014-3704）。该漏洞广泛存在于Drupal 7.x系列中7.31之前所有版本（Drupal &gt;= 7.0 &lt;= 7.31），远程攻击者可以非登录状态SQL注入，获取管理员权限，甚至实现远程代码执行，获取webshell。</p><p> </p><p>考虑到此注入漏洞利用没有任何限制，且影响范围非常广泛，目前国际安全专家认定这一SQL注入漏洞的严重程度为8级，这就是说会有更多的黑客利用它造成更严重的安全危机。</p><p> </p><p><strong>成因分析</strong></p><p> </p><p>Drupal在所有的SQL查询语句当中都是用的预编译来处理。在处理IN语句时，存在逻辑问题，有一个expandArguments函数来展开数组。该函数若带入数组当中有key并且不是整数，由于Drupal使用PDO，因此可以多语句查询。所以这个SQL注入向数据库里插入任意数据，下载或者修改存在的数据，甚至drop掉整个数据库。导致攻击者可以通过向数据库里插入任意的数据，利用Drupal的特性执行PHP代码，获取管理员权限，甚至通过这个问题实现远程代码执行。</p><p> </p><p><strong>如何核查是否存在该漏洞</strong></p><p> </p><p>绿盟科技依托于多年来在攻防领域的技术积累，Web漏洞应急响应团队依据漏洞成因分析，第一时间权威发布此高危Web漏洞的检测插件。</p><p> </p><p>用户可选择专攻于Web脆弱性安全评估的绿盟Web应用漏洞扫描系统（简称WVSS产品），通过更新最新插件库进行该漏洞的快速定位发现。</p><p> </p><p><strong>推荐用户应急措施</strong></p><p> </p><p>目前Drupal官方已发布最新版本7.32，请使用该系统的用户尽快升级。点击左下角<span style="BACKGROUND-COLOR: #92d050">阅读原文</span>进入Drupal官方地址，也可联系绿盟科技尝试本地化完美的安全加固解决方案。</p><p><img data-src="http://mmbiz.qpic.cn/mmbiz/IpYUt4DIvZcz5qO2OuqP5CM7o38N50mNzA2WJ4xkue9qn3H7F5DFJnGBBZR2Eyo45PK6dYwFZ067GTJ9Y9wHlA/0" data-w="" data-ratio="0.5841584158415841" src="../Images/2ae0fad31f483a3d7157c8a4c08e2bf8.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/IpYUt4DIvZcz5qO2OuqP5CM7o38N50mNzA2WJ4xkue9qn3H7F5DFJnGBBZR2Eyo45PK6dYwFZ067GTJ9Y9wHlA/0"/></p><p> </p>
+        
+</body>
+</html>

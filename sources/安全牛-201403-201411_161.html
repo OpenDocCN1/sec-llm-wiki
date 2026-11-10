@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>【牛技术】恶意软件采用密写 把代码隐藏在图片中</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>【牛技术】恶意软件采用密写 把代码隐藏在图片中</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5Njc3NjM4MA==&amp;mid=200689499&amp;idx=2&amp;sn=76a5cb177facf0ca76dfcc2db7e135cf&amp;chksm=28e6f7881f917e9e6d3a02bc99d55e8c3039d55e0d58cf0118650a668bf840dd4ef0fdfc0f42&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5Njc3NjM4MA==&amp;mid=200689499&amp;idx=2&amp;sn=76a5cb177facf0ca76dfcc2db7e135cf&amp;chksm=28e6f7881f917e9e6d3a02bc99d55e8c3039d55e0d58cf0118650a668bf840dd4ef0fdfc0f42&amp;scene=27#wechat_redirect</a></blockquote><p>“密写”技术在很多侦探小说和谍战电影中经常会出现 间谍用密写药水把情报写在白纸上，收到情报的上级再通过显影技术把情报还原出来。<br/><br/>最近，戴尔SecurityWorks的安全研究人员Brett Stone-Gross发表了一个报告，发现了一个新型恶意软件“潜伏”，这个恶意软件的最大特点就是，把恶意代码通过隐藏在BMP图片的像素中以躲避杀毒软件。（关注“信息安全知识”，回复“brett”获得报告网址）</p><p><br/>最近的银行木马KINS利用了一部分泄漏的Zeus木马源代码，已经在尝试“密写”技术。然而，KINS的“密写”技术还比较原始。只是把数据（配置文件或者命令）附加在图片文件的尾部。 这种技术对于现在的入侵防护系统（IPS）或者入侵检测系统（IDS）来说，相对比较容易检测到。 而“潜伏”则是通过一种算法，把加密后的URL”嵌入”图片的像素中。这样对于目前的IPS或者IDS来说将无法检测出来。<br/></p><p style="text-align: center"><img data-w="500" data-ratio="0.396" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/kuIKKC9tNkCUgKMdOl5OWjAXWKCK7tqIyviaHLvIyL4RmaaiaqAzQRIjnMrkGCKy3F3eicd87nCmvjghppKw1BtUg/0" src="../Images/e1ee2431b4ede34cdb241d6e414f5f7f.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/kuIKKC9tNkCUgKMdOl5OWjAXWKCK7tqIyviaHLvIyL4RmaaiaqAzQRIjnMrkGCKy3F3eicd87nCmvjghppKw1BtUg/0"/></p><p>“潜伏”主要任务是一个下载器，用来下载后续的恶意代码，用来搭建一个进行点击欺诈的僵尸网络。“潜伏“的DLL资源区域带有一个BMP位图。而“潜伏”把恶意代码的URL放在了每个像素的颜色字节的最低位上。 这样的话，从整个位图来看，只是会有一些噪点，而杀毒软件或者是以特征值为基础的IPS/IDS则很难检测出来。<br/><br/>此外，“潜伏”还会对系统的安全防护系统进行检查，检查系统是否安装有52中杀毒软件。如果检测到其中的21种软件 则“潜伏”不会去安装下载的恶意代码。如果不是的话，“潜伏”会把杀毒软件的信息传回给命令与控制服务器。<br/><br/>“潜伏”的发现是安全领域“道高一尺，魔高一丈”的又一个例子。前一段臭名昭著的赎金木马Cryptolocker中采用了AES算法， 以及僵尸网络利用P2P技术进行去中心化，都说明恶意软件和僵尸网络背后的网络犯罪分子在尽一切努力对恶意代码进行隐藏，或者对僵尸网络进行强化。 而“密写”技术则是最近恶意软件的新动向，值得从事恶意软件分析的人们多加关注。</p><p>－－－<br/></p><p><span style="color: rgb(127, 127, 127);">要闻、干货、原创、专业</span></p><p><span style="color: rgb(127, 127, 127);">关注“信息安全知识”</span></p><p><span style="color: rgb(127, 127, 127);">我们是安全牛！</span></p><p style="text-align:center"><img data-w="200" data-ratio="1" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/kuIKKC9tNkB8pQ3CTSGictAAAJL9tlrp5fY1dZLqqu1hlZys3BibaYTwKE2lXQe9tzpegvCECZqhNSg0icku7teTw/0" src="../Images/b7c37b7066302548960da8a2e74a40e4.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/kuIKKC9tNkB8pQ3CTSGictAAAJL9tlrp5fY1dZLqqu1hlZys3BibaYTwKE2lXQe9tzpegvCECZqhNSg0icku7teTw/0"/></p><p><br/></p>
+        
+</body>
+</html>

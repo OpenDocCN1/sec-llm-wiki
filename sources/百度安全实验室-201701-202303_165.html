@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Towards Understanding Google Titan</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Towards Understanding Google Titan</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA3NTQ3ODI0NA==&amp;mid=2247483989&amp;idx=1&amp;sn=1cb4b61edb1b32635861d6ea39f3fe91&amp;chksm=9f6ea7dea8192ec875e5fb38bd1134c223d5b9f0a23a721770931cd39501c7bd1522912bb793&amp;scene=126&amp;sessionid=1681572946#rd">http://mp.weixin.qq.com/s?__biz=MzA3NTQ3ODI0NA==&amp;mid=2247483989&amp;idx=1&amp;sn=1cb4b61edb1b32635861d6ea39f3fe91&amp;chksm=9f6ea7dea8192ec875e5fb38bd1134c223d5b9f0a23a721770931cd39501c7bd1522912bb793&amp;scene=126&amp;sessionid=1681572946#rd</a></blockquote><section class="xmteditor" style="display:none;" data-tools="&#x65B0;&#x5A92;&#x4F53;&#x7BA1;&#x5BB6;" data-label="powered by xmt.cn"/><p>
+			</p><p>
+				</p><p>
+					</p><p><span style="font-size: 19px;"><strong><span style="font-family: LMRoman12-Bold-Identity-H;color: rgb(0, 82, 255);">1 Introduction</span></strong></span></p><p>
+					</p><p><span style="font-family: LMRoman10-Regular-Identity-H;font-size: 11pt;"><br/></span></p><p><span style="font-family: LMRoman10-Regular-Identity-H;font-size: 11pt;">Recently, many priviledged</span><span style="font-family: LMRoman10-Regular-Identity-H;font-size: 11pt;"> software (e.g., BIOS and UEFI fi</span><span style="font-family: LMRoman10-Regular-Identity-H;font-size: 11pt;">rmware)
+attacks [3, 2] are identified. Attackers are able to remotely or locally compromise the boot  firmware and install persistent rootkits. In order to defend
+against such low-level powerful attacks, Google have committed to designing
+and building Titan as a trusted chip to harden the Google Cloud Platform
+(GCP).</span></p><p><span style="font-size: 11pt;font-family: LMRoman10-Regular-Identity-H;"><br/></span></p><p><span style="font-size: 11pt;font-family: LMRoman10-Regular-Identity-H;">Titan is  first introduced at Google Cloud Next 2017. It is secure, low-power Google’s purpose-built chip to establish hardware root of trust for
+both machines and peripherals on cloud infrastructure, allowing people to
+securely identify and authenticate legitimate access at the hardware level.
+Titan not only provides private key storage and management, secure boot
+and hardware-based root of trust, but also offers two important additional
+security properties: </span><span style="font-size: 11pt;font-family: LMRoman10-Italic-Identity-H;">remediation </span><span style="font-size: 11pt;font-family: LMRoman10-Regular-Identity-H;">and fi</span><span style="font-size: 11pt;font-family: LMRoman10-Italic-Identity-H;">rst-instruction integrity</span><span style="font-size: 11pt;font-family: LMRoman10-Regular-Identity-H;">. Trust can be
+re-established through remediation in the event that bugs in Titan firmware
+are found and patched, and  first-instruction integrity allows us to identify
+the earliest code that runs on each machine’s startup cycle.</span></p><p><span style="font-family: LMRoman10-Regular-Identity-H;font-size: 11pt;"><br/></span></p><p><span style="font-family: LMRoman10-Regular-Identity-H;font-size: 11pt;">In the following of this article, we will do our best efforts to figure out the
+working mechanims of Google Titan, although there are limited documents
+describing its design details. In addition, we also do some insight comparisons between Titan and TPM, which provides similar functionalities. </span></p><p><strong><span style="font-size: 14pt;font-family: LMRoman12-Bold-Identity-H;color: rgb(0, 82, 255);"><br/></span></strong></p><p><strong><span style="font-size: 14pt;font-family: LMRoman12-Bold-Identity-H;color: rgb(0, 82, 255);">2 Titan vs. TPM</span></strong></p><p><strong><span style="font-size: 12.000000pt;font-family: 'LMRoman12-Bold-Identity-H';"><br/></span></strong></p><p><strong><span style="font-size: 12.000000pt;font-family: 'LMRoman12-Bold-Identity-H';">2.1 Topological Location</span></strong></p><p>
+					</p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';"><br/></span></p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">According to Google online documents [5, 6], Titan communicates with the
+main CPU via the Serial Peripheral Interface (SPI) bus, and interposes between the boot firmware flash (e.g., BIOS) of the  first privileged component, </span><span style="font-family: LMRoman10-Regular-Identity-H;font-size: 11pt;">e.g., the Baseboard Management Controller (BMC) or Platform Controller
+Hub (PCH), allowing Titan to observe every byte of boot firmware. In addition, Titan is able to gate PCH/BMC access to the boot  firmware flash
+(e.g., BIOS) until after it has verified the flash content. Thus, Titan should
+be located on SPI bus, between boot firmware flash and PCH/BMC. For
+TPM, it is usually connected via LPC bus. Sometimes, SPI is also used to
+connect to the TPM [7, 8]. According to the topological locations of Titan
+and TPM (shown in Figure 1), we can visually identify why Titan is able to
+hold the machine in reset while TPM can not. </span></p><p>
+				</p><p>
+			</p><p>
+		</p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';"/><br/></p><p style="text-align: center;"><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/2fvCZicH9HWT2dmTrGCntDkh0TG5j0V6FdKibLSuE5Obq5BP5SOlsyTskvHRSExbdudqOOnboZXADgwM9yhfqUwQ/0?wx_fmt=png" class="" data-ratio="0.6908831908831908" data-w="702" src="../Images/67fccf4895a3304c071e7b6a26f66263.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/2fvCZicH9HWT2dmTrGCntDkh0TG5j0V6FdKibLSuE5Obq5BP5SOlsyTskvHRSExbdudqOOnboZXADgwM9yhfqUwQ/0?wx_fmt=png"/><span style="font-family: LMRoman10-Regular-Identity-H;font-size: 12px;color: rgb(136, 136, 136);">Figure 1: The locations of Titan and TPM on a typical Intel system. Titan
+is connected via SPI bus, while TPM is usually attached to LPC bus.</span></p><p>
+					</p><p><span style="font-size: 12.000000pt;font-family: 'LMRoman12-Bold-Identity-H';"><br/></span></p><p><strong><span style="font-size: 12.000000pt;font-family: 'LMRoman12-Bold-Identity-H';">2.2 Hardware Features</span></strong></p><p>
+					</p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';"><br/></span></p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">TPM as a trusted hardware module comprises components: </span></p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">1. An Execution Engine (processor),<br/>2. A cryptographic co-processor</span></p><p><span style="font-family: LMRoman10-Regular-Identity-H;font-size: 11pt;">3. A hardware random number generator, </span></p><p><span style="font-family: LMRoman10-Regular-Identity-H;font-size: 11pt;">4. A non-volatile memory,</span></p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">5. Some accessible PCRs</span></p><p>
+					</p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">Similarly, in order to provide secure boot, remediation and first-instruction
+integrity, Titan is designed as a chip that comprises the following hardware
+components:</span></p><p>
+					</p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">1. A secure application processor,<br/>2. A cryptographic co-processor,<br/>3. A hardware random number generator,<br/>4. An embedded static RAM (SRAM),<br/>5. An embedded flash (non-volatile memory), </span></p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">6. A read-only memory block，<br/>7. A monotonic counter</span></p><p>
+					</p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">Based on the above observations, we find that Titan and TPM have
+many similar hardware features (i.e., application processor, cryptographic
+co-processor, random number generator, non-violative memory, monotonic
+counter), which are mainly to serve key storage and management, secure
+boot and hardware root of trust, and to defend against rollback attacks.</span></p><p>
+					</p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">There are only limited differences in hardware features. One difference
+is Titian provides SRAM working together with the application processor
+(seems to be more powerful) to get better performance. Another mainly
+difference is Titan is able to provide proactive measurement (Titian proactively measures BIOS/UEFI’s code), while TPM only has passive working
+mode (TPM never proactively measures outside environment).</span></p><p>
+					</p><p><span style="font-size: 12.000000pt;font-family: 'LMRoman12-Bold-Identity-H';"><br/></span></p><p><strong><span style="font-size: 12.000000pt;font-family: 'LMRoman12-Bold-Identity-H';">2.3 Security Features</span></strong></p><p>
+					</p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Bold-Identity-H';"><br/></span></p><p><span style="font-size: 11pt;font-family: LMRoman10-Bold-Identity-H;color: rgb(0, 82, 255);">2.3.1 Secure Boot</span></p><p>
+					</p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';"><br/></span></p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">The secure bootsup sequence for a host machine with Titan is as follows,
+starting from power up/reset:</span></p><p>
+					</p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">1. Titan holds the machine in reset.</span></p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">2.Titan’s application processor executes code from its embedded read-only memory (boot ROM).</span></p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">3.Titan runs a Memory Built-In Self-Test. This step is to ensure that:</span></p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">    (a) All memory (including boot ROM) has not been tampered with. </span></p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">    (b) The fi</span><span style="font-family: LMRoman10-Regular-Identity-H;font-size: 11pt;">rmware in the on-chip fl</span><span style="font-family: LMRoman10-Regular-Identity-H;font-size: 11pt;">ash is not tampered with.</span></p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">4.The code from boot ROM loads and executes the verified firmware
+from the on-chip flash.</span></p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">5.Titan’s firmware verifies the host’s boot firmware flash，e.g.，BIOS/UEFI.</span></p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">6.Titan signals readiness to release the rest of the machine from reset.</span></p><p><span style="font-family: LMRoman10-Regular-Identity-H;font-size: 11pt;">7.The CPU then loads the basic firmware (BIOS or UEFI) from the boot firmware flash, which performs further hardware/software configuration.</span></p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">8.Once the machine is sufficiently configured, the boot firmware accesses
+the ”boot sector” on the machine’s persistent storage, and loads a
+special program called the ”boot loader” into the system memory.</span></p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">9.The boot firmware then passes execution control to the boot loader,
+which loads the initial OS image from storage into system memory
+and passes execution control to the operating system.</span></p><p>
+					</p><p><br/></p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">TPM-based secure boot assumes BIOS as the root of trust in ROM is
+secure. Thus, the boot sequence of the TPM-based secure boot skips the
+ rst 6 steps and starts from Step 7 of the Titan-based secure boot. It
+is noteworthy that many existing attacks indicate that this assume is not
+reliable in practice [3, 2]. Fortunately, TPM together with Intel TXT [4] or
+AMD SVM [1] is able to provide dynamic root of trust. With this technology,
+it allows the system to build up root of trust in Step 9, without trusting any
+previous steps.</span></p><p>
+					</p><p><br/></p><p><span style="font-size: 11pt;font-family: LMRoman10-Regular-Identity-H;color: rgb(0, 82, 255);">2.3.2 Remediation</span></p><p>
+					</p><p><br/></p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">Remediation is based on strong (cryptographic) identity. To provide strong
+identity, the Titan chip manufacturing process generates unique keying material for each chip. At the same time, Google securely stores this material-along with provenance information - into a registry database. It means
+that Google is able to identify each Titan chip by leveraging the unique keying material and the registry database. To be safe, the contents of this
+database are cryptographically protected using keys maintained in an offline
+quorum-based Titan Certification Authority (CA). Individual Titan chips
+can generate Certificate Signing Requests (CSRs) directed at the Titan CA,
+which - under the direction of a quorum of Titan identity administrators -
+can verify the authenticity of the CSRs using the information in the registry
+database before issuing identity certificates.</span></p><p>
+					</p><p><br/></p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">The Titan-based identity system is able to provide several interesting
+security features, which are listed as follows:</span></p><p>
+					</p><p><br/></p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">1.Enable back-end systems to securely provision secrets and keys to individual Titan-enabled machines, or jobs running on those machines.</span></p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">2.Verify the  firmware running on the chips, as the code identity of the firmware is hashed into the on-chip key hierarchy.</span></p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">3.Fix bugs in Titan firmware, and issue certificates that can only be
+wielded by patched Titan chips.</span></p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">4.Chain and sign critical audit logs, making those logs tamper-evident.
+To offer tamper-evident logging capabilities, Titan cryptographically
+associates the log messages with successive values of a secure monotonic counter maintained by Titan, and signs these associations with
+its private key. This binding of log messages with secure monotonic
+counter values ensures that audit logs cannot be altered or deleted
+without detection, even by insiders with root access to the relevant
+machine.</span></p><p>
+					</p><p><br/></p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">TPM does not provide the identity-based rumination feature, although
+each TPM has a unique identity, e.g., Endorsement Key (EK). On the con-
+trary, TPM-based security services aim to anonymize the identity of the
+TPM to provide better privacy protection.</span></p><p>
+					</p><p><span style="font-size: 11pt;font-family: LMRoman10-Bold-Identity-H;color: rgb(0, 82, 255);"><br/></span></p><p><span style="font-size: 11pt;font-family: LMRoman10-Bold-Identity-H;color: rgb(0, 82, 255);">2.3.3 Remote Attestation</span></p><p>
+					</p><p><br/></p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">TPM is able to provide remote attestation. There is no direct evidence/documents
+to explicitly describe Titan-based remote attestation. However, based on the
+existing hardware and software features (e.g., tamper-evident logging and
+sophisticated key hierarchy), I believe it is not hard to extend Titian to
+provide remote attestation. </span></p><p><span style="font-family: LMRoman10-Bold-Identity-H;font-size: 11pt;"><br/></span></p><p><span style="font-family: LMRoman10-Bold-Identity-H;font-size: 11pt;color: rgb(0, 82, 255);">2.3.4 First-instruction Integrity</span></p><p><span style="font-size: 11pt;font-family: LMRoman10-Regular-Identity-H;"><br/></span></p><p><span style="font-size: 11pt;font-family: LMRoman10-Regular-Identity-H;">The  first instruction in </span><span style="font-size: 11pt;font-family: LMRoman10-Italic-Identity-H;">First-instruction Integrity </span><span style="font-size: 11pt;font-family: LMRoman10-Regular-Identity-H;">(FiI) is the  first instruction
+of the boot firmware, i.e., BIOS/UEFI, not the first instruction of Titan’s
+code. TPM does not support this feature.</span></p><p>
+					</p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">To achieve FiI, Titan should satisfy the following requirements:</span></p><p>
+					</p><p><br/></p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">1.R1: Titan’s code executes first, before any code in BIOS/UEFI.</span></p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">2.R2: Titan’s code should be trust or verified.</span></p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">3.R3: BIOS/UEFI’s code should be verified before gaining CPU.</span></p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">4.R4: The execution transfer from Titan to the boot firmware flash
+should be non-interruptible.</span></p><p>
+					</p><p><br/></p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">Both Titan and the boot firmware flash are on SPI bus, and Titian
+is located between EMC/PCH and boot firmware flash (Figure 1). The
+topological advantage allows Titan to gate PCH/BMC access to the boot firmware flash and execute its code before BIOS/UEFI’s code (achieving
+R1). It is noteworthy that the above conclusion for R1 is based on an
+implicitly assumption: there is no hardware locating between Titan and
+PCH/BMC to gating PCH/BMC access to Titan. An insider attacker may
+physically violate this assumption.</span></p><p>
+					</p><p><br/></p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">The code in Titan is in two parts: (1) C1: code in read-only ROM, and
+(2) C2: code in the on-chip  ash. For code C1, it is implicitly trusted, as the
+boot ROM is physically protection (inside Titan chip) and read-only. For
+code C2, it is cryptographically verified by C1 every time the chip boots
+(achieving R2).</span></p><p>
+					</p><p><br/></p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">The topological location allows Titan code to access the code on the boot firmware flash. Thus, after achieving R2, Titan code is also able to verify
+BIOS/UEFI’s code, (achieving R3).</span></p><p>
+					</p><p><br/></p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">There is no document discussing about R4 requirement. It seems that
+this requirement is implicitly achieved by Titan and the topological location.
+It is noteworthy that any attacks that are able to break R4 can break the
+FiI property.</span></p><p>
+					</p><p><br/></p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';">Overall, these four requirements (R1, R2, R3 and R4) are explicitly
+or implicitly achieved through the combination of hardware and software
+design. </span></p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';"><br/></span></p><p><span style="font-size: 11.000000pt;font-family: 'LMRoman10-Regular-Identity-H';"/></p><p style="text-align: center;"><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/2fvCZicH9HWT2dmTrGCntDkh0TG5j0V6FhXaKPCdVEOofYe2Hf2ng53D0Vsd6zjibwFpOPE8EyGsODYA3CQDFMmg/0?wx_fmt=png" class="" data-ratio="0.9924471299093656" data-w="662" src="../Images/31b5fbef9050f2c6f7605bc0eb5ba531.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/2fvCZicH9HWT2dmTrGCntDkh0TG5j0V6FhXaKPCdVEOofYe2Hf2ng53D0Vsd6zjibwFpOPE8EyGsODYA3CQDFMmg/0?wx_fmt=png"/></p><p style="text-align: center;"><span style="font-size: 19px;"><strong><span style="font-family: LMRoman12-Bold-Identity-H;color: rgb(0, 82, 255);"><br/></span></strong></span></p><p style="text-align: left;"><span style="font-size: 19px;"><strong><span style="font-size: 16px;font-family: LMRoman12-Bold-Identity-H;color: rgb(0, 82, 255);">3. Conclusions</span></strong></span></p><p style="text-align: left;"><span style="font-family: LMRoman10-Regular-Identity-H;font-size: 11pt;"><br/></span></p><p style="text-align: left;"><span style="font-family: LMRoman10-Regular-Identity-H;font-size: 11pt;">In this article, we did the comparisons between Titan and TPM, from three
+aspects: (1) topological location, (2) hardware features and (3) security
+features. Putting all comparisons together, we get the following Table 1.
+Overall, Titan not only can provide almost all TPM features (remote attestation is unclear), but also can provide remediation and FiI. In addition,
+an important essential difference is that Titan is able to provide proactive
+measurement but TPM can not.</span></p><p>
+					</p><p><span style="font-size: 14.000000pt;font-family: 'LMRoman12-Bold-Identity-H';"><br/></span></p><p><span style="font-size: 19px;"><strong><span style="font-family: LMRoman12-Bold-Identity-H;color: rgb(0, 82, 255);">References</span></strong></span></p><p><span style="color: rgb(136, 136, 136);font-family: LMRoman10-Regular-Identity-H;font-size: 12px;"><br/></span></p><p><span style="color: rgb(136, 136, 136);font-family: LMRoman10-Regular-Identity-H;font-size: 12px;">[1]  AMD. Amd64 architecture programmer’s manual volume 2: System
+programming. March 2017.</span><br/></p><p><span style="color: rgb(136, 136, 136);font-family: LMRoman10-Regular-Identity-H;font-size: 12px;">[2]  Furtak Andrew, Gorobets Mikhail, Bazhaniuk Oleksandr, and Bulygin
+Yuriy. Firmware is the new black - analyzing past three years of bios/ue 
+security vulnerabilities. July 2017.</span></p><p><span style="color: rgb(136, 136, 136);font-family: LMRoman10-Regular-Identity-H;font-size: 12px;">[3]  Monroe Bruce, Branco Rodrigo, and Zimmer Vincent. Firmware is the
+new black - analyzing past three years of bios/ue  security vulnerabili-
+ties. July 2017.</span></p><p><span style="color: rgb(136, 136, 136);font-family: LMRoman10-Regular-Identity-H;font-size: 12px;">[4]  Intel. Intel 64 and IA-32 architectures software developer’s manual com-
+bined volumes: 1, 2a, 2b, 2c, 2d, 3a, 3b, 3c, 3d and 4. March 2017.</span><br/></p><p><span style="color: rgb(136, 136, 136);font-family: LMRoman10-Regular-Identity-H;font-size: 12px;">[5]  Google Cloud team. Google infrastructure security design overview. Jan-
+uary 2017.</span><br/></p><p><span style="color: rgb(136, 136, 136);font-family: LMRoman10-Regular-Identity-H;font-size: 12px;">[6]  Google Cloud Security team. Titan in depth: Security in plaintext.
+August 2017.</span><br/></p><p><span style="color: rgb(136, 136, 136);font-family: LMRoman10-Regular-Identity-H;font-size: 12px;">[7]  Allan Tomlinson. Introduction to the TPM, pages 155–172. Springer US,
+Boston, MA, 2008.</span><br/></p><p><span style="color: rgb(136, 136, 136);font-family: LMRoman10-Regular-Identity-H;font-size: 12px;">[8]  Wikipedia. Trusted platform module. September 2017. </span><br/></p><p>
+				</p><p>
+			</p><p>
+		</p><p><br/></p><p><img data-s="300,640" data-type="png" data-src="https://mmbiz.qpic.cn/mmbiz_png/2fvCZicH9HWQFtVWAWVW66N8DKNgb8sJDbLHibkADiaYfzcgJ4ep3RZvT63lyYjBFyNo7u2VyzCf58fMdeuIAg89w/0?wx_fmt=png" class="" data-ratio="0.4041204437400951" data-w="631" src="../Images/d17d4fdc1aea763f1fc4478664df2080.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/2fvCZicH9HWQFtVWAWVW66N8DKNgb8sJDbLHibkADiaYfzcgJ4ep3RZvT63lyYjBFyNo7u2VyzCf58fMdeuIAg89w/0?wx_fmt=png"/></p><p><br/></p>
+        
+</body>
+</html>

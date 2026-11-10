@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>漏洞预警-Oracle WebLogic wls9-async 组件反序列化远程命令执行漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>漏洞预警-Oracle WebLogic wls9-async 组件反序列化远程命令执行漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI3NzMzNzE5Ng==&amp;mid=2247484933&amp;idx=1&amp;sn=9f09b54ba7852d063b9e7254c721d4b6&amp;chksm=eb668306dc110a103b557e733e48b9f31e26da3a2dd63b618d4d25656cbd91fe8072fb2bc040&amp;scene=126&amp;sessionid=1681407274#rd">http://mp.weixin.qq.com/s?__biz=MzI3NzMzNzE5Ng==&amp;mid=2247484933&amp;idx=1&amp;sn=9f09b54ba7852d063b9e7254c721d4b6&amp;chksm=eb668306dc110a103b557e733e48b9f31e26da3a2dd63b618d4d25656cbd91fe8072fb2bc040&amp;scene=126&amp;sessionid=1681407274#rd</a></blockquote><blockquote><p><strong>漏洞概述</strong></p><p style="text-align: center;"><img class="rich_pages" data-ratio="0.5958333333333333" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/ibhQpAia4xu03p4bz3WetH7JiaF0iaflqvaROKk2yqRMqjtmqPsTPWSsne9Fg9JDsevEzbY5TUmYWyHh0gJ2pwFWhA/640?wx_fmt=png" data-type="png" data-w="720" style="" src="../Images/047944a57ac6f46693460a7dc7acabdb.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/ibhQpAia4xu03p4bz3WetH7JiaF0iaflqvaROKk2yqRMqjtmqPsTPWSsne9Fg9JDsevEzbY5TUmYWyHh0gJ2pwFWhA/640?wx_fmt=png"/></p><p><br/></p></blockquote><blockquote><blockquote><p><span style="color: rgb(0, 0, 0);">WebLogic Server 是美国甲骨文（Oracle）公司开发的一款适用于云环境和传统环境的应用服务中间件，它提供了一个现代轻型开发平台，支持应用从开发到生产的整个生命周期管理，并简化了应用的部署和管理。</span></p><p><span style="color: rgb(0, 0, 0);">部分版本 WebLogic 中默认包含的 wls9_async_response 包，为 WebLogic Server
+ 提供异步通讯服务。</span><span style="color: rgb(0, 0, 0);">由于该 WAR 包在反序列化处理输入信息时存在缺陷，攻击者可以发送精心构造的恶意 HTTP 
+请求，获得目标服务器的权限，在未授权的情况下远程执行命令。</span></p><p><br/></p><p><span style="color: rgb(0, 0, 0);">此漏洞存在于 weblogic 自带的 wls9_async_response.war 组件中，由于该 war 包在反序列化处理输入信息时存在缺陷，未经授权的攻击者可以发送精心构造的恶意 HTTP 请求，获取服务器权限，实现远程代码执行。</span></p></blockquote></blockquote><blockquote><p><span style="color: rgb(0, 0, 0);"><strong>漏洞危害</strong><strong/></span></p></blockquote><blockquote><blockquote><p><span style="color: rgb(0, 0, 0);">攻击者通过利用此漏洞，可以在未授权的情况下远程执行命令。</span></p></blockquote></blockquote><blockquote><p><span style="color: rgb(0, 0, 0);"><strong>受影响版本</strong><strong/></span></p></blockquote><blockquote><blockquote><p><span style="color: rgb(0, 0, 0);">WebLogic 10.X</span></p><p><span style="color: rgb(0, 0, 0);">WebLogic 12.1.3</span></p></blockquote><blockquote/></blockquote><blockquote><p><span style="color: rgb(0, 0, 0);"><strong>修复建议</strong></span><strong/></p></blockquote><blockquote><blockquote><p><span style="background-color: rgb(255, 255, 255);color: rgb(255, 0, 0);">目前，Oracle 官方暂未发布补丁，临时解决方案如下：</span></p><p><span style="background-color: rgb(255, 255, 255);color: rgb(255, 0, 0);">1、删除该 war 包并重启 webLogic；</span></p><p><span style="background-color: rgb(255, 255, 255);color: rgb(255, 0, 0);">2、通过访问策略控制禁止 /_async/* 路径的 URL 访问。</span></p><p class="vsbcontent_end"><span style="background-color: rgb(255, 255, 255);color: rgb(255, 0, 0);">建议使用 WebLogic Server 构建网站的信息系统运营者进行自查，发现存在漏洞后，按照临时解决方案及时进行修复。</span></p></blockquote></blockquote><p><br/></p>
+        
+</body>
+</html>

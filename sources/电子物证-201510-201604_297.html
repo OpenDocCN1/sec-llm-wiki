@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>如何获取微信uin</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>如何获取微信uin</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAwNDcwMDgzMA==&amp;mid=400665963&amp;idx=3&amp;sn=a1c9db396115f3fa8894034e8c450d2e&amp;chksm=0932e29a3e456b8c37a1890dad9f4dc387b6883e93bb0e0e985eb350eafe3e7e32e6202e0d8d&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzAwNDcwMDgzMA==&amp;mid=400665963&amp;idx=3&amp;sn=a1c9db396115f3fa8894034e8c450d2e&amp;chksm=0932e29a3e456b8c37a1890dad9f4dc387b6883e93bb0e0e985eb350eafe3e7e32e6202e0d8d&amp;scene=27#wechat_redirect</a></blockquote><p><img data-type="gif" data-src="http://mmbiz.qpic.cn/mmbiz/dDhDhftpRFv5VHUicJfnZCmLSEQnDFmiaf2vDnZIotsGn4WPqZj4h9ia3vIk4ciaNJ70Vn7RX289Q5CmvC2M7vJH0A/0?wx_fmt=gif" data-ratio="0.11870503597122302" data-w="" src="../Images/c2084ca813ebb9df9d10fee5ef26b84b.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/dDhDhftpRFv5VHUicJfnZCmLSEQnDFmiaf2vDnZIotsGn4WPqZj4h9ia3vIk4ciaNJ70Vn7RX289Q5CmvC2M7vJH0A/0?wx_fmt=gif"/></p><p style="line-height: 1.5em;">来源：http://blog.csdn.net/yuanbohx/article/details/41280837</p><p style="line-height: 1.5em;">作者：浣熊</p><p><br style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;"/></p><p style="line-height: 1.75em; margin-bottom: 10px;">首先解释什么是微信的“uin”：uin就是user information，也就是特定微信用户的ID。</p><p style="line-height: 1.75em; margin-bottom: 10px;">为什么要取得uin呢？：因为有读取微信聊天记录的需求，微信android版的数据库文件是可以取到的，但是微信对数据库进行了加密，而在破解的过程中要用到uin，至于如何破解，因为会在近期为大家介绍。</p><p style="line-height: 1.75em; margin-bottom: 10px;">言归正传，下面开始介绍uin的获取方法：</p><p style="line-height: 1.75em; margin-bottom: 10px;">1、登录微信网页版（推荐使用chrome浏览器，因为下一步是针对chrome浏览器的）</p><p style="line-height: 1.75em; margin-bottom: 10px;">2、开始chrome浏览器内置的抓包模式，即在新建的标签页地址栏中输入：chrome://net-internals/#events</p><p style="line-height: 1.75em; margin-bottom: 10px;">3、在微信中进行一些聊天操作，然后在浏览器的层级上搜索（ctrl+f）“uin”，不出意外可以搜到一个9位的uin码，这个就是你微信号对应的uin码</p><p style="line-height: 1.75em; margin-bottom: 10px; text-align: center;"><img data-src="http://mmbiz.qpic.cn/mmbiz/IGX1hI4hn5nDu1eBFj8W5sDwFGb2x5GEsxcXm1t9c9a8yExHHjlOrvIiaIDGBh6Es4cDXRia6WhdcFiaMPMC9PDCw/0?wx_fmt=png" data-type="png" data-ratio="0.4802158273381295" data-w="" style="margin: 0px; padding: 0px; border: none; box-sizing: border-box !important; word-wrap: break-word !important; width: auto !important; visibility: visible !important;" src="../Images/2dbd60f541d3976769ed0e7b5b3653f8.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/IGX1hI4hn5nDu1eBFj8W5sDwFGb2x5GEsxcXm1t9c9a8yExHHjlOrvIiaIDGBh6Es4cDXRia6WhdcFiaMPMC9PDCw/0?wx_fmt=png"/><span style="font-family: sans-serif; font-size: 16px;"/></p><p style="line-height: 1.75em; margin-bottom: 10px;">(<span style="color: rgb(255, 0, 0);">注</span>：<strong>data/data/com.tencent.mm/shared_prefs/system_config_prefs.xml中uin=</strong>后面的数值就是）</p>
+        
+</body>
+</html>

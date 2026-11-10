@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Mumblehard恶意软件针对Linux服务器已超5年</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Mumblehard恶意软件针对Linux服务器已超5年</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485974&amp;idx=4&amp;sn=4854744a346d8e11587a96c439884816&amp;chksm=ea973b7cdde0b26aad2cfbae3819ca5484a4e2a2a937b324cac929199e555a0e038df7ec51ae&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485974&amp;idx=4&amp;sn=4854744a346d8e11587a96c439884816&amp;chksm=ea973b7cdde0b26aad2cfbae3819ca5484a4e2a2a937b324cac929199e555a0e038df7ec51ae&amp;scene=27#wechat_redirect</a></blockquote><p>名为Mumblehard的恶意家族成功针对在Linux及BSD上运行的网络服务器发动攻击且已超过5年，目的是发送垃圾信息。该恶意软件控制了数千台Linux机器，在六个月期间，僵尸机器数量翻了一番。</p><p><br/></p><p><span style="color: rgb(0, 176, 80);"><strong>用于发送垃圾邮件的恶意软件</strong></span></p><p>安全分析指出，Mumblehard有两个组件，一个提供对受影响机器的后门访问，另外一个用于发送垃圾邮件。这两个组件都是用Perl写成的，而
+且自定义封隔器都用汇编语言写成。使用汇编语言生成ELF二进制是为了混淆Perl源代码，这比一般水平要高。安全研究员表示，恶意软件还具有通用代理的
+能力，只跟监听套接字上的命令及控制服务器通信。可在一个白名单上添加多个主机。</p><p><br/></p><p><span style="color: rgb(0, 176, 80);"><strong>Yellsoft DirectMailer</strong><strong>盗版版本感染网络服务器</strong></span></p><p>ESET发现超过8500个唯一的IP地址访问了他们设立的漏洞。在四月的第一个周就收到了来自3000个唯一IP的请求。安全研究人员发现
+DirectMailer的链接，它是Yellsoft为批量发送邮件而开发的一个程序。研究人员观察了7个月的活动情况后，发现有8867个唯一地址进
+行了连接，单日见到的最多连接数量为3292个。Mumbledhard至少在2009年就呈现活跃状态。</p><p>所有用户可通过查看未经请求的cronjob方式来了解机器是否被感染，而这个方式是Mumblehard每隔15分钟用来激活后门的方式。</p><p><br/></p>本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。
+        
+</body>
+</html>

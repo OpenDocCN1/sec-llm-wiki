@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>小米越权漏洞检测工具</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>小米越权漏洞检测工具</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=Mzg4OTI0MDk5MQ==&amp;mid=2247485267&amp;idx=1&amp;sn=68d608fac71f1a288e7ae63f49eb5314&amp;chksm=cfefaba3f89822b57366023dc94247f460d6eca9843b636c822fa40cfd83999514129c602f10&amp;scene=126&amp;sessionid=1681665607#rd">http://mp.weixin.qq.com/s?__biz=Mzg4OTI0MDk5MQ==&amp;mid=2247485267&amp;idx=1&amp;sn=68d608fac71f1a288e7ae63f49eb5314&amp;chksm=cfefaba3f89822b57366023dc94247f460d6eca9843b636c822fa40cfd83999514129c602f10&amp;scene=126&amp;sessionid=1681665607#rd</a></blockquote><p><span style="font-size: 15px;">小米范越权漏洞检测工具主要是检测网站越权漏洞的工具。 </span></p><p><span style="font-size: 15px;"><strong>此工具请使用Java 1.8以上版本运行。</strong></span></p><p><span style="font-size: 15px;">检测原理：</span></p><p><span style="font-size: 15px;">此工具内置了三个浏览器，三个浏览器完全独立，目前采用的是chrome内核，我们可以为三个浏览器使用不同的用户登录目标网站，</span></p><p><span style="font-size: 15px;">或者为三个浏览器设置不同的cookie，然后让他们同时去访问同一个url或者发送同样的请求，观察三个浏览器的页面变化。</span></p><p><span style="font-size: 15px;">假如某个URL本应只有1号浏览器的用户有权限查看，但是2、3号浏览器的用户也正常访问了URL，并获取了不该获取的数据，则可能存在越权</span></p><p><span style="font-size: 15px;">漏洞。界面如下：</span></p><p><img class="rich_pages wxw-img" data-ratio="0.544375" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/rgHsQiafgQSiaVYAXUreNeAWE3QHIiczx3O06eCloKD6QZE70R2w7lhe0aBU4KPbhibHGg0ibgV2NrEJicbYXNj4rbBA/640?wx_fmt=jpeg" data-type="jpeg" data-w="1600" height="467" width="858" src="../Images/0218162498e0da6ac678c76bee3032a6.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/rgHsQiafgQSiaVYAXUreNeAWE3QHIiczx3O06eCloKD6QZE70R2w7lhe0aBU4KPbhibHGg0ibgV2NrEJicbYXNj4rbBA/640?wx_fmt=jpeg"/></p><p><span style="font-size: 15px;">目前操作模式主要有两种：</span></p><p><span style="font-size: 15px;">一、2、3号浏览器与1号浏览器同步。</span></p><p><span style="font-size: 15px;">这种情况我们只要操作1号浏览器，2、3号浏览器会跟随1号浏览器访问同样的地址，这样我们可以为1号浏览器设置更高权限的用户即可检测垂直越权。</span></p><p><span style="font-size: 15px;">为三个浏览器设置同样级别的用户即可检测水平越权。</span></p><p><span style="font-size: 15px;">二、所有浏览器与表格同步。</span></p><p><span style="font-size: 15px;">这种情况主要针对ajax、post、手机app等情况，开启代理功能，类似burp，浏览器或者手机app设置代理为此工具，则会抓下所有的请求，然后我们点击表格中的任意请求，三个</span></p><p><span style="font-size: 15px;">浏览器会以各自的身份去发送这个请求，同样我们观察页面变化来判断是否存在越权问题。</span></p><p><span style="font-size: 15px;">另外此工具也可用于检测csrf漏洞。</span></p><p><span style="font-size: 15px;">操作方法：</span></p><p><span style="font-size: 15px;">1、在三个浏览器各自的文本输入框输入cookie，点击设置cookie，即可为对应的浏览器设置cookie。</span></p><p><span style="font-size: 15px;">2、点击三个浏览器上方的清除cookie，即可清除已经设置的cookie。</span></p><p><span style="font-size: 15px;">3、点击 启动即可启动代理，默认为监听 。0.0.0.0:8088端口。</span></p><p><span style="font-size: 15px;">4、在搜索框内输入关键字，点击搜索即可对表格内所有记录的请求进行搜索。</span></p><p><strong><span style="line-height: 1.5;font-size: 15px;">下载地址：http://pan.baidu.com/s/1pLjaQKF</span></strong><span style="line-height: 1.5;font-size: 15px;"/></p><p><br/></p>
+        
+</body>
+</html>

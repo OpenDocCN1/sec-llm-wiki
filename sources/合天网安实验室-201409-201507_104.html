@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Samba漏洞（CVE-2015-0240）实验|合天网安实验室</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Samba漏洞（CVE-2015-0240）实验|合天网安实验室</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5MTYxNjQxOA==&amp;mid=204193639&amp;idx=1&amp;sn=74f59750cd1469f18b26c0a43e751daf&amp;chksm=2f6dc3aa181a4abc3f82dc4e0a056ececbed35c0006783101242b82f3ee3c928d56bd0e0b63b&amp;scene=126&amp;sessionid=1681574382#rd">http://mp.weixin.qq.com/s?__biz=MjM5MTYxNjQxOA==&amp;mid=204193639&amp;idx=1&amp;sn=74f59750cd1469f18b26c0a43e751daf&amp;chksm=2f6dc3aa181a4abc3f82dc4e0a056ececbed35c0006783101242b82f3ee3c928d56bd0e0b63b&amp;scene=126&amp;sessionid=1681574382#rd</a></blockquote><p style=""><span style="font-size: 16px;">春节刚上班就听到了Samba漏洞爆发的消息，真是不消停的节奏。</span></p><p style=""><span style="font-size: 16px;">Samba是在Linux和UNIX系统上实现SMB协议的一个免费软件，由服务器及客户端程序构成。SMB（Server Messages Block，信息服务块）是一种在局域网上共享文件和打印机的一种通信协议，它为局域网内的不同计算机之间提供文件及打印机等资源的共享服务。Samba的应用范围非常广泛，因此这个漏洞的影响面也非常之大。</span></p><p style=""><span style="font-size: 16px;">这次爆发漏洞的是它的守护进程smbd里有一个为初始化的指针可被远程漏洞利用，这个编号CVE-2015-0240的漏洞</span></p><p style=""><span style="font-size: 16px;">允许一个恶意的Samba客户端发送一个特定的netlogon数据包给smbd获得smbd运行的权限，而smbd的默认权限是root，这个漏洞影响了Samba 3.5和更新的版本，主流的GNU/Linux发行版都受到了影响。</span></p><p style=""><span style="font-size: 16px;">为了帮助广大同学们弄清这个漏洞的来龙去脉，合天网安实验室的小伙伴们迅速开启了加班模式，终于2015年2月27日，Samba环境搭建及CVE-2015-0240漏洞检测与修复实验上线。</span></p><p style=""><span style="font-size: 16px;"><strong><span style="background-color: rgb(0, 176, 240); color: rgb(255, 255, 255);">点击阅读原文进入【合天网安实验室】</span></strong></span><br/></p>
+        
+</body>
+</html>

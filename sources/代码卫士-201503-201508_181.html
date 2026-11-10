@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>别了，SSLv3</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>别了，SSLv3</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485936&amp;idx=3&amp;sn=19f86efc4e263007a030b1b95904819c&amp;chksm=ea97389adde0b18caa7747249879d1264e4b0a3782f19ce6934569bd666168dc2e4c82eefdfb&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485936&amp;idx=3&amp;sn=19f86efc4e263007a030b1b95904819c&amp;chksm=ea97389adde0b18caa7747249879d1264e4b0a3782f19ce6934569bd666168dc2e4c82eefdfb&amp;scene=27#wechat_redirect</a></blockquote><p>这次，我们说的是真的：SSL3将退出历史舞台——这是因特网工程任务组（IETF）在公告中传递出的信息。实际上这不过是将IETF及互联网行业的共识正式化了：SSLv3过时且不安全，它是诸如BEAST和POODLE问题的罪魁祸首，而主要厂商自去年起就在代码中停用了SSL3。</p><p><br/></p><p>IETF在5月份就更新了TLS/SSL最佳实践指导，新文件应该只影响还未修复其系统的少数系统管理员。IETF表示，“实际上，客户端禁止发送将ClientHello设置为{03,00}的ClientHello.client_version。与之类似，服务器也不能发送将ServerHello设置为{03,00}的ServerHello.client_version。任何收到将协议版本设置为{03,00}协议版本的Hello信息的各方必须用一个‘protocol_version’警告信息予以回应并关闭连接。”</p><p><br/></p><p>RFC也提供了该协议在过去二十年中所存在问题的详细源记录。记录层（POODLE漏洞攻击的层面）崩溃且无法修复；密钥交换在重新谈判或会话重用过程中易受攻击且无法修复；所有的加密原语依赖于被启用的SHA-1；SSL3无法利用添加至TLS最新版本的安全功能。</p><p><br/></p><p>别了，SSLv3，愿从此永不相见。</p><p><br/></p><p>本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。</p><p><br/></p>
+        
+</body>
+</html>

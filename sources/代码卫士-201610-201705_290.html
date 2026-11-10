@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>攻击者利用Office OLE传播键盘记录器</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>攻击者利用Office OLE传播键盘记录器</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485599&amp;idx=2&amp;sn=50b58a01fd5266f88e768b4174079057&amp;chksm=ea9739f5dde0b0e301738852e290bcacdc10487ef129bd22162bc7de9313181a77f78b9c6e43&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485599&amp;idx=2&amp;sn=50b58a01fd5266f88e768b4174079057&amp;chksm=ea9739f5dde0b0e301738852e290bcacdc10487ef129bd22162bc7de9313181a77f78b9c6e43&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKial9a7Mn8WkJEds45BlApWVknKWia7ZuV7Kc7Y78ibiawORd1G8PSPoicMjd239qgyibrYlVfFgGPLia1IyA/0?wx_fmt=png" data-ratio="0.4701492537313433" data-w="670" src="../Images/2b8c8c5c63b92f54e0c8e996aeaddc4c.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKial9a7Mn8WkJEds45BlApWVknKWia7ZuV7Kc7Y78ibiawORd1G8PSPoicMjd239qgyibrYlVfFgGPLia1IyA/0?wx_fmt=png"/><br/></p><p><strong>Proofpoint公司的研究人员指出，最近攻击者将一款未知键盘记录器伪装成微软银光(Sliverlight) 更新，并针对大型金融机构发动攻击。</strong></p><p><br/></p><p>攻击者使用少量邮件通过一款还未识别出的键盘记录器实施感染，且每次感染仅针对一家组织机构。这些邮件中包含一个Word附件里面内嵌着高度混淆的对象以避免被检测。</p><p><br/></p><p>恶意软件作者此前曾利用Office的对象链接与嵌入(OLE)功能将恶意代码隐藏在文档中，微软也曾在半年前告警过这种情况。虽然恶意宏还是恶意软件传播的热门攻击向量，但其它替代方式如OLE的使用今年有望增长。</p><p><br/></p><p>这次攻击中使用的文档名称是info.doc，它要求用户安装Silverlight插件浏览内容。恶意软件作者使用Packager Shell Object将VBS文件隐藏。攻击者在字符串的每个字符后面都增加了“We are safe”对文件进行混淆。</p><p><br/></p><p>研究人员发现代码的前三行包括旨在替代“We are safe”字符串的空字符串的混淆函数。代码的目的是对恶意文件执行HTTP GET请求，不过在研究人员尝试下载并分析前就已经被删除。</p><p><br/></p><p>来自VirusTotal的恶意软件样本显示攻击中使用的恶意软件是一个新的未识别出的键盘记录器。它会向icanhazip.com提出网络请求来识别受感染设备的公共IP地址，并且使用GetAsyncKeyState的Windows API。这个API经常被键盘记录器用来识别用户按键。</p><p><br/></p><p>攻击使用的键盘记录器使用Gmail的SMTP服务器将日志发送到两个硬编码的Gmail地址。它用Autolt编写，使用的工具包括Lazagne密码恢复工具，并且具有十分明显的键盘记录功能。</p><p><br/></p><p>研究人员指出，攻击者使用的向量并不仅限于恶意宏。组织机构需要重新思考如何阻止恶意内容侵害终端用户。虽然很多组织机构要么从策略层面禁止使用Office宏，要么告知用户启用宏内容的危险，但是攻击者总是有其它方式创建可用来传播恶意软件的武器化文档，在本案例中这样的文档就是带有键盘记录器有效负载且内嵌在Word文档中的VBS。</p>
+        
+</body>
+</html>

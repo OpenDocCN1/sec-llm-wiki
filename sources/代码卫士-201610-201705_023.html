@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>黑客利用软件更新机制攻击高级别目标</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>黑客利用软件更新机制攻击高级别目标</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485533&amp;idx=6&amp;sn=1d7abcec9f97cf29ec080d6650d332a3&amp;chksm=ea973937dde0b0210166a261e443839d1d547e48402e5ed99dd28d6b67d017b4c630c93f268e&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485533&amp;idx=6&amp;sn=1d7abcec9f97cf29ec080d6650d332a3&amp;chksm=ea973937dde0b0210166a261e443839d1d547e48402e5ed99dd28d6b67d017b4c630c93f268e&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiakW3j4tVYJ8oQYnbQbV2ZKcqTeb0zFV5HdjBeMs11rEh81icpJ2DWmubRePwxDfWapJajF9Yn9NGFA/0?wx_fmt=jpeg" data-ratio="0.625" data-w="400" src="../Images/1f824aaf41a30a853164dc8258e713c9.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiakW3j4tVYJ8oQYnbQbV2ZKcqTeb0zFV5HdjBeMs11rEh81icpJ2DWmubRePwxDfWapJajF9Yn9NGFA/0?wx_fmt=jpeg"/></p><p><br/></p><p><strong>微软安全研究人员最近发现一起针对高级别技术和金融组织机构的攻击正在使用被攻陷的软件更新机制传播恶意软件。</strong></p><p><br/></p><p>这种攻击类型并不新鲜，它的特别之处在于还用了一系列商用工具和简单的恶意软件助阵。攻击者通过攻陷一款第三方编辑工具的更新机制或软件供应链，能够部署被微软检测为Rivit的恶意软件。这种恶意可执行文件能够启动跟Meterpreter逆向shell绑定的PowerShell脚本，这样远程攻击者就能静默控制被攻陷机器。</p><p><br/></p><p>这种网络间谍活动目前尚处于早期活动阶段，还未能造成真正的伤害。微软已告知受影响方和第三方软件供应商并跟他们一道缓解潜在风险。精心策划的网络攻击非常隐秘，甚至是第三方工具的开发人员都未察觉到问题的存在。研究人员指出，虽然它并未使用0day利用代码，但这种网络攻击有效地攻陷了资产。它利用的是跟软件供应链的常见信任关系以及攻击者已获得控制远程更新机制的事实。有意思的是只有某些设备受影响，而多数成为目标的设备被忽视。然而，这说明恶意攻击者的目的是关注最具价值的目标并保持低调风格。</p><p>攻击中使用的商用工具最常用于渗透测试活动中，可使攻击者逃避归属。恶意软件二进制ue.exe是仅专注于推出Meterpreter shell的一小段代码。</p><p><br/></p><p>攻击者或者通过原生系统命令或仅通过PowerShell在内存中执行的脚本工具渗透网络或泄露凭证等。而这种技术在受害者犯罪分子中间很受欢迎。</p><p><br/></p><p>研究人员观察到的攻击中的技术、技巧和程序包括非持续性、自毁初始化二进制、仅内存有效负载、侦察活动如机器枚举、使用常见工具如Minikatz和Kerberoast泄露哈希等。</p><p><br/></p><p>在攻击活动中，攻击者还使用网络地址hXXp://5.39.218.205/logo.png 和hXXp://176.53.118.131/logo.png初始网络扫描、侧向位移和C&amp;C通信。地址还被用于下载基于Meterpreter的有效负载。研究人员指出攻击者为经济利益而来，他们通过攻陷第三方软件包针对可能从事金融和支付行业发动攻击。</p><p><br/></p><p><br/></p><p><strong style="white-space: normal;">本文由360代码卫士编译，不代表360观点，转载请注明“转自360代码卫士www.codesafe.cn”。</strong></p>
+        
+</body>
+</html>

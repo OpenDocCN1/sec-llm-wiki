@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>一个被严重忽视的木马病毒：Fakedebuggerd</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>一个被严重忽视的木马病毒：Fakedebuggerd</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5Njc3NjM4MA==&amp;mid=201772788&amp;idx=2&amp;sn=6245f8b0173369c21a4a21b70ab7daf6&amp;chksm=2f167e271861f731ddf05493bab0699dd9b630d8d4cc1e901f846219801250d39ff54095ffa9&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5Njc3NjM4MA==&amp;mid=201772788&amp;idx=2&amp;sn=6245f8b0173369c21a4a21b70ab7daf6&amp;chksm=2f167e271861f731ddf05493bab0699dd9b630d8d4cc1e901f846219801250d39ff54095ffa9&amp;scene=27#wechat_redirect</a></blockquote><p>一个名为Fakedebuggerd的漏洞利用程序可在安卓设备上获取root权限后，在系统中安装文件。该程序使用两个已知的安卓4.x提权（PE）工具FramaRoot和TowelRoot，以root权限运行代码，并在设备上安装工具包，并允许攻击者隐藏代码和避免对恶意应用的删除。</p><p><br/></p><p>360安全卫士于上个月在其官方博客上公布了这个木马的细节，360给这个恶意程序命名为“长老木马”。</p><p><br/>Fakedebuggerd是首次利用安卓4.x提权漏洞在被感染的设备上运行代码的恶意软件，这意味着安卓恶意软件的严重扩大化。一旦被感染，恶意代码就会收集包括惟一标识符、设备版本和网络连接数据在内的诸多敏感数据，而且还会在不经用户许可的情况下，强制安装类似手电筒和日历这样的APP应用。即使用户使用root权限将它们卸载，这些恶意程序还是会自动重新安装。<br/><br/>如果两个root工具一起用，更是大大提高了被感染的几率。Towelroot是基于futex漏洞（CVE-2014-3153）进行攻击的，该漏洞是在安卓5.0之前的大多数安卓设备上都存在的一个Linux漏洞。Framaroot是大部分三星、LG、华为、华硕、中兴等设备上都可以使用的一款root工具。总的来说，这些占据着大部分市场份额的安卓设备如果在工作中使用，就会给企业带来严重的风险。<br/><br/>这种可以在受感染设备上运行代码的攻击特性和能力使这个恶意软件处理起来异常麻烦，特别是对于想保护员工自有设备上敏感数据的企业。即使用户发现异常，也无能为力。简单地删除可疑程序并不能解决问题，恶意软件常常竭尽所能地保护自己，通常的删除功能对其无济于事。要是没被发现，它就可以从用户设备中窃取个人和企业信息了。<br/><br/>尽管Fakedebuggerd已经构成严重威胁，但是在网上并没有引起足够的注意。我们从中仅能够知道有多少移动设备处于什么样的安全威胁之中。它的厉害这处在于，采用了在个人电脑上经反复测试过后的恶意软件技术，利用多个漏洞组合攻击，并嵌入了防删除机制。<br/><br/>此为FakeDebuggerd还具备一个比较特殊的功能，可盗取3种即时通讯工具的聊天记录，微信、手机QQ和手机Skype。</p><p><br/></p><p style="text-align: center;"><img data-w="" data-ratio="1.184158415841584" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/kuIKKC9tNkCUx1HhpibDRyq1FwTkIVVzoe3yISnY45ib2stiaXublcjEyKAia38ssvz3UxCHjwRhzQSWCXiauU7j2Xg/0" src="../Images/aa152705ee8840110949a780085f9e1e.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/kuIKKC9tNkCUx1HhpibDRyq1FwTkIVVzoe3yISnY45ib2stiaXublcjEyKAia38ssvz3UxCHjwRhzQSWCXiauU7j2Xg/0"/><br/></p><p><br/>安全牛建议移动设备的用户从以下几点加强安全防护：<br/><br/>远离第三方市场，仅从谷歌官方应用商店上下载应用程序。<br/><br/>尽量支持信用良好、好评如潮的App应用程序开发商。<br/><br/>小小短信、邮件和社交网络等各种形式的虚假广告和链接。</p><p><br/></p><p style=""><strong style="max-width: 100%; word-wrap: break-word !important; box-sizing: border-box !important;">－－－</strong></p><p style=""><span style="max-width: 100%; word-wrap: break-word !important; box-sizing: border-box !important; color: rgb(127, 127, 127);">要闻、干货、原创、专业</span></p><p style=""><span style="max-width: 100%; word-wrap: break-word !important; box-sizing: border-box !important; color: rgb(127, 127, 127);">关注“信息安全知识”</span></p><p><span style="max-width: 100%; word-wrap: break-word !important; box-sizing: border-box !important; color: rgb(127, 127, 127);">我们是安全牛！</span></p><p><br/></p>
+        
+</body>
+</html>

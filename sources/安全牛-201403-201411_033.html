@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>【安全警报】国内iCloud遭中间人攻击 中国苹果用户隐私不保</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>【安全警报】国内iCloud遭中间人攻击 中国苹果用户隐私不保</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5Njc3NjM4MA==&amp;mid=200996712&amp;idx=2&amp;sn=67ddb332086fdaae65bcad1c80bc35dc&amp;chksm=28ea47bb1f9dcead12f519c826be56076b4325389675f5dff01463f0ba2defad51e95dd0973e&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5Njc3NjM4MA==&amp;mid=200996712&amp;idx=2&amp;sn=67ddb332086fdaae65bcad1c80bc35dc&amp;chksm=28ea47bb1f9dcead12f519c826be56076b4325389675f5dff01463f0ba2defad51e95dd0973e&amp;scene=27#wechat_redirect</a></blockquote><p>有网友反应iCloud服务器iCloud服务器在中国被人使用SSL中间人劫持，中国苹果用户隐私或将不保。<br/><br/>iCloud.com使用akamai提供的CDN服务，有多个IP，目前至少发现了三个IP。https://23.48.140.239和https://23.13.186.46这两个iCloud服务器上没有被替换证书。但是直接访问https://23.59.94.46/，在台湾直接访问没有被替换证书，换苏州联通的VPN后，证书被替换为自签名的证书。并得到多位网友的证实。<br/><br/>若有人不幸运被DNS服务器返回23.59.94.46这个icloud.com的IP地址，又忽略了网页上的安全警告的话，输入到icloud的用户名和密码都会被这个制造自签名证书的人拿到，他存储在icloud的私房照片、钥匙圈里的各种帐号密码都会被别人偷偷复制到。<br/><br/>用阿里测的DNS解析工具检测可知，至少广东、黑龙江、吉林等地的icloud用户会被返回23.59.94.46这个IP地址，亦极可能影响使用icloud帐号。目前还没有看到任何组织声称对此黑客行为负责。”</p><p><strong>－－－<br/></strong></p><p><span style="color:#7F7F7F">要闻、干货、原创、专业</span></p><p><span style="color:#7F7F7F">关注“信息安全知识”</span></p><p><span style="color:#7F7F7F">我们是安全牛！<br/></span></p><p style="text-align:center"><img data-w="200" data-ratio="1" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/kuIKKC9tNkB8pQ3CTSGictAAAJL9tlrp5fY1dZLqqu1hlZys3BibaYTwKE2lXQe9tzpegvCECZqhNSg0icku7teTw/0" src="../Images/b7c37b7066302548960da8a2e74a40e4.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/kuIKKC9tNkB8pQ3CTSGictAAAJL9tlrp5fY1dZLqqu1hlZys3BibaYTwKE2lXQe9tzpegvCECZqhNSg0icku7teTw/0"/></p><p><br/></p>
+        
+</body>
+</html>

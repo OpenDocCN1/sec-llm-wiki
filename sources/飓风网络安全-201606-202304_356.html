@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>php关键词抓取链接源码</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>php关键词抓取链接源码</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI3NzMzNzE5Ng==&amp;mid=2247483970&amp;idx=1&amp;sn=22fd35ebb527e91f921a3e4e5031c91a&amp;chksm=eb668741dc110e57592c768e19b62a13daffd58fe9483270236c003ae2003c01895314414ccc&amp;scene=126&amp;sessionid=1681407375#rd">http://mp.weixin.qq.com/s?__biz=MzI3NzMzNzE5Ng==&amp;mid=2247483970&amp;idx=1&amp;sn=22fd35ebb527e91f921a3e4e5031c91a&amp;chksm=eb668741dc110e57592c768e19b62a13daffd58fe9483270236c003ae2003c01895314414ccc&amp;scene=126&amp;sessionid=1681407375#rd</a></blockquote><p>&lt;?php</p><p><br/></p><p>    error_reporting(E_ERROR);</p><p><br/></p><p>    set_time_limit(0);</p><p><br/></p><p>    $keyword= '飓风'; // 批量关键字</p><p><br/></p><p>    $filedir= "test.txt";</p><p><br/></p><p>    $timeout= 20; </p><p><br/></p><p>    $startpage= 1; </p><p><br/></p><p>    $lastpage= 4; // [url]http://hi.baidu.com/sethc5/blog[/url]</p><p><br/></p><p>    $list= ReadBaiduList($keyword,$timeout,$startpage,$lastpage);</p><p><br/></p><p>    $num= count($list);</p><p><br/></p><p>    $fp= fopen("$filedir",w);</p><p><br/></p><p>    if($fp) {</p><p><br/></p><p>        for($i=0;$i&lt;=$num;$i++) {</p><p><br/></p><p>            fwrite($fp,$list[$i]."\n");</p><p><br/></p><p>        }</p><p><br/></p><p>    }else{</p><p><br/></p><p>        echo'&lt;font color=red&gt;can not open file';</p><p><br/></p><p>    }</p><p><br/></p><p>    fclose($fp);</p><p><br/></p><p> </p><p><br/></p><p>//http://www.baidu.com/s?wd=飓风&amp;pn=40&amp;ie=utf-8&amp;usm=1</p><p><br/></p><p>functionReadBaiduList($keyword,$timeout,$startpage,$lastpage) {</p><p><br/></p><p>   for($i=$startpage; $i&lt;$lastpage; $i++) {</p><p><br/></p><p>        $nowpage= ($i-1)*10;</p><p><br/></p><p>        $fp= @fsockopen('www.baidu.com',80,$errno,$errstr,$timeout);</p><p><br/></p><p>        @fputs($fp,"GET /s?wd=".urlencode($keyword)."&amp;pn=".$nowpage." HTTP/1.1\r\nHost:[url]www.baidu.com[/url]\r\nConnection: Close\r\n\r\n");</p><p><br/></p><p>        while($fp&amp;&amp; !feof($fp))</p><p><br/></p><p>        $data.= fread($fp, 1024);</p><p><br/></p><p>        @fclose($fp);</p><p><br/></p><p>        preg_match_all("/&lt;span class=\"g\"&gt;(.*)&lt;\/span&gt;/iU",$data,$tmp);</p><p><br/></p><p>    }</p><p><br/></p><p>        foreach($tmp[1] as$value) {</p><p><br/></p><p>            $list= explode('/',$value);</p><p><br/></p><p>            $lastlist[] = $list[0];</p><p><br/></p><p>        }</p><p><br/></p><p>        $lastlist= array_unique($lastlist);</p><p><br/></p><p>        return$lastlist;</p><p><br/></p><p> }</p><p><br/></p><p> </p><p><br/></p><p>?&gt;</p><p><br/></p>
+        
+</body>
+</html>

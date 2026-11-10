@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>自己动手写操作系统</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>自己动手写操作系统</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/mp/appmsg/show?__biz=MjM5NTc2MDYxMw==&amp;appmsgid=10016682&amp;itemidx=1&amp;sign=3eeed3728c4b92f031c28bde5385583f&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/mp/appmsg/show?__biz=MjM5NTc2MDYxMw==&amp;appmsgid=10016682&amp;itemidx=1&amp;sign=3eeed3728c4b92f031c28bde5385583f&amp;scene=27#wechat_redirect</a></blockquote><p> </p><table style="WIDTH: 359px" uetable="null"><tbody><tr valign="top"><td style="WORD-BREAK: break-all" id="td_post_1249741" class="alt1"><p>简介<br/><br/>这是一个实验性质的操作系统，起初目的是为验证我对x86底层的一些了解是否正确，以及尝试一些不同于现有操作系统的想法。因为一开始学写makefile参考了于渊的《自己动手写操作系统》，名称也没有改，就叫tinix。 但已经和原来的tinix没有任何关系了。为了将精力尽量投入在内核本身的逻辑上，一些和硬件相关的部分尽量简化或尽量移植，一些libc功能性函数则是直接完全移植，如vsprintf等。<br/><br/>至今为止，仅实现了多任务管理、任务特权级管理（使用0和3两级，普通程序运行于ring3内核运行于ring0）、多控制台管理（F1~F4可切换）、不高于4g的内存管理（使用两级分页）、有限的文件系统管理、fat12文件系统、虚拟文件系统、以及软驱驱动和键盘驱动。目前还没有实现的包括多用户、文件权限、硬盘驱动、和其他外设驱动。<br/><br/>对于应用程序的支持，仅实现了单个任务对应单个ELF格式文件的加载，不支持写时复制机制和动态库加载机制。<br/><br/>此项目的目录结构如下<br/><br/>|-- floppy.img          #最终完成的软盘镜像<br/>|-- tinix              #内核目录<br/>|   |-- boot            #内核加载器目录<br/>|   |-- kernel          #内核代码目录<br/>|   |   |-- dev          #设备驱动目录<br/>|   |   |-- fs          #文件系统目录<br/>|   |   |-- include        #头文件<br/>|   |   |-- init          #内核代码入口<br/>|   |   |-- kernel        #任务管理、陷阱门、时钟、系统调用等<br/>|   |   |-- lib          #内核lib<br/>|   |   |-- mm          #内存管理目录<br/>|   |   |-- Makefile        #用于Cygwin下编译的makefile<br/>|   |   `-- Makefile.linux    #用于linux下编译的makefile<br/>|   |-- build.bat        #用于Cygwin下编译的两个批处理<br/>|   |-- clean.bat<br/>|   |-- lbuild          #用于linux的shell脚本<br/>|   |-- lclean<br/>|   |-- build.log        #gcc编译生成的错误输出<br/>|   |-- loader.map        #内核加载器符号文件<br/>|   |-- system.map        #内核符号文件<br/>|   |-- system.idc        #用于IDA的内核符号脚本<br/>|   |-- map2idc.pl        #生成IDA脚本的perl脚本<br/>|   `-- oskernel          #最终编译出的内核镜像<br/>|-- tools<br/>|   `-- WinImage.exe      #用于在windows下编辑软盘镜像的工具<br/>`-- user              #用户态代码目录<br/>    |-- app            #用户态应用源代码<br/>    |-- include          #用户态头文件<br/>    |-- lib            #用户态lib函数源代码<br/>    |-- Makefile.eval      #用户态应用的几个makefile<br/>    |-- Makefile.pi<br/>    |-- Makefile.queens<br/>    |-- Makefile.sh<br/>`-- objs            #避免重新编译的obj文件<br/>  <br/>下文将对内核态的设计与实现进行解释，并对该系统的实际应用进行演示。<br/><br/>内核加载器<br/><br/>主要文件<br/>  /tinix/boot/boot.S <br/>/tinix/boot/loader.c<br/><br/>  为方便内核设计和编译，内核的加载位置位于高地址0xC0000000，但物理内存无法保证有这个物理地址，因此内核需要通过一个位于低地址的加载器将其转移并映射到高地址。这就是内核加载器的作用。<br/><br/>  内核加载器自身的加载则需要借助grub，因此内核加载器的编写遵循了grub的ultiboot规范。同时内核加载器还有一个任务，即传递grub探测到的硬件信息。这个项目里只使用到了grub探测到的物理内存上限。<br/><br/>  在loader.c中，内核加载器会将kernel文件复制到物理0地址。同时将物理内存上限保存到0x00090000，将当前光标位置保存到0x00090004。加载工作完成之后，内核加载器将直接跳转到0地址，将控制权移交实际内核。<br/><br/>内核初始化<br/><br/>主要文件<br/>  /tinix/kernel/init/head.S<br/>  /tinix/kernel/init/main.c<br/><br/>  在head.S中，start为内核的入口，在这里重新设置esp为0x90000，然后依次开分页、初始化gdt、初始化中断控制器、初始化idt。<br/><br/>  开分页时，为保证代码地址和数据地址正确。这里将线性地址0~0x400000和0xC0000000~0xC0400000映射到相同的物理地址0~4m。映射关系如图。建立完映射关系后，init_page通过调整esp和修改返回地址转移到高3g执行。<br/><img style="MARGIN: 2px" title="名称:  1.png&amp;#10;查看次数: 0&amp;#10;文件大小:  6.3 KB" border="0" src="../Images/9f6a5081598507b2d6479d111f30fd5d.png" data-original-src="http://bbs.pediy.com/attachment.php?attachmentid=85792&amp;thumb=1&amp;d=1387988031"/><br/><br/>全局描述符表中初始化了4个描述符，分别为内核代码段，内核数据段，用户代码段和用户数据段。这4个描述符在表中是连续的，这是为了兼容sysenter、sysexit的规定。中断描述符表初始状态均为空。<br/><br/>  head.S完成基本的初始化工作后，将进入k_main函数，在这里调用各个模块的初始化接口。操作系统所有的初始化工作完成之后，0号任务将依次在0~2三个空闲控制台上启动三个子任务shell，路径为/bin/sh。<br/>  <br/>  之后，0号任务将进入半睡眠状态，最大限度的让出cpu资源。<br/><br/>内存管理<br/><br/>主要文件<br/>  /tinix/kernel/mm/memory.c<br/><br/>  这里的内存管理指狭义的内存管理，及映射关系的建立和映射关系的取消，是页级的。内核态内存的管理，将从物理内存1M位置开始，在1M位置，依次为内核页目录表、内核页表0~3。尾随其后的是根据loader传来的物理内存大小计算得出的一个mem_map数组。这个数组用于管理物理内存，数组地址为0x00105000。mem_map之后的内存将用于动态管理。建立完mem_map之后，为避免其他问题，将取消掉低4M的映射关系。<br/><br/>  因为只为内核保留了4张页表，所以内核本身能使用的内存将不能大于16M。另外，为方便内核态线性地址和物理地址之间的相互转换，内核态内存和物理内存的映射关系必须为“线性地址 - 物理地址 = PAGE_OFFSET”。因此，内核内存申请和用户内存申请的策略是不同的。内核态内存申请将在mem_map中从前往后找，用户态相反。<br/><br/>  最终形成的映射关系，如下图所示<br/><img style="MARGIN: 2px" title="名称:  2.png&amp;#10;查看次数: 0&amp;#10;文件大小:  5.8 KB" border="0" src="../Images/213cba0bbd8e0b2ae8fc6ac131a8bea6.png" data-original-src="http://bbs.pediy.com/attachment.php?attachmentid=85793&amp;thumb=1&amp;d=1387988079"/><br/><br/>        内核态内存申请与释放接口为k_get_page和k_free_page。用户态接口为u_get_pages和u_free_page_table。<br/><br/>文件管理<br/><br/>  主要文件<br/>  /tinix/kernel/fs/fs.c<br/><br/>  文件系统的管理基于fs.c中维护的一张内核文件表kfile_table。向这张表中添加文件或添加目录通过fs_add_file和fs_add_dir进行。<br/><br/>  文件表中每一项均为一个file结构，定义如下<br/></p><p>代码:</p><pre dir="ltr">typedef struct _file {
+    u32 f_type;
+    u32 f_father;          //父目录索引
+    u32 f_time;            //最后修改时间
+    u32 f_base;            //文件基址，不同的文件含义不同
+    s32 f_size;            //文件大小
+    s32 f_pos[MAX_TASK];      //读写位置,每个任务有自己的读写位置
+    struct _file_operations *f_op;  //操作文件跳转指针 不能空！！！     
+    struct _file_req *f_req;    //操作请求结构，可以空
+    u8  f_name[MAX_NAME];
+}__attribute__((packed)) file;</pre><p>其中比较重要的成员一是f_op这个指针指向操作该文件的各种接口地址。不同的文件系统在向kfile_table中添加文件时，须指定该结构，这样在操作这个文件时，将会根据这个指针找到正确的操作接口。<br/><br/></p><p>代码:</p><pre dir="ltr">typedef struct _file_operations {
+    s32 (*seek) (void *, s32, u32);    //定位文件当前的读写位置
+    s32 (*read) (void *, u8 *, u32);  //读文件
+    s32 (*write) (void *, u8 *, u32);  //写文件
+}__attribute__((packed)) file_operations;</pre><p>如上，目前仅支持三种操作。<br/><br/>  如果对于该文件的某个操作是阻塞的，那么f_req成员将不能为空。操作该文件时，将通过该结构判断文件对应的设备是否空闲，操作请求是否完成等。<br/></p><p>代码:</p><pre dir="ltr">typedef struct _file_req
+{
+    u8  f_req_state;                       //设备状态
+    u32 f_req_orgsize;                    //原始请求大小
+    u32 f_req_completed;               //已完成请求大小
+    u32 f_req_task;                        //发起请求的任务id
+    u8  f_req_buffer[MAX_IOBUFFER];
+}__attribute__((packed)) file_req;</pre><p>控制台管理<br/><br/>主要文件<br/>  /tinix/kernel/dev/console.c<br/>多控制台的管理基于上文中的文件管理。在初始化多控制台时，向kfile_table中/dev/目录下添加了四个文件，分别为con0~4。<br/><br/>  四个不同的控制台文件使用相同的_file_operations操作跳转表。但使用了4个不同的_file_req文件请求结构。因此，运行于同一个控制台上的任务，同时只能有一个任务对该控制台进行读操作（对于控制台设备，只有读操作是阻塞的），但运行不同控制台的任务则可以同时向不同的控制台进行读操作。<br/><br/>  多控制台主要基于足够大的显存空间，因此控制台之间的切换通过显存地址切换实现。热键为F1~F4。<br/><br/>  控制台的读操作即相当于标准输入，是该系统中具有典型性的阻塞请求处理流程，具体如下<br/><br/>1，  当有任务发起控制台读操作时，置控制台设备file_req为忙碌状态<br/>2，  任务陷入io等待状态，此后该任务将不再占用时间片<br/>3，  当产生键盘中断，并发现当前控制台file_req为忙碌时，将键盘扫描码转换结果加入f_req_buffer，并检查是否完成<br/>4，  如果未完成，什么也不做。否则，将控制台file_req置为已完成状态，并唤醒发起请求的任务<br/>5，  任务重新运行时，将f_req_buffer中的内容取回，并将控制台file_req置为空闲，以便下个任务使用<br/><br/>其他设备的操作，同以上基于中断唤醒的阻塞请求处理流程大体类似。<br/><br/>定时器和时钟中断<br/><br/>主要文件<br/>  /tinix/kernel/kernel/timer.c<br/><br/>  在时钟中断处理器中，将递增内核总滴答数，递增当前任务的计数器。然后触发所有的内核定时器例程。目前这个定时器用处还不大。<br/><br/>  处理完定时器例程，然后递减当前任务的可用时间，如果时间片用完，则将中断栈上的通用寄存器结构指针作为参数，触发任务调度scheduler。<br/><br/>任务管理和任务调度<br/><br/>主要文件/tinix/kernel/kernel/task.c<br/><br/>  任务队列使用一个结构数组task_list保存。任务结构如下<br/></p><p>代码:</p><pre dir="ltr">typedef struct _task_struct
+{    
+u32         state;         /* 任务状态 */
+    u32         flags;          /* 任务标志位图，目前仅用于fpu */
+    u32         father;           /* 父任务id */
+    u32         pwait;          /* 要等待的任务id */
+    s32         counter;        /* 可使用时间片 */
+    u32         user_time;      /* 用户态运行时间(滴答数) */
+    u32         system_time;   /* 内核态运行时间(滴答数) */
+    u32         start_time;    /* 任务开始的时间 */
+    s32         fid[MAX_OPEN];  /* 任务文件表,0执行文件本身，1文con */
+    regs        t_regs;        /* 通用寄存器 */
+    fpu_regs    t_fpu_regs;     /* FPU 寄存器 */
+    u32         k_stack;         /* esp0内核栈 */
+    u32         pgd;             /* 任务页目录 */
+} __attribute__((packed)) task_struct;</pre><p>该队列的0号位置保存的即为init任务，这是一个通过make_task0接口捏造的任务。其余位置只能通过task_add_task使用。<br/><br/>在init_task中，将会在全局描述符表gdt中添加一项，tss段，并加载tr寄存器。在起初的设想中，我是不打算用tss段的，但是在某些极限状况下，比如栈溢出进而触发#PF异常，cpu在向栈中压入陷阱帧时又会触发#PF异常，这将导致整个机器无法继续运转。所以tss段是必须的，但是可以只有一个，即文件中定义的init_tss。<br/><br/>init_task还会向中断描述符表添加一个系统调用入口system_call，中断号<br/>为0x80，如果定义了FAST_SYS_CALL宏，还会修改msr中的快速系统调用入口，和快速系统调用使用的EIP，CS。<br/><br/>scheduler任务调度器主要的工作就是轮询task_list只要发现有任务可以运行，就会切换至该任务。目前任务的切换可能发生在各种特权级上。任务的切换的实现分为任务上下文的切换switch_context和内存切换switch_mm。上下文切换又分为通用寄存器切换和浮点寄存器切换，通用寄存器切换通过直接修改中断栈上的寄存器结构指针p_int_regs，而浮点寄存器是否保存和恢复则取决于两个任务的是否曾使用过浮点寄存器，实际切换通过汇编指令fsave和frstor实现。fsave和frstor只保存和恢复FPU不包括mmx和sse、sse2，所以这里还是有bug的。<br/>内存切换则直接将对应任务的pgd置入cr3寄存器即可，因为只使用了一个tss段init_tss，所以在内存切换时，必须手动修改init_tss中的esp0。也只需要改esp0。另如果定义了FAST_SYS_CALL，还需修改msr的ESP。<br/><br/>陷阱、异常、中断<br/><br/>主要文件<br/>  /tinix/kernel/kernel/asm.S<br/>  /tinix/kernel/kernel/traps.c<br/><br/>  在这个文件里定义了大部分的陷阱、异常和中断处理例程，其中大部分异常均将导致产生异常的任务结束，如#PF，如下图所示<br/><img style="MARGIN: 2px" class="thumbnail" title="点击图片以查看大图&amp;#10;&amp;#10;图片名称:&amp;#9;3.png&amp;#10;查看次数:&amp;#9;0&amp;#10;文件大小:&amp;#9;17.1 KB&amp;#10;文件 ID :&amp;#9;85794" border="0" src="../Images/97f3152d41fe72cba83807cb22dff07c.png" data-original-src="http://bbs.pediy.com/attachment.php?attachmentid=85794&amp;thumb=1&amp;d=1387988358"/><br/><br/>有两个异常的处理比较特殊：<br/>  #BP 调试陷阱<br/>  此异常处理过程中会将任务寄存器状态打印至内核消息输出终端。之后任务将继续运行。这个陷阱用于在应用程序代码中插入int3指令，输出即时寄存器状态，但不影响其他指令的执行。<br/><br/>  #NM 设备不可用异常<br/>  此异常表示当前任务尝试使用浮点指令，但cr0的ts位置位。因此此异常处理中将清除cr0的ts位，同时将该任务的标志位图中的TASK_FLAG_FPU置位，这将导致该任务在调度切换时需要保存和恢复fpu。同时在内核消息输出提示，并继续任务<br/><br/>如图<br/><img style="MARGIN: 2px" class="thumbnail" title="点击图片以查看大图&amp;#10;&amp;#10;图片名称:&amp;#9;4.png&amp;#10;查看次数:&amp;#9;0&amp;#10;文件大小:&amp;#9;3.0 KB&amp;#10;文件 ID :&amp;#9;85795" border="0" src="../Images/1db992435377f2dd8a5cdbefea364c75.png" data-original-src="http://bbs.pediy.com/attachment.php?attachmentid=85795&amp;thumb=1&amp;d=1387988412"/><br/><img style="MARGIN: 2px" class="thumbnail" title="点击图片以查看大图&amp;#10;&amp;#10;图片名称:&amp;#9;5.png&amp;#10;查看次数:&amp;#9;0&amp;#10;文件大小:&amp;#9;16.8 KB&amp;#10;文件 ID :&amp;#9;85796" border="0" src="../Images/81b3d5c6a011d00afb284afc358374d4.png" data-original-src="http://bbs.pediy.com/attachment.php?attachmentid=85796&amp;thumb=1&amp;d=1387988412"/><br/><br/>在控制台1上，任务eval(Pid=4)使用了浮点寄存器，并完成了运算，此时切换至控制台4，即可看到该信息。<br/>  <br/>  对于硬件中断，因为其发生时机是不可预知的，而当任务运行于内核态时，cpu在同级中断的情况下不会进行栈切换。所以，asm.S中为硬件中断保留了一个中断栈，并手动进行了切换，以应对一些极限状况。<br/><br/>FAT12文件系统<br/><br/>主要文件<br/>  /tinix/kernel/fs/fat12.c<br/><br/>  内核在初始化完陷阱门之后，开启了中断。然后通过软盘驱动将软盘加载至内存。fat12文件系统代码开始遍历整个软盘，将找到的文件加入kfile_table。内核消息输出控制台上可看到相关输出，如图。<br/><img style="MARGIN: 2px" class="thumbnail" title="点击图片以查看大图&amp;#10;&amp;#10;图片名称:&amp;#9;6.png&amp;#10;查看次数:&amp;#9;0&amp;#10;文件大小:&amp;#9;53.1 KB&amp;#10;文件 ID :&amp;#9;85797" border="0" src="../Images/0a0d6422d024dcc1e3adc7f35c14954c.png" data-original-src="http://bbs.pediy.com/attachment.php?attachmentid=85797&amp;thumb=1&amp;d=1387988461"/><br/><br/>目前fat12文件系统仅实现了读取，没有实现写入。<br/><br/>虚拟文件系统<br/><br/>主要文件<br/>  /tinix/kernel/fs/sysfs.c<br/><br/>  虚拟文件系统的作用是以文件的方式为用户态程序提供一个访问内核信息的接口，目前虚拟文件系统向kfile_table中添加了三个伪文件，meminfo和cpuinfo及sysinfo，并提供了文件操作接口。用户态可通过对这两个文件的read来获取cpu信息和内存使用信息。sysinfo为系统调用次数和失败的系统调用次数。<br/><br/>  如图<br/><img style="MARGIN: 2px" class="thumbnail" title="点击图片以查看大图&amp;#10;&amp;#10;图片名称:&amp;#9;7.png&amp;#10;查看次数:&amp;#9;0&amp;#10;文件大小:&amp;#9;9.4 KB&amp;#10;文件 ID :&amp;#9;85798" border="0" src="../Images/fa3bdda80f9028dd01475a14d11041f1.png" data-original-src="http://bbs.pediy.com/attachment.php?attachmentid=85798&amp;thumb=1&amp;d=1387988498"/><br/><br/>这两个文件的实现，也是此操作系统中虚拟文件系统实现的一个范例。<br/><br/>系统调用的实现<br/><br/>  主要文件<br/>  /tinix/kernel/kernel/sys_*.c<br/>  /user/lib/syscall.c<br/>  <br/>  目前实现了十几个系统调用，能够支持一些简单的任务运行，调用接口及调用号如下<br/></p><p>代码:</p><pre dir="ltr">#define  _NR_sys_open    0  //s32 sys_open(u8 *);
+#define  _NR_sys_close   1  //s32 sys_close(s32);
+#define  _NR_sys_write  2  //s32 sys_write(s32 , u8* , u32 );
+#define  _NR_sys_read    3  //s32 sys_read(s32 , u8* , u32 );
+#define  _NR_sys_seek    4  //s32 sys_seek(s32 , s32 , u32 );
+#define  _NR_sys_wait    5  //s32 sys_wait(u32);
+#define  _NR_sys_exit    6  //s32 sys_exit();
+#define  _NR_sys_exec    7  //s32 sys_exec(u8 *);
+#define  _NR_sys_kill    8  //s32 sys_kill(u32);
+#define  _NR_sys_getpid  9  //s32 sys_getpid(u32);
+#define  _NR_sys_getticks  10  //s32 sys_getticks();
+#define  _NR_sys_pstat  11  //s32 sys_pstat(u32, void *, u32);
+#define  _NR_sys_opendir  12  //s32 sys_opendir(u8 *);
+#define    _NR_sys_readdir  13  //s32 sys_readdir(s32, void *, u32);
+#define  _NR_sys_getdate  14  //s32 sys_getdate(void *, u32);
+#define  _NR_sys_reboot  15  //s32 sys_reboot(u32);
+#define   _NR_sys_sleep    16  //s32 sys_sleep(u32);</pre><p>其中多数只是实现内核和用户态通信的作用，较为复杂的有sys_exec、sys_kill等，以上代码中均有注释。<br/><br/>在task.c中设置了两个系统调用入口，因此用户态程序可以使用两种中的任意一种方式进行系统调用，即int 0x80或sysenter。<br/>这两个调用方式用法基本上是一致的，只是因为intel的规定而实现上略有不同，sysenter使用eax作为调用号，ebx、esi、edi传参。而int 0x80则使用ebx、ecx、edx传参。<br/><br/>比如sys_open在用户态系统调用接口的实现有两个<br/><br/>int 0x80方式<br/></p><p>代码:</p><pre dir="ltr">int sys_open(char *_filename)
+{
+    int _ret;
+    __asm__ __volatile__(
+            "int  $0x80"
+            :"=a"(_ret)
+            :"0" (_NR_sys_open),"b"(_filename));
+    return _ret;
+}</pre><p>sysenter方式<br/></p><p>代码:</p><pre dir="ltr">int sys_open(char *_filename)
+{
+    int _ret;
+    __asm__ __volatile__(
+            "movl %%esp, %%ecx\n\t"
+            "movl $1f, %%edx\n\t"
+            "sysenter\n\t"
+            "1:"
+            :"=a"(_ret)
+            :"0" (_NR_sys_open),"b"(_filename)
+            :"ecx","edx");
+    return _ret;
+}</pre><p>具体使用哪个，由FAST_SYS_CALL宏控制。<br/><br/>应用演示<br/><br/>主要文件<br/>  /user/app/sh.c      一个简单的shell，提供了一些基本的内建命令。同时可通过它启动其他应用程序。<br/>  /user/app/eval.c    一个表达式求解程序。<br/>  /user/app/queens.c    一个n皇后问题求解程序。<br/>  /user/app/pi.c      一个pi值计算程序。<br/>应用层移植封装了sprintf、printf、sscanf、scanf、strxxx等一些常用的输入输出、串处理接口。app子目录下编写了三个简单的应用程序。以下为这几个应用程序的运行效果演示<br/>shell的内建指令表和ls命令<br/><img style="MARGIN: 2px" class="thumbnail" title="点击图片以查看大图&amp;#10;&amp;#10;图片名称:&amp;#9;8.png&amp;#10;查看次数:&amp;#9;0&amp;#10;文件大小:&amp;#9;10.9 KB&amp;#10;文件 ID :&amp;#9;85799" border="0" src="../Images/b6f486b48ad8529f481bf1b89a752643.png" data-original-src="http://bbs.pediy.com/attachment.php?attachmentid=85799&amp;thumb=1&amp;d=1387988642"/><br/><br/>shell的tree命令<br/><img style="MARGIN: 2px" class="thumbnail" title="点击图片以查看大图&amp;#10;&amp;#10;图片名称:&amp;#9;9.png&amp;#10;查看次数:&amp;#9;0&amp;#10;文件大小:&amp;#9;5.4 KB&amp;#10;文件 ID :&amp;#9;85800" border="0" src="../Images/b284220ed020bec730c7577a5d2a28c9.png" data-original-src="http://bbs.pediy.com/attachment.php?attachmentid=85800&amp;thumb=1&amp;d=1387988695"/><br/><br/>在shell下新启动一个新任务pi<br/><img style="MARGIN: 2px" class="thumbnail" title="点击图片以查看大图&amp;#10;&amp;#10;图片名称:&amp;#9;10.png&amp;#10;查看次数:&amp;#9;0&amp;#10;文件大小:&amp;#9;21.2 KB&amp;#10;文件 ID :&amp;#9;85801" border="0" src="../Images/582285cdbe5ffdb408606a63980000f7.png" data-original-src="http://bbs.pediy.com/attachment.php?attachmentid=85801&amp;thumb=1&amp;d=1387988721"/><br/><br/>新启动一个新任务queens和eval<br/><img style="MARGIN: 2px" class="thumbnail" title="点击图片以查看大图&amp;#10;&amp;#10;图片名称:&amp;#9;11.png&amp;#10;查看次数:&amp;#9;0&amp;#10;文件大小:&amp;#9;5.9 KB&amp;#10;文件 ID :&amp;#9;85802" border="0" src="../Images/c7e3e15f3df585ea770c6702233ff070.png" data-original-src="http://bbs.pediy.com/attachment.php?attachmentid=85802&amp;thumb=1&amp;d=1387988745"/><br/><br/>如图所示，计算n皇后问题n=15时使用了3.88秒，n=16时使用了25.97秒。<br/><br/>打印进程列表信息，以下为在shell下启动多个shell，并运行一个耗时非常长的任务效果 <br/><img style="MARGIN: 2px" class="thumbnail" title="点击图片以查看大图&amp;#10;&amp;#10;图片名称:&amp;#9;12.png&amp;#10;查看次数:&amp;#9;0&amp;#10;文件大小:&amp;#9;12.0 KB&amp;#10;文件 ID :&amp;#9;85803" border="0" src="../Images/202dbd39c4c092f001711a47c27ac85a.png" data-original-src="http://bbs.pediy.com/attachment.php?attachmentid=85803&amp;thumb=1&amp;d=1387988772"/><br/><br/>ps输出的格式为<br/>执行体 ID 父ID  状态 用户态时间 内核态时间 开始时间 已提交内存 控制台<br/><br/>任务状态有以下几种<br/>R-运行中      常规状态<br/>B-IO阻塞      通常由io请求引起，由对应设备的中断例程唤醒<br/>W-等待中      通常由任务主动进入，由另一个任务退出时唤醒<br/>S-睡眠中      通常由任务主动进入，由内核定时器例程唤醒<br/>E-已结束      任务调用了exit或被kill，0任务将定时清空此类任务<br/><br/><br/>注：本帖由看雪论坛志愿者PEstone 重新将DOC整理排版，若和原文有出入，以原作者附件为准 <br/></p></td></tr><br class="Apple-interchange-newline"/></tbody></table><p> </p>
+        
+</body>
+</html>

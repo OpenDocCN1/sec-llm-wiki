@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>谷歌演示首个SHA-1哈希碰撞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>谷歌演示首个SHA-1哈希碰撞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485577&amp;idx=2&amp;sn=76de10a0584f11d6b16b0113ba8f5cd6&amp;chksm=ea9739e3dde0b0f594b2d338d2609864e583bfb6b62c462c90f2c436b13b3cdea8a04bf2dbae&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485577&amp;idx=2&amp;sn=76de10a0584f11d6b16b0113ba8f5cd6&amp;chksm=ea9739e3dde0b0f594b2d338d2609864e583bfb6b62c462c90f2c436b13b3cdea8a04bf2dbae&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiakScH0FGXfogprSibfspBlf3mNJ9F2MQax2TBshvNJcGIwkpkqrsGDY1kZibyHIa0niagSRFYNQ3Cjrg/0?wx_fmt=jpeg" data-ratio="0.5294117647058824" data-w="340" src="../Images/01c7fc1692308ca27a5491efd50ba2c7.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiakScH0FGXfogprSibfspBlf3mNJ9F2MQax2TBshvNJcGIwkpkqrsGDY1kZibyHIa0niagSRFYNQ3Cjrg/0?wx_fmt=jpeg"/></p><p><br/></p><p><strong>谷歌研究人员和学术界已演示证明可生成两种具有相同SHA-1哈希签名的文档。而这是个大问题。</strong></p><p><br/></p><p>原因是SHA-1的使用遍布全网。它可保护用户浏览安全的HTTPS证书以及用于Git库。它可证明数据如邮件、PDF、网站证书、源代码等并未被任何黑客所入侵。而谷歌设法证实实际上可以通过不更改SHA-1哈希值而修改PDF的方式创建一种哈希碰撞。也就是说人们会被诱骗相信被更改的文档实际上就是原始文档，这种现象可引发担忧。</p><p><br/></p><p>谷歌表示，在距离SHA-1首次引入的时间已过去10年的现在证实可生成碰撞的首个具有操作性的技术，它是谷歌跟阿姆斯特丹CWI研究所的合作成果。合作旨在向技术社区展示有必要停用SHA-1。谷歌多年以来都在呼吁停用SHA-1尤其是在签署TLS证书方面。Chrome自2014年起就逐步淘汰SHA-1。</p><p><br/></p><p>2013年，Marc Stevens发布一篇论文说明创建SHA-1碰撞的理论方式。谷歌及其余团队就开始创建了一个PDF前缀专门用于生成两个具有鲜明视觉内容的文档，但它们具有相同的SHA-1。凭借谷歌的技术专业以及云基础架构，他们设法计算出该碰撞，它是迄今为止最大规模的计算之一。</p><p><br/></p><p>谷歌表示这是一种巨大规模的计算，它并未言过其实。这从数字上就可看出：九百万的三次方（美国算法，英国是九百万的五次方）SHA-1计算需要作为6500年的CPU计算才能完成攻击的第一阶段，而110年的GPU计算才能完成攻击的第二阶段。这些数字都是极其大，而普通的攻击者可能无法计算，不过谷歌展示SHA-1碰撞是有可能发生的，这就应该足够了。</p><p><br/></p><p>研究人员表示，根据谷歌的漏洞披露政策，将会在90天后发布相关代码。谷歌表示已经为Gmail和GSuite用户增加了保护措施以检测PDF碰撞技术。</p>
+        
+</body>
+</html>

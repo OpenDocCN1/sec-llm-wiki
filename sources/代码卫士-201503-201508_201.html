@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>隐藏在图片文件中的恶意软件Stegoloader</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>隐藏在图片文件中的恶意软件Stegoloader</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485941&amp;idx=2&amp;sn=efa8f0d0e9ffd09d4e7180beeee0592b&amp;chksm=ea97389fdde0b1890ea001ec82a6e28e62de16ea1344e10b7c50d26d0b2fbdad294c3e4c526b&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485941&amp;idx=2&amp;sn=efa8f0d0e9ffd09d4e7180beeee0592b&amp;chksm=ea97389fdde0b1890ea001ec82a6e28e62de16ea1344e10b7c50d26d0b2fbdad294c3e4c526b&amp;scene=27#wechat_redirect</a></blockquote><p>Dell SecureWorks的安全研究人员分析了Stegoloader恶意软件感染终端用户计算机并窃取信息的进程。虽然说恶意软件会采取多种形式，但多数情况下，人们还是没有料到它会隐藏在图片文件中。计算机科学理论将该技巧称为速记式加密，即从其它明文形式的数据中暴露信息。</p><p><br/></p><p><span style="color: rgb(0, 176, 80); ">隐蔽式多任务恶意软件Stegoloader</span></p><p>Stegoloader也叫Win32/Gatak.DR 及TSPY_GATAK.GTK，它是一款首次于2013年被发现的恶意软件，但当时并未引起人们的注意，主要是以为它的设计很隐秘，因此很多反病毒解决方案并不能检测到。</p><p><br/></p><p>Stegoloader是一个简单的模块设计，最初的步骤是需要执行两种行动的基本部署模块：检测受感染计算机是否安全以便部署；下载主模块。而这两个步骤正是恶意软件为何难以被分析的原因。Stegoloader会进行一系列基本检查来了解所感染计算机是一台普通计算机还是安装了高级安全分析系统。</p><p><br/></p><p>通过结合鼠标光标活动、嗅探功能以及查询活跃服务清单以发现一系列用于逆向工程的预定义安全产品，Stegoloader可以轻易检测出“难题”并在被检测到之前终止活动。</p><p><br/></p><p><span style="color: rgb(0, 176, 80); ">主模块通过PNG文件加载</span></p><p>如果Stegoloader完成第一个阶段的检查，部署模块随后就会进入第二个阶段并下载主模块。该恶意软件会利用一个通常托管在受信任且合法网站的基本的常见PNG文件完成下载。Stegoloader主模块的源代码伪装成“每个像素颜色的最低有效位”编码在图片文件的像素中。</p><p><br/></p><p>该数据流通过一个硬编码密钥跟RC4算法连接在一起，组成主要的Stegoloader加载器。所有的这些动作以及主模块的存储都是通过计算机的内存完成的，整个过程都没有在磁盘上存储任何东西，以此来躲避基于签名的分析工具。</p><p><br/></p><p>在此阶段，部署模块终止，而主模块开始执行一系列预定义任务，并与服务器通信以接收进一步的指示。而主模块实际上是其它所有后续行动的中央枢纽，它可以根据在受感染系统上找到的数据类型加载其它模块。这款恶意软件同时还能长时间处于休眠状态，直到被服务器或内部程序再次激活。</p><p><br/></p><p>攻击者可通过Stegoloader从多种类型的应用程序中窃取密码、安装其它类型的恶意软件、下载浏览器历史、执行shellcode、获取最新打开的文件、并确定用户的地理位置。</p><p><br/></p><p>Stegoloader在其生命周期中的许多阶段都可以避免被检测到并且非常危险，而这也是让Dell SecureWorks研究团队惊讶的原因：迄今为止它并未用于任何针对性攻击中。</p><p><br/></p><p>本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。</p><p><br/></p>
+        
+</body>
+</html>

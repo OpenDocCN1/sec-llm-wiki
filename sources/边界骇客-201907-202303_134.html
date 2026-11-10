@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>当缺少环境时，批量get-http</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>当缺少环境时，批量get-http</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzU1NTkzMTYxOQ==&amp;mid=2247484007&amp;idx=1&amp;sn=3427d4195d5552f38cceb8029185dcd0&amp;chksm=fbcd80ebccba09fdbfcf59cdc79f5a04cb7446c04a0fe53b5f02e02dbf5dd514af7160bf96bf&amp;scene=126&amp;sessionid=1681664829#rd">http://mp.weixin.qq.com/s?__biz=MzU1NTkzMTYxOQ==&amp;mid=2247484007&amp;idx=1&amp;sn=3427d4195d5552f38cceb8029185dcd0&amp;chksm=fbcd80ebccba09fdbfcf59cdc79f5a04cb7446c04a0fe53b5f02e02dbf5dd514af7160bf96bf&amp;scene=126&amp;sessionid=1681664829#rd</a></blockquote><p>前言：当内网主机缺少python,go等环境时，又想执行点批量操作，写个bat脚本挺合适的，就5行命令，不喜勿喷。</p><section class="code-snippet__fix code-snippet__js"><ul class="code-snippet__line-index code-snippet__js"><li/><li/><li/><li/><li/></ul><pre class="code-snippet__js" data-lang="bash"><code><span class="code-snippet_outer">@<span class="code-snippet__built_in">echo</span> off</span></code><code><span class="code-snippet_outer"><span class="code-snippet__built_in">set</span> ip=<span class="code-snippet__string">''</span></span></code><code><span class="code-snippet_outer">setlocal enabledelayedexpansion</span></code><code><span class="code-snippet_outer"><span class="code-snippet__keyword">for</span> /f %%i <span class="code-snippet__keyword">in</span> (ip.txt) <span class="code-snippet__keyword">do</span> (<span class="code-snippet__built_in">set</span> ip=%%i</span></code><code><span class="code-snippet_outer">powershell <span class="code-snippet__string">"curl -uri http://!ip!</span>/fuck.html | Select RawContenLength<span class="code-snippet__string">"&gt;&gt;res.txt</span></span></code></pre></section><p>没错 今天不知道为什么就是想水公众号的<br/></p><p style="text-align: center;"><img class="rich_pages" data-ratio="1.0524691358024691" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/FHByZnoBsqacIv5tq0yu2TibPVgz2ISX54BUaxo5pAgHsuxk6dn1DQ2b0uAGJ9NYXj07CiaNNvGFERPwZwbMZNZQ/640?wx_fmt=png" data-type="png" data-w="324" style="" src="../Images/22c930593d4a081c179d6ab7c9450c58.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/FHByZnoBsqacIv5tq0yu2TibPVgz2ISX54BUaxo5pAgHsuxk6dn1DQ2b0uAGJ9NYXj07CiaNNvGFERPwZwbMZNZQ/640?wx_fmt=png"/></p><p><br/></p><p><br/></p>
+        
+</body>
+</html>

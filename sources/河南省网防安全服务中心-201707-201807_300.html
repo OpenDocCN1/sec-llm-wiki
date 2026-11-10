@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>用Golang写的域名信息搜集工具</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>用Golang写的域名信息搜集工具</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzIxNjQ0MTEwMg==&amp;mid=2247485372&amp;idx=2&amp;sn=d5969ce10f20bfffb78f1645d801fe7f&amp;chksm=97884fdda0ffc6cbef568f1ecf1e022cf9c9bf3a1790325200b853869021520d6b4c63868034&amp;scene=126&amp;sessionid=1681668016#rd">http://mp.weixin.qq.com/s?__biz=MzIxNjQ0MTEwMg==&amp;mid=2247485372&amp;idx=2&amp;sn=d5969ce10f20bfffb78f1645d801fe7f&amp;chksm=97884fdda0ffc6cbef568f1ecf1e022cf9c9bf3a1790325200b853869021520d6b4c63868034&amp;scene=126&amp;sessionid=1681668016#rd</a></blockquote><p style="box-sizing: border-box;margin-bottom: 10px;font-size: 15px;line-height: 26px;word-wrap: break-word;word-break: break-word;color: rgb(88, 88, 88);font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;;white-space: normal;background-color: rgb(255, 255, 255);text-align: center;"><span style="box-sizing: border-box;word-wrap: break-word;word-break: break-word;color: rgb(0, 176, 80);"><img class="" data-ratio="0.5238879736408567" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/b8ibibLfdoP5QMH2Wvsawjuy25NBFuRhMAe4EpP2NUncoJTIbxIxiaFde2NBMnVeetfwibYUGMiaoqAQyTOuLuibWsrw/0?wx_fmt=jpeg" data-type="jpeg" data-w="607" style="box-sizing: border-box;border-width: 0px;border-style: initial;border-color: initial;vertical-align: middle;display: inline;" width="607" src="../Images/b789877588e3804fa0500d7e63290a7b.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/b8ibibLfdoP5QMH2Wvsawjuy25NBFuRhMAe4EpP2NUncoJTIbxIxiaFde2NBMnVeetfwibYUGMiaoqAQyTOuLuibWsrw/0?wx_fmt=jpeg"/><br style="box-sizing: border-box;"/></span></p><p style="box-sizing: border-box;margin-bottom: 10px;font-size: 15px;line-height: 26px;word-wrap: break-word;word-break: break-word;color: rgb(88, 88, 88);font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;;white-space: normal;background-color: rgb(255, 255, 255);"><span style="box-sizing: border-box;font-weight: 700;color: rgb(0, 176, 80);">blacksheepwall是一款由Go语言编写的域名信息搜集工具 ，你也可以在你的工具中将它作为一个独立软件包来使用。</span></p><h2 style="box-sizing: border-box;font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;;font-weight: bold;line-height: 1.1;color: rgb(55, 56, 56);margin-top: 30px;margin-bottom: 15px;font-size: 18px;white-space: normal;background-color: rgb(255, 255, 255);">下载</h2><p style="box-sizing: border-box;margin-bottom: 10px;font-size: 15px;line-height: 26px;word-wrap: break-word;word-break: break-word;color: rgb(88, 88, 88);font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;;white-space: normal;background-color: rgb(255, 255, 255);">blacksheepwall支持跨平台，目前它所支持的系统有windows、linux以及苹果的darwin。你可以在这里https://github.com/tomsteele/blacksheepwall/releases/tag/v3.3.0下载到不同版本的二进制软件包。</p><h2 style="box-sizing: border-box;font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;;font-weight: bold;line-height: 1.1;color: rgb(55, 56, 56);margin-top: 30px;margin-bottom: 15px;font-size: 18px;white-space: normal;background-color: rgb(255, 255, 255);">安装</h2><p style="box-sizing: border-box;margin-bottom: 10px;font-size: 15px;line-height: 26px;word-wrap: break-word;word-break: break-word;color: rgb(88, 88, 88);font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;;white-space: normal;background-color: rgb(255, 255, 255);">你可以直接下载编译好的二进制文件运行并安装它。如果你的系统已经安装好了Go语言环境并配置好了工作区，那么你也可以直接通过以下命令下载安装：</p><pre style=" box-sizing: border-box;overflow: auto; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; "><code class="hljs cs" style=" box-sizing: border-box; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ">$ go <span class="hljs-keyword" style="box-sizing: border-box;font-weight: bold;">get</span> github.com/tomsteele/blacksheepwall</code></pre><h2 style="box-sizing: border-box;font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;;font-weight: bold;line-height: 1.1;color: rgb(55, 56, 56);margin-top: 30px;margin-bottom: 15px;font-size: 18px;white-space: normal;background-color: rgb(255, 255, 255);">使用</h2><pre style=" box-sizing: border-box;overflow: auto; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; "><code deep="8" class="hljs xml" style=" box-sizing: border-box; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ">Usage: blacksheepwall [options] <span class="hljs-tag" style="box-sizing: border-box;">&lt;<span class="hljs-name" style="box-sizing: border-box;font-weight: bold;">ip</span> <span class="hljs-attr" style="box-sizing: border-box;">address</span> <span class="hljs-attr" style="box-sizing: border-box;">or</span> <span class="hljs-attr" style="box-sizing: border-box;">CIDR</span>&gt;</span>命令选项:<br data-filtered="filtered" style="box-sizing: border-box;"/>
+ -h, --help            显示帮助信息并退出
+ -version              显示当前版本信息并退出
+ -debug                启用调试并显示从任务返回的错误。
+ -config               包含以下任何选项的YAML文件的位置。
+                       连字符使用下划线代替 (例如 bing-html, bing_html).
+                       没有参数的选项为布尔值应该使用true/false表示（例如bing_html：true）
+ -timeout              SOCKET连接的最大超时时间（以秒为单位）[默认.5秒]
+ -concurrency <span class="hljs-tag" style="box-sizing: border-box;">&lt;<span class="hljs-name" style="box-sizing: border-box;font-weight: bold;">int</span>&gt;</span>    最大并发任务数 [默认：100]
+ -server <span class="hljs-tag" style="box-sizing: border-box;">&lt;<span class="hljs-name" style="box-sizing: border-box;font-weight: bold;">string</span>&gt;</span>      DNS服务器地址 [默认：“8.8.8.8”]
+ -input <span class="hljs-tag" style="box-sizing: border-box;">&lt;<span class="hljs-name" style="box-sizing: border-box;font-weight: bold;">string</span>&gt;</span>       以行分隔的CIDR或IP地址文件
+ -ipv6                 寻找更多适用的AAAA记录
+ -domain <span class="hljs-tag" style="box-sizing: border-box;">&lt;<span class="hljs-name" style="box-sizing: border-box;font-weight: bold;">string</span>&gt;</span>      用于某些任务的目标域可以是单一的也可以是以行分隔的域名文件
+ -fcrdns               通过尝试检索先前确定的每个主机的A或AAAA记录来验证结果
+ -parse <span class="hljs-tag" style="box-sizing: border-box;">&lt;<span class="hljs-name" style="box-sizing: border-box;font-weight: bold;">string</span>&gt;</span>       通过从先前扫描的文件中解析JSON来生成输出
+ -validate             使用符合RFC的正则表达式验证主机名
+Passive:
+ -dictionary <span class="hljs-tag" style="box-sizing: border-box;">&lt;<span class="hljs-name" style="box-sizing: border-box;font-weight: bold;">string</span>&gt;</span>  尝试检索以行分隔文件中子域的CNAME和A记录
+ -ns                   查找域的所有域名服务器的IP和主机名
+ -mx                   查找域的任何mx记录的ip和hostmame。
+ -yandex <span class="hljs-tag" style="box-sizing: border-box;">&lt;<span class="hljs-name" style="box-sizing: border-box;font-weight: bold;">string</span>&gt;</span>      提供了一个Yandex搜索XML API url，使用Yandex<br data-filtered="filtered" style="box-sizing: border-box;"/>                       搜索“rhost：”查找目标域的子域
+ -bing <span class="hljs-tag" style="box-sizing: border-box;">&lt;<span class="hljs-name" style="box-sizing: border-box;font-weight: bold;">string</span>&gt;</span>        提供了一个base64编码的API密钥，使用必应搜索<br data-filtered="filtered" style="box-sizing: border-box;"/>                       API的'ip：'来查找每个ip的主机名，而<br data-filtered="filtered" style="box-sizing: border-box;"/>                       'domain：'来查找域的ips/hostnames
+ -bing-html            使用Bing搜索“ip：”来查找每个ip的主机名，而<br data-filtered="filtered" style="box-sizing: border-box;"/>                       'domain：'查找域的ips/hostnames<br data-filtered="filtered" style="box-sizing: border-box;"/>                       
+ -shodan <span class="hljs-tag" style="box-sizing: border-box;">&lt;<span class="hljs-name" style="box-sizing: border-box;font-weight: bold;">string</span>&gt;</span>      提供了一个Shodan API密钥，使用Shodan的API'/dns/reverse'来查找每个IP的主机名<br data-filtered="filtered" style="box-sizing: border-box;"/>                       '/shodan/host/search'查找一个域的ips/hostnames，对所有IP都进行一次调用<br data-filtered="filtered" style="box-sizing: border-box;"/>                       
+ -reverse              检索每个主机的PTR
+ -viewdns-html         使用viewdns.info的IP反向查找功能查询zhu'ji主机，请谨慎使用否则会被封杀
+ -viewdns <span class="hljs-tag" style="box-sizing: border-box;">&lt;<span class="hljs-name" style="box-sizing: border-box;font-weight: bold;">string</span>&gt;</span>     使用viewdns.info的API和IP反向查找功能查找每个主机。
+ -logontube            使用logontube.com的API查找主机和（或）域，截至本次发布<br data-filtered="filtered" style="box-sizing: border-box;"/>                       该网站已被关闭
+ -exfiltrated          查找从exfiltrated.com的主机名搜索返回的主机名
+ -censys <span class="hljs-tag" style="box-sizing: border-box;">&lt;<span class="hljs-name" style="box-sizing: border-box;font-weight: bold;">string</span>&gt;</span>      搜索censys.io域。名称的收集来自于这个搜索的每个主机的TLS证书。该命令选项后跟的字符串为API ID和Secret并用冒号分隔
+ -crtsh                在crt.sh中搜索与所提供域相关的证书
+ -vt                   在提供域的子域名中搜索VirusTotal
+ -srv                  查找DNS SRV记录并检索关联的主机名/ IP信息
+ -cmn-crawl <span class="hljs-tag" style="box-sizing: border-box;">&lt;<span class="hljs-name" style="box-sizing: border-box;font-weight: bold;">string</span>&gt;</span>   搜索commoncrawl.org域的子域。提供索引要使用参数<br data-filtered="filtered" style="box-sizing: border-box;"/>                       。例如：“CC-MAIN-2017-04-index”
+Active:
+ -axfr                 尝试域的区域传输
+ -headers              对每个主机执行HTTP（s）请求并查找<br data-filtered="filtered" style="box-sizing: border-box;"/>                       可能位置中的主机名
+ -tls                  尝试从TLS证书中检索名称<br data-filtered="filtered" style="box-sizing: border-box;"/>                       （公用名称和主题备用名称）
+Output Options:
+ -clean                打印结果为每个主机的主机名
+ -csv                  打印结果为csv格式
+ -json                 打印结果为JSON</code></pre><p style="box-sizing: border-box;margin-bottom: 10px;font-size: 15px;line-height: 26px;word-wrap: break-word;word-break: break-word;color: rgb(88, 88, 88);font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;;white-space: normal;background-color: rgb(255, 255, 255);"><span style="box-sizing: border-box;word-wrap: break-word;word-break: break-word;color: rgb(159, 163, 168);"><span style="box-sizing: border-box;font-weight: 700;">*参考来源：GitHub，FB小编 secist 编译，转载请注明来自FreeBuf.COM</span></span></p><hr/><p style="text-align: center;"><br/></p><p style="text-align: center;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/b8ibibLfdoP5Q2WVU3nCYhcBPvWnJTq3In3b69uCTd53F7yRBeDOmicQrBz4BB9Zfg33ibImeqAaw5ib7kl0YLEBgbA/640?wx_fmt=png" data-type="png" class="" data-ratio="1.4259818731117824" data-w="331" src="../Images/fb2840f40698ba9e4c93b28c6026d72e.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/b8ibibLfdoP5Q2WVU3nCYhcBPvWnJTq3In3b69uCTd53F7yRBeDOmicQrBz4BB9Zfg33ibImeqAaw5ib7kl0YLEBgbA/640?wx_fmt=png"/></p>
+        
+</body>
+</html>

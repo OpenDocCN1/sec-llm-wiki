@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>联想被爆利用Windows防盗功能做羞羞的事</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>联想被爆利用Windows防盗功能做羞羞的事</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NTc2NDM4MQ==&amp;mid=209669198&amp;idx=2&amp;sn=15b6af1bb9805d36e346fbb93bc75648&amp;chksm=2f786dbc180fe4aa84a393f0403b26349ef87e7e2feb551c564819e768da7aa14545232b5495&amp;scene=126&amp;sessionid=1681368446#rd">http://mp.weixin.qq.com/s?__biz=MjM5NTc2NDM4MQ==&amp;mid=209669198&amp;idx=2&amp;sn=15b6af1bb9805d36e346fbb93bc75648&amp;chksm=2f786dbc180fe4aa84a393f0403b26349ef87e7e2feb551c564819e768da7aa14545232b5495&amp;scene=126&amp;sessionid=1681368446#rd</a></blockquote><p><strong>Win 8 和Win 10中包含了一个让许多用户都不喜欢的功能，被称为“Windows Platform Binary Table”。电脑厂商可以从BIOS向系统推送和安装软件，Win 8和10将会在启动时提取这个执行文件并自动运行。通过这种方式，电脑厂商可以在Windows的机器上注入软件，即使系统重装之后也还是如此。</strong></p><p><strong><br/></strong></p><p><strong><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz/qXZ5RodNbbHcqdGYFPhQuvjxVI4ibAk8ftIAwyfAhpk4v5HC875Hl6ia6RXIm9ibiaJ1DwccSq7YhG5PYkqUib9eibww/0?wx_fmt=jpeg" data-ratio="0.5573122529644269" data-w="" src="../Images/bd6c22912f3fb8851a982b27d3528881.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qXZ5RodNbbHcqdGYFPhQuvjxVI4ibAk8ftIAwyfAhpk4v5HC875Hl6ia6RXIm9ibiaJ1DwccSq7YhG5PYkqUib9eibww/0?wx_fmt=jpeg"/><br/></strong></p><p><strong><span style="font-size: 20px;"><br/></span></strong></p><p><strong><span style="font-size: 20px;">Windows的善意与误伤</span></strong></p><p>WPBT的主要目的是用于防盗软件的自动安装。一旦硬件丢失或者被盗，数据被清除后任何防盗软件也不复存在，这更不利于系统的恢复。因此，WPBT提供了这个解决方案：即使磁盘被擦拭、系统经过重新安装，固件依然可以重装软件并且报告笔记本被盗的情况。</p><p><br/></p><p>然而，也就是说除非刷 BIOS，否则厂商预装软件可以一直出现在用户的电脑里面。</p><p><br/></p><p>好消息是大多数厂商似乎并没有利用这个特性。但是，坏消息来了：“大多数”并非“所有”。2014年10月至今年4月，联想利用这一功能在某些联想台式机和笔记本系统中预装了被称为“联想服务引擎”的软件。</p><p><br/></p><p><span style="font-size: 20px;"><strong>联想暴扣得分</strong></span></p><p>据联想描述，该软件的功能取决于其是在台式机还是笔记本系统中。台式机上，软件只能发送一些基本信息(系统模型、区域、日期以及系统ID)到联想服务器上面。这并不包括任何的个人识别信息，但是系统ID应该是每个设备所特有的。联想认为这是个一次性的操作，信息只会在机器第一次联网的时候才会被发送。</p><p><br/></p><p>而针对笔记本电脑，软件功能则有所不同。联想笔记本会在每次开机的过程中都会写入一份系统文件，下载联想官方更新文件，并且自动安装。而之所以能够实现这一功能是因为联想在 BIOS 中设置了一项功能选项“Lenovo Service Engine”（LSE），下载的软件是“OneKey Optimizer”，根据官方的介绍，这是一个系统优化工具：</p><pre><span style="font-size: 12px; background-color: rgb(191, 191, 191);">“OneKey Optimizer（OKO） 是专为联想电脑研发的新一代功能强大的系统优化软件，它能够为您的电脑进行体检，提升电脑性能，更新最新的固件、驱动和应用程序，并提供合理的电源管理方案，有效延长电池使用寿命。”<br/><br/></span></pre><p>然而，另一个种观点却认为OKO完全可以放在“废件”的类别中。虽然OKO做了一点有用的维护系统的工作——例如更新驱动——它同样还能提供性能“优化”以及系统垃圾文件清理，但是这两点均受到了严重的质疑。</p><p><br/></p><p>更糟糕的是LSE（或OKO）其实并不安全。4月份联想与微软研究员Roel Schouwenberg发布了报告称其存在的隐患包括缓冲区溢出和不安全网络连接。问题在于，攻击者可以利用这种自动更新和自动安装机制伪装成联想的更新服务，在用户重启电脑的过程中安装任何恶意软件。</p><p><br/></p><p><span style="font-size: 20px;"><strong>联想用户论坛举报</strong></span></p><p>这个情况最初被曝光于arstechnica论坛，一位用户发现BIOS会检查C:\Windows\system32\autochk.exe 是联想的版本还是微软的原始版本，如果是微软的版本，它会将其移至C:\Windows\system32\0409\zz_sec\autobin.exe，然后写入联想的autochk.exe。</p><p><br/></p><p>在启动期间， autochk.exe会向system32文件夹写入 LenovoUpdate.exe和LenovoCheck.exe，连上网后，它会设置一个服务运行其中一个程序，然后访问 http://download.lenovo.com/ideapad/windows/lsebios/win8_en-us_32_oko.json。这个网址没有使用加密，意味着可以被攻击者拦截流量远程执行代码。</p><p><br/></p><p>今年6月有中国网友在知乎提问“如何评价联想电脑自动安装LenovoUpdate.exe、LenovoCheck.exe等软件的行为？”。</p><p><br/></p><p>有中国网友对此颇为不满：</p><pre><span style="font-size: 12px; background-color: rgb(191, 191, 191);">“联想的这种行为是否真的值得信赖？日防夜防，家贼难防，操作系统和应用级别的流氓软件解决起来非常简单，最不济重装系统，但是BIOS的rootkit耍起流氓来就不是那么简单了。”“推广国产自主化这件事没那么简单，行外人还是不要瞎揣度了。Lenovo顶多也只有耍流氓的途径，真想耍得好功力还差得远，先掏钱改善改善自己队伍的生活水平吧。”</span></pre><p><br/></p><p><span style="font-size: 20px;"><strong>联想公司紧急处理</strong></span></p><p>联想目前已作出回应，在新系统中停止了LSE的应用（该公司说，6月份之后的系统是干净的）。联想在其英文官方网站发布了提供了笔记本电脑的固件更新，并发布了在台式机中禁用该选项并清理LSE文件的操作步骤。但是中文官网并没有更新。</p><p><br/></p><p>受影响的机型如下：</p><pre><span style="font-size: 12px; background-color: rgb(191, 191, 191);">Flex 2 Pro-15/Edge 15 (Broadwell)
+Flex 2 Pro-15/Edge 15 (Haswell)
+Flex 3-1470/1570
+Flex 3-1120
+G40-80/G50-80/G50-80 Touch/V3000
+S21e
+S41-70/U41-70
+S435/M40-35
+Yoga3 14
+Z70-80 / G70-80
+Yoga 3 11
+Y40-80
+Z41-70/Z51-70</span></pre><p><br/></p><p><span style="font-size: 20px;"><strong>解决方案</strong></span></p><p>尚不清楚是否有其他电脑制造商也在利用WPBT的能力。LoJack公司提供了一份冗长的清单，列举出了可能应用了此功能的固件以及大多数或者全部的系统。在此FreeBuf建议受影响系统用户更新固件，然后运行联想的LSE移除工具来清理磁盘的文件。</p><p><img data-type="gif" data-src="http://mmbiz.qpic.cn/mmbiz/qXZ5RodNbbGbLa3uT44183q6dRLdTgAYCLXmzurmfTBVkMoYbia651hglRgWvVHbcOHG4KmdmibNUdqVmVaaTrLQ/0?wx_fmt=gif" data-ratio="0.6679841897233202" data-w="" src="../Images/416e8128575744e8f49ec4306f41c7e3.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qXZ5RodNbbGbLa3uT44183q6dRLdTgAYCLXmzurmfTBVkMoYbia651hglRgWvVHbcOHG4KmdmibNUdqVmVaaTrLQ/0?wx_fmt=gif"/><br/></p>
+        
+</body>
+</html>

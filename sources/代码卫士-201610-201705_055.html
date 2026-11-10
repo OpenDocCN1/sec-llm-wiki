@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Nomx邮箱服务器被指存在多个严重漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Nomx邮箱服务器被指存在多个严重漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485539&amp;idx=1&amp;sn=f5180e29310c92cb7342ef08f4ccb5c5&amp;chksm=ea973909dde0b01fe4f3b048560789d84cf59fad50b6697fc1c076277695fb6d91c217e4afc0&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485539&amp;idx=1&amp;sn=f5180e29310c92cb7342ef08f4ccb5c5&amp;chksm=ea973909dde0b01fe4f3b048560789d84cf59fad50b6697fc1c076277695fb6d91c217e4afc0&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiakgzGLxe0Nyc4HD24dbKh0doia6cZbYFicOMaDSFKliczGia79icaF04pkOZsrZUSPzVa4nsTPlPYrDNaw/0?wx_fmt=jpeg" data-ratio="0.5370370370370371" data-w="648" src="../Images/9f287889b4475e3366edb767776420e5.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiakgzGLxe0Nyc4HD24dbKh0doia6cZbYFicOMaDSFKliczGia79icaF04pkOZsrZUSPzVa4nsTPlPYrDNaw/0?wx_fmt=jpeg"/></p><p><br/></p><p><strong>研究人员声称在nomx邮件服务器技术中发现多个严重漏洞，而该产品所在公司Nomx对此表示强烈反对并喊话挑战，包括在指定的被远程托管的nomx设备上创建邮件账户。</strong></p><p><br/></p><p>今年1月份，Nomx在CES贸易展上推出其邮件服务器硬件。它的市场宣言是“nomx确保个人和商业的邮件和消息的绝对私密性”并表示，“其它一切都是不安全的”。而研究员Scott Heme声称找到了所有的缺点。</p><p><br/></p><p><strong>不止有CSRF漏洞问题？</strong></p><p><br/></p><p>设备运行的是树莓派上标准的邮件服务器软件，Helme表示大部分已过时，而且nomx的web接口出现了一个严重的跨站点请求伪造漏洞。另外，设备无法接收更新，而这是基本的安全要求。另外他在博客中还提到了其它漏洞问题。他表示厂商出言大胆但设备很糟糕，他能够完全远程攻陷设备。另外，他表示利用这个CSRF漏洞有三种办法，厂商表示已修复但Helme并未收到任何可用补丁。</p><p><br/></p><p>Helme表示可阅读用户邮件、删除邮件、发送邮件或者在别人设备上创建自己的邮箱地址来登录使用。总之，设备问题很多。而nomx方面强烈反对这些说法并声称Helme试图诋毁nomx；另外Helme提到的CSRF漏洞已修复并否认了Helme提出的影响。他指出，如果nomx设备上出现了这个CSRF漏洞，那么如果用户位于设备的管理页面并访问了被黑页面或恶意站点，攻击者就会获取访问权限。但跟日常的邮件使用并无关联，且除非访问了管理页面并同时访问第三方站点，那么这种情况就不会发生。另外表示已修复这个问题并不再提供受影响版本。</p><p><br/></p><p><strong>不过是树莓派版的Postfix邮件服务器？</strong></p><p><br/></p><p>跟Helme一起分析设备的大学教授Alan Woodward指出，nomx邮件服务器跟普通邮件服务器的不同之处在于其盒到盒的通信方式。然而他认为这是因为设备使用了Postfix: transport tables的标准部分。他指出nomx邮件服务器只是使用了TLS，为邮件流量发送地址准备了本地IP地址。</p><p><br/></p><p><strong>Nomx的设计初衷</strong></p><p><br/></p><p>Nomx（no mail exchange，“无邮件交换”）这个名称旨在跳过易受攻击的第三方邮件交换服务器。Nomx方面指出，通过强制邮件经过互联网上的某些路由而不是使用传统的邮件中继即复制这些信息并易受多种问题的困扰；Helme将其仅看做“树莓派版的Postfix邮件服务器”并不能代表真正的nomx；nomx提供一系列服务和协议共同解决第三方服务器带来的漏洞问题。另外，迄今为止被攻陷的nomx账户屈指可数。</p><p><br/></p><p>Woodward教授指出nomx所提出的这些安全问题引发了消费者能否信任安全厂商所做承诺的讨论点。</p><p><br/></p><p><br/></p><p><strong>本文由360代码卫士编译，不代表360观点，转载请注明“转自360代码卫士www.codesafe.cn”。</strong></p>
+        
+</body>
+</html>

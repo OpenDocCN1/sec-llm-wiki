@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>OpenSSL 存在缓冲区溢出漏洞 （CVE-2022-3602,CVE-2022-3786）</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>OpenSSL 存在缓冲区溢出漏洞 （CVE-2022-3602,CVE-2022-3786）</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI3NzMzNzE5Ng==&amp;mid=2247485634&amp;idx=1&amp;sn=e9329499c0952cc16e3faec257c72212&amp;chksm=eb668dc1dc1104d7c9b4b95da25b064f0fcf93cfc3b9a5a6c2d68df3de59d8e1629bec14b376&amp;scene=126&amp;sessionid=1681407223#rd">http://mp.weixin.qq.com/s?__biz=MzI3NzMzNzE5Ng==&amp;mid=2247485634&amp;idx=1&amp;sn=e9329499c0952cc16e3faec257c72212&amp;chksm=eb668dc1dc1104d7c9b4b95da25b064f0fcf93cfc3b9a5a6c2d68df3de59d8e1629bec14b376&amp;scene=126&amp;sessionid=1681407223#rd</a></blockquote><p>基本信息
+    </p><p>风险等级:<span style="color: #ff4545;">高危            </span>
+        </p><p>漏洞类型:缓冲区溢出 
+        </p><p>漏洞描述
+    
+        
+            
+                </p><p>近日，飓风安全监测到OpenSSL发布安全公告，修复了2个存在于OpenSSL中的缓冲区溢出漏洞，详情如下：</p><p><strong>1.CVE-2022-3602 OpenSSL栈缓冲区溢出漏洞</strong></p><p>风险等级：高危</p><p>漏洞类型：缓冲区溢出</p><p>漏洞简介：在 X.509 证书验证过程中（特别是在名称约束检查中）会触发缓冲区溢出，可能导致拒绝服务或远程代码执行。缓冲区溢出发生在证书链签名验证之后，需要 CA 
+签署恶意证书或让应用程序在未能构建到受信任颁发者的路径时继续进行证书验证。攻击者可以构造恶意电子邮件地址利用可控的四个字节来溢出邻近缓冲区。</p><p><br/><mpchecktext><br/></mpchecktext></p><p><strong>2.CVE-2022-3786 OpenSSL缓冲区溢出漏洞</strong></p><p>风险等级：高危</p><p>漏洞类型：缓冲区溢出</p><p>漏洞简介：在 X.509 证书验证过程中（特别是在名称约束检查中）会触发缓冲区溢出，可能导致拒绝服务。缓冲区溢出发生在证书链签名验证之后，需要 CA 
+签署恶意证书或让应用程序在未能构建到受信任颁发者的路径时继续进行证书验证。攻击者可以在证书中构造恶意电子邮件地址来溢出邻近栈缓冲区中包含‘.’的任意数量字节。</p><p><br/><mpchecktext><br/></mpchecktext></p><p><strong>【受影响版本】</strong></p><ul class="list-paddingleft-1"><li><p>3.0.0 &lt;= OpenSSL &lt; 3.0.7</p></li></ul><p><strong>【安全版本】</strong></p><ul class="list-paddingleft-1"><li><p>OpenSSL &gt;= 3.0.7</p></li><li><p style="text-align: center;"><img class="rich_pages wxw-img" data-galleryid="" data-ratio="0.35826296743063935" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/ibhQpAia4xu03DomjGiadMnhrQJnDynSryX2pCsgTPBpQPRliblh7G2yLibCNBxLmyAONa6tnz3yMK2uGbFGg68EVDg/640?wx_fmt=png" data-type="png" data-w="829" style="" src="../Images/a787e59c3bff742be658b0d5c9634573.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/ibhQpAia4xu03DomjGiadMnhrQJnDynSryX2pCsgTPBpQPRliblh7G2yLibCNBxLmyAONa6tnz3yMK2uGbFGg68EVDg/640?wx_fmt=png"/></p></li></ul><p>OpenSSL是OpenSSL团队的一个开源的能够实现安全套接层（SSLv2/v3）和安全传输层（TLSv1）协议的通用加密库。该产品支持多种加密算法，包括对称密码、哈希算法、安全散列算法等。</p><p>影响范围
+        </p><p>3.0.0 &lt;= OpenSSL &lt; 3.0.7</p><p><br/></p><p>解决方案
+    <span style="font-weight: 600;border-bottom: 1px solid #002664;color: #002664;"><br/></span></p><p><span style="font-weight: 600;border-bottom: 1px solid #002664;color: #002664;">修复建议</span>
+            </p><p><strong>临时修复建议：</strong></p><ul class="list-paddingleft-1"><li><p>如果目前无法升级，若业务环境允许，使用白名单限制相关端口的访问来降低风险。</p></li></ul><p><strong>通用修复建议：</strong></p><p>官方已经针对漏洞发布了版本更新，下载地址如下：</p><ul class="list-paddingleft-1"><li><p>https://github.com/openssl/openssl/tags</p></li></ul><p><br/></p><p style="display: none;"><mp-style-type data-value="3"/></p>
+        
+</body>
+</html>

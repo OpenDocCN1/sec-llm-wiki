@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>远程命令注入漏洞影响内置RealTek SDK的路由器</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>远程命令注入漏洞影响内置RealTek SDK的路由器</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485974&amp;idx=5&amp;sn=b183074622a837e74f20934658869770&amp;chksm=ea973b7cdde0b26a67f500125f6b4b88ee98172bf68174b24ebdc819d2a2961d8bb7a7c4dbd0&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485974&amp;idx=5&amp;sn=b183074622a837e74f20934658869770&amp;chksm=ea973b7cdde0b26a67f500125f6b4b88ee98172bf68174b24ebdc819d2a2961d8bb7a7c4dbd0&amp;scene=27#wechat_redirect</a></blockquote><p>RealTek 
+SDK（软件开发包）1.3版本中出现一个漏洞，被攻击者利用后可在设备上执行任意代码。该软件开发包被用于D-Link以及Trendnet宽带路由器
+开发。尽管只有上述厂商的产品易受攻击，但受影响范围可能更广，因为RealTek SDK用户无线及网关控制器的固件生产。</p><p><br/></p><p><span style="color: rgb(0, 176, 80);"><strong>攻击者可获得</strong><strong>root</strong><strong>权限</strong></span></p><p>该漏洞由惠普0day项目安全研究员Ricky Lawshae发现于2014年8月13日。供应商多次被告知漏洞的存在，但至今未发布任何补丁。</p><p><br/></p><p>漏洞位于处理网络服务通信的SOAP服务“MinilGD”组件部分。研究人员表示漏洞可被攻击者利用并以root权限执行代码。</p><p><br/></p><p><span style="color: rgb(0, 176, 80);"><strong>推出的补丁并未解决多款产品中的问题</strong></span></p><p>可通过将服务仅限与可信客户端交互的方式缓解漏洞影响。比如通过执行防火墙规则或与允许通信的机器创建白名单来实现这一目的。安全研究员
+Stefan  Viehböckbiaoshi 
+,MinilGD似乎是来自MiniUPnP旧版本的一个fork。一些研究人员建议关掉用于发现本地网络中客户端的UPnP服务。在一些设备
+上，UPnP还可从互联网进行访问，因此启动远程攻击。值得注意的是，即使RealTek发布了补丁，并不是可在所有受影响的设备上执行，因为很多设备已
+不受厂商支持。</p><p><br/></p>本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。
+        
+</body>
+</html>

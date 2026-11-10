@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>【踩坑】phpstudy-80端口被占用</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>【踩坑】phpstudy-80端口被占用</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzU5OTU3NDEzOQ==&amp;mid=2247484117&amp;idx=1&amp;sn=2c1bb863d0e63886c511fc9fa47587dc&amp;chksm=feb391c1c9c418d79156fe7fa8dd3cba0858739c2d63724945b345f4ec8194369e8715214941&amp;scene=126&amp;sessionid=1681663188#rd">http://mp.weixin.qq.com/s?__biz=MzU5OTU3NDEzOQ==&amp;mid=2247484117&amp;idx=1&amp;sn=2c1bb863d0e63886c511fc9fa47587dc&amp;chksm=feb391c1c9c418d79156fe7fa8dd3cba0858739c2d63724945b345f4ec8194369e8715214941&amp;scene=126&amp;sessionid=1681663188#rd</a></blockquote><section label="Edit by 135editor.com" style="font-size:16px;"><section data-role="outer" label="Powered by 135editor.com" style="font-size:16px;"><section class="_135editor" data-tools="135编辑器" data-id="94151"><section style="text-align: center;padding: 1em 0px;box-sizing: border-box;"><section style="display: flex;justify-content: center;align-items: center;text-align: center;"><section style="display: flex;justify-content: flex-end;margin-top: -12px;"><section style="display: inline-block;width: 0.4em;height: 5px;background: rgb(254, 231, 34);border-radius: 5px;margin-right: 3px;box-sizing: border-box;"/><section style="display: inline-block;width: 0.9em;height: 5px;background: rgb(254, 231, 34);border-radius: 5px;margin-right: -5px;box-sizing: border-box;"/></section><section style="width: 1.8em;height: 5px;background: rgb(254, 231, 34);border-radius: 5px;margin-top: 8px;margin-left: -1.6em;box-sizing: border-box;"/><section style="display:inline-block;"><section class="135brush" data-brushtype="text" style="background: #fbef2e;color: #986300;font-size: 16px;letter-spacing: 1.5px;padding: 10px 1.6em;transform: rotate(0deg);-webkit-transform: rotate(0deg);-moz-transform: rotate(0deg);-ms-transform: rotate(0deg);-o-transform: rotate(0deg);">phpstudy的80端口占用</section><section data-bgless="spin" data-bglessp="280" data-bgopacity="80%" style="width:100%;background:rgba(251,239,46,0.3);height: 40px;margin-top: -34px;margin-left:6px;" data-width="100%"/></section><section style="display: flex;justify-content: flex-end;margin-top: -12px;"><section style="display: inline-block;width: 0.4em;height: 5px;background: rgb(254, 231, 34);border-radius: 5px;box-sizing: border-box;"/><section style="display: inline-block;width: 0.9em;height: 5px;background: rgb(254, 231, 34);border-radius: 5px;margin-left: 3px;box-sizing: border-box;"/></section><section style="width: 1.2em;height: 5px;background: rgb(254, 231, 34);border-radius: 5px;margin-top: 8px;margin-left: -1.6em;box-sizing: border-box;"/></section></section></section><section data-role="paragraph" class="_135editor"><p><br/></p>
+<p style="padding: 7px;"><img data-ratio="1" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/df1X0NvQ5Kl2TzOeWE9CS2iaEO45vWu4M57ToMLVzF5eYU5gf7d2fh4CZx7jemcdaMKPn1wMMf9GAeaa5RgvVoQ/640" style="border: 1px solid rgb(151, 152, 153);box-shadow: rgb(151, 152, 153) 2px 2px 5px;padding: 10px;box-sizing: border-box;border-radius: 0px;height: auto !important;" src="../Images/ccad1410420fb7ce12f6f7efdb951bb0.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/df1X0NvQ5Kl2TzOeWE9CS2iaEO45vWu4M57ToMLVzF5eYU5gf7d2fh4CZx7jemcdaMKPn1wMMf9GAeaa5RgvVoQ/640"/></p>
+<p><br/></p>
+<p>    好长时间不用了，今天打开突然说80端口被占用，Apache服务起不来</p>
+<p><br/></p>
+<p><img data-ratio="1" data-src="https://mmbiz.qpic.cn/mmbiz_png/df1X0NvQ5Kl2TzOeWE9CS2iaEO45vWu4MMSzo7qzU2olvp0afJCX5Z8W9mgtYfeP6ENn7N4oYIMtWuOjc29uolw/640" style="height: auto !important;" src="../Images/bb16ddac6fa4097ad41a08c0daea8e49.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/df1X0NvQ5Kl2TzOeWE9CS2iaEO45vWu4MMSzo7qzU2olvp0afJCX5Z8W9mgtYfeP6ENn7N4oYIMtWuOjc29uolw/640"/></p>
+<p><br/></p>
+<p><br/></p>
+<p>检查一下看看是谁占用了</p><p>cmd窗口输入：netstat -ano</p>
+<p>可以看到占用的是 pid 为 4 的</p>
+<p><br/></p>
+<p><img data-ratio="1" data-src="https://mmbiz.qpic.cn/mmbiz_png/df1X0NvQ5Kl2TzOeWE9CS2iaEO45vWu4MIqkib462dCoSevnzMSibaBU1zfpFHVo3GtEgNSYRzic0mrnqYvTlica1Cw/640" style="height: auto !important;" src="../Images/d0c138ded5c968015e96a0c6b1bf3f93.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/df1X0NvQ5Kl2TzOeWE9CS2iaEO45vWu4MIqkib462dCoSevnzMSibaBU1zfpFHVo3GtEgNSYRzic0mrnqYvTlica1Cw/640"/></p>
+<p><br/></p>
+<p><br/></p>
+<p>输入：tasklist </p>
+<p>看看是谁，system ？？</p>
+<p>看网上师傅们踩坑的帖子，是 sql sever 的锅，之前学校讲数据库，在电脑上也安装了一个</p>
+<p><br/></p>
+<p><img data-ratio="1" data-src="https://mmbiz.qpic.cn/mmbiz_png/df1X0NvQ5Kl2TzOeWE9CS2iaEO45vWu4MTDxrpcBWqJSVb8iakWnicJiar9OUrUD0nQq1SrsKyJDbwewib9LapgEDrA/640" style="height: auto !important;" src="../Images/8707ff9bb21840e47e9eb7035b7beb62.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/df1X0NvQ5Kl2TzOeWE9CS2iaEO45vWu4MTDxrpcBWqJSVb8iakWnicJiar9OUrUD0nQq1SrsKyJDbwewib9LapgEDrA/640"/></p>
+<p><br/></p>
+<p><br/></p>
+<p>命令行输入：services.msc</p>
+<p>会自动打开电脑的服务</p>
+<p><br/></p>
+<p><img data-ratio="1" data-src="https://mmbiz.qpic.cn/mmbiz_png/df1X0NvQ5Kl2TzOeWE9CS2iaEO45vWu4MMQdZibtVrfNBmAhkwf1PsrO5nYSkHwNsQ0qgRAicy6gFxX4ZgVqCKWLQ/640" style="height: auto !important;" src="../Images/e36470c8084f742a32366d0bbdb4e963.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/df1X0NvQ5Kl2TzOeWE9CS2iaEO45vWu4MMQdZibtVrfNBmAhkwf1PsrO5nYSkHwNsQ0qgRAicy6gFxX4ZgVqCKWLQ/640"/></p>
+<p><br/></p>
+<p><br/></p>
+<p>找到：<span style="color: rgb(0, 0, 0);font-family: 微软雅黑, &quot;Microsoft YaHei&quot;, Arial, sans-serif;letter-spacing: 0.034em;">SQL Server Reporting Services (MSSQLSERVER)</span></p>
+<p><span style="font-size: 16px;font-weight: 400;font-style: normal;color: rgb(0, 0, 0);text-decoration: none solid rgb(0, 0, 0);font-family: 微软雅黑, &quot;Microsoft YaHei&quot;, Arial, sans-serif;">停止！！！</span></p>
+<p><br/></p>
+<p><img data-ratio="1" data-src="https://mmbiz.qpic.cn/mmbiz_png/df1X0NvQ5Kl2TzOeWE9CS2iaEO45vWu4MnFRBbib6tPVqsEnlltWSicPaQ8YkZozkh13VZm02XibkgWY5Qm1fhLfJw/640" style="height: auto !important;" src="../Images/befa0207b2b28995d34a78a77520a3ee.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/df1X0NvQ5Kl2TzOeWE9CS2iaEO45vWu4MnFRBbib6tPVqsEnlltWSicPaQ8YkZozkh13VZm02XibkgWY5Qm1fhLfJw/640"/></p>
+<p><br/></p>
+<p><br/></p>
+<p>重启 phpstudy</p>
+<p>奈斯！！！</p>
+<p><br/></p>
+<p><img data-ratio="1" data-src="https://mmbiz.qpic.cn/mmbiz_png/df1X0NvQ5Kl2TzOeWE9CS2iaEO45vWu4MUTBoHEANMqGSZAMyAIeWnPXIQqto6CwncicuXzrp4xLMLTQlax0Exxw/640" style="height: auto !important;" src="../Images/f1e3ac02d0b45419c51e2c50ba072c4d.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/df1X0NvQ5Kl2TzOeWE9CS2iaEO45vWu4MUTBoHEANMqGSZAMyAIeWnPXIQqto6CwncicuXzrp4xLMLTQlax0Exxw/640"/></p>
+<p><br/></p>
+<p><br/></p>
+<p style="text-align: center;"><img data-ratio="1" height="287" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/df1X0NvQ5Kl2TzOeWE9CS2iaEO45vWu4MGwYYx6YibEfKN3E66mKW1O6MVVTrjkvbujiaicSBbVp5yclV8u5wsUyJg/640" style="border: 2px dashed rgb(151, 152, 153);padding: 5px;border-radius: 0px;height: auto !important;" width="331" src="../Images/6f6fb4b87f3883f23f3a88002f89bbe8.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/df1X0NvQ5Kl2TzOeWE9CS2iaEO45vWu4MGwYYx6YibEfKN3E66mKW1O6MVVTrjkvbujiaicSBbVp5yclV8u5wsUyJg/640"/></p>
+<p style="text-align: center;"><br/></p></section></section></section>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>IPProxyPool4月6号更新。。。</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>IPProxyPool4月6号更新。。。</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzIwODIxMjc4MQ==&amp;mid=2651003641&amp;idx=1&amp;sn=ffff1699df0445e2739e74c5c02f16dc&amp;chksm=8cf13cbbbb86b5ad6fc280b3950d20833ada38f56238b5e36613d7ecb6b3d2d5c249e6bbfaf5&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzIwODIxMjc4MQ==&amp;mid=2651003641&amp;idx=1&amp;sn=ffff1699df0445e2739e74c5c02f16dc&amp;chksm=8cf13cbbbb86b5ad6fc280b3950d20833ada38f56238b5e36613d7ecb6b3d2d5c249e6bbfaf5&amp;scene=27#wechat_redirect</a></blockquote><p>    大家好，今天完成对IPProxyPool较大范围地更新，主要是根据大家的需求反馈进行的调整。下面说一下更新的主要内容：<br/></p><p><br/></p><p><strong>1.更新评分机制。 </strong></p><ul class=" list-paddingleft-2" style="list-style-type: disc;"><li><p>之前的评分机制是刚添加进来每个代理ip为0分，每隔半个小时检测一次，检测之后依然有效则加分，无效则删除。</p></li><li><p>现在的评分机制是每个新的代理ip分配10分,每隔半个小时检测一次，检测之后依然有效则分数不变，无效则分数减一,直至为0删除,可以避免由于检测网站不稳定导致的误删。</p></li><li><p><br/></p></li></ul><p><strong>2.用户可以自定义检测函数,在config.py的CHECK_PROXY变量中可以配置。</strong></p><p><br/></p><ul class=" list-paddingleft-2" style="list-style-type: disc;"><li><p>CHECK_PROXY变量是为了用户自定义检测代理的函数，默认是CHECK_PROXY={'function':'checkProxy'}。</p></li><li><p>现在使用检测的网址是httpbin.org,但是即使ip通过了验证和检测</p></li><li><p>也只能说明通过此代理ip可以到达httpbin.org,但是不一定能到达用户爬取的网址。<span style="line-height: 1.6;">因此在这个地方用户可以自己添加检测函数,我以百度为访问网址尝试一下</span></p></li><li><p>大家可以看一下Validator.py文件中的baidu_check函数和detect_proxy函数就会明白。</p><p>CHECK_PROXY={'function':'baidu_check'}</p></li></ul><p><br/></p><p><strong>3.经过大家的共同努力,彻底解决了僵死进程的问题。</strong></p><p><br/></p><p>    由于IPProxyPool项目是通过多进程+协程的方式对代理ip进行抓取和验证的，因此容易出现开启进程较多无法及时销毁的现象，即僵尸进程。经过大家的努力，最终将这个问题进行彻底地解决了，谢谢大家的支持。</p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/ttTDFzozho4pzMpgAgzmNRT5ZHia8OPeibhyBGAxPF3wPtw5asN1ch44NibeJUrrZW0CSzUGH1YgwtEyeZPRmcsGA/0?wx_fmt=jpeg" style="width: 100%; height: auto;" data-ratio="1" data-w="300" src="../Images/962a0b327e6cf556b8c01e0ba7d1740f.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/ttTDFzozho4pzMpgAgzmNRT5ZHia8OPeibhyBGAxPF3wPtw5asN1ch44NibeJUrrZW0CSzUGH1YgwtEyeZPRmcsGA/0?wx_fmt=jpeg"/></p><p><br/></p><p>    下一篇博文，咱们就开始讲解我的另一个开源项目PowerProxy，希望大家多多支持。</p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/ttTDFzozho4pzMpgAgzmNRT5ZHia8OPeibxh53pn1axR5icbLR7uoUsMdbCibolUhUQc33mZAaUknL1c2ficx016Wew/0?wx_fmt=jpeg" style="width: 100%; height: auto;" data-ratio="1.1811023622047243" data-w="254" src="../Images/e605036bf517a5de1c1854b53d541d6c.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/ttTDFzozho4pzMpgAgzmNRT5ZHia8OPeibxh53pn1axR5icbLR7uoUsMdbCibolUhUQc33mZAaUknL1c2ficx016Wew/0?wx_fmt=jpeg"/></p><p><br/></p>
+        
+</body>
+</html>

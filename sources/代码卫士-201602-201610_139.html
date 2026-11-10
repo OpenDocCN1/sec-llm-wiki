@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>勒索软件CTB-Faker使用WinRAR将数据锁定为带有密码保护的ZIP文件</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>勒索软件CTB-Faker使用WinRAR将数据锁定为带有密码保护的ZIP文件</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485713&amp;idx=1&amp;sn=c64654801d9c7251f1f647bc0bf7a816&amp;chksm=ea97387bdde0b16d3fd49b5a14caff5bd56489e51e002f994ef01fb79dcb7611badb77c9f10b&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485713&amp;idx=1&amp;sn=c64654801d9c7251f1f647bc0bf7a816&amp;chksm=ea97387bdde0b16d3fd49b5a14caff5bd56489e51e002f994ef01fb79dcb7611badb77c9f10b&amp;scene=27#wechat_redirect</a></blockquote><p style="text-indent: 2em;"><strong>一款来自CTB-Locker变体的名为CTB-Faker的勒索软件，谎称对用户数据做了强加密，实际上只是将用户的数据移到有密码保护的ZIP文件中。</strong></p><p style="text-indent: 2em;">好在这款恶意软件已经被破解。虽然用户请求帮助的过程比较复杂，来自Bleeping Computer的劳伦斯·艾布拉姆斯（Lawrence Abrams）自愿免费协助用户进行破解。<a name="OLE_LINK113"/></p><p style="text-indent: 2em;"><strong>CTB-Faker通过成人网站传播</strong></p><p style="text-indent: 2em;">经过Bleeping Computer和Check Point两家公司的技术分析，目前CTB-Faker通过成人网站上的脱衣舞跳舞视频进行传播。</p><p style="text-indent: 2em;">在成人网站上，用户被鼓励下载一个包含可执行文件的ZIP文件。运行可执行文件就会启动CTB-Faker，它会慢慢将文件移动到一个有密码保护的文件"C:Users.zip"中。</p><p style="text-indent: 2em;">CTB-Faker使用WinRAR移动文件并加密文件。一旦文件创建成功，CTB-Faker会强制电脑重启，用户再次登录后显示赎金信息。</p><p style="text-indent: 2em;"><strong>骗子已从CTB-Faker赚得盆满钵盈</strong></p><p style="text-indent: 2em;">CTB-Faker的勒索信息和著名的勒索软件CTB-Locker设计极为相似。Abrams称，在已发现的一个接收CTB-Faker比特币赎金的地址中，已经收到了577比特币（约381000美元）赎金。</p><p style="text-indent: 2em;">按照每台PC收取0.08比特币（约50美元）计算，需要感染超过7200台用户的电脑。按照这样简单的逻辑推理，骗子似乎早已收回了投资成本。</p><p style="text-indent: 2em;"><strong>解密条件</strong></p><p style="text-indent: 2em;">CTB-Faker的勒索信息称恶意软件同时结合了SHA-512和RSA-4096加密文件。但实际上它只使用了AES-256加密，这是WinRAR压缩文档的标准加密方法。</p><p style="text-indent: 2em;">用户从成人网站下载的初始ZIP文件中的可执行文件中有硬编码的AES-256加密秘钥。如果用户仍有该文件，可以联系Abrams将密码提取出来。</p><p style="text-indent: 2em;">在此之前，另外两个恶意软件家族 Bart 和CryptoHost都是将文件锁定内置有密码保护的压缩文件中，目前都已被破解。</p>
+        
+</body>
+</html>

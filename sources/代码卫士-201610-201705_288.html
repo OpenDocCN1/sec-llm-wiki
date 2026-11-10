@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>攻击者可获取三星智能摄像头的根权限</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>攻击者可获取三星智能摄像头的根权限</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485598&amp;idx=3&amp;sn=f75b8f3f579ba23108dd851f8eda8658&amp;chksm=ea9739f4dde0b0e2a1b24440c3b2a21e63da00dd8eb5f9339e5da7bc95a4a3b170375123ab73&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485598&amp;idx=3&amp;sn=f75b8f3f579ba23108dd851f8eda8658&amp;chksm=ea9739f4dde0b0e2a1b24440c3b2a21e63da00dd8eb5f9339e5da7bc95a4a3b170375123ab73&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiam56aIxDRZAVZ48F855dRNdau33bccEsTqIfwd1RhcY1vVJTkNUEiaTSia8f9pexLP9tZ6hSWstpzXQ/0?wx_fmt=jpeg" data-ratio="0.5294117647058824" data-w="340" src="../Images/33432b7c241f3c3455e3d880e2d27ebc.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiam56aIxDRZAVZ48F855dRNdau33bccEsTqIfwd1RhcY1vVJTkNUEiaTSia8f9pexLP9tZ6hSWstpzXQ/0?wx_fmt=jpeg"/><br/></p><p><br/></p><p><strong>三星智能摄像头(Smartcam)中又出现了一个新漏洞，攻击者能够获取根权限并远程运行命令。</strong></p><p><br/></p><p>三星的智能摄像头实际上是一款IP摄像头，用户可将其跟三星设备连接并查看实时视频或从任意地点记录活动。它通过极其简单的配置和实时通知提供了无缝婴儿或宠物监控、企业和家庭安全功能。</p><p><br/></p><p>不过这款智能摄像头的安全问题似乎不少。之前就有安全研究人员发现了多个漏洞，这次又出现漏洞，且能够导致攻击者获取根权限，利用的是三星之前修复其它漏洞而留下的一个网络服务器。</p><p><br/></p><p><strong>本地服务器漏洞</strong></p><p><br/></p><p>为了修复漏洞，三星删除了本地网络界面并强迫用户访问SmartCloud网站，不过同时还让本地服务器运行着。结果攻击者可利用发现的漏洞通过一个定制化固件文件连接到这个网络界面。</p><p><br/></p><p>研究人员指出，“iWatch Install.php漏洞可通过编制一个特别的文件名称被利用，这个文件名称随后被存储到传给php system()调用的tar命令。因为网络服务器以根身份运行，这个文件名称是用户提供的，而输入是在没有清洁的情况下使用的，因此我们能够将自己的命令注入从而实现根远 程命令执行。”</p><p><br/></p><p>三星尚未发布补丁。目前该漏洞的<a style="color: rgb(131, 131, 131);">PoC和修复方案</a>已发布。</p>
+        
+</body>
+</html>

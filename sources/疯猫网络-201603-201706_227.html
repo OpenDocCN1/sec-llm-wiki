@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Phpcms v9漏洞分析</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Phpcms v9漏洞分析</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzIyMzE5NTQ3Ng==&amp;mid=2650584416&amp;idx=3&amp;sn=117b33dd0eac3f9cd2b16b81da00824b&amp;chksm=f029ed5bc75e644ddb97576dcae6472d15321b7da4a842372af9e3bea71d829a1fe027d09afb&amp;scene=126&amp;sessionid=1681370563#rd">http://mp.weixin.qq.com/s?__biz=MzIyMzE5NTQ3Ng==&amp;mid=2650584416&amp;idx=3&amp;sn=117b33dd0eac3f9cd2b16b81da00824b&amp;chksm=f029ed5bc75e644ddb97576dcae6472d15321b7da4a842372af9e3bea71d829a1fe027d09afb&amp;scene=126&amp;sessionid=1681370563#rd</a></blockquote><p/><p><img data-type="gif" data-src="http://mmbiz.qpic.cn/mmbiz_gif/5ZACCn1bWEwrm1niax0xWl6tFwyaPqCHRyskxXGvZQgOFTCFaUiaU6PSmdmwSdb3JEAuZwPx0lPWsHf2xuib8Asew/0?wx_fmt=gif" data-ratio="0.15625" data-w="640" src="../Images/bd12d37e5b6d2b5b81389d88a9cef40a.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_gif/5ZACCn1bWEwrm1niax0xWl6tFwyaPqCHRyskxXGvZQgOFTCFaUiaU6PSmdmwSdb3JEAuZwPx0lPWsHf2xuib8Asew/0?wx_fmt=gif"/></p><p><br/></p><p><strong>最近研究源码审计相关知识，会抓起以前开源的CMS漏洞进行研究，昨天偶然看见了这个PHPCMS的漏洞，就准备分析研究一番，最开始本来想直接从源头对代码进行静态分析，但是发现本身对PHPCMS架构不是很熟悉，导致很难定位代码的位置，最后就采用动态调试&amp;静态分析的方式对漏洞的触发进行分析，下面进入正题。</strong></p><p><strong><br/></strong></p><p><br/></p><h2 style="box-sizing: border-box; font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; font-weight: bold; line-height: 1.1; color: rgb(55, 56, 56); margin-top: 30px; margin-bottom: 15px; font-size: 18px; white-space: normal; background-color: rgb(255, 255, 255);">1、漏洞触发代码定位</h2><p>通过漏洞的POC（/phpcms/index.php?m=member&amp;c=index&amp;a=register&amp;siteid=1 ）判断，漏洞触发点的入口位于/phpcms/modules/member/index.php文件中的register()方法中，在代码中插入一些echo函数，观察输出（见下）的变化。从下面的结果变化可知，img标签的src属性是在执行完下面的get()函数：</p><p><br/></p><pre style="box-sizing: border-box; overflow: auto; font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 13px; padding: 9.5px; margin-top: 0px; margin-bottom: 15px; line-height: 1.42857; color: rgb(51, 51, 51); word-break: break-all; word-wrap: break-word; border: 1px solid rgb(228, 228, 228); border-radius: 4px; background-color: rgb(243, 243, 243);"><code class="hljs php" style="box-sizing: border-box; font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: inherit; padding: 0.5em; color: rgb(68, 68, 68); border-radius: 0px; white-space: pre-wrap; display: block; overflow-x: auto; background-image: initial; background-attachment: initial; background-size: initial; background-origin: initial; background-clip: initial; background-position: initial; background-repeat: initial;">$user_model_info = $member_input-&gt;get($_POST[<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">'info'</span>])</code></pre><p>后发生变化，因此基本可以确定，漏洞的触发点就是位于这个函数中。</p><p><strong><br/></strong></p><p/><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWExFFF7FGibOl7uNQu9MNs461M4KFLlGcr2ia0oGyYyCxXoficqTvlWubob3eWmTNryCkicFl9uL4gdE9g/0?wx_fmt=jpeg" data-ratio="0.45362318840579713" data-w="690" src="../Images/454549c7064553fb364688abbe024b40.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWExFFF7FGibOl7uNQu9MNs461M4KFLlGcr2ia0oGyYyCxXoficqTvlWubob3eWmTNryCkicFl9uL4gdE9g/0?wx_fmt=jpeg"/></p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWExFFF7FGibOl7uNQu9MNs4617zFPaueDEAzj1m4KZa95u8QOS3XP3DnUenUfX62SYL0GEeUx4Y206g/0?wx_fmt=jpeg" data-ratio="0.3347826086956522" data-w="690" src="../Images/324dd26b871edf788f6201249cef35dc.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWExFFF7FGibOl7uNQu9MNs4617zFPaueDEAzj1m4KZa95u8QOS3XP3DnUenUfX62SYL0GEeUx4Y206g/0?wx_fmt=jpeg"/></p><p><br/></p><h2 style="box-sizing: border-box; font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; font-weight: bold; line-height: 1.1; color: rgb(55, 56, 56); margin-top: 30px; margin-bottom: 15px; font-size: 18px; white-space: normal; background-color: rgb(255, 255, 255);">2、定位member_input-&gt;get()跟进分析</h2><p><br/></p><p>跟进该函数，该函数位于/phpcms/modules/member/fields/member_input.class.php文件中，此处本来还想故技重施，在该方法中对代码进行插桩，但是发现插桩后的居然无法打印到页面上，没辙（原因望各位大神指点一二），只能对代码进行一行行推敲，先把代码贴上，方便分析：</p><p><br/></p><p><br/></p><p><span style="color: rgb(68, 68, 68); font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 13px; line-height: 18.5714px; white-space: pre-wrap; background-color: rgb(243, 243, 243);"> </span>function get($data) {
+		$this-&gt;data = $data = trim_script($data);
+		$model_cache = getcache('member_model', 'commons');
+		$this-&gt;db-&gt;table_name = $this-&gt;db_pre.$model_cache[$this-&gt;modelid]['tablename'];
+		$info = array();
+		$debar_filed = array('catid','title','style','thumb','status','islink','description');		if(is_array($data)) {			foreach($data as $field=&gt;$value) {				if($data['islink']==1 &amp;&amp; !in_array($field,$debar_filed)) continue;
+				$field = safe_replace($field);
+				$name = $this-&gt;fields[$field]['name'];
+				$minlength = $this-&gt;fields[$field]['minlength'];
+				$maxlength = $this-&gt;fields[$field]['maxlength'];
+				$pattern = $this-&gt;fields[$field]['pattern'];
+				$errortips = $this-&gt;fields[$field]['errortips'];				if(empty($errortips)) $errortips = "$name 不符合要求！";
+				$length = empty($value) ? 0 : strlen($value);				if($minlength &amp;&amp; $length &lt; $minlength &amp;&amp; !$isimport) showmessage("$name 不得少于 $minlength 个字符！");				if (!array_key_exists($field, $this-&gt;fields)) showmessage('模型中不存在'.$field.'字段');				if($maxlength &amp;&amp; $length &gt; $maxlength &amp;&amp; !$isimport) {
+					showmessage("$name 不得超过 $maxlength 个字符！");
+				} else {
+					str_cut($value, $maxlength);
+				}				if($pattern &amp;&amp; $length &amp;&amp; !preg_match($pattern, $value) &amp;&amp; !$isimport) showmessage($errortips);
+	                        if($this-&gt;fields[$field]['isunique'] &amp;&amp; $this-&gt;db-&gt;get_one(array($field=&gt;$value),$field) &amp;&amp; ROUTE_A != 'edit') showmessage("$name 的值不得重复！");
+				$func = $this-&gt;fields[$field]['formtype'];				if(method_exists($this, $func)) $value = $this-&gt;$func($field, $value);
+	
+				$info[$field] = $value;
+			}
+		}		return $info;
+	}</p><p><br/></p><p>代码整体比较容易，可能比较难理解的就是$this-&gt;fields这个参数，这个参数是初始化类member_input是插入的，这个参数分析起来比较繁琐，主要是对PHPCMS架构不熟，那就在此走点捷径吧，在1中，直接将初始化完成后的member_input类dump出来，效果还不错，所有的参数都dump到页面上了，下面主要摘取比较重要的$this-&gt;fields[$field]，即：【$this-&gt;fields["content"]】这个参数，如下所示⤵️：</p><p><br/></p><p>["content"]=&gt;
+    array(35) {
+      ["fieldid"]=&gt;
+      string(2) "90"      ["modelid"]=&gt;
+      string(2) "11"      ["siteid"]=&gt;
+      string(1) "1"      ["field"]=&gt;
+      string(7) "content"      ["name"]=&gt;
+      string(6) "内容"      ["tips"]=&gt;
+      string(407) "&lt;div class="content_attr"&gt;&lt;label&gt;&lt;input name="add_introduce" type="checkbox"  value="1" checked&gt;是否截取内容&lt;/label&gt;&lt;input type="text" name="introcude_length" value="200" size="3"&gt;字符至内容摘要
+&lt;label&gt;&lt;input type='checkbox' name='auto_thumb' value="1" checked&gt;是否获取内容第&lt;/label&gt;&lt;input type="text" name="auto_thumb_no" value="1" size="2" class=""&gt;张图片作为标题图片
+&lt;/div&gt;"      ["css"]=&gt;
+      string(0) ""      ["minlength"]=&gt;
+      string(1) "0"      ["maxlength"]=&gt;
+      string(6) "999999"      ["pattern"]=&gt;
+      string(0) ""      ["errortips"]=&gt;
+      string(18) "内容不能为空"      ["formtype"]=&gt;
+      string(6) "editor"      ["setting"]=&gt;
+      string(199) "array (
+  'toolbar' =&gt; 'full',
+  'defaultvalue' =&gt; '',
+  'enablekeylink' =&gt; '1',
+  'replacenum' =&gt; '2',
+  'link_mode' =&gt; '0',
+  'enablesaveimage' =&gt; '1',
+  'height' =&gt; '',
+  'disabled_page' =&gt; '0',
+)"      ["formattribute"]=&gt;
+      string(0) ""      ["unsetgroupids"]=&gt;
+      string(0) ""      ["unsetroleids"]=&gt;
+      string(0) ""      ["iscore"]=&gt;
+      string(1) "0"      ["issystem"]=&gt;
+      string(1) "0"      ["isunique"]=&gt;
+      string(1) "0"      ["isbase"]=&gt;
+      string(1) "1"      ["issearch"]=&gt;
+      string(1) "0"      ["isadd"]=&gt;
+      string(1) "1"      ["isfulltext"]=&gt;
+      string(1) "1"      ["isposition"]=&gt;
+      string(1) "0"      ["listorder"]=&gt;
+      string(2) "13"      ["disabled"]=&gt;
+      string(1) "0"      ["isomnipotent"]=&gt;
+      string(1) "0"      ["toolbar"]=&gt;
+      string(4) "full"      ["defaultvalue"]=&gt;
+      string(0) ""      ["enablekeylink"]=&gt;
+      string(1) "1"      ["replacenum"]=&gt;
+      string(1) "2"      ["link_mode"]=&gt;
+      string(1) "0"      ["enablesaveimage"]=&gt;
+      string(1) "1"      ["height"]=&gt;
+      string(0) ""      ["disabled_page"]=&gt;
+      string(1) "0"    }</p><p><br/></p><p>有了上面的参数列表后，理解get()函数的代码就要轻松许多了，分析过程略。结论就是，漏洞的触发函数在倒数6、7两行，单独截个图，如下⤵️：</p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWExFFF7FGibOl7uNQu9MNs461Pmsc8ias1xemN5bE2HXULsIBPkjalIfd2CBN2nuoYIOUIkP2bJmk9HA/0?wx_fmt=jpeg" data-ratio="0.07101449275362319" data-w="690" src="../Images/01c28e501aec25ac411be5b056106dfd.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWExFFF7FGibOl7uNQu9MNs461Pmsc8ias1xemN5bE2HXULsIBPkjalIfd2CBN2nuoYIOUIkP2bJmk9HA/0?wx_fmt=jpeg"/></p><p><br/></p><p>这里比较重要的是要找出$func这个函数，查查上面的表，找到["formtype"]=&gt;string(6) “editor”，可知$func就是editor()函数，editor函数传入的参数就是上面列出的一长串字符串，和img标签的内容，下面将跟进editor函数，真相好像马上就要大白于天下了。</p><p><br/></p><h2 style="box-sizing: border-box; font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; font-weight: bold; line-height: 1.1; color: rgb(55, 56, 56); margin-top: 30px; margin-bottom: 15px; font-size: 18px; white-space: normal; background-color: rgb(255, 255, 255);">3、跟进editor函数及后续函数</h2><p><br/></p><p><br/></p><p>editor()函数位于/phpcms/modules/member/fields/editor/imput.inc.php文件中，老规矩，先贴出代码：</p><p><br/></p><pre style="box-sizing: border-box; overflow: auto; font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 13px; padding: 9.5px; margin-top: 0px; margin-bottom: 15px; line-height: 1.42857; color: rgb(51, 51, 51); word-break: break-all; word-wrap: break-word; border: 1px solid rgb(228, 228, 228); border-radius: 4px; background-color: rgb(243, 243, 243);"><code class="hljs php" style="box-sizing: border-box; font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: inherit; padding: 0.5em; color: rgb(68, 68, 68); border-radius: 0px; white-space: pre-wrap; display: block; overflow-x: auto; background-image: initial; background-attachment: initial; background-size: initial; background-origin: initial; background-clip: initial; background-position: initial; background-repeat: initial;">	<span class="hljs-function" style="box-sizing: border-box;"><span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">function</span> <span class="hljs-title" style="box-sizing: border-box; color: rgb(136, 0, 0); font-weight: bold;">editor</span><span class="hljs-params" style="box-sizing: border-box;">($field, $value)</span> </span>{
+		$setting = string2array($this-&gt;fields[$field][<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">'setting'</span>]);
+		$enablesaveimage = $setting[<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">'enablesaveimage'</span>];		<span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">if</span>(<span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">isset</span>($_POST[<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">'spider_img'</span>])) $enablesaveimage = <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">0</span>;		<span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">if</span>($enablesaveimage) {
+			$site_setting = string2array($this-&gt;site_config[<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">'setting'</span>]);
+			$watermark_enable = intval($site_setting[<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">'watermark_enable'</span>]);
+			$value = $this-&gt;attachment-&gt;download(<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">'content'</span>, $value, $watermark_enable);
+		}		<span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">return</span> $value;
+	}<br style="box-sizing: border-box;"/></code></pre><p>简单阅读代码，发现实际的触发流程发生在$this-&gt;attachment-&gt;download()函数中，直接跟进这个函数，这个函数位于/phpcms/libs/classes/attachment.class.php中download()函数，源代码有点长，就贴一些关键代码，⤵️</p><p><br/></p><pre style="box-sizing: border-box; overflow: auto; font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 13px; padding: 9.5px; margin-top: 0px; margin-bottom: 15px; line-height: 1.42857; color: rgb(51, 51, 51); word-break: break-all; word-wrap: break-word; border: 1px solid rgb(228, 228, 228); border-radius: 4px; background-color: rgb(243, 243, 243);"><code class="hljs php" style="box-sizing: border-box; font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: inherit; padding: 0.5em; color: rgb(68, 68, 68); border-radius: 0px; white-space: pre-wrap; display: block; overflow-x: auto; background-image: initial; background-attachment: initial; background-size: initial; background-origin: initial; background-clip: initial; background-position: initial; background-repeat: initial;">                $string = new_stripslashes($value);		<span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">if</span>(!preg_match_all(<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">"/(href|src)=([\"|']?)([^ \"'&gt;]+\.($ext))\\2/i"</span>, $string, $matches)) <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">return</span> $value;
+		$remotefileurls = <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">array</span>();		<span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">foreach</span>($matches[<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">3</span>] <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">as</span> $matche)
+		{			<span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">if</span>(strpos($matche, <span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">'://'</span>) === <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">false</span>) <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">continue</span>;
+			dir_create($uploaddir);
+			$remotefileurls[$matche] = $this-&gt;fillurl($matche, $absurl, $basehref);
+		}		<span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">unset</span>($matches, $string);
+		$remotefileurls = array_unique($remotefileurls);
+		$oldpath = $newpath = <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">array</span>();		<span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">foreach</span>($remotefileurls <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">as</span> $k=&gt;$file) {
+                        <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">if</span>(strpos($file, <span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">'://'</span>) === <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">false</span> || strpos($file, $upload_url) !== <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">false</span>) <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">continue</span>;
+			$filename = fileext($file);
+			$file_name = basename($file);
+			$filename = $this-&gt;getname($filename);
+
+			$newfile = $uploaddir.$filename;
+			$upload_func = $this-&gt;upload_func;			<span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">if</span>($upload_func($file, $newfile)) {<br style="box-sizing: border-box;"/></code></pre><p><br/></p><p><br/></p><p>代码主要是进行一些正则过滤等等操作，这里真正关键的是代码的最后一行的操作$upload_func($file, $newfile)，其中$this-&gt;upload_func = ‘copy’;，写的在明白点就是copy($file, $newfile)，漏洞就是一个copy操作造成的。</p><p><br/></p><p><img data-type="gif" data-src="http://mmbiz.qpic.cn/mmbiz_gif/5ZACCn1bWEwrm1niax0xWl6tFwyaPqCHRL7zA6G4OWxgibRsJT9lLafJppjibev1TUxHYEia92BiaAtlc7u0BcOmUvA/0?wx_fmt=gif" data-ratio="0.7" data-w="500" src="../Images/e8c1330a4ae95198ebdb17e4f3bb4cbb.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_gif/5ZACCn1bWEwrm1niax0xWl6tFwyaPqCHRL7zA6G4OWxgibRsJT9lLafJppjibev1TUxHYEia92BiaAtlc7u0BcOmUvA/0?wx_fmt=gif"/></p><p><br/></p>
+        
+</body>
+</html>

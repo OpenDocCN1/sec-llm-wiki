@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>关于这次Apache Log4j2漏洞 简单说几点</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>关于这次Apache Log4j2漏洞 简单说几点</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=Mzg5OTU1NTEwMg==&amp;mid=2247483750&amp;idx=1&amp;sn=b2163dd9e9acff43130b457d2038eac1&amp;chksm=c050cb17f7274201ad90e7d00f1122551f50e616ffb04eab734c381dd8922903feb4aea86822&amp;scene=126&amp;sessionid=1681665295#rd">http://mp.weixin.qq.com/s?__biz=Mzg5OTU1NTEwMg==&amp;mid=2247483750&amp;idx=1&amp;sn=b2163dd9e9acff43130b457d2038eac1&amp;chksm=c050cb17f7274201ad90e7d00f1122551f50e616ffb04eab734c381dd8922903feb4aea86822&amp;scene=126&amp;sessionid=1681665295#rd</a></blockquote><p><br/></p><p>1、不是有请求就说明有漏洞，但是很可能是有漏洞，在没有授权的情况下不建议深入，直接报告官方，等官方确认是可行的</p><p><br/></p><p>2、不是用了Log4j的都应用程序就一定有影响，但是大多数情况确实是受到影响，触发流程要具体看应用调用方式</p><p><br/></p><p>3、rc1被绕过是说漏洞点确实可以被绕过，但是rc1已经默认了log4j2.formatMsgNoLookups为true 只要不是手贱那也没啥问题</p><p><br/></p><p>4、目前主要攻击暴露面还是在事件型漏洞上，直接简单暴力提交参数就行，通用软件的暴露面正在路上</p><p><br/></p><p>5、Log4j可以说无处不在，如果你短期不能确定排查哪些用了受漏洞影响，建议上waf等设备规则拦截，推荐使用我司创宇盾（提我可能可以打折）</p><p><br/></p><p>6、攻击面可能设计到服务端甚至客户端，各种云，各种OS，所以需要做好长久战的准备时刻关注进展。tips：安卓不支持jndi</p><p><br/></p><p>7、apache要背锅，就跟当年st2漏洞一样，官方直接就给出了exp！当然这次我觉得可能也算是开源软件的缺陷（缺少安全补丁推广普及时间空间）</p><p><br/></p><p>8、这个漏洞必然会在历史上留名，毫不夸张的说只要你想道的互联网公司都会受到这个漏洞影响，这个也是一开始可能被低估的漏洞</p><p><br/></p>
+        
+</body>
+</html>

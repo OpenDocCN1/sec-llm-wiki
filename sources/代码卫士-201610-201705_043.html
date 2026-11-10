@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Fuze协作平台允许任何人下载会议记录</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Fuze协作平台允许任何人下载会议记录</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485537&amp;idx=2&amp;sn=520caa499732d4621c31be95ad9b0958&amp;chksm=ea97390bdde0b01d9c9a899b7c9ee6a7a011f7266980a8bafa8fd6126bc00bb18929c03b4eef&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485537&amp;idx=2&amp;sn=520caa499732d4621c31be95ad9b0958&amp;chksm=ea97390bdde0b01d9c9a899b7c9ee6a7a011f7266980a8bafa8fd6126bc00bb18929c03b4eef&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiakABXTMR7dexBgeTj6QNxWyqCVWNKwLymgrCXKShbNa7V2GYCC4pjicekXTbvUzv7bxk4CMAcUfpKA/0?wx_fmt=jpeg" data-ratio="0.544954128440367" data-w="545" src="../Images/78ef8b0349550de9bbf361f404b7f3dd.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiakABXTMR7dexBgeTj6QNxWyqCVWNKwLymgrCXKShbNa7V2GYCC4pjicekXTbvUzv7bxk4CMAcUfpKA/0?wx_fmt=jpeg"/></p><p><br/></p><p><strong>随着全球化和流动性的发展，组织机构纷纷转向基于网络的统一通信系统作为改进写作并降低成本的一种方式。Fuze就是这样一种服务，它提供语音（会议语音）、视频（会议视频）和信息服务，任何地点任何时间任何一台设备都能实现。</strong></p><p><br/></p><p>基于网络的第三方服务提供商的安全性是企业担心的一个主要问题，而安全审计有难度且价格昂贵。结果企业就会形成一种印象：如果其他大型企业都在使用一款特定的服务，那么它一定很好。</p><p><br/></p><p>Fuze拥有很多大型客户，包括美联社、USAuto Sales和ThoughtWorks。但其名声却没有带来同等的安全性。Rapid7研究人员Samuel Huckins在2017年2月份发现了这一点并在今天予以公布。Huckins发现Fuze会议中存在“不当访问控制”。</p><p><br/></p><p>具体来讲，在Fuze协作平台上记录的会议并没有设置足够的控制来确保记录的隐秘性（CWE-284）。Fuze记录的会议存储在了云服务中，可通过格式为 /browser.fuzemeeting.com/?replayID=7digitnum的URL访问。其中“7digitnum”是一个随着时间变化会增加的一个7位数字。Rapid7指出问题在于这个7位数字不足以抵抗暴力攻击。第三方能轻易通过猜测一个近似于目标的中继ID并遍历可能的7位数字的方式下载。这个格式还能让第三方使用搜索引擎找到可获取的记录。</p><p><br/></p><p>很显然安全威胁是存在的。会议用于讨论计划、分享并协作知识财产并通常用于开展国际业务。威胁带来的潜在后果是敏感数据落入不法之徒手中。</p><p><br/></p><p>Rapid7在2月27日将问题告知Fuze。两天后Fuze通过早先的URL格式禁用了公共访问权限。Rapid7表示3月10日所有的会议记录都要求输入密码验证才能访问。其实这个安全问题并不严重也容易解决，但如不解决可能会带来严重后果。这个案例再次说明所有的云使用需求必须由组织机构的安全团队签名而非IT部门盖个章走个过场。安全专业人士可能已经从刚开始就看出这个基于URL的访问控制不够好，Fuze不该从开始就这样设计其系统。</p><p><br/></p><p><br/></p><p><strong style="white-space: normal;">本文由360代码卫士编译，不代表360观点，转载请注明“转自360代码卫士www.codesafe.cn”。</strong></p>
+        
+</body>
+</html>

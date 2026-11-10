@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>NETGEAR修复无线管理系统中的漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>NETGEAR修复无线管理系统中的漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485888&amp;idx=4&amp;sn=3b8e0377765d9d77e137fbf4bcaa5b64&amp;chksm=ea9738aadde0b1bc7dd4fb1af12e1554ab5affbceb42573eeabfad6327477a5c79b11663ee90&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485888&amp;idx=4&amp;sn=3b8e0377765d9d77e137fbf4bcaa5b64&amp;chksm=ea9738aadde0b1bc7dd4fb1af12e1554ab5affbceb42573eeabfad6327477a5c79b11663ee90&amp;scene=27#wechat_redirect</a></blockquote><p><strong>NETGEAR</strong><strong>发布一个固件更新解决WMS5316 ProSafe 16AP</strong><strong>无线管理系统中可能引发绕过验证以及权限升级的漏洞问题。</strong></p><p><strong><br/></strong></p><p>该漏洞发现于2015年4月份，影响所有运行2.1.4.15（Build 1236）固件版本的所有WM5316 ProSafe 
+16AP无线管理系统设备，不过其它固件也可能受到了影响。固件版本2.1.5含有对该漏洞的修复。NETGEAR证实称在其它产品中也发现了这个漏洞，
+但并未详细说明。</p><p><br/></p><p>利用这个漏洞绕过验证进程和权限升级相当简单，攻击者只需将"&amp;" 字符带到登录请求的密码值中即可。系统似乎自动接受了所提供的凭证并给
+ 
+出访问图形用户界面的权限，尽管账户看似被限制（仅适用于客户端情况）。接着攻击者能够发送一个添加新管理用户的请求，随后便可实施攻击。安全研究人员指
+ 
+出这并非唯一的利用方式。攻击者还能“修改浏览器的Java代码来启用所有的管理功能而不是创建新用户”。这种绕过验证进程的方法也管用，也就是说网络犯
+罪分子并不一定要通过创建新用户才能访问受影响的无线管理系统。安全研究人员发现这个绕过“用户”可在必要时获取完全的管理权限，并且已有被攻击的线索。</p><p><br/></p><p>NETGEAR在支持网站中指出新发布的固件版本2.1.5为“可导致未经验证登录和获取管理权限的安全漏洞”、以及为“可导致绕过验证和未经验证的操作系统命令被注入的安全漏洞”提供了修复方案。</p><p><br/></p>本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。
+        
+</body>
+</html>

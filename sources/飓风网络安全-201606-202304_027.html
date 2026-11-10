@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Samba 存在多个漏洞 （CVE-2022-3437,CVE-2022-3592）</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Samba 存在多个漏洞 （CVE-2022-3437,CVE-2022-3592）</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI3NzMzNzE5Ng==&amp;mid=2247485625&amp;idx=2&amp;sn=7e28894ddcaccb4d698d85793d113039&amp;chksm=eb668dbadc1104ac273ed671ee26a5a8693a25c5c445162693204e6fdcf1227d4a171e961b7a&amp;scene=126&amp;sessionid=1681407228#rd">http://mp.weixin.qq.com/s?__biz=MzI3NzMzNzE5Ng==&amp;mid=2247485625&amp;idx=2&amp;sn=7e28894ddcaccb4d698d85793d113039&amp;chksm=eb668dbadc1104ac273ed671ee26a5a8693a25c5c445162693204e6fdcf1227d4a171e961b7a&amp;scene=126&amp;sessionid=1681407228#rd</a></blockquote><p>漏洞描述
+    
+        
+            
+                </p><p>近日，飓风安全应急团队监测到Samba发布安全公告，修复了2个存在于Samba软件中的安全漏洞，详情如下：</p><p><strong>1.CVE-2022-3437 Samba缓冲区溢出漏洞</strong></p><p>风险等级：中危</p><p>漏洞类型：缓冲区溢出</p><p>漏洞简介：该漏洞存在于Heimdal（包含在Samba中）GSSAPI库中的unwrap_des()和unwrap_des3()例程中，在默认情况下，当Samba被编译为使用内部Heimdal
+ Kerberos库时，会使用易受攻击的unwrap_des3()，因此该漏洞会影响以默认构建选项构建的文件服务器部署。</p><p><br/><mpchecktext><br/></mpchecktext></p><p><strong>2.CVE-2022-3592 共享目录逃逸漏洞</strong></p><p>风险等级：中危</p><p>漏洞类型：目录穿越</p><p>漏洞简介：该漏洞是由于Samba 4.17以来在用户空间中引入的符号链接没有正确覆盖，导致恶意用户可以通过创建符号链接，使smbd摆脱配置的共享路径，并利用该漏洞访问服务器的所有文件系统。</p><p><strong>【受影响版本】</strong></p><p><strong>CVE-2022-3437影响的版本：</strong></p><ul class="list-paddingleft-1"><li><p>4.15.0 &lt;= Samba &lt; 4.15.11</p></li><li><p>4.16.0 &lt;= Samba &lt; 4.16.6</p></li><li><p>4.17.0 &lt;= Samba &lt; 4.17.2</p></li></ul><p><strong>CVE-2022-3592影响的版本：</strong></p><ul class="list-paddingleft-1"><li><p>4.17.0 &lt;= Samba &lt; 4.17.2</p></li></ul><p><strong>【安全版本】</strong></p><p><strong>CVE-2022-3437的安全版本：</strong></p><ul class="list-paddingleft-1"><li><p>Samba = 4.15.11</p></li><li><p>Samba = 4.16.6</p></li><li><p>Samba = 4.17.2</p></li></ul><p><strong>CVE-2022-3592的安全版本：</strong></p><ul class="list-paddingleft-1"><li><p>Samba = 4.17.2</p><p><br/></p><p><br/></p><p><br/></p></li><li><p style="text-align: center;"><img class="rich_pages wxw-img" data-galleryid="" data-ratio="0.3004231311706629" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/ibhQpAia4xu03yQE566xlmibNWv7icJ6F6SDHNhsr6a7MwZBSDZk4K20mclSnkJcoQ4SfYuLDJGKiaOiciayaLRahPSoA/640?wx_fmt=png" data-type="png" data-w="709" style="" src="../Images/7527717fcd989d51f56b52ec12122333.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/ibhQpAia4xu03yQE566xlmibNWv7icJ6F6SDHNhsr6a7MwZBSDZk4K20mclSnkJcoQ4SfYuLDJGKiaOiciayaLRahPSoA/640?wx_fmt=png"/></p></li><br/><br/></ul><p>Samba是用于Linux和Unix的标准Windows互操作性程序套件，旨在提供安全、稳定和快速的文件和打印服务。</p><p>影响范围
+        </p><p>4.0 &lt;= Samba &lt; 4.15.11、4.16.6、4.17.2，4.17.0 &lt;= Samba &lt; 4.17.2</p><p><br/></p><p>解决方案
+    </p><p><span style="font-weight: 600;border-bottom: 1px solid #002664;color: #002664;">修复建议</span>
+            </p><p><strong>临时修复建议：</strong></p><ul class="list-paddingleft-1"><li><p>如果目前无法升级，若业务环境允许，使用白名单限制相关端口的访问来降低风险。</p><p><br/></p></li></ul><p><strong>通用修复建议：</strong></p><p>官方已经针对漏洞发布了软件更新，下载地址如下：</p><ul class="list-paddingleft-1"><li><p>https://www.samba.org/samba/history/security.html</p></li></ul><p><br/></p><p><br/></p><p style="display: none;"><mp-style-type data-value="3"/></p>
+        
+</body>
+</html>

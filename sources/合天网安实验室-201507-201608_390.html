@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>新课推荐 | 软件漏洞挖掘</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>新课推荐 | 软件漏洞挖掘</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5MTYxNjQxOA==&amp;mid=400362580&amp;idx=2&amp;sn=b0779cbf1ba4bc5b8dc5ffabfd3afec7&amp;chksm=349b709903ecf98f842445c152bbb650895770fdcf29004ab558585ddaeb027c5b0a8fcfb4ec&amp;scene=126&amp;sessionid=1681574301#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5MTYxNjQxOA==&amp;mid=400362580&amp;idx=2&amp;sn=b0779cbf1ba4bc5b8dc5ffabfd3afec7&amp;chksm=349b709903ecf98f842445c152bbb650895770fdcf29004ab558585ddaeb027c5b0a8fcfb4ec&amp;scene=126&amp;sessionid=1681574301#wechat_redirect</a></blockquote><p style="line-height: 1.5em; margin-top: 10px;">软件漏洞是由于开发者疏忽造成可以用的BUG产生。本系列课程从基本的漏洞挖掘工具开始入手软件漏洞挖掘，到常见的缓冲区溢出覆盖返回地址，覆盖SEH异
+常处理。接着介绍了常见的安全保护措施并实践绕过这些保护的技术。通过本系列课程，学习者应该能了解软件漏洞的基本原理并掌握常见的利用和绕过安全
+保护的技术。</p><p style="line-height: 1.5em; margin-top: 10px;"><strong><span style="color: rgb(0, 176, 80);">实验一：工欲善其事必先利其器</span></strong></p><p style="line-height: 1.5em; margin-top: 10px;">本节介绍漏洞挖掘过程中常见工具的使用，如windbg，Immunity Debugger等，但不局限于这些，实际还有别的很多工具，不可能一一介绍。</p><p style="line-height: 1.5em; margin-top: 10px;"><strong><span style="color: rgb(0, 176, 80);">实验二：栈溢出覆盖返回地址实践</span></strong></p><p style="line-height: 1.5em; margin-top: 10px;">返回地址保存着调用函数下一条指令的地址，如果我们控制了这个地址，就控制了程序的执行流程，不信？让我们开始吧！</p><p style="line-height: 1.5em; margin-top: 10px;"><strong><span style="color: rgb(0, 176, 80);">实验三：利用SEH机制Exploit_it</span></strong></p><p style="line-height: 1.5em; margin-top: 10px;">在某些情况下，我们不能通过覆盖返回地址进行漏洞利用，如程序有GS保护（后面我们将会看到），因此，我们的选择是覆盖异常处理。它可以达到和覆盖返回地址一样的效果，学会了这个技术，我们在漏洞利用中才能更游刃有余。</p><p style="line-height: 1.5em; margin-top: 10px;"><strong><span style="color: rgb(0, 176, 80);">实验四：绕过GS机制</span></strong></p><p style="line-height: 1.5em; margin-top: 10px;">本节开始GS介绍，GS是针对缓冲区溢出覆盖返回地址这一特点，微软推出的一项保护措施。在GS的保护下，我们简单的用jmp esp 地址覆盖返回地址的技术将失败。然而下来你讲看到，这项技术是可以被绕过的。</p><p style="line-height: 1.5em; margin-top: 10px;"><span style="color: rgb(0, 176, 80);"><strong>实验五：突破SafeSeh防线</strong></span></p><p style="line-height: 1.5em; margin-top: 10px;">自Windwos XP SP2之后，微软就引入了SafeSEH技术。SafeSEH开始发挥他强大的作用，对于以前那种简单的通过覆盖异常处理句柄的漏洞利用技术，也就基本失效了。但是，就像GS机制，SafeSeh在特定的情况下还是可以被绕过的。</p><p style="line-height: 1.5em; margin-top: 10px;"><span style="color: rgb(0, 176, 80);"><strong>实验六：进击ASLR地址随机化</strong></span></p><p style="line-height: 1.5em; margin-top: 10px;">ASLR（Address space layout 
+randomization）是一种针对缓冲区溢出的安全保护技术，通过对堆、栈、共享库映射等线性区布局的随机化，通过增加攻击者预测目的地址的难度，防止攻击者直接定位攻击代码位置，达到阻止溢出攻击的目的。尽管ASLR给攻击者带来了很多麻烦，实践证明：ASLR同样可以被绕过。</p><p style="line-height: 1.5em; margin-top: 10px;"><strong><span style="color: rgb(0, 176, 80);">实验七：实战挖掘Mini-stream_Ripper缓冲区溢出漏洞</span></strong></p><p style="line-height: 1.5em; margin-top: 10px;">经过前面学习，相信大家都掌握了软件漏洞挖掘基本的原理和技术。本节从实战的角度，带大家挖掘Mini-stream Ripper存在的缓冲区溢出漏洞，通过本节，大家不仅能加深前面学习过的漏洞利用技术，还能体会到“实战”的快感，为以后深入学习打下基础。</p><p style="line-height: 1.5em; margin-top: 10px;"><strong><span style="color: rgb(0, 176, 80);">实验八：实战挖掘某FTP服务器溢出漏洞</span></strong></p><p style="line-height: 1.5em; margin-top: 10px;">纵览一下当前网络上流行的漏洞攻击方式，软件缺陷所造成的溢出最为关键，简单的说溢出就是针对软件的bug，提交构造的恶意代码，造成软件执行攻击者的代
+码或指令。本节介绍了FTP服务漏洞的表现形式以及利用方法，FTP服务器漏洞允许攻击者远程执行任意代码，造成的后果是相当严重的。</p><p><br/></p><p style="line-height: 1.5em; margin-top: 10px;"><span style="color: rgb(127, 127, 127);">点击<span style="color: rgb(146, 205, 220);">【阅读原文】</span>“极客”尝鲜</span><br/></p>
+        
+</body>
+</html>

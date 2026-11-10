@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>聊聊我一知半解的安全切面</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>聊聊我一知半解的安全切面</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI5MjEyOTE4MA==&amp;mid=2648519690&amp;idx=1&amp;sn=c3362acf6c2e8767e2ec1c23bf8ddcf5&amp;chksm=f42f84f9c3580defd11a443df55d92a308fe28e094451b9dea0d626d06578a5809a4485a24c5&amp;scene=126&amp;sessionid=1681322062#rd">http://mp.weixin.qq.com/s?__biz=MzI5MjEyOTE4MA==&amp;mid=2648519690&amp;idx=1&amp;sn=c3362acf6c2e8767e2ec1c23bf8ddcf5&amp;chksm=f42f84f9c3580defd11a443df55d92a308fe28e094451b9dea0d626d06578a5809a4485a24c5&amp;scene=126&amp;sessionid=1681322062#rd</a></blockquote><p><span style="font-size: 18px;">在聊之前，先了解一个概念，面向切面编程（AOP，Aspect-Orented Programming），它是通过预编译方式和运行期间动态代理实现程序功能的统一维护的一种技术。AOP是面向对象编程（OOP，Object-Oriented Programming）的延续，是软件开发中的一个热点，也是Spring框架中的一个重要内容，是函数式编程的一种衍生范型。利用AOP可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各部分之间的耦合度降低，提高程序的可重用性，提高了开发的效率。</span></p><p><span style="font-size: 18px;">而安全切面（AOS，Aspect-Orendted Security）则是按安全能力做为独立切面以供业务使用，使安全功能与业务充分解耦，通过业务产品对安全功能切面的调用，形成安全功能的安全防御体系，这样就提升了业务的安全性；</span></p><p><span style="font-size: 18px;">说到切面，笔者第一反应是就想起了大脑切片，一片就是一个切面；</span></p><p><span style="font-size: 18px;">在产品层次，业务的同学将业务功能和系统功能剥离，比如，将日志记录，性能统计，安全控制，事务处理，异常处理等代码从业务逻辑代码中划分出来，通过对这些行为的分离，我们将可以将这些从业务逻辑中排除，未来改变这些行为的时候不影响业务逻辑的代码，这样业务的同学仅关注业务功能即可，不必考虑安全问题，而安全的同学需要将安全功能做为切面以供业务同学调用；</span></p><p><span style="font-size: 18px;">而安全的同学，则将安全功能，根据不同的用途和场景划分不同的切面，如根据功能分，比如认证接入，比如API调用审核，比如用户行为分析审计..或根据层级架构分，比如应用层安全防护，比如网络层安全防护，比如系统级安全防护....或者根据网络流，或者数据流划分...</span></p><p><span style="font-size: 18px;">而后将所有的安全切面汇聚在一起，就是一整体的安全服务输出体系，从物理层到应用层的纵深防防御，从C端到S端的安全切面服务，最终形成安全切面防御体系；</span></p><p><br/></p><p><span style="font-size: 18px;">其实今年（2020年）北京网络安全大会上，时任蚂蚁集团副总裁的韦韬大佬就已在讲了关于《安全切面：安全防御的平行空间》，让笔者第一次听到了安全切面的概念；这里重点感谢《基于量子透明计算的可信自主可控区块链式拟态安全态势感知的威胁情报联盟微信交流群》的各位大佬，以及昨晚三个小时的LUO聊环节，经过风控之父马三，院长，三妈（为同一人）点，线，面的指点，终于有了一星星知识感悟，一定要做为记录保存下来；</span></p><p><span style="font-size: 18px;">如有不对，欢迎拍砖...</span></p><p><br/></p><p><span style="font-size: 18px;">而你心中的安全切片是什么样子的呢？</span></p>
+        
+</body>
+</html>

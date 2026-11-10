@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>WordPress 4.2.1修复影响所有旧版本的0day漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>WordPress 4.2.1修复影响所有旧版本的0day漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485976&amp;idx=3&amp;sn=c2ba3868f3163e810db0d94d82cab96f&amp;chksm=ea973b72dde0b264f317b13ae7138562a8f71b498434f1615952ba237fa8cf66bc2fa80e747a&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485976&amp;idx=3&amp;sn=c2ba3868f3163e810db0d94d82cab96f&amp;chksm=ea973b72dde0b264f317b13ae7138562a8f71b498434f1615952ba237fa8cf66bc2fa80e747a&amp;scene=27#wechat_redirect</a></blockquote><p>WordPress的维护人员快速推出CMS的一个新版本，修复了影响之前所有版本的0day漏洞。该漏洞为XSS漏洞，可在运行WordPress网站的评论区通过隐藏在服务器执行的恶意代码被利用。</p><p><br/></p><p><strong>文本截断处理可导致服务器端</strong><strong>RCE</strong></p><p>攻击者可执行服务器上行的任意代码，创建新的管理员账户、或者更改权限成为当前的登录管理员权限。这一漏洞是由芬兰漏洞研究公司Klikki 
+Oy的员工发现的，跟之前Cedric Van Bockhaven发现并私下汇报的漏洞类似，当时在WordPress 4.1.2版本中予以修复。</p><p><br/></p><p>在WordPress中，超过64kb的长评论会在存储时被截断，导致生成有缺陷的HTML。攻击者依赖受支持的HTML标签属性，将一小段恶意
+JavaScript代码隐藏在评论中，并在管理员批准前从控制面板查看时秘密执行。Bockhaven发现的方法也是基于文本截断，不过这次是由攻击者
+通过非法字符诱发的。</p><p><br/></p><p><strong>部署自动更新程序</strong></p><p>周一，WordPress 4.2.1作为重要的安全发布出现，原因是此前的所有CMS</p><p>均易受攻击。新版本会对启用自动更新功能的网站推出自动更新服务。新版本包含的修复之一是检查存储在数据库中的字符串是否太长而在服务器上引发不必要的后果。</p><p><br/></p><p>网站如果没有启用自动更新功能，管理员可通过手动下载或检查新版本的方式使用最新版本。安装WordPress 4.2.1迫在眉睫，因为利用漏洞的代码自上周日便已公开。</p><p><br/></p>本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。
+        
+</body>
+</html>

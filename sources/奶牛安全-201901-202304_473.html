@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>xsser使用tips</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>xsser使用tips</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzU4NjY0NTExNA==&amp;mid=2247483693&amp;idx=1&amp;sn=fd2aa7a5fa2b85f738a108c644126fbe&amp;chksm=fdf96a38ca8ee32eed7688957999009b66e899508039afebed42deb0ac3824bdef22e58df8be&amp;scene=126&amp;sessionid=1681665777#rd">http://mp.weixin.qq.com/s?__biz=MzU4NjY0NTExNA==&amp;mid=2247483693&amp;idx=1&amp;sn=fd2aa7a5fa2b85f738a108c644126fbe&amp;chksm=fdf96a38ca8ee32eed7688957999009b66e899508039afebed42deb0ac3824bdef22e58df8be&amp;scene=126&amp;sessionid=1681665777#rd</a></blockquote><ol style="list-style-type: decimal;" class=" list-paddingleft-2"><li><p>测试登录后的页面，使用--cookie=COOKIE。COOKIE的获取如下：<br/></p><p style="text-indent: 2em;">a. 用浏览器登录测试站点后，按F12打开web开发者控制台，切换“网络”标签。</p><p style="text-indent: 2em;">b. 选择登录后url的连接，找到cookie，复制粘贴</p></li><li><p style="text-indent: 0em;">测试时需要用POST方法，使用-p "a=1&amp;b=XSS", 假设b是可能注入点，那么需要传递XSS这个值，让xsser来主动替换它。如果需要使用GET方法，使用-g "a=1&amp;b=XSS",假设b是可能注入点，那么需要传递XSS这个值，让xsser来主动替换它。<br/></p></li><li><p style="text-indent: 0em;">使用xsser本身提供的payload,使用--auto参数，payload在kali里路径是/usr/share/xsser/core/fuzzing/vector.py<br/></p></li><li><p style="text-indent: 0em;">保存测试的结果， 使用--save或以xml方式保存--xml="result.xml"。文件默认保存在xsser的安装，如/usr/share/xsser。不过这个报告没多少意义，因为只是显示请求过的url，并没有把结果和请求内容记录下来，还不如直接用-v选项，再重定向到某个文件，即使用-v参数，也无法把post请求的内容记录下来。<br/></p></li><li><p style="text-indent: 0em;">某些网站会检查referer字段来确认是否特定页面过来。通过--referer可以绕过这种检查</p><p style="text-indent: 0em;"><br/></p></li></ol><p><br/></p>
+        
+</body>
+</html>

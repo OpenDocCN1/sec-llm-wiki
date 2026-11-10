@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>长达11年的Linux内核本地权限升级漏洞出现</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>长达11年的Linux内核本地权限升级漏洞出现</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485578&amp;idx=3&amp;sn=3271a9e5adced39a82d3b3b691222577&amp;chksm=ea9739e0dde0b0f64eaac942fcf60e113a69a7f19cbca2a7f0983c58f61266818679c898a44a&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485578&amp;idx=3&amp;sn=3271a9e5adced39a82d3b3b691222577&amp;chksm=ea9739e0dde0b0f64eaac942fcf60e113a69a7f19cbca2a7f0983c58f61266818679c898a44a&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKiamDQjBD05NyMpWncTlfmvibD0OvcC2OWMHoR5ruu6edCM4ALhf54EP7fshtLX9mh8oXDBeDIhicDuCg/0?wx_fmt=png" data-ratio="0.521978021978022" data-w="728" src="../Images/834f9ceed38ef9c4d7bc4c52dffcf525.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKiamDQjBD05NyMpWncTlfmvibD0OvcC2OWMHoR5ruu6edCM4ALhf54EP7fshtLX9mh8oXDBeDIhicDuCg/0?wx_fmt=png"/></p><p><br/></p><p><strong>Linux内核中又出现一个可追溯至2005年的权限升级漏洞，它影响主要的Linux操作系统版本，包括Redhat、Debian、OpenSUSE和Ubuntu。</strong></p><p><br/></p><p>安全研究员Andrey Konovalov用谷歌发布的内核模糊工具Syzkaller在DCCP（数据报拥塞控制协议）实现中发现了一个超过十年的Linux内核漏洞CVE-2017-6074。该漏洞是一个使用后释放漏洞。这个双重释放漏洞能让具有本地非特权的用户修改Linux内核内存，从而引发拒绝服务（系统崩溃）或升级权限以获取对系统的管理员权限。</p><p><br/></p><p>漏洞披露指出，攻击者能够控制任何对象并且通过使用一些内核堆喷射技术用任意数据重写对象的内容。如果被重写的对象有任何可被触发的函数指针，攻击者就会在内核中执行任意代码。</p><p><br/></p><p>DCCP是一个面向消息的传输层协议，能够将数据包的头信息规模最小化或者尽可能多地将末端节点最小化，并且为不可靠的包流提供建立、维护和拆除服务，以及对该包流进行拥塞控制。</p><p><br/></p><p>该漏洞并未给外部人员提供入侵系统的方式，因为它并非是一个远程代码执行漏洞，而且要求攻击者在系统上有本地账户访问权限才能利用这个漏洞。</p><p><br/></p><p>几乎在两个月前，Linux内核中还出现了一个类似的可追溯于2011年的权限升级漏洞 (CVE-2016-8655)，它允许没有特权权限的本地用户通过利用Linux内核中af_packet执行中的一个竞态条件获取根权限。</p><p><br/></p><p>该漏洞已被修复。因此高级Linux用户需要打上补丁并自己重构内核。或者可等待版本提供商的下一个内核更新并尽快使用。</p>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>FreeBSD发现严重缓冲区漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>FreeBSD发现严重缓冲区漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5ODI2MTg3Mw==&amp;mid=201989400&amp;idx=2&amp;sn=41e9cb28a105efedc4a9db2558cccd46&amp;chksm=2f33d806184451109f9c223b50ec7ec9db10e3c77bee259d0bc9d0a041a7c1d80b4097a8531d&amp;scene=126&amp;sessionid=1681309449#rd">http://mp.weixin.qq.com/s?__biz=MjM5ODI2MTg3Mw==&amp;mid=201989400&amp;idx=2&amp;sn=41e9cb28a105efedc4a9db2558cccd46&amp;chksm=2f33d806184451109f9c223b50ec7ec9db10e3c77bee259d0bc9d0a041a7c1d80b4097a8531d&amp;scene=126&amp;sessionid=1681309449#rd</a></blockquote><p style=""><span style="font-size: 14px;">威胁情报公司Norse的研究人员在FreeBSD中发现一个严重的缓冲区漏洞。FreeBSD是一款非常流行的类Unix操作系统，在全世界的服务器、个人电脑和嵌入式平台中广泛使用。<br/></span></p><p style=""><span style="font-size: 14px;">该漏洞存在于该操作系统标准输入输出（I/O）库的“_sfluch()”函数中，可被利用引起缓冲区溢出，从而导致数据损坏或是调用程序权限级别的任意代码执行。</span></p><p style=""><span style="font-size: 14px;">FreeBSD项目组在安全通告中写道：“I/O库提供一种简单有效的缓冲流I/O交互，当I/O库已满或应用程序通过fflush(3)函数有明确要求时，它就会写入缓冲数据。而函数_sflush()的一个编程问题错误的调整了缓冲流中的内部状态。”</span></p><p style=""><span style="font-size: 14px;">挪威人公司的内核程序高级工程师在公司产品线开发过程中发现的此漏洞，并为些制作了一个补丁发到了FreeBSD社区。用户可以升级操作系统，或下载补丁源代码。</span></p><p style=""><span style=""><br/></span></p><p style=""><span style=""><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/f4CbNfICAmWmJqibGoyIv8YSkzfzNSvon9qIxJ68uicrd2vL1kubzvjdxnOjylbgCzGR2qoiaibjXhFOib2LGP8hXsw/0" data-ratio="1" data-w="430" src="../Images/7463d32afb25af506438f4359bdb14a1.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/f4CbNfICAmWmJqibGoyIv8YSkzfzNSvon9qIxJ68uicrd2vL1kubzvjdxnOjylbgCzGR2qoiaibjXhFOib2LGP8hXsw/0"/></span></p>
+        
+</body>
+</html>

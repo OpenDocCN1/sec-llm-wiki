@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>卡巴斯基反病毒软件修正其0day Bug</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>卡巴斯基反病毒软件修正其0day Bug</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAwMDQwNTE5MA==&amp;mid=210667112&amp;idx=2&amp;sn=28fd0eb54ab077fe04495cebe59426ab&amp;chksm=13935dc124e4d4d7ac31c90d3c378d8dc9771069a2b2d4c66a5df68e30140aa3304be811aa47&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzAwMDQwNTE5MA==&amp;mid=210667112&amp;idx=2&amp;sn=28fd0eb54ab077fe04495cebe59426ab&amp;chksm=13935dc124e4d4d7ac31c90d3c378d8dc9771069a2b2d4c66a5df68e30140aa3304be811aa47&amp;scene=27#wechat_redirect</a></blockquote><p><span style="">卡巴斯基已经迅速修正了旗下互联网安全防病毒软件当中存在的一个bug，这个bug允许黑客在受害者电脑上阻止Windows Update和其他服务。</span><span style="">谷歌Project Zero安全研究人员Tavis Ormandy在9月初发现了这个零日漏洞。更具体地说，Tavis Ormandy是在卡巴斯基的网络攻击拦截器组件当中发现了这个零日漏洞。网络攻击拦截器组件可以防止恶意软件和依赖于互联网或本地网络其他电脑发动的攻击。</span></p><p><span style=""/></p><p style="">据Tavis Ormandy的研究显示，这个问题实际上是一个设计缺陷，网络攻击拦截器是一个简单的无状态包过滤器，内建模式匹配签名系统。这意味着组件依次扫描每个网络数据包，如果检测到恶意数据包，卡巴斯基杀毒简单地将数据包的起源IP地址加入黑名单。</p><p style="">因此，攻击者可以很容易地欺骗网络数据包，进而让网络攻击拦截器屏蔽Windows更新，卡巴斯基自身的更新服务器地址，可能削弱电脑的防御能力可，进而允许其开展进一步的攻击。</p><p style="">该漏洞于9月11日被发现和报告卡巴斯基，卡巴斯基10月8日发布了修复补丁。</p><p class="f_center" style=""><img data-src="http://mmbiz.qpic.cn/mmbiz/2dMzopbOicL9Are00v4Pw3TTPk2lPOVu8RHXThwrOiazSDkZdN2Cgb1xj3mguBxTxOYCncQ2H2AN9ibInEGFdKoJQ/0?wx_fmt=jpeg" title="vulnerability-open-to-abuse-fixed-in-kaspersky-internet-security-antivirus-494280-2.jpg" original="http://static.cnbetacdn.com/thumb/article/2015/1011/18deda412553079.jpg_600x600.jpg" style="border: 0px; display: block; margin: 0px auto; max-width: 630px;" class="" data-type="jpeg" data-ratio="0.6" data-w="600" src="../Images/72be95f5707cd9a24151e5cc0b3ec2e2.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/2dMzopbOicL9Are00v4Pw3TTPk2lPOVu8RHXThwrOiazSDkZdN2Cgb1xj3mguBxTxOYCncQ2H2AN9ibInEGFdKoJQ/0?wx_fmt=jpeg"/></p><p class="f_center" style=""><img data-src="http://mmbiz.qpic.cn/mmbiz/2dMzopbOicL9Are00v4Pw3TTPk2lPOVu8hQnWznK4DcNHhExQeibABvBL0m3z8tk69M11MFiam8eRZlrZnjicOznrw/0?wx_fmt=jpeg" title="vulnerability-open-to-abuse-fixed-in-kaspersky-internet-security-antivirus-494280-3.jpg" original="http://static.cnbetacdn.com/thumb/article/2015/1011/066f088d91d8c63.jpg_600x600.jpg" style="border: 0px; display: block; margin: 0px auto; max-width: 630px;" class="" data-type="jpeg" data-ratio="0.6883333333333334" data-w="600" src="../Images/0861c19a37855114a918fdcd8f8cda02.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/2dMzopbOicL9Are00v4Pw3TTPk2lPOVu8hQnWznK4DcNHhExQeibABvBL0m3z8tk69M11MFiam8eRZlrZnjicOznrw/0?wx_fmt=jpeg"/></p><p><span style=""><br/></span><br/></p>
+        
+</body>
+</html>

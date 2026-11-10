@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>对加密感兴趣吗？来看看Wickr的核心加密软件代码吧！</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>对加密感兴趣吗？来看看Wickr的核心加密软件代码吧！</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485583&amp;idx=3&amp;sn=eb2f24e2871b24edd4f143227fff9c0f&amp;chksm=ea9739e5dde0b0f3e8251a38e8c35a729874df58731f0cd4a81500bb2b131b5a49d7e0335329&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485583&amp;idx=3&amp;sn=eb2f24e2871b24edd4f143227fff9c0f&amp;chksm=ea9739e5dde0b0f3e8251a38e8c35a729874df58731f0cd4a81500bb2b131b5a49d7e0335329&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKialuKoWpT5bn0p4Q5bK4Y4ucoXyHJX1aMicTTWqo1OdPM2AlEkTn09DwpWV4XUM8oicUNG1NxCLEjJ2A/0?wx_fmt=jpeg" data-ratio="0.5370370370370371" data-w="648" src="../Images/3709d084c728f124ff212bf844ef7d20.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKialuKoWpT5bn0p4Q5bK4Y4ucoXyHJX1aMicTTWqo1OdPM2AlEkTn09DwpWV4XUM8oicUNG1NxCLEjJ2A/0?wx_fmt=jpeg"/></p><p><br/></p><p><strong>消息应用程序Wickr开放了专业版app的核心加密软件供他人查看。</strong><a><strong>这个库托管在GitHub上</strong></a><strong>。</strong></p><p><br/></p><p>Wickr公司表示公布代码的目的并不是让复用，而是仅供“查看许可证”，不过表示GNC许可证下的开源软件发布正在筹备过程中。</p><p><br/></p><p>为避免独立的库依赖关系，Wickr公司表示已通过专业版以一种“有序且通用的”方式展示其安全原语。换句话说，虽然这款app使用的是OpenSSL 1.0.2，但也可支持其它库。受支持的OpenSSL原语包括AES 256 （GCM和CTR）、SHA 256到512；多种椭圆曲线Diffie-Hellman；SCRYPThe BCRYPT；HMAC和HKDF。</p><p><br/></p><p><a>白皮书</a>中指出，该协议提供了以下内容：</p><p><br/></p><p>* 端对端加密——信息和加密密钥仅对Wickr应用程序开放，并且并未透露给攻击者或Wickr服务器运营商。</p><p><br/></p><p>* 完美的前向保密性——即使用户或设备的长期密钥被攻陷，旧的信息内容也不会被攻陷。同时也提供了针对被动对手的后向保密性。</p><p><br/></p><p>* 对元数据的保护——存储在信息首标中的节点身份信息被隐藏，缺乏信息上下文和源信息的攻击者不可见。</p><p><br/></p><p>协议内容还包括加密模块以及该应用程序的其它关键基础架构信息，以及“上下文(Context)”。上下文提供的是客户端前端如何跟加密库整合的方式。</p><p><br/></p><p>该协议还是可扩展的，因此未来能够支持诸如文件转换、视频和音频等非文本型文件。相关人员表示，加密源代码和白皮书都已经经过了独立的审计。</p><p><br/></p><p>Wickr并非首个允许此类审计的安全消息app，其竞争对手Signal就曾在2016年11月份发布了其代码。</p>
+        
+</body>
+</html>

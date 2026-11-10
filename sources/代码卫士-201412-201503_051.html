@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>数千个MongoDB数据库被泄露</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>数千个MongoDB数据库被泄露</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247486020&amp;idx=2&amp;sn=064c604e3fbf587fc884e9ac1dcac054&amp;chksm=ea973b2edde0b23800bdfe0b4a8d10a8cb3d3b1affbe5bb9d9f554ed81963a049a794536bddf&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247486020&amp;idx=2&amp;sn=064c604e3fbf587fc884e9ac1dcac054&amp;chksm=ea973b2edde0b23800bdfe0b4a8d10a8cb3d3b1affbe5bb9d9f554ed81963a049a794536bddf&amp;scene=27#wechat_redirect</a></blockquote><p>三名来自德国萨尔大学的学生Jens Heyens、Kai Greshake及 Eric Petryka（三人同时是该校IT安全、隐私及责任中心的员工）研究发现，数千个作为商业服务器服务或网站后端的MongoDB数据库遭泄露。</p><p><br/></p><p>MongoDB是一个NoSQL的跨平台面向文档数据库。三名学生的调查显示，近40000的MongoDB实例被公开，其中一家法国电信供应商也受到影响，这家公司大约有800万条用户记录。</p><p><br/></p><p>研究报告指出，“无需任何特殊工具或绕过任何安全措施，我们本可以读取并写入数千个数据库，包括敏感的客户信息或网店的实时后端等。”发生这种情况的原因有两个。第一，MongoDB默认专门在同一台物理机或虚拟机实例上运行。第二，安装MongoDB服务器的互联网接入文档及指南可能还不够清晰，尤其在激活接入控制、认证、传输加密机制的必要性方面。</p><p><br/></p><p>报告中写道，“如果一名经验不足的管理员按照指南安装了一台MongoDB服务器，他很容易忽视激活安全机制的重要性。这会导致一个完全公开且易受攻击的数据库出现，导致任何人都可以访问甚至控制它。”</p><p>MongoDB默认在TCP端口27017上运行，这意味着攻击者只需要在网上运行一个端口扫描就可以找到公开可获得的数据库。这些数据库同时可通过Shodan搜索引擎识别出来。三名学生表示，确保数据库配置的正确性取决于MongoDB用户。</p><p><br/></p><p>Rapid7公司的全球安全战略官Trey Ford指出，“这是对过去惨痛历史的重演，只不过这次‘以身试法’的是高级别的企业。他还指出，MongoDB的访问控制及加密服务应当默认为开启状态。</p><p><br/></p><p>MongoDB首席信息官在博客中表示他们非常重视用户的安全。“我们的安全手册中详细讨论了安全的问题。安全检查表谈论了网络暴露的问题。因服务存放的位置不同（AWS、Azure、本地等），采取的安全措施也大大不同。此外，MongoDB管理服务用户可以启动警报检测他们的部署是否被公开。”</p><p><br/></p><p>本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。</p><p><br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Google发布了阻止USB按键注入攻击的工具</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Google发布了阻止USB按键注入攻击的工具</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=Mzg3MjI1MDU4OA==&amp;mid=2247487983&amp;idx=6&amp;sn=58f1ffe82af5842139e5c4dd27d8f704&amp;chksm=cef37c5cf984f54a95ffe8e0ba2d6be512af99884c42ceaaa3dccba9ccd1cdf1b69950f4f2d8&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=Mzg3MjI1MDU4OA==&amp;mid=2247487983&amp;idx=6&amp;sn=58f1ffe82af5842139e5c4dd27d8f704&amp;chksm=cef37c5cf984f54a95ffe8e0ba2d6be512af99884c42ceaaa3dccba9ccd1cdf1b69950f4f2d8&amp;scene=27#wechat_redirect</a></blockquote><p><span style="font-size: 15px;">Google已发布了一种新的软件工具，旨在识别潜在的USB按键注入攻击并阻止其起源的设备。 </span></p><p><br/></p><p style="text-align: center;"><img class="rich_pages js_insertlocalimg" data-ratio="0.564453125" data-s="300,640" data-src="https://mmbiz.qpic.cn/sz_mmbiz_jpg/vDJXDPrW7A0GSOJ9ZFC57RbMoQPHj5Y5iaUmZicFWJ9XLaRxVdfdlgyVKTTzxdh61Anml7hJmkn9icGtyzvKQicmwQ/640?wx_fmt=jpeg" data-type="jpeg" data-w="512" style="" src="../Images/c215efede49040b4eedfba61a8ade5ea.png" data-original-src="https://mmbiz.qpic.cn/sz_mmbiz_jpg/vDJXDPrW7A0GSOJ9ZFC57RbMoQPHj5Y5iaUmZicFWJ9XLaRxVdfdlgyVKTTzxdh61Anml7hJmkn9icGtyzvKQicmwQ/640?wx_fmt=jpeg"/></p><p><br/></p><p><span style="font-size: 15px;">由于击键注入工具易于使用，因此它们能够快速发送击键，而受害者却看不见它们。通过USB提供的按键注入攻击需要人机接口设备驱动程序。</span></p><p><br/></p><p><span style="font-size: 15px;">对于Linux系统而言，这是Google于本周宣布的工具，它在不涉及用户的情况下，根据预定义的启发式方法来测量击键的时间，以尝试确定这是否是攻击。  </span></p><p><br/></p><p><span style="font-size: 15px;">有两种操作模式，即MONITOR和HARDENING。在前一种模式下，它不会阻止被归类为恶意的设备，但是会将有关它们的信息写入syslog。但是，在后一种模式下，该工具会立即阻止分类为恶意/攻击的设备。 </span></p><p><br/></p><p><span style="font-size: 15px;">USB Keystroke Injection Protection出厂默认启用了HARDENING模式，并且可以在GitHub上以开源方式获得，其中的循序渐进指南提供了有关如何启动和运行在重新启动时启用的systemd守护程序的详细信息。 </span></p><p><br/></p><p><span style="font-size: 15px;">Google称：“该工具并非针对基于USB的攻击或按键注入攻击的灵丹妙药，因为如果用户未锁定计算机，则能够访问用户计算机的攻击者（基于USB的按键注入攻击所需的攻击者）会做得更糟。” 解释。 </span></p><p><br/></p><p><span style="font-size: 15px;">该解决方案的设计是通过使用户看到攻击的发生而增加了一层保护，因为击键的延迟足够长，可以绕开工具的逻辑，或者击键的速度足够快，可以被工具检测到。</span></p><p><br/></p><p><span style="font-size: 15px;">“该工具可以与其他Linux工具进行补充，例如细粒度的udev规则或USBGuard等开源项目，以使成功的攻击更具挑战性。后者使用户可以定义策略并允许/阻止特定的USB设备，或者在屏幕锁定时阻止USB设备。”</span></p><p><br/></p><p><span style="font-size: 15px;">有兴趣请查看：</span></p><p><span style="font-size: 15px;">https://opensource.googleblog.com/2020/03/usb-keystroke-injection-protection.html</span></p>
+        
+</body>
+</html>

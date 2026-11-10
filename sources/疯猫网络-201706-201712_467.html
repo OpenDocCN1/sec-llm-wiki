@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>网卡厂商自动识别工具（Python版， 附源代码）</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>网卡厂商自动识别工具（Python版， 附源代码）</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzIyMzE5NTQ3Ng==&amp;mid=2650587481&amp;idx=3&amp;sn=fe94f80a105db7a73900df6ff637937d&amp;chksm=f0299962c75e1074be16393d2ddab2c9052515d543ed13003c394549c10038376fdc3d696721&amp;scene=126&amp;sessionid=1681370492#rd">http://mp.weixin.qq.com/s?__biz=MzIyMzE5NTQ3Ng==&amp;mid=2650587481&amp;idx=3&amp;sn=fe94f80a105db7a73900df6ff637937d&amp;chksm=f0299962c75e1074be16393d2ddab2c9052515d543ed13003c394549c10038376fdc3d696721&amp;scene=126&amp;sessionid=1681370492#rd</a></blockquote><p style="box-sizing: border-box; margin-bottom: 10px; font-size: 15px; line-height: 26px; word-wrap: break-word; word-break: break-word; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; white-space: normal; background-color: rgb(255, 255, 255);"><span style="color: rgb(123, 12, 0);"/></p><p><img data-type="gif" data-src="http://mmbiz.qpic.cn/mmbiz_gif/5ZACCn1bWEwrm1niax0xWl6tFwyaPqCHRyskxXGvZQgOFTCFaUiaU6PSmdmwSdb3JEAuZwPx0lPWsHf2xuib8Asew/0?wx_fmt=gif" data-ratio="0.15625" data-w="640" src="../Images/bd12d37e5b6d2b5b81389d88a9cef40a.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_gif/5ZACCn1bWEwrm1niax0xWl6tFwyaPqCHRyskxXGvZQgOFTCFaUiaU6PSmdmwSdb3JEAuZwPx0lPWsHf2xuib8Asew/0?wx_fmt=gif"/></p><p style="box-sizing: border-box; margin-bottom: 10px; font-size: 15px; line-height: 26px; word-wrap: break-word; word-break: break-word; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; white-space: normal; background-color: rgb(255, 255, 255);"><span style="color: rgb(123, 12, 0);"/><br/></p><p style="box-sizing: border-box; margin-bottom: 10px; font-size: 15px; line-height: 26px; word-wrap: break-word; word-break: break-word; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; white-space: normal; background-color: rgb(255, 255, 255);"><span style="color: rgb(123, 12, 0);">看了这篇文章 ，觉得很实用，于是写了一个python 版的，支持Linux 和windows 平台使用，对于Linux (arp -n ) 和windows （arp -a）导出的arp表，进行解析并输出结果。</span></p><h2 style="box-sizing: border-box; font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; font-weight: bold; line-height: 1.1; color: rgb(55, 56, 56); margin-top: 30px; margin-bottom: 15px; font-size: 18px; white-space: normal; background-color: rgb(255, 255, 255);">如何使用</h2><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEwSMMiczWicD3hdYnfxcO2Fv718qL6LibNc1ZwgcX4qQpWTUPrtzlse2gOJvPucRB6sD8DmKzIoKopyQ/0?wx_fmt=jpeg" data-ratio="0.28695652173913044" data-w="690" src="../Images/425166549d81b888cf3a99fe568dcb35.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEwSMMiczWicD3hdYnfxcO2Fv718qL6LibNc1ZwgcX4qQpWTUPrtzlse2gOJvPucRB6sD8DmKzIoKopyQ/0?wx_fmt=jpeg"/></p><p><br/></p><p>–oui-file 指的是 oui.txt的路径，程序默认值为当前目录下的oui.txt ， 即：./oui.txt</p><p>–arp-tab-file 指的是 导出的arp表的路径</p><p><br/></p><h3><strong>1、首先你要导出系统上的arp 表</strong></h3><p><strong><br/></strong></p><blockquote><pre style=" box-sizing: border-box; overflow: auto; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; "><code>                 windows &gt; arp -a &gt; arp.txt
+
+                 Linux # arp -n &gt;arp.txt</code></pre></blockquote><h3><strong>2、 然后执行网卡厂商解析工具（这里暂为mac.py）</strong></h3><h3><strong>3、解析结果保存在当前目录下的result.txt 中</strong></h3><h2 style="box-sizing: border-box; font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; font-weight: bold; line-height: 1.1; color: rgb(55, 56, 56); margin-top: 30px; margin-bottom: 15px; font-size: 18px; white-space: normal; background-color: rgb(255, 255, 255);">测试效果如下：</h2><h3><strong>Linux：</strong></h3><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEwSMMiczWicD3hdYnfxcO2Fv7auMZxOrFqrt8yVXzPPjpibpBTGmwQ11hzNhibZA8aOkm9xg2SFyIBZzg/0?wx_fmt=jpeg" data-ratio="0.17391304347826086" data-w="690" src="../Images/6dabd5d7cb37552f7420d7a77a16727d.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEwSMMiczWicD3hdYnfxcO2Fv7auMZxOrFqrt8yVXzPPjpibpBTGmwQ11hzNhibZA8aOkm9xg2SFyIBZzg/0?wx_fmt=jpeg"/></p><p><br/></p><h3><strong>Windows:</strong></h3><p><strong><br/></strong></p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEwSMMiczWicD3hdYnfxcO2Fv7k9bELs2mF4TCdTzkUHULLjNHicPHUlpeJGlObGejJePNRwiciajticXR2w/0?wx_fmt=jpeg" data-ratio="0.5942028985507246" data-w="690" src="../Images/6ab24fd29d4a8e958418532042bb9933.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEwSMMiczWicD3hdYnfxcO2Fv7k9bELs2mF4TCdTzkUHULLjNHicPHUlpeJGlObGejJePNRwiciajticXR2w/0?wx_fmt=jpeg"/></p><p><br/></p><h2 style="box-sizing: border-box; font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; font-weight: bold; line-height: 1.1; color: rgb(55, 56, 56); margin-top: 30px; margin-bottom: 15px; font-size: 18px; white-space: normal; background-color: rgb(255, 255, 255);">源码：</h2><p><br/></p><blockquote><pre style=" box-sizing: border-box; overflow: auto; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; "><code>#!/usr/bin/env python# -*- coding:utf8 -*-"""
+
+Coded by bgusko63190
+
+"""import reimport sysimport codecsimport argparsedef parse_oui(oui_path):
+    """
+     载入并解析oui.txt,生成'厂商标识':'厂商名称' 字典
+    """
+    oui_dict = dict()    with codecs.open(oui_path, 'r', encoding='utf8') as fd:        for line in fd:            if '(hex)' in line:
+                _line = line.split('(hex)')
+                flag = _line[0].strip()
+                manufacturers = _line[1].strip()
+                oui_dict[flag] = manufacturers    return oui_dictdef parse_arp_tab(arp_tab_path, oui_path):
+    """
+    :param arp_tab_path: arp -n 生生结果保存文件路径（支持windows ar -a 和Linux的arp -n 结果格式）
+    :param oui_path: oui.txt的路径
+    :return:
+    """
+    parse_result = []
+
+    oui_dict = parse_oui(oui_path)    # 支持  00:42:5a:38:9f:56 ， 00-42-5a-38-9f-56，00.42.5a.38.9f.56 3种格式的MAC地址
+    mac_pattern = re.compile(        '([0-9a-fA-F]{1,2}[-]){5}([0-9a-fA-F]{1,2})|([0-9a-fA-F]{1,2}[:]){5}([0-9a-fA-F]{1,2})|([0-9a-fA-F]{1,2}[.]){5}([0-9a-fA-F]{1,2})',
+        re.VERBOSE | re.IGNORECASE)
+
+    result_lines = []    with codecs.open(arp_tab_path, 'r', encoding='utf8') as fd:        for line in fd:
+            _line = None
+            if u'类型' in line:
+                _line = line.strip() + '\t\t' + u'厂商'
+            elif 'Type' in line or 'Iface' in line:
+                _line = line.strip() + '\t\t' + 'manufacturers'
+            else:                try:                    if u'态' in line or 'dynamic' in line or 'static' in line or 'ether' in line:                        # _line = line.strip() + '\t\t' + oui_dict[mac_pattern.search(line).group().rsplit('-', 3)[0].upper()]
+                        manu = re.split('[-:.]', mac_pattern.search(line).group(), 3)
+                        manu_flag = manu[0] + '-' + manu[1] + '-' + manu[2]
+                        _line = line.strip() + '\t\t' + oui_dict[manu_flag.upper()]                except KeyError:
+                    _line = line.strip() + '\t\t' + u'unknown'
+                except:                    # print line.strip()
+                    pass
+            if _line:
+                result_lines.append(_line + '\n')            else:                # print line
+                pass
+
+    with codecs.open('result.txt', 'w', encoding='utf8') as fd:
+        fd.writelines(result_lines)if __name__ == '__main__':
+    reload(sys)
+
+    sys.setdefaultencoding('utf8')
+
+    parse = argparse.ArgumentParser()
+    parse.add_argument('--oui-file', dest='oui', type=str, default='./oui.txt', help='oui file path')
+    parse.add_argument('--arp-tab-file', dest='arp', type=str, required=True, help='arp tab file path')
+
+    argument = parse.parse_args()
+
+    parse_arp_tab(argument.arp, argument.oui)</code></pre></blockquote><p><img data-type="gif" data-src="http://mmbiz.qpic.cn/mmbiz_gif/5ZACCn1bWEwrm1niax0xWl6tFwyaPqCHRL7zA6G4OWxgibRsJT9lLafJppjibev1TUxHYEia92BiaAtlc7u0BcOmUvA/0?wx_fmt=gif" data-ratio="0.7" data-w="500" src="../Images/e8c1330a4ae95198ebdb17e4f3bb4cbb.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_gif/5ZACCn1bWEwrm1niax0xWl6tFwyaPqCHRL7zA6G4OWxgibRsJT9lLafJppjibev1TUxHYEia92BiaAtlc7u0BcOmUvA/0?wx_fmt=gif"/></p><p><br/></p>
+        
+</body>
+</html>

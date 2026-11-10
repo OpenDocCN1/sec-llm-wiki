@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>源代码审计面经</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>源代码审计面经</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTExNzcxNQ==&amp;mid=2247483950&amp;idx=1&amp;sn=33e9f568b74317ca5879b3f37994f8d3&amp;chksm=eaa30b52ddd4824495cefa153320c2eb0d41d97672e456488721d5f7e65e23d7347cd310bb06&amp;scene=126&amp;sessionid=1681657635#rd">http://mp.weixin.qq.com/s?__biz=MzI2NTExNzcxNQ==&amp;mid=2247483950&amp;idx=1&amp;sn=33e9f568b74317ca5879b3f37994f8d3&amp;chksm=eaa30b52ddd4824495cefa153320c2eb0d41d97672e456488721d5f7e65e23d7347cd310bb06&amp;scene=126&amp;sessionid=1681657635#rd</a></blockquote><p>源代码审计面经</p><p>之前陆陆续续参加过源代码审计新人的面试，有个小兄弟今年也在学习源代码审计相关知识，本人今年上半年也参与过部分单位源代码审计岗位的面试，网上也没有相关岗位的面经介绍，这里就总结了一下，供各位大佬和新人参考。</p><p>1、源代码审计项目如何进行任务拆分，需要多少人日或者代码审计如何确定项目单价</p><p>2、审计过那些项目，熟悉那些编程语言，使用过那些源代码审计工具，可以自行书写规则吗？</p><p>3、源代码审计的方法论是什么，人工审计注意点有哪些，审计项目需要注意什么，你在审计过程中遇到的坑有哪些？</p><p>4、源代码审计的常见漏洞都有哪些，你是如何审计的，漏洞如何进行防护，请举例子详细说明(sql注入，XSS，反序列化，ssrf，xxe，csrf，文件上传下载等) </p><p>5、审计完成后，研发进行修复后，如何进行复测，复测的标准和规则是什么？ </p><p>6、在审计过程中如果未发现安全风险，但是客户通过灰盒和黑盒发现问题，对于这类情况你该如何处理？</p><p>7、审计过程中审计你不熟悉的框架，不熟悉的语言，你该如何进行项目交付，请说明？  </p><p>8、审计过程中对于组件安全，你该如何审计，发现疑似问题如何处理？</p><p><br/></p><p>反序列化漏洞考的比较多，就单独拎出来总结一下。</p><p>反序列化漏洞考点：</p><p>1、什么是反序列化，反序列化能造成什么危害 </p><p>2、反序列化如何利用，常见的反序列化漏洞有哪些 </p><p>3、反序列化如何进行审计（分两方面，组件的，原生的）</p><p>4、反序列化的修复方案有哪些（组件升级，危险方法白名单限制，黑名单容易绕过，可以参考fastjson之前的修复方案来佐证）</p><p>5、ysoserial工具了解吗，你了解哪些反序列化利用链，请找一个你最熟悉的反序列化利用链进行介绍。</p><p>6、常见的反序列化漏洞有哪些（框架漏洞，如：fastjson,apache-commons,shiro等），请选择一个最熟悉的进行介绍。</p><p><br/></p>
+        
+</body>
+</html>

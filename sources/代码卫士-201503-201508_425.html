@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>mDNS的不当配置增强DDoS攻击流量</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>mDNS的不当配置增强DDoS攻击流量</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485991&amp;idx=3&amp;sn=f60013550d251df6349a53b11b4b067b&amp;chksm=ea973b4ddde0b25bfd76ea8bfaac7b5a5ea9268710dcb3813decb09eb84b41175b740d1460aa&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485991&amp;idx=3&amp;sn=f60013550d251df6349a53b11b4b067b&amp;chksm=ea973b4ddde0b25bfd76ea8bfaac7b5a5ea9268710dcb3813decb09eb84b41175b740d1460aa&amp;scene=27#wechat_redirect</a></blockquote><p><span style="color: rgb(0, 176, 80); ">mDNS简介</span></p><p>多播域名系统（mDNS）是一种多平台服务，旨在将主机名解析到小型网络中的IP地址，这些小型网络没有本地命名服务器。</p><p><br/></p><p>mDNS可在独立配置中或跟单播DNS服务器配套使用。在本地网络中，mDNS可用来搜索设备及服务，并被诸如VoIP电话及打印机的设备执行。</p><p><br/></p><p>mDNS是一种零配置服务，它将相同的程序界面、包格式及操作语义当做单点DNS。</p><p><br/></p><p><span style="color: rgb(0, 176, 80); "> mDNS增强DDoS攻击流量</span></p><p>Seaman发现，一些多播mDNS执行可被用来增强DDoS攻击。专家发现错误的mDNS执行会响应来自本地连接外的单播查询，这种行为允许攻击者运行强大的DDoS攻击。</p><p><br/></p><p>Seaman在GitHub中指出，“在互联网多个系统中部署的多播DNS及DNS服务发现守护进程被错误配置，并相应针对多播地址的查询，包括来自WAN界面的查询。”</p><p><br/></p><p>利用配置不当的mDN还允许攻击者获取敏感信息如网络及设备详情。利用mDNS最有趣的方式是用增强DDoS攻击，这种加强是因为响应的规模要比查询的规模大得多造成的。攻击者只需要欺骗目标的IP地址并向mDNS发送大量查询就可生成恶意流量。</p><p><br/></p><p>Seaman表示，“攻击者可期望至少1：1的映射，在一些测试中，某些服务的增强度达到975%。真正的增强率难以被预测，因为响应会随着服务器配置及查询包本身大小的不同而不同，而查询包本身的大小由所查询的服务决定，但据保守攻击，平均的增强率为130%以上。”</p><p><br/></p><p>RFC 6762建议，当无法验证来源时，本地网络之外的单播查询应被忽略。</p><p><br/></p><p><span style="color: rgb(0, 176, 80); ">mDNS执行带来的影响</span></p><p>Seaman发现，响应mDNS查询的愈10万台设备针对它们的多播地址，这是他通过扫描互联网发现的结果。成千上万台设备易受到DDoS攻击的影响，包括NAS设备、VoIP、以及在Windows及Linux操作系统上运行的打印机。</p><p><br/></p><p>mDNS执行漏洞已被US CERT公布并提供了如下解决方案：</p><ul style="list-style-type: disc; " class=" list-paddingleft-2"><li><p>拦截WAN上流入及流出mDNS的流量，可通过控制mDNS UDP端口5353实现。</p></li><li><p>禁用设备上的mDNS服务。</p></li></ul><p><br/></p><p>一些厂商已经确认将不会修复老旧设备中的漏洞，其他厂商已经发布了产品修复补丁。</p><p> </p><p> </p><p>本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。</p><p><br/></p>
+        
+</body>
+</html>

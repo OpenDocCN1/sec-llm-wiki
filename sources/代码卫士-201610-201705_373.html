@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Linux内核本地权限升级漏洞潜伏5年 影响几乎所有版本</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Linux内核本地权限升级漏洞潜伏5年 影响几乎所有版本</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485624&amp;idx=2&amp;sn=511e9f7325dc1699228829423450e094&amp;chksm=ea9739d2dde0b0c4179c4f4da5f4b02e69330b365a6b42246def606213439dedb913bd06d14b&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485624&amp;idx=2&amp;sn=511e9f7325dc1699228829423450e094&amp;chksm=ea9739d2dde0b0c4179c4f4da5f4b02e69330b365a6b42246def606213439dedb913bd06d14b&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKial5dPNaIfW65PELCnBOLU7Yjj8JaiaDzvDYVkmtQOsIKTbwefAxWkQibaq4feNFDmTxWE2XSDm5KH4A/0?wx_fmt=png" data-ratio="0.521978021978022" data-w="728" src="../Images/e17b0684a5280fd8bb5da5c0b86508e6.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKial5dPNaIfW65PELCnBOLU7Yjj8JaiaDzvDYVkmtQOsIKTbwefAxWkQibaq4feNFDmTxWE2XSDm5KH4A/0?wx_fmt=png"/><br/></p><p><br/></p><p><strong>研究人员在Linux内核中发现了一个严重的权限升级漏洞已潜伏5年之久，几乎影响所有的Linux操作系统版本，其中包括Redhat和Ubuntu。</strong></p><p><br/></p><p>一个月之前，研究人员曾发现了一个潜伏期达9年的权限升级漏洞“脏牛”，它也出现在Linux内核中，影响几乎所有的开源操作系统版本，包括Redhat、Debian和Ubuntu。</p><p><br/></p><p>目前发现的这个漏洞CVE-2016-8655最早出现于2011年，它允许无特权的本地用户通过利用Linux内核中af-packet实现中的一个竞态条件来获取根权限。发现这个漏洞的研究人员Philip Pettersson能够创建一个利用代码获取Ubuntu 16.04 LTS系统（Linux 内核4.4）上的根shell，并且突破SMEP/SMAP保护措施获取内核代码执行能力。换句话说，一个本地非特权攻击者能利用这个利用代码引发拒绝服务（服务器崩溃）或者在目标系统上以管理员权限运行任意恶意代码。</p><p><br/></p><p>这个漏洞为服务提供商带来了潜在威胁，比如导致服务器崩溃或者被黑。在安卓系统上，带有gid=3004/AID_NET_RAW的进程能够创建AF_PACKET套接（媒体服务器）并触发该漏洞。上周主流内核已修复该漏洞，因此建议用户尽快更新至最新的Linux版本。</p>
+        
+</body>
+</html>

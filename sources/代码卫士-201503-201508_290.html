@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>数百个云服务商易受Logjam攻击影响</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>数百个云服务商易受Logjam攻击影响</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485960&amp;idx=1&amp;sn=31d89eb40612a9c874f1e55e9af13763&amp;chksm=ea973b62dde0b27423ea5b9328e0d9cab322c125b9393f27e013a7d29df2ad29745bd1b54301&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485960&amp;idx=1&amp;sn=31d89eb40612a9c874f1e55e9af13763&amp;chksm=ea973b62dde0b27423ea5b9328e0d9cab322c125b9393f27e013a7d29df2ad29745bd1b54301&amp;scene=27#wechat_redirect</a></blockquote><p>云安全企业Skyhigh Networks在周三表示，最近被称为Logjam的TLS漏洞影响了数量众多的云服务提供商。</p><p><br/></p><p>Logjam漏洞与FREAK（疯怪）漏洞类似，产生原因是DHE密钥交换的部署机制。该漏洞可被中间攻击人利用，将TLS连接降级为薄弱且出口级加密并获取访问通过连接的数据。</p><p><br/></p><p>Logjam（CVE-2015-4000）影响所有支持512位出口级密码以及所有现代的网络浏览器。该漏洞最初影响了8%的前百万个HTTPS网站，以及超过3%的浏览器信任网站。</p><p><br/></p><p>由于数百万HTTPS、SSH以及VPN服务器在不同的DHE中使用了相同的质数，因此通过破解最常见的512位质数将连接降级为80%的支持出口级DHE密码是有可能的。</p><p><br/></p><p>安全专家认为学术团队可以破解一个768位的质数，而受国家支持的组织甚至可以破解一个1024位的质数。实际上很有可能NSA已经将其应用到了VPN服务器攻击中。</p><p><br/></p><p>安全研究员表示，“破解网络服务器所使用的单一且最为常见的1024位质数允许对18%排名前100万的HTTPS域名连接实施被动监听。第二个质数将允许解密66%的VPN服务器以及26%的SSH服务器连接。”</p><p><br/></p><p>Skyhigh的服务情报团队表示可以监控Logjam对数千名云提供商的影响，并在该问题发布6小时候便指出由575家云服务商容易受到攻击。
+Skyhigh表示一般企业使用了923种云服务，也就是说一个组织机构中受影响的服务有一个或多个。Skyhigh表示在超过400名的客户中，99%
+正在使用至少一种易受攻击的服务，而一般企业是71种。</p><p><br/></p><p>Venafi安全战略及威胁情报副总裁Kevin 
+Bocek表示，对于Logjam的出现他一点也不惊讶，“这类通过Diffie-Hellman的薄弱加密协议注定会发生，因为网络犯罪分子会盯上这些
+漏洞并且监控数千HTTPS站点及邮件服务器所使用的加密连接。Heartbleed（心脏出血）、Logjam、FREAK（疯怪）、
+Superfish（快鱼）以及其他例子都说明人们对SSL/TLS、证书及信任的盲目信任太多了。而且我认为未来我们还会找到更多的协议、加密及证书漏洞。”</p><p><br/></p><p>本文由测腾代码卫士编译，不代表测腾观点，转载请注明“转自测腾代码卫士www.codesafe.cn”。</p>
+        
+</body>
+</html>

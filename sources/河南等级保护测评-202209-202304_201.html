@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>操作系统/虚拟化安全知识域：物理访问和安全删除</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>操作系统/虚拟化安全知识域：物理访问和安全删除</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=Mzg2NjY2MTI3Mg==&amp;mid=2247489157&amp;idx=1&amp;sn=e233f903861a646aa7a04b9af707ffca&amp;chksm=ce463072f931b9643ec2fa9a6087c001d81619d0159702ea14b8f56f867c27bb3d692ab47fb1&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=Mzg2NjY2MTI3Mg==&amp;mid=2247489157&amp;idx=1&amp;sn=e233f903861a646aa7a04b9af707ffca&amp;chksm=ce463072f931b9643ec2fa9a6087c001d81619d0159702ea14b8f56f867c27bb3d692ab47fb1&amp;scene=27#wechat_redirect</a></blockquote><h2><span lang="ZH">物理访问和安全删除</span></h2><p style="margin-right: 18.3pt;margin-left: 6.65pt;">请务必注意，操作系统级别的访问限制并不一定转换为物理级别的相同限制。例如，操作系统可以通过删除使其显示为文件的相应元数据（例如，在列出目录时）来<span lang="ZH" style="letter-spacing:-.15pt;">“</span><span style="letter-spacing:-.15pt;">删除<span lang="ZH">”</span></span>文件，而无需真正删除磁盘上文件<em>的内容</em>。因此，读取原始磁盘块而不考虑文件系统的攻击者可能仍然能够访问数据。</p><p style="margin-right: 18.55pt;margin-left: 6.65pt;">事实证明，安全地删除磁盘上的数据并非易事。例如，通过用零覆盖原始内容来朴素删除并不总是足够的。例如，在某些磁盘上，<span style="letter-spacing:-.15pt;mso-font-width:105%;">磁盘轨道</span>上的数据会在靠近磁道的区域留下（磁性）痕迹，并且具有足够时间和资源的聪明攻击可能会使用这些来恢复内容。<span style="letter-spacing:-.15pt;">此外</span>，操作系统可能已经制作了用户无法立即看到的文件副本，例如<span style="letter-spacing:-.15pt;mso-font-width:&#10;105%;">，</span>作为备份或缓存。所有这些副本都需要安全删除。<span lang="EN-US"><span lang="EN-US" style="color: rgb(35, 31, 32);"><span lang="EN-US">固态</span></span><span lang="EN-US" style="color: rgb(35, 31, 32);"><span lang="EN-US">驱动器</span></span></span>（<span lang="EN-US"><span lang="ZH" style="color: rgb(35, 31, 32);">SSD</span></span>）的情况也好不到<span style="letter-spacing:-.15pt;">哪里去</span>，因为<span lang="EN-US"><span lang="ZH" style="color: rgb(35, 31, 32);">SSD</span></span>有自己的固件来决定（覆盖）写入的内容以及何时写入，超出控制范围操作系统。对于大多数操作系统，真正的安全删除通常超出了操作系统的能力，我们不会在此知识中进一步讨论它区域，除了说全磁盘加密是现代操作系统的常见功能，有助于防止删除后的文件恢复。</p><p><br/></p><p style="display: none;"><mp-style-type data-value="3"/></p>
+        
+</body>
+</html>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>安卓再曝新漏洞：可远程致使用户无法接打电话</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>安卓再曝新漏洞：可远程致使用户无法接打电话</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxMjE3ODU3MQ==&amp;mid=207936220&amp;idx=5&amp;sn=1e4315ef239d807aa763f2b0e3875f78&amp;chksm=1225bf382552362ec7b11e4e9b2e90ad08c8c711ff0ceed91d0004762bf8822ce37a6632192d&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzAxMjE3ODU3MQ==&amp;mid=207936220&amp;idx=5&amp;sn=1e4315ef239d807aa763f2b0e3875f78&amp;chksm=1225bf382552362ec7b11e4e9b2e90ad08c8c711ff0ceed91d0004762bf8822ce37a6632192d&amp;scene=27#wechat_redirect</a></blockquote><p style="box-sizing: border-box; margin-top: 0px; margin-bottom: 10px; padding-bottom: 6px; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; font-size: 14px; line-height: 26px; white-space: normal; background-color: rgb(255, 255, 255);"><span style="box-sizing: border-box; color: rgb(0, 176, 80);"><span style="box-sizing: border-box; font-weight: 700;">本周堪称是安卓设备的“黑色周”，几天前刚被爆出Stagefight媒体库上存在胜似“心脏滴血”的高危漏洞，这两天安全研究人员再曝可远程致使安卓设备无法正常接打电话的最新漏洞。</span></span></p><p style="box-sizing: border-box; margin-top: 15px; margin-bottom: 10px; padding-bottom: 6px; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; font-size: 14px; line-height: 26px; white-space: normal; background-color: rgb(255, 255, 255);"><span style="box-sizing: border-box; color: rgb(0, 0, 0); font-size: 18px;"><span style="box-sizing: border-box; font-weight: 700;">漏洞概述</span></span></p><p style="box-sizing: border-box; margin-top: 0px; margin-bottom: 10px; padding-bottom: 6px; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; font-size: 14px; line-height: 26px; white-space: normal; background-color: rgb(255, 255, 255);">趋势科技的安全研究员在安卓设备的mediaserver服务上发现了一个整数溢出漏洞，可远程致使超过全球55%的安卓手机崩溃，连最基本的打电话接电话都不行。</p><p style="box-sizing: border-box; margin-top: 0px; margin-bottom: 10px; padding-bottom: 6px; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; font-size: 14px; line-height: 26px; white-space: normal; background-color: rgb(255, 255, 255);">Android 4.3 Jelly Bean及其之后的所有版本均受影响，包括Android 5.1.1 Lollipop，以至于有数百万的安卓用户都可能被黑客攻击。</p><p style="box-sizing: border-box; margin-top: 0px; margin-bottom: 10px; padding-bottom: 6px; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; font-size: 14px; line-height: 26px; white-space: normal; text-align: center; background-color: rgb(255, 255, 255);"><img data-original="http://image.3001.net/images/20150731/14383101306877.jpg!small" data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLibicNQnF1wef5mCEdiamK8iaQm7MqbiafvQQoG5c0rJG277jJuN2l53cBGnaDgtfibBfEp8wSBuiarPUfpA/0?wx_fmt=jpeg" title="6.jpg" style="box-sizing: border-box; border: 0px; vertical-align: middle; display: inline;" class="" data-type="jpeg" data-ratio="0.5049701789264414" data-w="" src="../Images/f33aa9b0a36091fc762ef2fc982ef9fd.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLibicNQnF1wef5mCEdiamK8iaQm7MqbiafvQQoG5c0rJG277jJuN2l53cBGnaDgtfibBfEp8wSBuiarPUfpA/0?wx_fmt=jpeg"/></p><p style="box-sizing: border-box; margin-top: 15px; margin-bottom: 10px; padding-bottom: 6px; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; font-size: 14px; line-height: 26px; white-space: normal; background-color: rgb(255, 255, 255);"><span style="box-sizing: border-box; color: rgb(38, 38, 38); font-size: 18px;"><span style="box-sizing: border-box; font-weight: 700;">如何利用？</span></span></p><p style="box-sizing: border-box; margin-top: 0px; margin-bottom: 10px; padding-bottom: 6px; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; font-size: 14px; line-height: 26px; white-space: normal; background-color: rgb(255, 255, 255);">黑客可通过下面的两种方式利用该漏洞：</p><pre class="prettyprint lang-html prettyprinted" style=""><span class="pln" style="box-sizing: border-box; color: rgb(72, 72, 76);">1. 通过一个恶意的安卓app
+2. 通过一个特别构造的网站</span></pre><p style="box-sizing: border-box; margin-top: 0px; margin-bottom: 10px; padding-bottom: 6px; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; font-size: 14px; line-height: 26px; white-space: normal; background-color: rgb(255, 255, 255);">最简单的方法就是引诱存在安全问题的安卓手机到一个设有陷阱的网站上。如果是因为这种方法使得手机没反应，只需重启手机即可恢复正常。</p><p style="box-sizing: border-box; margin-top: 0px; margin-bottom: 10px; padding-bottom: 6px; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; font-size: 14px; line-height: 26px; white-space: normal; background-color: rgb(255, 255, 255);">然而，本周三趋势科技在其博客中指出，如果是通过恶意APP入侵的手机，则会对手机造成比较长远的影响。</p><p style="box-sizing: border-box; margin-top: 0px; margin-bottom: 10px; padding-bottom: 6px; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; font-size: 14px; line-height: 26px; white-space: normal; text-align: center; background-color: rgb(255, 255, 255);"><img data-original="http://image.3001.net/images/20150731/14383101021798.png!small" data-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLibicNQnF1wef5mCEdiamK8iaQmUgNo9dBkTOYia2ibZG0Q3azaZSicuGKqgl966Yeic0524Tr9KOqqhA4hcg/0?wx_fmt=jpeg" title="666.png" style="box-sizing: border-box; border: 0px; vertical-align: middle; display: inline;" class="" data-type="jpeg" data-ratio="0.3518886679920477" data-w="" src="../Images/5da4e7401e66e686ac29ee0282fe1fa4.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/3xxicXNlTXLibicNQnF1wef5mCEdiamK8iaQmUgNo9dBkTOYia2ibZG0Q3azaZSicuGKqgl966Yeic0524Tr9KOqqhA4hcg/0?wx_fmt=jpeg"/></p><p style="box-sizing: border-box; margin-top: 0px; margin-bottom: 10px; padding-bottom: 6px; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; font-size: 14px; line-height: 26px; white-space: normal; background-color: rgb(255, 255, 255);">恶意APP的工作方式可被设计成：只要手机被打开，APP就会自动运行，此时手机就会出现短暂的不受控制——出现无反应、静音、无法打电话、无法接听电话等情况。</p><p style="box-sizing: border-box; margin-top: 15px; margin-bottom: 10px; padding-bottom: 6px; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; font-size: 14px; line-height: 26px; white-space: normal; background-color: rgb(255, 255, 255);"><span style="box-sizing: border-box; color: rgb(38, 38, 38); font-size: 18px;"><span style="box-sizing: border-box; font-weight: 700;">漏洞技术细节</span></span></p><p style="box-sizing: border-box; margin-top: 0px; margin-bottom: 10px; padding-bottom: 6px; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; font-size: 14px; line-height: 26px; white-space: normal; background-color: rgb(255, 255, 255);"><span style="box-sizing: border-box; color: rgb(0, 112, 192);">该漏洞存在于mediaserver服务上，mediaserver服务是安卓手机用于索引媒体文件的一个服务。造成该安全威胁的原因是mediaserver服务不能正确的处理畸形文件。当mediaserver服务解析MKV文件时会出现整数溢出，解析音频数据时，攻击者可以读取缓冲区数据，重写NULL数据。所以会导致服务崩溃。</span></p><p style="box-sizing: border-box; margin-top: 0px; margin-bottom: 10px; padding-bottom: 6px; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; font-size: 14px; line-height: 26px; white-space: normal; background-color: rgb(255, 255, 255);">漏洞细节的源码：</p><pre class="prettyprint lang-html prettyprinted" style=""><span style="box-sizing: border-box; color: rgb(72, 72, 76); font-size: 10px;">865 size_t offset = 1;
+ 866 size_t len1 = 0;
+ 867 while (offset &lt; codecPrivateSize &amp;&amp; codecPrivate[offset] == 0xff) {//codecPrivate is controlled by the mkv file
+ 868 len1 += 0xff;
+ 869 ++offset;
+ 870 }
+ 871 if (offset &gt;= codecPrivateSize) {
+ 872 return ERROR_MALFORMED;
+ 873 }
+ 874 len1 += codecPrivate[offset++];
+ 875
+ 876 size_t len2 = 0;
+ 877 while (offset &lt; codecPrivateSize &amp;&amp; codecPrivate[offset] == 0xff) {
+ 878 len2 += 0xff;
+ 879 ++offset;
+ 880 }
+ 881 if (offset &gt;= codecPrivateSize) {
+ 882 return ERROR_MALFORMED;
+ 883 }
+ 884 len2 += codecPrivate[offset++];
+ 885
+ 886 if (codecPrivateSize &lt; offset + len1 + len2) {//len1 or len2 maybe 0xffffffff, then integer overflow happened
+ 887 return ERROR_MALFORMED;
+ 888 }
+ 889
+ 890 if (codecPrivate[offset] != 0x01) {
+ 891 return ERROR_MALFORMED;
+ 892 }
+ 893 meta-&gt;setData(kKeyVorbisInfo, 0, &amp;codecPrivate[offset], len1);//crash in here</span></pre><p><span style="box-sizing: border-box; font-weight: 700; color: rgb(0, 112, 192); font-family: 微软雅黑; font-size: 18px; line-height: 26px;  background-color: rgb(255, 255, 255);">POC视频：</span></p><p><span style="">📹 <a href="http://v.qq.com/iframe/player.html?vid=k0161b7jjzr&amp;width=500&amp;height=375&amp;auto=0">http://v.qq.com/iframe/player.html?vid=k0161b7jjzr&amp;width=500&amp;height=375&amp;auto=0</a></span></p>
+        
+</body>
+</html>

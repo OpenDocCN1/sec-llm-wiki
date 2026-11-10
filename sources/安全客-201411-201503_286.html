@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>告警:贵宾犬漏洞卷土重来，影响TLS安全协议</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>告警:贵宾犬漏洞卷土重来，影响TLS安全协议</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA5ODA0NDE2MA==&amp;mid=201506641&amp;idx=1&amp;sn=ee6ee9c97f60343f72eec5cfa75a974e&amp;chksm=19618f3e2e16062868adce7be01f56a383d4e93d4b7ebbac5f73168d1d21baeac1db3d4f39ee&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA5ODA0NDE2MA==&amp;mid=201506641&amp;idx=1&amp;sn=ee6ee9c97f60343f72eec5cfa75a974e&amp;chksm=19618f3e2e16062868adce7be01f56a383d4e93d4b7ebbac5f73168d1d21baeac1db3d4f39ee&amp;scene=27#wechat_redirect</a></blockquote><p style="">10月份刚修复过SSL严重漏洞的网站管理员们，貌似又要开始忙活了。安全研究人员发现该漏洞也会影响新TLS协议(安全传输层协议)的实现。</p><p style=""><span style="">贵宾犬漏洞 (Padding Oracle On Downgraded Legacy Encryption)允许攻击者作为中间人的时候，对传输敏感信息进行解密,例如用户的cookie。</span></p><p style=""><span style="">起初，安全研究人员认为该漏洞仅仅影响SSL 3.0版本，通过TLS 1.0，1.1，1.2取代老化的协议。 这种解决方案仍然置用户于危险之中，因为大多数的浏览器和服务器仍然支持SSL 3.0，因为兼容性的缘故。攻击者能够强制TLS连接降级到SSL，然后利用该漏洞。</span></p><p style=""><span style="">现在，安全研究人员已经发现，该问题也影响TLS在产品中的实施，一些不适当检查的TLS数据包所用的“padding”的结构。</span></p><p style=""><span style="">问题首先被发现在老版本的Mozilla的NSS（网络安全服务），在Firefox和其他产品中使用的加密库，但谷歌安全工程师亚当·兰利做了个扫描仪，找出是否有其他产品会受到影响。</span></p><p style=""><span style="">他发现，一些重要站点存在该漏洞，原来是因为他们使用的负载均衡从F5 Networks和A10 Networks来处理TLS连接。</span></p><p style=""><span style="">“F5已经</span><span style="">发布补丁</span><span style="">，A10应该今天发布更新，“Langley周一在博客中说 。“我不能完全肯定，我能发现了每一个受影响的厂商，但是，现在，这个问题是公开的，其他任何受影响的产品应该很快暴露出来。”</span></p><p style=""><span style="">据安全厂商Qualys公司SSL Labs负责人Ivan Ristic所言，由SSL脉冲项目监测服务器的10％左右很容易通过TLS贵宾犬的攻击。 该SSL脉冲项目监测Alexa十一月的统计的访问量在前百万的网站列表中的启用HTTPS的大概151,000个站点。</span></p><p style=""><span style="">想要检查他们的服务器或者网站使用的负载均衡设备是否存在该漏洞的网站管理员们，可以使用</span><span style="">Qualys公司SSL实验室服务器测试</span><span style=""> </span><span style="">。</span></p><p style=""><span style="">“如果存在该漏洞的，就该打补丁了，”Ivan Ristic的在他的博客里说，“这个问题应该很容易修复。”</span></p><p style=""><br/></p><p style=""><br/></p><p style="">本文由 360安全播报 翻译，转载请注明“转自360安全播报”，并附上链接。<br/>原文链接：http://www.networkworld.com/article/2857053/the-poodle-flaw-returns-this-time-hitting-tls-security-protocol.html</p><p><br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>【用 Python 浅析股票数据】</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>【用 Python 浅析股票数据】</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAwNDcwMDgzMA==&amp;mid=2651029797&amp;idx=1&amp;sn=4d55a3d90667144b1408fc552b019928&amp;chksm=80d0ced4b7a747c238490db8c0a704695a6cacf70e06854aa3eebe88361df8deadd10cb790f9&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzAwNDcwMDgzMA==&amp;mid=2651029797&amp;idx=1&amp;sn=4d55a3d90667144b1408fc552b019928&amp;chksm=80d0ced4b7a747c238490db8c0a704695a6cacf70e06854aa3eebe88361df8deadd10cb790f9&amp;scene=27#wechat_redirect</a></blockquote><section data-mpa-powered-by="yiban.io" style="display: none; height: 0px;"/><p style="line-height: 25.6px; white-space: normal;"><img data-type="gif" data-src="http://mmbiz.qpic.cn/mmbiz_gif/dDhDhftpRFv1u2jD7iaUmib1lB4obwcNMTj6W1Dia0UMr1JPKFOsOO1IOu6f5riatcXicD0Tk48my4YVNHe7D6wPaoQ/0.gif?wxfrom=5&amp;wx_lazy=1&amp;tp=webp" data-ratio="0.14583333333333334" data-w="480" src="../Images/fb176fb49ae19d9b53427171c4cdbc64.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_gif/dDhDhftpRFv1u2jD7iaUmib1lB4obwcNMTj6W1Dia0UMr1JPKFOsOO1IOu6f5riatcXicD0Tk48my4YVNHe7D6wPaoQ/0.gif?wxfrom=5&amp;wx_lazy=1&amp;tp=webp"/></p><p>转自：36大数据（ID：dashuju36）</p><p><br/></p><center style="font-size: 16px; line-height: 25.6px; white-space: normal; color: rgb(102, 102, 102); background-color: rgb(255, 255, 255);"><p><img class="" data-ratio="0.59375" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58stGUSv4OqxjM0elbTr7r9iciaSXMibaS9nmmzyEfDUtBibaLDvUhVHm29OA/640?wx_fmt=jpeg" data-type="jpeg" data-w="640" style="width: 670px; visibility: visible !important;" width="100%" src="../Images/2bb697a3cefbc9e6268d52a180b26ad6.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58stGUSv4OqxjM0elbTr7r9iciaSXMibaS9nmmzyEfDUtBibaLDvUhVHm29OA/640?wx_fmt=jpeg"/></p></center><p><br/></p><section label="Copyright &#xA9; 2016 playhudong All Rights Reserved." donone="shifuMouseDownPayStyle('shifu_t_051')" style="margin: 1em auto; color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; width: 20em; text-align: center; background-color: rgb(255, 255, 255);"><section class="" style="padding: 6px; color: white; transform: rotate(360deg); background-color: rgb(255, 105, 31);"><section class="" style="padding: 10px; border: 1px dashed white;">数据导入</section></section><section style="margin-top: -1.8em; width: 20em; height: 3em; background-image: url(&quot;http://mmbiz.qpic.cn/mmbiz_png/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58sjaHRD3gwTLvxS5kRicKficqibyDcmjoERNzmtT1mNthJ3icDZJVYae1qaQ/0?wx_fmt=png&quot;); background-size: 100%; background-repeat: no-repeat;"><br/></section></section><p><br/></p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);"><span style="line-height: 25.6px;">这里将股票数据存储在stockData.txt文本文件中，我们使用pandas.read_table()函数将文件数据读入成DataFrame格式。</span></p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);">其中参数usecols=range(15)限制只读取前15列数据，parse_dates=[0]表示将第一列数据解析成时间格式，index_col=0则将第一列数据指定为索引。</p><pre style="margin-top: 20px; margin-bottom: 20px; padding: 10px 20px; overflow: auto; font-size: 12px; line-height: 20px; color: rgb(248, 248, 212); word-break: break-all; border: none; border-radius: 4px; font-stretch: normal; background-color: rgb(74, 74, 74);">import pandas as pd
+
+import numpy as np
+
+import matplotlib.pyplot as plt
+
+%matplotlib inline
+
+%config InlineBackend.figure_format = 'retina'
+
+%pylab inline
+
+pylab.rcParams['figure.figsize'] = (10, 6) #设置绘图尺寸
+
+#读取数据
+
+stock = pd.read_table('stockData.txt', usecols=range(15), parse_dates=[0], index_col=0)
+
+stock = stock[::-1] #逆序排列
+
+stock.head()</pre><p style="margin-bottom: 16px; font-size: 16px; line-height: 25.6px; white-space: normal; color: rgb(102, 102, 102); background-color: rgb(255, 255, 255);"><img class="" data-ratio="0.221875" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58sOcH9kVHIh7lM2Mmb8QXeuJAyZgyoNzqSm4WibRAzcsjLT3GgzHPvKAQ/640?wx_fmt=jpeg" data-type="jpeg" data-w="640" style="color: rgb(62, 62, 62); line-height: 25.6px; width: 670px; visibility: visible !important;" width="100%" src="../Images/7d5148992bd258a8baefe0f35dff1f66.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58sOcH9kVHIh7lM2Mmb8QXeuJAyZgyoNzqSm4WibRAzcsjLT3GgzHPvKAQ/640?wx_fmt=jpeg"/><br/></p><p style="margin-bottom: 16px; font-size: 16px; line-height: 25.6px; white-space: normal; color: rgb(102, 102, 102); background-color: rgb(255, 255, 255);">以上显示了前5行数据，要得到数据的更多信息，可以使用.info()方法。它告诉我们该数据一共有20行，索引是时间格式，日期从2015年1月5日到2015年1月30日。总共有14列，并列出了每一列的名称和数据格式，并且没有缺失值。</p><pre style="margin-top: 20px; margin-bottom: 20px; padding: 10px 20px; overflow: auto; font-size: 12px; line-height: 20px; color: rgb(248, 248, 212); word-break: break-all; border: none; border-radius: 4px; font-stretch: normal; background-color: rgb(74, 74, 74);">stock.info()
+
+DatetimeIndex: 20 entries, 2015-01-05 to 2015-01-30
+
+Data columns (total 14 columns):
+
+open 20 non-null float64
+
+high 20 non-null float64
+
+close 20 non-null float64
+
+low 20 non-null float64
+
+volume 20 non-null float64
+
+price_change 20 non-null float64
+
+p_change 20 non-null float64
+
+ma5 20 non-null float64
+
+ma10 20 non-null float64
+
+ma20 20 non-null float64
+
+v_ma5 20 non-null float64
+
+v_ma10 20 non-null float64
+
+v_ma20 20 non-null float64
+
+turnover 20 non-null float64
+
+dtypes: float64(14)
+
+memory usage: 2.3 KB</pre><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);">在观察每一列的名称时，我们发现’open’的列名前面似乎与其它列名不太一样，为了更清楚地查看，使用.columns得到该数据所有的列名如下：</p><pre style="margin-top: 20px; margin-bottom: 20px; padding: 10px 20px; overflow: auto; font-size: 12px; line-height: 20px; color: rgb(248, 248, 212); word-break: break-all; border: none; border-radius: 4px; font-stretch: normal; background-color: rgb(74, 74, 74);">stock.columns
+
+Index([' open', 'high', 'close', 'low', 'volume', 'price_change',
+
+'p_change', 'ma5', 'ma10', 'ma20', 'v_ma5', 'v_ma10', 'v_ma20',
+
+'turnover'],
+
+dtype='object')</pre><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);">于是发现’open’列名前存在多余的空格，我们使用如下方法修正列名。</p><pre style="margin-top: 20px; margin-bottom: 20px; padding: 10px 20px; overflow: auto; font-size: 12px; line-height: 20px; color: rgb(248, 248, 212); word-break: break-all; border: none; border-radius: 4px; font-stretch: normal; background-color: rgb(74, 74, 74);">stock.rename(columns={' open':'open'}, inplace=True)</pre><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);">至此，我们完成了股票数据的导入和清洗工作，接下来将使用可视化的方法来观察这些数据。</p><p><br/></p><section label="Copyright &#xA9; 2016 playhudong All Rights Reserved." donone="shifuMouseDownPayStyle('shifu_t_051')" style="margin: 1em auto; color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; width: 20em; text-align: center; background-color: rgb(255, 255, 255);"><section class="" style="padding: 6px; color: white; transform: rotate(360deg); background-color: rgb(255, 105, 31);"><section class="" style="padding: 10px; border: 1px dashed white;">数据观察</section></section><section style="margin-top: -1.8em; width: 20em; height: 3em; background-image: url(&quot;http://mmbiz.qpic.cn/mmbiz_png/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58sjaHRD3gwTLvxS5kRicKficqibyDcmjoERNzmtT1mNthJ3icDZJVYae1qaQ/0?wx_fmt=png&quot;); background-size: 100%; background-repeat: no-repeat;"><br/></section></section><p><br/></p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);"><span style="line-height: 25.6px;">首先，我们观察数据的列名，其含义对应如下：</span><br/></p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);"><img class="" data-ratio="0.2765625" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58sBPJ2iaT4UNN8Q1a4iaRNow7oVHRia0Qpnz2ePdKD8df3XDlkVl3icmibXyQ/640?wx_fmt=jpeg" data-type="jpeg" data-w="640" style="width: 670px; visibility: visible !important;" width="100%" src="../Images/b1ccfcaea5785441ca6d8b8cb45b3f9a.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58sBPJ2iaT4UNN8Q1a4iaRNow7oVHRia0Qpnz2ePdKD8df3XDlkVl3icmibXyQ/640?wx_fmt=jpeg"/></p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);">这些指标总体可分为两类：</p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);"><strong style="line-height: 25.6px;">价格相关指标</strong></p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);">当日价格：开盘、收盘价，最高、最低价</p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);">价格变化：价格变动和涨跌幅</p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);">均价：5、10、20日均价</p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);"><strong>成交量相关指标</strong></p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);">成交量</p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);">换手率：成交量/发行总股数×100%</p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);">成交量均量：5、10、20日均量</p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);">由于这些指标都是随时间变化的，所以让我们先来观察它们的时间序列图。</p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);"><strong style="line-height: 25.6px;">时间序列图</strong></p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);">以时间为横坐标，每日的收盘价为纵坐标，做折线图，可以观察股价随时间的波动情况。这里直接使用DataFrame数据格式自带的做图工具，其优点是能够快速做图，并自动优化图形输出形式。</p><pre style="margin-top: 20px; margin-bottom: 20px; padding: 10px 20px; overflow: auto; font-size: 12px; line-height: 20px; color: rgb(248, 248, 212); word-break: break-all; border: none; border-radius: 4px; font-stretch: normal; background-color: rgb(74, 74, 74);">stock['close'].plot(grid=True)</pre><p style="margin-bottom: 16px; font-size: 16px; line-height: 25.6px; white-space: normal; color: rgb(102, 102, 102); background-color: rgb(255, 255, 255);"><img class="" data-ratio="0.6625" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58sTjN18biamy4v9p1nG5uXnD4Ee8Oy3EOhnDJBI1nFhnxhv9p9C8njlEw/640?wx_fmt=jpeg" data-type="jpeg" data-w="640" style="color: rgb(62, 62, 62); line-height: 25.6px; width: 670px; visibility: visible !important;" width="100%" src="../Images/62c63ad1e9d1b3f5d0735f01c61ff4b0.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58sTjN18biamy4v9p1nG5uXnD4Ee8Oy3EOhnDJBI1nFhnxhv9p9C8njlEw/640?wx_fmt=jpeg"/><br/></p><p style="margin-bottom: 16px; font-size: 16px; line-height: 25.6px; white-space: normal; color: rgb(102, 102, 102); background-color: rgb(255, 255, 255);">如果我们将每日的开盘、收盘价和最高、最低价以折线的形式绘制在一起，难免显得凌乱，也不便于分析。那么有什么好的方法能够在一张图中显示出这四个指标?答案下面揭晓。</p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);"><strong>K线图</strong></p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);"><span style="line-height: 25.6px;">相传K线图起源于日本德川幕府时代，当时的商人用此图来记录米市的行情和价格波动，后来K线图被引入到股票市场。每天的四项指标数据用如下蜡烛形状的图形来记录，不同的颜色代表涨跌情况。</span><br/></p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);"><img class="" data-ratio="0.75" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58spm1cxJBf5EicRKMsDtua1bTwywheg71M9UYsic4jvmXo2d99ibzaj4OhA/640?wx_fmt=jpeg" data-type="jpeg" data-w="640" style="width: 670px; visibility: visible !important;" width="100%" src="../Images/3b4277afe6637c7af254406baaff72d8.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58spm1cxJBf5EicRKMsDtua1bTwywheg71M9UYsic4jvmXo2d99ibzaj4OhA/640?wx_fmt=jpeg"/></p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; text-align: center; background-color: rgb(255, 255, 255);">图片来源：http://wiki.mbalib.com/wiki/K线理论</p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);"><span style="line-height: 25.6px;">Matplotlib.finance模块提供了绘制K线图的函数candlestick_ohlc()，但如果要绘制比较美观的K线图还是要下点功夫的。下面定义了pandas_candlestick_ohlc()函数来绘制适用于本文数据的K线图，其中大部分代码都是在设置坐标轴的格式。</span><br/></p><pre style="margin-top: 20px; margin-bottom: 20px; padding: 10px 20px; overflow: auto; font-size: 12px; line-height: 20px; color: rgb(248, 248, 212); word-break: break-all; border: none; border-radius: 4px; font-stretch: normal; background-color: rgb(74, 74, 74);">from matplotlib.finance import candlestick_ohlc
+
+from matplotlib.dates import DateFormatter, WeekdayLocator, DayLocator, MONDAY
+
+def pandas_candlestick_ohlc(stock_data, otherseries=None):
+
+# 设置绘图参数，主要是坐标轴
+
+mondays = WeekdayLocator(MONDAY)
+
+alldays = DayLocator()
+
+dayFormatter = DateFormatter('%d')
+
+fig, ax = plt.subplots()
+
+fig.subplots_adjust(bottom=0.2)
+
+if stock_data.index[-1] - stock_data.index[0] &lt; pd.Timedelta('730 days'):
+
+weekFormatter = DateFormatter('%b %d')
+
+ax.xaxis.set_major_locator(mondays)
+
+ax.xaxis.set_minor_locator(alldays)
+
+else:
+
+weekFormatter = DateFormatter('%b %d, %Y')
+
+ax.xaxis.set_major_formatter(weekFormatter)
+
+ax.grid(True)
+
+# 创建K线图
+
+stock_array = np.array(stock_data.reset_index()[['date','open','high','low','close']])
+
+stock_array[:,0] = date2num(stock_array[:,0])
+
+candlestick_ohlc(ax, stock_array, colorup = "red", colordown="green", width=0.4)
+
+# 可同时绘制其他折线图
+
+if otherseries is not None:
+
+for each in otherseries:
+
+plt.plot(stock_data[each], label=each)
+
+plt.legend()
+
+ax.xaxis_date()
+
+ax.autoscale_view()
+
+plt.setp(plt.gca().get_xticklabels(), rotation=45, horizontalalignment='right')
+
+plt.show()
+
+pandas_candlestick_ohlc(stock)</pre><center style="font-size: 16px; line-height: 25.6px; white-space: normal; color: rgb(102, 102, 102); background-color: rgb(255, 255, 255);"><p><img class="" data-ratio="0.5734375" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58srdYsvopsen8vWNQFs0MT4duda409U7RooUCRr0G5iaicxI7A4lULwZOw/640?wx_fmt=jpeg" data-type="jpeg" data-w="640" style="width: 670px; visibility: visible !important;" width="100%" src="../Images/8a4403aee456bbed790a31b190090d6a.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58srdYsvopsen8vWNQFs0MT4duda409U7RooUCRr0G5iaicxI7A4lULwZOw/640?wx_fmt=jpeg"/></p></center><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);">这里红色代表上涨，绿色代表下跌。</p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);"><strong style="line-height: 25.6px;">相对变化量</strong></p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);">股票中关注的不是价格的绝对值，而是相对变化量。有多种方式可以衡量股价的相对值，最简单的方法就是将股价除以初始时的价格。</p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);"><img class="" data-ratio="0.1109375" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58snh9icIT3gS8cmEcoVp9ve5QClYoysqO32yXZUq4pntPtBOa4bic7gJMw/640?wx_fmt=jpeg" data-type="jpeg" data-w="640" style="width: 670px; visibility: visible !important;" width="100%" src="../Images/5992855e1c8de5316e78f841b9f310a8.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58snh9icIT3gS8cmEcoVp9ve5QClYoysqO32yXZUq4pntPtBOa4bic7gJMw/640?wx_fmt=jpeg"/></p><pre style="margin-top: 20px; margin-bottom: 20px; padding: 10px 20px; overflow: auto; font-size: 12px; line-height: 20px; color: rgb(248, 248, 212); word-break: break-all; border: none; border-radius: 4px; font-stretch: normal; background-color: rgb(74, 74, 74);">stock['return'] = stock['close'] / stock.close.iloc[0]
+
+stock['return'].plot(grid=True)</pre><center style="font-size: 16px; line-height: 25.6px; white-space: normal; color: rgb(102, 102, 102); background-color: rgb(255, 255, 255);"><p><img class="" data-ratio="0.659375" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58slZMNYGdic2vGFgIoLmeNlgcmhrqogaiblfy7M8FCjTGBhCDOiblltZkbg/640?wx_fmt=jpeg" data-type="jpeg" data-w="640" style="width: 670px; visibility: visible !important;" width="100%" src="../Images/2a08432191ecc7fdd97bd7ee359914ef.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58slZMNYGdic2vGFgIoLmeNlgcmhrqogaiblfy7M8FCjTGBhCDOiblltZkbg/640?wx_fmt=jpeg"/></p></center><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);">第二种方法是计算每天的涨跌幅，但计算方式有两种：</p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);"><br/></p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);"><img class="" data-ratio="0.0890625" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58siaKcc3fMdYYdQG4uruqibFQxuRZ7cn8LQTZupiaegkKFsIQJfJt8QlibxA/640?wx_fmt=jpeg" data-type="jpeg" data-w="640" style="width: 670px; visibility: visible !important;" width="100%" src="../Images/3e86985917d9372e28c9668603e3bc74.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58siaKcc3fMdYYdQG4uruqibFQxuRZ7cn8LQTZupiaegkKFsIQJfJt8QlibxA/640?wx_fmt=jpeg"/></p><p style="margin-bottom: 16px; font-size: 16px; line-height: 25.6px; white-space: normal; color: rgb(102, 102, 102); background-color: rgb(255, 255, 255);"><span style="line-height: 25.6px;">这两者可能导致不同的分析结果，样例数据中的涨跌幅使用的是第一个公式，并乘上了100%。</span><br/></p><pre style="margin-top: 20px; margin-bottom: 20px; padding: 10px 20px; overflow: auto; font-size: 12px; line-height: 20px; color: rgb(248, 248, 212); word-break: break-all; border: none; border-radius: 4px; font-stretch: normal; background-color: rgb(74, 74, 74);">stock['p_change'].plot(grid=True).axhline(y=0, color='black', lw=2)</pre><p style="margin-bottom: 16px; font-size: 16px; line-height: 25.6px; white-space: normal; color: rgb(102, 102, 102); background-color: rgb(255, 255, 255);"><img class="" data-ratio="0.6765625" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58soRr6joUqxmsiaRRf3jph1Ofcp9K9u8rcK7N4pibQVp4E2zpMZ9fxHNiaA/640?wx_fmt=jpeg" data-type="jpeg" data-w="640" style="color: rgb(62, 62, 62); line-height: 25.6px; width: 670px; visibility: visible !important;" width="100%" src="../Images/30e2baf75f0207a8ffa7898951252866.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58soRr6joUqxmsiaRRf3jph1Ofcp9K9u8rcK7N4pibQVp4E2zpMZ9fxHNiaA/640?wx_fmt=jpeg"/><br/></p><p style="margin-bottom: 16px; font-size: 16px; line-height: 25.6px; white-space: normal; color: rgb(102, 102, 102); background-color: rgb(255, 255, 255);">为了解决第二种方法中的两难选择，我们引入第三种方法，就是计算价格的对数之差，公式如下：</p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);"><img class="" data-ratio="0.071875" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58sQsqAfmPc1gnbVjEea9ia8qB0S15QefNRQ3icCibtXGFHUxUogMGInjibUA/640?wx_fmt=jpeg" data-type="jpeg" data-w="640" style="width: 670px; visibility: visible !important;" width="100%" src="../Images/0fb78aa4a7cae33365d0b9531bbc04f5.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58sQsqAfmPc1gnbVjEea9ia8qB0S15QefNRQ3icCibtXGFHUxUogMGInjibUA/640?wx_fmt=jpeg"/></p><pre style="margin-top: 20px; margin-bottom: 20px; padding: 10px 20px; overflow: auto; font-size: 12px; line-height: 20px; color: rgb(248, 248, 212); word-break: break-all; border: none; border-radius: 4px; font-stretch: normal; background-color: rgb(74, 74, 74);">close_price = stock['close']
+
+log_change = np.log(close_price) - np.log(close_price.shift(1))
+
+log_change.plot(grid=True).axhline(y=0, color='black', lw=2)</pre><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);"><img class="" data-ratio="0.071875" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58sQsqAfmPc1gnbVjEea9ia8qB0S15QefNRQ3icCibtXGFHUxUogMGInjibUA/640?wx_fmt=jpeg" data-type="jpeg" data-w="640" style="width: 670px; visibility: visible !important;" width="100%" src="../Images/0fb78aa4a7cae33365d0b9531bbc04f5.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58sQsqAfmPc1gnbVjEea9ia8qB0S15QefNRQ3icCibtXGFHUxUogMGInjibUA/640?wx_fmt=jpeg"/></p><center style="font-size: 16px; line-height: 25.6px; white-space: normal; color: rgb(102, 102, 102); background-color: rgb(255, 255, 255);"><p><img class="" data-ratio="0.6703125" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58scZ3BlZIJtUzGo3qibG2UPECkxetnPen2F6dmicrhJ81IuszqILOGJaVQ/640?wx_fmt=jpeg" data-type="jpeg" data-w="640" style="width: 670px; visibility: visible !important;" width="100%" src="../Images/234406c491d148314042f09d98e11a5d.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58scZ3BlZIJtUzGo3qibG2UPECkxetnPen2F6dmicrhJ81IuszqILOGJaVQ/640?wx_fmt=jpeg"/></p></center><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);"><strong>相关关系</strong></p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);"><span style="line-height: 25.6px;">在观察了价格的走势之后，我们来看看各指标之间的关系。下面挑选了部分代表性的指标，并使用pandas.scatter_matrix()函数，将各项指标数据两两关联做散点图，对角线是每个指标数据的直方图。</span><br/></p><pre style="margin-top: 20px; margin-bottom: 20px; padding: 10px 20px; overflow: auto; font-size: 12px; line-height: 20px; color: rgb(248, 248, 212); word-break: break-all; border: none; border-radius: 4px; font-stretch: normal; background-color: rgb(74, 74, 74);">small = stock[['close', 'price_change', 'ma20','volume', 'v_ma20', 'turnover']]
+
+_ = pd.scatter_matrix(small)</pre><p style="margin-bottom: 16px; font-size: 16px; line-height: 25.6px; white-space: normal; color: rgb(102, 102, 102); background-color: rgb(255, 255, 255);"><img class="" data-ratio="0.6109375" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58s4r7e3aibuicrRl4OplgkBE0Wz8icp2n5DE72hJdqpXpnEN8qJF2dhKupg/640?wx_fmt=jpeg" data-type="jpeg" data-w="640" style="color: rgb(62, 62, 62); line-height: 25.6px; width: 670px; visibility: visible !important;" width="100%" src="../Images/b765b8fc24ce6d7d3a3cb5b22da34cd0.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58s4r7e3aibuicrRl4OplgkBE0Wz8icp2n5DE72hJdqpXpnEN8qJF2dhKupg/640?wx_fmt=jpeg"/><br/></p><p style="margin-bottom: 16px; font-size: 16px; line-height: 25.6px; white-space: normal; color: rgb(102, 102, 102); background-color: rgb(255, 255, 255);">图中可以明显发现成交量(volume)和换手率(turnover)有非常明显的线性关系，其实换手率的定义就是：成交量除以发行总股数，再乘以100%。所以下面的分析中我们将换手率指标去除，这里使用了相关性关系来实现数据降维。</p><p style="margin-bottom: 16px; font-size: 16px; line-height: 25.6px; white-space: normal; color: rgb(102, 102, 102); background-color: rgb(255, 255, 255);">上面的散点图看着有些眼花缭乱，我们可以使用numpy.corrcof()来直接计算各指标数据间的相关系数。<br/></p><pre style="margin-top: 20px; margin-bottom: 20px; padding: 10px 20px; overflow: auto; font-size: 12px; line-height: 20px; color: rgb(248, 248, 212); word-break: break-all; border: none; border-radius: 4px; font-stretch: normal; background-color: rgb(74, 74, 74);">small = stock[['close', 'price_change', 'ma20','volume', 'v_ma20']]
+
+cov = np.corrcoef(small.T)
+
+cov
+
+array([[ 1. , 0.30308764, 0.10785519, 0.91078009, -0.37602193],
+
+[ 0.30308764, 1. , -0.45849273, 0.3721832 , -0.25950305],
+
+[ 0.10785519, -0.45849273, 1. , -0.06002202, 0.51793654],
+
+[ 0.91078009, 0.3721832 , -0.06002202, 1. , -0.37617624],
+
+[-0.37602193, -0.25950305, 0.51793654, -0.37617624, 1. ]])</pre><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);">如果觉得看数字还是不够方便，我们继续将上述相关性矩阵转换成图形，如下图所示，其中用颜色来代表相关系数。我们发现位于(0，3)位置的相关系数非常大，查看数值达到0.91。这两个强烈正相关的指标是收盘价和成交量。</p><pre style="margin-top: 20px; margin-bottom: 20px; padding: 10px 20px; overflow: auto; font-size: 12px; line-height: 20px; color: rgb(248, 248, 212); word-break: break-all; border: none; border-radius: 4px; font-stretch: normal; background-color: rgb(74, 74, 74);">img = plt.matshow(cov,cmap=plt.cm.winter)
+
+plt.colorbar(img, ticks=[-1,0,1])
+
+plt.show()</pre><p style="margin-bottom: 16px; font-size: 16px; line-height: 25.6px; white-space: normal; color: rgb(102, 102, 102); background-color: rgb(255, 255, 255);"><img class="" data-ratio="1.0375" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58sgJn8SlQIk8QHicxzOuBv20VVSnjD7PKw5bhSicUHPwiasP25dlrglFCLg/640?wx_fmt=jpeg" data-type="jpeg" data-w="640" style="color: rgb(62, 62, 62); line-height: 25.6px; width: 670px; visibility: visible !important;" width="100%" src="../Images/b1e070538778bfb0de56ca9a81334ebd.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58sgJn8SlQIk8QHicxzOuBv20VVSnjD7PKw5bhSicUHPwiasP25dlrglFCLg/640?wx_fmt=jpeg"/><br/></p><p style="margin-bottom: 16px; font-size: 16px; line-height: 25.6px; white-space: normal; color: rgb(102, 102, 102); background-color: rgb(255, 255, 255);">以上我们用矩阵图表的方式在多个指标中迅速找到了强相关的指标。接着做出收盘价和成交量的折线图，因为它们的数值差异很大，所以我们采用两套纵坐标体系来做图。</p><pre style="margin-top: 20px; margin-bottom: 20px; padding: 10px 20px; overflow: auto; font-size: 12px; line-height: 20px; color: rgb(248, 248, 212); word-break: break-all; border: none; border-radius: 4px; font-stretch: normal; background-color: rgb(74, 74, 74);">stock[['close','volume']].plot(secondary_y='volume', grid=True)</pre><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);"><img class="" data-ratio="0.6390625" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58sK7pDNbQIO6zDkbibmEHQdv1efggrS2DcN3Kibh65iawyOA8pFyAvraOYQ/640?wx_fmt=jpeg" data-type="jpeg" data-w="640" style="color: rgb(102, 102, 102); line-height: 25.6px; width: 670px; visibility: visible !important;" width="100%" src="../Images/ff4b8548d7cf61fd7bb1b68ba7630bcc.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58sK7pDNbQIO6zDkbibmEHQdv1efggrS2DcN3Kibh65iawyOA8pFyAvraOYQ/640?wx_fmt=jpeg"/><br/></p><center style="font-size: 16px; line-height: 25.6px; white-space: normal; color: rgb(102, 102, 102); text-align: left; background-color: rgb(255, 255, 255);">观察这两个指标的走势，在大部分时候股价上涨，成交量也上涨，反之亦然。但个别情况下则不成立，可能是成交量受到前期的惯性影响，或者还有其他因素。</center><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);"><strong>移动平均线</strong></p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);">吴军老师曾讲述他的投资经验，大意是说好的投资方式不是做预测，而是能在合适的时机做出合适的应对和决策。同样股市也没法预测，我们能做的是选择恰当的策略应对不同的情况。</p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);"><span style="line-height: 25.6px;">好的指标是能驱动决策的。在上面的分析中我们一直没有使用的一类指标是5、10、20日均价，它们又称为移动平均值，下面我们就使用这项指标来演示一个简单的股票交易策略。(警告：这里仅仅是演示说明，并非投资建议。)</span><br/></p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);"><span style="line-height: 25.6px;">为了得到更多的数据来演示，我们使用pandas_datareader直接从雅虎中下载最近一段时间的谷歌股票数据。</span><br/></p><pre style="margin-top: 20px; margin-bottom: 20px; padding: 10px 20px; overflow: auto; font-size: 12px; line-height: 20px; color: rgb(248, 248, 212); word-break: break-all; border: none; border-radius: 4px; font-stretch: normal; background-color: rgb(74, 74, 74);">import datetime
+
+import pandas_datareader.data as web
+
+# 设置股票数据的时间跨度
+
+start = datetime.datetime(2016,10,1)
+
+end = datetime.date.today()
+
+# 从yahoo中获取google的股价数据。
+
+goog = web.DataReader("GOOG", "yahoo", start, end)
+
+#修改索引和列的名称，以适应本文的分析
+
+goog.index.rename('date', inplace=True)
+
+goog.rename(columns={'Open':'open', 'High':'high', 'Low':'low', 'Close':'close'}, inplace=True)
+
+goog.head()</pre><p style="margin-bottom: 16px; font-size: 16px; line-height: 25.6px; white-space: normal; color: rgb(102, 102, 102); background-color: rgb(255, 255, 255);"><img class="" data-ratio="0.3109375" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58sp8B0iaTW9plbMVvCx2Tk1yIaK6D3s1ntjXuBY63QMoqsgqydcukAEDQ/640?wx_fmt=jpeg" data-type="jpeg" data-w="640" style="color: rgb(62, 62, 62); line-height: 25.6px; width: auto !important; visibility: visible !important;" src="../Images/cb516ea6c68098967faafb242fcc6b83.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58sp8B0iaTW9plbMVvCx2Tk1yIaK6D3s1ntjXuBY63QMoqsgqydcukAEDQ/640?wx_fmt=jpeg"/><br/></p><p style="margin-bottom: 16px; font-size: 16px; line-height: 25.6px; white-space: normal; color: rgb(102, 102, 102); background-color: rgb(255, 255, 255);">数据中只有每天的价格和成交量，所以我们需要自己算出5日均价和10日均价，并将均价的折线图(也称移动平均线)与K线图画在一起。</p><pre style="margin-top: 20px; margin-bottom: 20px; padding: 10px 20px; overflow: auto; font-size: 12px; line-height: 20px; color: rgb(248, 248, 212); word-break: break-all; border: none; border-radius: 4px; font-stretch: normal; background-color: rgb(74, 74, 74);">goog["ma5"] = np.round(goog["close"].rolling(window = 5, center = False).mean(), 2)
+
+goog["ma20"] = np.round(goog["close"].rolling(window = 20, center = False).mean(), 2)
+
+goog = goog['2017-01-01':]
+
+pandas_candlestick_ohlc(goog, ['ma5','ma20'])</pre><p style="margin-bottom: 16px; font-size: 16px; line-height: 25.6px; white-space: normal; color: rgb(102, 102, 102); background-color: rgb(255, 255, 255);"><img class="" data-ratio="0.5828125" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58sqqxhXlkLYdwbJypw1VHhibuWZRdQvxRgOtUXjR4RmpdLkKUpAn8ybNw/640?wx_fmt=jpeg" data-type="jpeg" data-w="640" style="color: rgb(62, 62, 62); line-height: 25.6px; width: auto !important; visibility: visible !important;" src="../Images/88bfa8fefbe7ed8cfed03df025faa6e9.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58sqqxhXlkLYdwbJypw1VHhibuWZRdQvxRgOtUXjR4RmpdLkKUpAn8ybNw/640?wx_fmt=jpeg"/><br/></p><p style="margin-bottom: 16px; font-size: 16px; line-height: 25.6px; white-space: normal; color: rgb(102, 102, 102); background-color: rgb(255, 255, 255);">观察上图，我们发现5日均线与K线图较为接近，而20日均线则更平坦，可见移动平均线具有抹平短期波动的作用，更能反映长期的走势。比较5日均线和20日均线，特别是关注它们的交叉点，这些是交易的时机。移动平均线策略，最简单的方式就是：当5日均线从下方超越20日均线时，买入股票，当5日均线从上方越到20日均线之下时，卖出股票。</p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);">为了找出交易的时机，我们计算5日均价和20日均价的差值，并取其正负号，作于下图。当图中水平线出现跳跃的时候就是交易时机。</p><pre style="margin-top: 20px; margin-bottom: 20px; padding: 10px 20px; overflow: auto; font-size: 12px; line-height: 20px; color: rgb(248, 248, 212); word-break: break-all; border: none; border-radius: 4px; font-stretch: normal; background-color: rgb(74, 74, 74);">goog['ma5-20'] = goog['ma5'] - goog['ma20']
+
+goog['diff'] = np.sign(goog['ma5-20'])
+
+goog['diff'].plot(ylim=(-2,2)).axhline(y=0, color='black', lw=2)</pre><p style="margin-bottom: 16px; font-size: 16px; line-height: 25.6px; white-space: normal; color: rgb(102, 102, 102); background-color: rgb(255, 255, 255);"><img class="" data-ratio="0.6109375" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58sjzy1CaW8K0ZXOYFYhFfBkXicdBUs0Le3kwJ2HCVE005TnvRfTOibYNHA/640?wx_fmt=jpeg" data-type="jpeg" data-w="640" style="color: rgb(62, 62, 62); line-height: 25.6px; width: auto !important; visibility: visible !important;" src="../Images/0ea4ef97a828043023edbb3ec9f8dad9.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58sjzy1CaW8K0ZXOYFYhFfBkXicdBUs0Le3kwJ2HCVE005TnvRfTOibYNHA/640?wx_fmt=jpeg"/><br/></p><p style="margin-bottom: 16px; font-size: 16px; line-height: 25.6px; white-space: normal; color: rgb(102, 102, 102); background-color: rgb(255, 255, 255);">为了更方便观察，上述计算得到的均价差值，再取其相邻日期的差值，得到信号指标。当信号为1时，表示买入股票;当信号为-1时，表示卖出股票;当信号为0时，不进行任何操作。</p><pre style="margin-top: 20px; margin-bottom: 20px; padding: 10px 20px; overflow: auto; font-size: 12px; line-height: 20px; color: rgb(248, 248, 212); word-break: break-all; border: none; border-radius: 4px; font-stretch: normal; background-color: rgb(74, 74, 74);">goog['signal'] = np.sign(goog['diff'] - goog['diff'].shift(1))
+
+goog['signal'].plot(ylim=(-2,2))</pre><p style="margin-bottom: 16px; font-size: 16px; line-height: 25.6px; white-space: normal; color: rgb(102, 102, 102); background-color: rgb(255, 255, 255);"><img class="" data-ratio="0.6109375" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58sbyVv70yicRAibia6mHQr6G0MsvC5Zxib3zWtVwCibjLQPbPT9EM6qWvlXNA/640?wx_fmt=jpeg" data-type="jpeg" data-w="640" style="color: rgb(62, 62, 62); line-height: 25.6px; width: auto !important; visibility: visible !important;" src="../Images/bf5f973e1adc094eb70ab69c73e89d05.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58sbyVv70yicRAibia6mHQr6G0MsvC5Zxib3zWtVwCibjLQPbPT9EM6qWvlXNA/640?wx_fmt=jpeg"/><br/></p><p style="margin-bottom: 16px; font-size: 16px; line-height: 25.6px; white-space: normal; color: rgb(102, 102, 102); background-color: rgb(255, 255, 255);">从上图中看出，从今年初到现在，一共有两轮买进和卖出的时机。到目前为止，似乎一切顺利，那么让我们看下这两轮交易的收益怎么样吧。</p><pre style="margin-top: 20px; margin-bottom: 20px; padding: 10px 20px; overflow: auto; font-size: 12px; line-height: 20px; color: rgb(248, 248, 212); word-break: break-all; border: none; border-radius: 4px; font-stretch: normal; background-color: rgb(74, 74, 74);">trade = pd.concat([
+
+pd.DataFrame({"price": goog.loc[goog["signal"] == 1, "close"],
+
+"operation": "Buy"}),
+
+pd.DataFrame({"price": goog.loc[goog["signal"] == -1, "close"],
+
+"operation": "Sell"})
+
+])
+
+trade.sort_index(inplace=True)
+
+trade</pre><p style="margin-bottom: 16px; font-size: 16px; line-height: 25.6px; white-space: normal; color: rgb(102, 102, 102); background-color: rgb(255, 255, 255);"><img class="" data-ratio="0.30625" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58sgeLgOG5cu24Y7wnoUicU50mdwUgJnQia7z64d7Psh7kOjbzibZEdZeqGQ/640?wx_fmt=jpeg" data-type="jpeg" data-w="640" style="color: rgb(62, 62, 62); line-height: 25.6px; width: 670px; visibility: visible !important;" width="100%" src="../Images/90c5601faae757f952f0e27ec9bda568.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/jAqr3XzCYibz5ribFXKA3MVou33p2Cf58sgeLgOG5cu24Y7wnoUicU50mdwUgJnQia7z64d7Psh7kOjbzibZEdZeqGQ/640?wx_fmt=jpeg"/><br/></p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);">上述表格列出了交易日期、操作和当天的价格。但很遗憾地发现，这两轮交易的卖出价都小于买入价，实际上按上述方法交易我们亏本了!!!</p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);">你是否很愤怒呢?原来分析到现在，都是假的呀!我之前就警告过，这里的分析只是演示移动平均线策略的思想，而并非真正的投资建议。股票市场是何其的复杂多变，又如何是一个小小的策略所能战胜的呢?</p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);">那么这个策略就一无是处吗?非也!如果考虑更长的时间跨度，比如5年、10年，并考虑更长的均线，比如将20日均线和50日均线比较;虽然过程中也有亏损的时候，但赢的概率更大。也就是说，在更长的时间尺度上该策略也是可行的。但即使你赚了，又能跑赢大盘吗?这时候还需用到其他方法，比如合理配置投资比例等。</p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);">还是那句话，股市有风险，投资需谨慎。本文不是分析股票的文章，而是借用股票数据来说明数据分析的基本方法，以及演示什么样的指标是好的指标。</p><p style="color: rgb(62, 62, 62); font-size: 16px; line-height: 25.6px; white-space: normal; background-color: rgb(255, 255, 255);"><br/></p><p style="color: rgb(62, 62, 62); font-size: 16px; white-space: normal; line-height: 28.8288px; text-align: center; background-color: rgb(255, 255, 255);"><span style="color: rgb(255, 255, 255); background-color: rgb(255, 104, 39);"> End </span></p><hr/><p><span style="color: rgb(255, 41, 65);"><strong>推荐阅读：</strong></span></p><p><br/></p>
+        
+</body>
+</html>

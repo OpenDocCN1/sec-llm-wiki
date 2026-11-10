@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>关于网传“天擎越权访问和SQL注入漏洞”的声明</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>关于网传“天擎越权访问和SQL注入漏洞”的声明</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=Mzg5OTYwMTY5MA==&amp;mid=2247483824&amp;idx=1&amp;sn=3591b219a1ef61cc6d37f7ad88da559d&amp;chksm=c05185c5f7260cd373ddb044be44693b52d3c46b4b73121c8d85f2b3e38e466f2b7a16ce97c3&amp;scene=126&amp;sessionid=1681380685#rd">http://mp.weixin.qq.com/s?__biz=Mzg5OTYwMTY5MA==&amp;mid=2247483824&amp;idx=1&amp;sn=3591b219a1ef61cc6d37f7ad88da559d&amp;chksm=c05185c5f7260cd373ddb044be44693b52d3c46b4b73121c8d85f2b3e38e466f2b7a16ce97c3&amp;scene=126&amp;sessionid=1681380685#rd</a></blockquote><section style="margin-top: 10px;margin-bottom: 10px;text-align: justify;text-indent: 2em;line-height: 2em;"><span style="line-height: 150%;font-family: 微软雅黑, sans-serif;font-size: 17px;letter-spacing: 0.5px;">关于网传“天擎越权访问和SQL注入漏洞”的信息，经查涉及的“/api/dbstat/gettablessize（越权访问）”、“/api/dp/rptsvcsyncpoint（前台SQL注入）”<strong>均为2020年发现的已知漏洞，且已在去年发布的相关版本修复</strong>，请按《2021年-天擎服务器安全加固和安全更新手册V2.1》进行安全加固，以防止包括这两个漏洞的所有已知安全漏洞的攻击。</span></section><section style="margin-top: 10px;margin-bottom: 10px;text-align: justify;text-indent: 2em;line-height: 2em;"><strong><span style="font-family: 微软雅黑, sans-serif;text-indent: 2em;font-size: 17px;letter-spacing: 0.5px;">具体说明如下：</span></strong><span style="font-family: 微软雅黑, sans-serif;text-indent: 2em;font-size: 17px;letter-spacing: 0.5px;"/></section><section style="text-align: justify;text-indent: 2em;line-height: 2em;"><span style="font-family: 微软雅黑, sans-serif;font-size: 17px;letter-spacing: 0.5px;">1.<span style="font: 17px &quot;Times New Roman&quot;;"> </span>/api/dbstat/gettablessize接口存在越权访问安全问题，为2020年9月发现的已知中危漏洞（<span style="font-size: 17px;font-family: 微软雅黑, sans-serif;color: rgb(0, 56, 132);">https://www.cnvd.org.cn/flaw/show/CNVD-2020-62853</span>），利用该漏洞可绕过管理员登录查看天擎系统本身的数据库大小信息，不会构成远程代码执行、获取系统或管理员权限等实质性危害。此漏洞影响V6R6Patch5500以下版本。该漏洞已经在2020年10月发布的V6R6Patch5500及以上版本修复。</span></section><section style="text-align: justify;text-indent: 2em;line-height: 2em;"><span style="font-family: 微软雅黑, sans-serif;font-size: 17px;letter-spacing: 0.5px;">2.<span style="font: 17px &quot;Times New Roman&quot;;letter-spacing: 0.5px;"> </span>/api/dp/rptsvcsyncpoint接口存在SQL注入安全问题，为2020年5月发现的已知高危漏洞，攻击者利用该漏洞可在访问天擎控制台时恶意构造参数来getshell。此漏洞影响天擎V6系列版本，该漏洞已经在2020年5月发布的V6系列V6R3Patch8550、V6R6Patch5460、V6R7Patch2018及以上主线Patch版本修复。</span></section><section style="text-align: left;text-indent: 0em;"><br/></section>
+        
+</body>
+</html>

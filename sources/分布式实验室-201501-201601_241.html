@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>案例 | 持续集成：Docker、Maven、Java</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>案例 | 持续集成：Docker、Maven、Java</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=Mzg5Mjc3MjIyMA==&amp;mid=2247542209&amp;idx=1&amp;sn=b761bd150584ca11a3764c6de36bb30c&amp;chksm=c03b6fd2f74ce6c408fa14de89755736013ebac087feeb952e522e4a4025f02e36e2e99dcb20&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=Mzg5Mjc3MjIyMA==&amp;mid=2247542209&amp;idx=1&amp;sn=b761bd150584ca11a3764c6de36bb30c&amp;chksm=c03b6fd2f74ce6c408fa14de89755736013ebac087feeb952e522e4a4025f02e36e2e99dcb20&amp;scene=27#wechat_redirect</a></blockquote><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal; text-align: center;"><span style="line-height: 0px;"><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz/A1HKVXsfHNmjkPQyicu2ExJ09IG5Jib12rrXH3pMVksEqUwjU8Ogy4OxicDo9ib09qDZ2g7lDdsDSar1wSy3xB97Zw/0?wx_fmt=jpeg" data-ratio="0.3675889328063241" data-w="" src="../Images/b2ebbb424eb8e5931b8e5d2bf6aaf172.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/A1HKVXsfHNmjkPQyicu2ExJ09IG5Jib12rrXH3pMVksEqUwjU8Ogy4OxicDo9ib09qDZ2g7lDdsDSar1wSy3xB97Zw/0?wx_fmt=jpeg"/><br/></span><span style="line-height: 0px;"/></p><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;"><span style="line-height: 0px;">﻿</span><span style="line-height: 1.75em;">在Alooma，我们非常非常非常喜爱Docker。真的, 我们想完全容器化我们的应用。 虽然容器化应用有非常多的好处，但在这里，我并不是要说服你用Docker。我们只是认为你和我们一样喜欢这东西。</span><span style="line-height: 0px;"><br/></span></p><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">接下来，让我们谈谈Alooma是如何在生产环境使用Docker来精简开发流程并快速push代码的。</p><section style="border: none; margin: 0.5em 0px; box-sizing: border-box; padding: 0px;" class="tn-Powered-by-XIUMI"><section style="border-left-width: 10px; border-left-style: solid; border-color: rgb(75, 161, 248); line-height: 2em; padding: 0.5em; border-radius: 5px 0px 0px 5px; box-shadow: rgb(153, 153, 153) 0em 0.2em 0.2em; font-size: 1em; font-family: inherit; text-decoration: inherit; color: rgb(45, 45, 45); box-sizing: border-box; background-color: rgb(239, 239, 239);" class="tn-Powered-by-XIUMI"><section class="tn-Powered-by-XIUMI" style="box-sizing: border-box;"><span style="font-size: 18px;">概述</span></section></section><section style="width: 0px; height: 0px; clear: both;"/></section><section style="border: 0px; margin: 0.8em 0px 0.5em; overflow: hidden; padding: 0px; box-sizing: border-box !important;" class="tn-Powered-by-XIUMI"><section style="width: 0px; height: 0px; clear: both;"/></section><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">Docker允许你把基础架构当作代码一样来对待。这个代码就是你的Dockerfile。</p><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">像其它代码一样，我们想要使用一个紧密的<code><span style="color: rgb(31, 73, 125);">改变-&gt;提交-&gt;构建-&gt;测试</span></code>的周期（一个完整的持续集成解决方案）。为了实现这个目标，我们需要构建一个流畅的DevOps流水线。</p><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">让我们把目标分解为更加详细的需求：</p><ul class=" list-paddingleft-2" style="list-style-type: disc;"><li><p style="line-height: 1.5em;"><span style="color: rgb(89, 89, 89);">在版本控制系统中管理</span><code><span style="color: rgb(89, 89, 89);">Dockerfile</span></code></p></li><li><p style="line-height: 1.5em;"><span style="color: rgb(89, 89, 89);">在CI服务器上为每个commit构建Docker镜像</span></p></li><li><p style="line-height: 1.5em;"><span style="color: rgb(89, 89, 89);">上传构件并打标签（这个构件要能够简单的部署）</span></p></li></ul><section style="border: 0px; margin: 0.8em 0px 0.5em; overflow: hidden; padding: 0px; box-sizing: border-box !important;" class="tn-Powered-by-XIUMI"><section style="display: inline-block; font-size: 1em; font-family: inherit; text-decoration: inherit; color: rgb(255, 255, 255); border-color: rgb(75, 161, 248); box-sizing: border-box;" class="tn-Powered-by-XIUMI"><section style="height: 2em; display: inline-block; padding: 0.3em 0.5em; text-align: center; font-size: 1em; line-height: 1.4; vertical-align: top; font-family: inherit; box-sizing: border-box !important; background-color: rgb(75, 161, 248);" class="tn-Powered-by-XIUMI"><section class="tn-Powered-by-XIUMI" style="box-sizing: border-box;"><span style="font-size: 18px;">我们的工作流</span></section></section><section style="display: inline-block; height: 2em; width: 0.5em; vertical-align: top; border-left-width: 0.5em; border-left-style: solid; border-left-color: rgb(75, 161, 248); font-size: 1em; box-sizing: border-box !important; border-top-width: 1em !important; border-top-style: solid !important; border-top-color: transparent !important; border-bottom-width: 1em !important; border-bottom-style: solid !important; border-bottom-color: transparent !important;" class="tn-Powered-by-XIUMI"/></section><section style="width: 0px; height: 0px; clear: both;"/></section><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">我们的DevOps流水线围绕GitHub、Jenkins和Maven构建。下面是它的工作流程：</p><ol style="margin-bottom: 1em; margin-left: 19px; color: rgb(102, 102, 102); font-family: Arial, Helvetica, sans-serif; white-space: normal;" class=" list-paddingleft-2"><li><p>GitHub将repo的每一个push通知给Jenkins</p></li><li><p>Jenkins触发一个Maven build</p></li><li><p>Maven 构建所有的东西，包括Docker镜像</p></li><li><p>最后，Maven会把镜像推送到私有的Docker Registry。</p></li></ol><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">这个工作流的好处是它允许我们能够很容易的为每个发布版本打标签（所有的commit都被构建并且在我们的Docker Registry中准备好了）。然后我们可以非常容易地通过pull和run这些Docker镜像进行部署。</p><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">事实上这个部署过程是非常简单的，我们通过发送一个命令给我们信任的Slack机器人：”Aloominion”（关于我们的机器人朋友的更多情况将在未来的文章中发表）开始这个过程。</p><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">你可能对这个工作流中的其他元素非常熟悉，因为它们都很常见。所以，让我们来深入了解如何使用Maven构建Docker镜像。</p><section style="border: none; margin: 0.5em 0px; box-sizing: border-box; padding: 0px;" class="tn-Powered-by-XIUMI"><section style="border-left-width: 10px; border-left-style: solid; border-color: rgb(75, 161, 248); line-height: 2em; padding: 0.5em; border-radius: 5px 0px 0px 5px; box-shadow: rgb(153, 153, 153) 0em 0.2em 0.2em; font-size: 1em; font-family: inherit; text-decoration: inherit; color: rgb(45, 45, 45); box-sizing: border-box; background-color: rgb(239, 239, 239);" class="tn-Powered-by-XIUMI"><section class="tn-Powered-by-XIUMI" style="box-sizing: border-box;"><span style="font-size: 18px;">深入Docker 构建</span></section></section><section style="width: 0px; height: 0px; clear: both;"/></section><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">Alooma是一个Java公司。我们已经使用Maven作为我们构建流水线的中心工具，所以很自然的想到把构建Docker的过程也加入到我们的Maven构建过程中去。</p><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">当搜索和Docker交互的Maven插件时，出现了3个选项。我们选择使用Spotify的maven-docker-plugin —— 虽然rhus的和alexec的同名插件看起来也是一个不错的选择。</p><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">另一个我们的构建计划依赖的Maven插件是maven-git-commit-id-plugin。我们使用这个插件，所以我们的Docker镜像能使用git的commit ID来打标签 —— 这在部署过程中非常有帮助，我们可以了解运行的是哪个版本。</p><section style="border: 0px; margin: 0.8em 0px 0.5em; overflow: hidden; padding: 0px; box-sizing: border-box !important;" class="tn-Powered-by-XIUMI"><section style="display: inline-block; font-size: 1em; font-family: inherit; text-decoration: inherit; color: rgb(255, 255, 255); border-color: rgb(75, 161, 248); box-sizing: border-box;" class="tn-Powered-by-XIUMI"><section style="height: 2em; display: inline-block; padding: 0.3em 0.5em; text-align: center; font-size: 1em; line-height: 1.4; vertical-align: top; font-family: inherit; box-sizing: border-box !important; background-color: rgb(75, 161, 248);" class="tn-Powered-by-XIUMI"><section class="tn-Powered-by-XIUMI" style="box-sizing: border-box;"><span style="font-size: 18px;">给我看代码！</span></section></section><section style="display: inline-block; height: 2em; width: 0.5em; vertical-align: top; border-left-width: 0.5em; border-left-style: solid; border-left-color: rgb(75, 161, 248); font-size: 1em; box-sizing: border-box !important; border-top-width: 1em !important; border-top-style: solid !important; border-top-color: transparent !important; border-bottom-width: 1em !important; border-bottom-style: solid !important; border-bottom-color: transparent !important;" class="tn-Powered-by-XIUMI"/></section><section style="width: 0px; height: 0px; clear: both;"/></section><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">每一个docker镜像有它自己的Maven模块（所有上面提到的docker-maven 插件在一个模块一个Dockerfile时都能顺利地工作）</p><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">让我们从Spotify插件的一个简单配置开始：</p><pre style="border: 1px solid rgb(204, 204, 204); padding: 10px 20px; margin-top: 0px; margin-bottom: 1em; line-height: 32px; overflow: auto; border-radius: 5px; color: rgb(102, 102, 102); background-color: rgb(250, 250, 250);">&lt;plugin&gt;
+&lt;groupId&gt;com.spotify&lt;/groupId&gt;
+&lt;artifactId&gt;docker-maven-plugin&lt;/artifactId&gt;
+    ........
+    &lt;dockerDirectory&gt;${project.basedir}&lt;/dockerDirectory&gt;
+    &lt;imageName&gt;alooma/${project.artifactId}&lt;/imageName&gt;
+&lt;/configuration&gt;
+&lt;/plugin&gt;</pre><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">我们看到这里我们把插件的build目标和Maven的package阶段绑定，我们也指导它去在我们模块的根目录下来寻找Dockerfile（使用DockerDirectory 元素来指定），我们还把镜像名称用它的构件Id来命名（用”alloma/”做前缀）。</p><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">我们注意到的第一件事情是这个镜像没有被push到任何地方，我们可以通过加入&lt;pushImage&gt;true&lt;/pushImage&gt;到配置中来解决这个问题。</p><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;"><span style="color: rgb(31, 73, 125);">但是现在这个镜像会被push到默认的Docker Hub Registry上。糟糕。</span></p><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">为了解决这个问题，我们定义了一个新的Maven属性&lt;docker.registry&gt;docker-registry.alooma.io:5000/&lt;/docker.registry&gt;并且把镜像名称<code>imageName</code>改为${docker.registry}alooma/${project.artifactId}。 你可能会想，“为什么需要为Docker Registry设置一个属性？”， 你是对的！但是有这个属性可以使我们在Regsitry URL改变的时候能够更方便的修改。</p><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">有一个更重要的事情我们还没有处理——我们想让每一个镜像用它的git commit ID来打标签。这可以通过改变imageName为${docker.registry}alooma/${project.artifactId}:${git.commit.id.abbrev}来实现。</p><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">${git.commit.id.abbrev}属性是通过我上面提到的<code>maven-git-commit-id-plugin</code>插件来实现的。</p><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">所以，现在我们的插件配置看起来像下面这样：</p><pre style="border: 1px solid rgb(204, 204, 204); padding: 10px 20px; margin-top: 0px; margin-bottom: 1em; line-height: 32px; overflow: auto; border-radius: 5px; color: rgb(102, 102, 102); background-color: rgb(250, 250, 250);">&lt;artifactId&gt;docker-maven-plugin&lt;/artifactId&gt;
+.......
+    &lt;dockerDirectory&gt;${project.basedir}&lt;/dockerDirectory&gt;
+    &lt;imageName&gt;
+        ${docker.registry}alooma/${project.artifactId}:${git.commit.id.abbrev}
+    &lt;/imageName&gt;
+    &lt;pushImage&gt;true&lt;/pushImage&gt;
+&lt;/configuration&gt;
+&lt;/plugin&gt;</pre><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">我们的下一个挑战是在我们的<code>pom.xml</code>中表达我们的<code>Dockerfile</code>的依赖。一些我们的Docker镜像在构建时使用了 <code>FROM</code> 其它的Docker 镜像作为基础镜像（也在同一个构建周期中构建）。例如，我们的<code>webgate</code>镜像（是我们的机遇Tomcat的WebApp）基于我们的<code>base</code>镜像（包含Java 8、更新到最新的 apt-get、等等）。</p><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">这些镜像在同一个构建过程中构建意味着我们不能简单的使用FROM docker-registry.alooma.io/alooma/base:some-tag因为我们需要这个标签编程当前构建的标签（即 git commit ID）。</p><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">为了在<code>Dockerfile</code>中获得这些属性，我们使用了Maven的resource filtering功能。这在一个资源文件中替换Maven 的属性。</p><pre style="border: 1px solid rgb(204, 204, 204); padding: 10px 20px; margin-top: 0px; margin-bottom: 1em; line-height: 32px; overflow: auto; border-radius: 5px; color: rgb(102, 102, 102); background-color: rgb(250, 250, 250);">&lt;resource&gt;
+&lt;directory&gt;${project.basedir}&lt;/directory&gt;
+&lt;filtering&gt;true&lt;/filtering&gt;
+&lt;includes&gt;
+    &lt;include&gt;**/Dockerfile&lt;/include&gt;
+&lt;/includes&gt;
+&lt;/resource&gt;</pre><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">在Dockerfile的内部我们有一个这样的<code>FROM</code>：</p><pre style="border: 1px solid rgb(204, 204, 204); padding: 10px 20px; margin-top: 0px; margin-bottom: 1em; line-height: 32px; overflow: auto; border-radius: 5px; color: rgb(102, 102, 102); background-color: rgb(250, 250, 250);">FROM ${docker.registry}alooma/base:${git.commit.id.abbrevs}</pre><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">一些更多的事情…….我们需要的是我们的配置来找到正确的Dockerfile（过滤过之后的），这可以在target/classes文件夹内找到，所以我们把dockerDirectory改为${project.build.directory}/classes。</p><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">这意味着现在我们的配置文件长这样：</p><pre style="border: 1px solid rgb(204, 204, 204); padding: 10px 20px; margin-top: 0px; margin-bottom: 1em; line-height: 32px; overflow: auto; border-radius: 5px; color: rgb(102, 102, 102); background-color: rgb(250, 250, 250);">&lt;resources&gt;
+&lt;resource&gt;
+    &lt;directory&gt;${project.basedir}&lt;/directory&gt;
+    &lt;filtering&gt;true&lt;/filtering&gt;
+    &lt;includes&gt;
+        &lt;include&gt;**/Dockerfile&lt;/include&gt;
+    &lt;/includes&gt;
+&lt;/resource&gt;
+&lt;/resources&gt;
+&lt;pluginManagement&gt;
+&lt;plugins&gt;
+    &lt;plugin&gt;
+        ........
+            &lt;imageName&gt;
+                ${docker.registry}alooma/${project.artifactId}:${git.commit.id.abbrev}
+            &lt;/imageName&gt;
+        &lt;/configuration&gt;
+    &lt;/plugin&gt;
+&lt;/plugins&gt;
+&lt;/pluginManagement&gt;</pre><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">此外，我们还要添加<code>base</code>构件作为<code>webgate</code>模块的一个Maven依赖来保证正确的Maven构建顺序。</p><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;"><span style="color: rgb(31, 73, 125);">但是我们还有另一个挑战：我们如何把我们编译和打包了的源文件添加到我们的Docker镜像中呢？</span>我们的Dockerfile依赖于很多其它文件，它们通过<code>ADD</code>或<code>COPY</code>命令插入。[你可以在这里（https://docs.docker.com/reference/builder/）读到更多的关于Dockerfile的指导。]</p><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">为了让这些文件可以被获取，我们需要使用插件配置的<code>resources</code>标签。</p><pre style="border: 1px solid rgb(204, 204, 204); padding: 10px 20px; margin-top: 0px; margin-bottom: 1em; line-height: 32px; overflow: auto; border-radius: 5px; color: rgb(102, 102, 102); background-color: rgb(250, 250, 250);">&lt;resources&gt;
+&lt;resource&gt;
+    &lt;targetPath&gt;/&lt;/targetPath&gt;
+    &lt;directory&gt;${project.basedir}&lt;/directory&gt;
+    &lt;excludes&gt;
+        &lt;exclude&gt;target/**/*&lt;/exclude&gt;
+        &lt;exclude&gt;pom.xml&lt;/exclude&gt;
+        &lt;exclude&gt;*.iml&lt;/exclude&gt;
+    &lt;/excludes&gt;
+&lt;/resource&gt;
+&lt;/resources&gt;</pre><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">注意到我们排除了一些文件。</p><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">记住这个<code>resources</code>标签不应该和通常的Maven <code>resources</code>标签弄混，看看下面的例子，它来自于我们的pom.xml的一部分：</p><pre style="border: 1px solid rgb(204, 204, 204); padding: 10px 20px; margin-top: 0px; margin-bottom: 1em; line-height: 32px; overflow: auto; border-radius: 5px; color: rgb(102, 102, 102); background-color: rgb(250, 250, 250);">&lt;resources&gt;            
+&lt;resource&gt;
+......
+    &lt;includes&gt;
+        &lt;include&gt;**/Dockerfile&lt;/include&gt;
+    &lt;/includes&gt;
+........
+&lt;plugins&gt;
+    &lt;plugin&gt;
+        &lt;groupId&gt;com.spotify&lt;/groupId&gt;
+        &lt;artifactId&gt;docker-maven-plugin&lt;/artifactId&gt;
+        &lt;version&gt;0.2.3&lt;/version&gt;
+.....
+    &lt;/plugin&gt;
+&lt;/plugins&gt;
+&lt;/pluginManagement&gt;</pre><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">前一个添加在我们想添加一些静态资源到镜像时工作，但是如果我们想要添加一个在同一个构建中构建的构件时需要更多的调整。</p><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">例如，我们的<code>webgate</code> Docker镜像包含了我们的<code>webgate.war</code>，这是由另一个模块构建的。</p><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">为了添加这个war作为资源，我们首先必须把它作为我们的Maven依赖加进来，然后使用<code>maven-dependency-plugin</code>插件的<code>copy</code>目标来把它加到我们当前的构建目录中。</p><pre style="border: 1px solid rgb(204, 204, 204); padding: 10px 20px; margin-top: 0px; margin-bottom: 1em; line-height: 32px; overflow: auto; border-radius: 5px; color: rgb(102, 102, 102); background-color: rgb(250, 250, 250);">&lt;plugin&gt;
+&lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+.......
+                    &lt;groupId&gt;com.alooma&lt;/groupId&gt;
+                    &lt;artifactId&gt;webgate&lt;/artifactId&gt;
+                    &lt;version&gt;${project.parent.version}&lt;/version&gt;
+                    &lt;type&gt;war&lt;/type&gt;
+                    &lt;outputDirectory&gt;${project.build.directory}&lt;/outputDirectory&gt;
+                    &lt;destFileName&gt;webgate.war&lt;/destFileName&gt;
+.......
+&lt;/plugin&gt;</pre><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">现在这允许我们简单的把这个文件加到Docker插件的resources中去。</p><pre style="border: 1px solid rgb(204, 204, 204); padding: 10px 20px; margin-top: 0px; margin-bottom: 1em; line-height: 32px; overflow: auto; border-radius: 5px; color: rgb(102, 102, 102); background-color: rgb(250, 250, 250);">&lt;resources&gt;
+........
+        &lt;include&gt;**/Dockerfile&lt;/include&gt;
+    &lt;/includes&gt;
+........
+    &lt;plugin&gt;
+        &lt;groupId&gt;com.spotify&lt;/groupId&gt;
+        &lt;artifactId&gt;docker-maven-plugin&lt;/artifactId&gt;
+        &lt;version&gt;0.2.3&lt;/version&gt;
+        &lt;executions&gt;
+........
+        &lt;/executions&gt;
+.........
+&lt;/plugins&gt;
+&lt;/pluginManagement&gt;</pre><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">我们需要做的最后一件事情是让我们的CI服务器（Jenkins）真的将镜像push到Docker Registry上。请记住本地构件默认是不会push镜像的。</p><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">为了push这些镜像，我们改变我们的&lt;pushImage&gt;标签的值从<code>true</code>变为<code>${push.image}</code>属性，这默认是被设置为<code>false</code>，并且只会在CI服务器上设置为<code>true</code>。</p><blockquote><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">译注：这里的意思是，由于开发人员也要在本地构建然后测试之后才会提交，而测试的镜像不应该被提交到Registry，所以&lt;pushImage&gt;应该使用一个属性，默认为false，在CI服务器上覆盖为true在构建后去push镜像。</p></blockquote><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">这就完成了！让我们看一下最终的代码：</p><pre style="border: 1px solid rgb(204, 204, 204); padding: 10px 20px; margin-top: 0px; margin-bottom: 1em; line-height: 32px; overflow: auto; border-radius: 5px; color: rgb(102, 102, 102); background-color: rgb(250, 250, 250);">&lt;resources&gt;
+&lt;resource&gt;
+    &lt;directory&gt;${project.basedir}&lt;/directory&gt;
+    &lt;filtering&gt;true&lt;/filtering&gt;
+    &lt;includes&gt;
+        &lt;include&gt;**/Dockerfile&lt;/include&gt;
+    &lt;/includes&gt;
+&lt;/resource&gt;
+&lt;/resources&gt;
+&lt;pluginManagement&gt;
+&lt;plugins&gt;
+    &lt;plugin&gt;
+        &lt;groupId&gt;com.spotify&lt;/groupId&gt;
+        &lt;artifactId&gt;docker-maven-plugin&lt;/artifactId&gt;
+        &lt;version&gt;0.2.3&lt;/version&gt;
+        &lt;executions&gt;
+            &lt;execution&gt;
+                &lt;phase&gt;package&lt;/phase&gt;
+                &lt;goals&gt;
+                    &lt;goal&gt;build&lt;/goal&gt;
+                &lt;/goals&gt;
+            &lt;/execution&gt;
+        &lt;/executions&gt;
+        &lt;configuration&gt;
+            &lt;dockerDirectory&gt;${project.build.directory}/classes&lt;/dockerDirectory&gt;
+
+            &lt;pushImage&gt;${push.image}&lt;/pushImage&gt;      &lt;!-- true when Jenkins builds, false otherwise --&gt;
+
+            &lt;imageName&gt;
+                ${docker.registry}alooma/${project.artifactId}:${git.commit.id.abbrev}
+            &lt;/imageName&gt;
+            &lt;resources&gt;
+                &lt;resource&gt;
+                    &lt;targetPath&gt;/&lt;/targetPath&gt;
+                    &lt;directory&gt;${project.basedir}&lt;/directory&gt;
+                    &lt;excludes&gt;
+                        &lt;exclude&gt;target/**/*&lt;/exclude&gt;
+                        &lt;exclude&gt;pom.xml&lt;/exclude&gt;
+                        &lt;exclude&gt;*.iml&lt;/exclude&gt;
+                    &lt;/excludes&gt;
+                &lt;/resource&gt;
+                &lt;rescource&gt;
+                    &lt;targetPath&gt;/&lt;/targetPath&gt;
+                    &lt;directory&gt;${project.build.directory}&lt;/directory&gt;
+                    &lt;include&gt;webgate.war&lt;/include&gt;
+                &lt;/rescource&gt;
+            &lt;/resources&gt;
+        &lt;/configuration&gt;
+    &lt;/plugin&gt;
+&lt;/plugins&gt;
+&lt;/pluginManagement&gt;</pre><section style="border: 0px; margin: 0.8em 0px 0.5em; overflow: hidden; padding: 0px; box-sizing: border-box !important;" class="tn-Powered-by-XIUMI"><section style="display: inline-block; font-size: 1em; font-family: inherit; text-decoration: inherit; color: rgb(255, 255, 255); border-color: rgb(75, 161, 248); box-sizing: border-box;" class="tn-Powered-by-XIUMI"><section style="height: 2em; display: inline-block; padding: 0.3em 0.5em; text-align: center; font-size: 1em; line-height: 1.4; vertical-align: top; font-family: inherit; box-sizing: border-box !important; background-color: rgb(75, 161, 248);" class="tn-Powered-by-XIUMI"><section class="tn-Powered-by-XIUMI" style="box-sizing: border-box;"><span style="font-size: 18px;">性能</span></section></section><section style="display: inline-block; height: 2em; width: 0.5em; vertical-align: top; border-left-width: 0.5em; border-left-style: solid; border-left-color: rgb(75, 161, 248); font-size: 1em; box-sizing: border-box !important; border-top-width: 1em !important; border-top-style: solid !important; border-top-color: transparent !important; border-bottom-width: 1em !important; border-bottom-style: solid !important; border-bottom-color: transparent !important;" class="tn-Powered-by-XIUMI"/></section><section style="width: 0px; height: 0px; clear: both;"/></section><p style="margin-top: 0px; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">这个过程有两个能够提高你的构建和部署的性能的改进地方：</p><ul class=" list-paddingleft-2" style="list-style-type: disc;"><li><p style="line-height: 1.5em;"><span style="color: rgb(89, 89, 89);">让你的基础的机器镜像（在EC2的例子下是AMI）包含一些你的Docker镜像的基础版本。这样会使得</span><code><span style="color: rgb(89, 89, 89);">docker pull</span></code><span style="color: rgb(89, 89, 89);">只去pull那些改变了的层，即增量（相对于整个镜像来说要小得多）。</span></p></li><li><p style="line-height: 1.5em;"><span style="color: rgb(89, 89, 89);">在Docker Registry的前端放一个Redis缓存。这可以缓存标签和元数据，减少和真实存储（在我们的例子下是S3）的回环。</span></p></li></ul><p style="margin-top: 1em; margin-bottom: 1em; padding: 0px; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em; font-family: Arial, Helvetica, sans-serif; white-space: normal;">我们现在已经使用这个构建过程一段时间了，并且对它非常满意。然而仍然有提高的空间，如果你有任何关于让这个过程更加流畅的建议，我很乐意在评论中听到你的想法。</p><section class="tn-Powered-by-XIUMI" style="margin: 1em; padding: 0px; max-width: 100%; box-sizing: border-box; border: 0px; word-wrap: break-word !important;"><section class="tn-Powered-by-XIUMI" style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box; font-size: 1em; font-family: inherit; font-weight: inherit; text-align: inherit; text-decoration: inherit; color: rgb(255, 255, 255); border-color: rgb(0, 187, 236); word-wrap: break-word !important;"><section class="tn-Powered-by-XIUMI" style="margin: 0px; padding: 3px 8px; max-width: 100%; box-sizing: border-box; display: inline-block; line-height: 1.4; border-top-left-radius: 8px; border-top-right-radius: 8px; font-family: inherit; word-wrap: break-word !important; background-color: rgb(0, 187, 236);"><section class="tn-Powered-by-XIUMI" style="margin: 0px; padding: 0px; max-width: 100%; box-sizing: border-box; word-wrap: break-word !important;">DockOne</section></section><section class="tn-Powered-by-XIUMI" style="margin: -1px 0px 0px; padding: 0px; max-width: 100%; box-sizing: border-box; border: 1px solid rgb(95, 156, 239); border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; font-size: 1em; font-family: inherit; font-weight: inherit; text-align: inherit; text-decoration: inherit; color: rgb(51, 51, 51); word-wrap: break-word !important;"><section class="tn-Powered-by-XIUMI" style="margin: 0px; padding: 16px; max-width: 100%; box-sizing: border-box; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; line-height: 1.4; word-wrap: break-word !important;"><p style="margin-top: 0px; margin-bottom: 0px; padding: 0px; max-width: 100%; box-sizing: border-box; min-height: 1em; white-space: pre-wrap; word-wrap: break-word !important;">DockOne，新圈子，新思路，新视野。</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0px; max-width: 100%; box-sizing: border-box; min-height: 1em; white-space: pre-wrap; word-wrap: break-word !important;"><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz/A1HKVXsfHNnANjfBQuZIiaiaxQoKjtwH9icLpg7wia0S0qiagyTXOhprrOrPichviaewSqSqicsPdoSAkeQIAxP7Xdaiaxw/0?wx_fmt=jpeg" data-ratio="0.3522727272727273" data-w="440" style="margin: 0px; padding: 0px; box-sizing: border-box !important; word-wrap: break-word !important; width: auto !important; visibility: visible !important;" width="auto" src="../Images/46577303fa42567eec75efa5bf3efb6b.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/A1HKVXsfHNnANjfBQuZIiaiaxQoKjtwH9icLpg7wia0S0qiagyTXOhprrOrPichviaewSqSqicsPdoSAkeQIAxP7Xdaiaxw/0?wx_fmt=jpeg"/><br/></p></section></section></section></section>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>雅虎邮件服务有漏洞 黑客可访问任意邮件</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>雅虎邮件服务有漏洞 黑客可访问任意邮件</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485623&amp;idx=4&amp;sn=66756d6074a25ffe5c1abc11be8bf7c9&amp;chksm=ea9739dddde0b0cbe3cd63b63b12296889b096626059e693b7f7b27b55c23ad3b8a8d8a61a94&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485623&amp;idx=4&amp;sn=66756d6074a25ffe5c1abc11be8bf7c9&amp;chksm=ea9739dddde0b0cbe3cd63b63b12296889b096626059e693b7f7b27b55c23ad3b8a8d8a61a94&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKianGJ0hwPARCkKJvgBRKX9OgibolPgTbRQ97nZKdwM0rDRsfqCJUvQQOoOyEJ2NwEJPJPZiaPxzDtzwQ/0?wx_fmt=png" data-ratio="0.521978021978022" data-w="728" src="../Images/37cab87ac219d75aaf99e3e7c8808914.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKianGJ0hwPARCkKJvgBRKX9OgibolPgTbRQ97nZKdwM0rDRsfqCJUvQQOoOyEJ2NwEJPJPZiaPxzDtzwQ/0?wx_fmt=png"/><br/></p><p><br/></p><p><strong>雅虎目前修复了邮件服务中的一个重要安全漏洞，该漏洞可允许攻击者监控任何用户的收件箱。</strong></p><p><br/></p><p>来自安全公司Klikki Oy的芬兰安全研究人员Jouko Pynnönen在雅虎邮件服务中发现了一个基于DOM的持续XSS漏洞，攻击者可发送内嵌有恶意代码的邮件。他在博客中演示了攻击者如何将受害人的收件箱发送到一个外部网站，并且创建一种通过将恶意脚本添加到消息签名的方式可附着在所有发出邮件中的病毒。</p><p><br/></p><p>由于这个恶意代码位于消息的主体内容部分，一旦受害者打开被感染的邮件代码就会被执行，而且隐藏的有效负载脚本会偷偷将受害者的收件箱内容提交给被攻击者控制的外部网站。</p><p><br/></p><p>出现这个问题的原因是雅虎邮件服务没有正确地过滤HTML邮件中可能存在的恶意代码。Pynnönen指出他通过暴力将所有已知的HTML标签和属性输入过滤器（雅虎用来过滤恶意HTML的过滤器），但发现某些恶意HTML代码设法通过了过滤，因此他找到了这个漏洞。</p><p><br/></p><p>Pynnönen指出，他给雅虎安全团队发送了一封邮件，如被查阅，那么攻击者就会使用AJAX读取用户的收件箱内容并将其发送到攻击者的服务器。这个PoC是通过雅虎的HackerOne漏洞奖励计划发出的，Pynnönen因此获得1万美元的奖励。</p><p><br/></p><p>Pynnönen曾在今年年初报告了雅虎邮件服务网页版本中存在的一个类似问题，并因此获得1万美元的奖励。他还在2015年12月份发现了雅虎Flicker中存在的一个存储型XSS漏洞，并因此获得500美元的奖励。</p>
+        
+</body>
+</html>

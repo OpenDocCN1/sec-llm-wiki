@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Hajime：入侵是为了更好地保护？</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Hajime：入侵是为了更好地保护？</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485543&amp;idx=5&amp;sn=ab398f6e75d5200016dedc4cbb2e160c&amp;chksm=ea97390ddde0b01b2fd66ee3c54bce24453004a569f3449ace0dc82525feea979596bec725bf&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485543&amp;idx=5&amp;sn=ab398f6e75d5200016dedc4cbb2e160c&amp;chksm=ea97390ddde0b01b2fd66ee3c54bce24453004a569f3449ace0dc82525feea979596bec725bf&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKiak3CocYw6k1ScWcWz0KOQoHZGk1kDCXVbUzxGRtC5cuozibZXtOKSqZMw8lBgwffardTxemsOlvlpA/0?wx_fmt=png" data-ratio="0.521978021978022" data-w="728" src="../Images/975931b53c43fa3cbeae2c699b9378fa.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/UsQySyjOKiak3CocYw6k1ScWcWz0KOQoHZGk1kDCXVbUzxGRtC5cuozibZXtOKSqZMw8lBgwffardTxemsOlvlpA/0?wx_fmt=png"/></p><p><br/></p><p><strong>无论背后真实的目的是什么，入侵系统从而获取未经授权的访问权限是非法行为。</strong></p><p><br/></p><p>之所以要指出这一点，是因为一名被媒体称作“义务黑客”的人据悉入侵了易受攻击的物联网设备，目的竟然是为了保护这些设备。这并非黑客展现义务的个例，在此前的案例中，很多黑客都使用恶意软件攻陷数千台设备，他们这么做不是为了入侵设备而是强迫设备所有人实施更好的保护措施。</p><p><br/></p><p>最新的这款物联网恶意软件名为Hajime，目前至少已感染了1万台家庭路由器、联网摄像头和其它智能设备。但据悉Hajime这么做是为了对抗Mirai和其它恶意威胁。</p><p><br/></p><p><strong>Hajime僵尸网络如何运作</strong></p><p><br/></p><p>Hajime僵尸网络的运作方式跟Mirai很类似，它会通过拥有开放Telnet端口的不安全物联网设备传播，并使用默认密码，它还会使用Mirai僵尸网络使用的用户名和密码组合列表。</p><p><br/></p><p>然而，Hajime僵尸网络会通过拦截对四个用于攻击很多物联网设备的端口（23、7547、5555和5358）来保护目标设备的安全。Hajime会使用非集中化的P2P恶意软件（而非C&amp;C服务器）来向受感染设备发布命令和更新，这样使得互联网服务提供商和互联网主干网提供商难以拿下这个僵尸网络。</p><p><br/></p><p>Hajime僵尸网络还会采取措施隐藏自己的运行进程和文件，导致受感染系统的检测更加困难。另外，除了让一个受感染设备寻找并感染其它易受攻击设备的传播代码外，Hajime僵尸网络还缺少DDoS功能或其它黑客代码。Hajime还会每隔10分钟左右在终端商展示一个加密签署信息，信息内容是“只是一个白帽子黑客来保护某些系统的安全。重要信息会像这样得到签名。Hajime作者。联系已关闭。保持警觉！”。</p><p><br/></p><p>毫无疑问，这是Hajime值得称赞的地方，但这得是在用户并未重启被黑设备的情况下。由于Hajime并没有持续机制，一旦物联网设备被重启，它就会返回不安全状态，也就是使用默认密码并将Telnet端口开放给全世界。</p><p><br/></p><p>另外一个问题是，入侵某人以阻止入侵未必不会带来新问题，这也就是我们担心美国通过的一项修订案Rule 41的原因。Rule 41能让FBI获得更大的权力合法入侵属于任何国家的计算机、拿走数据并参与远程监控。</p><p><br/></p><p>因此，最让人担忧的问题是，是否能保证Hajime的作者不会在蠕虫中添加攻击向量，从而劫持设备实施恶意行为。</p><p><br/></p><p><br/></p><p><strong style="white-space: normal;">本文由360代码卫士编译，不代表360观点，转载请注明“转自360代码卫士www.codesafe.cn”。</strong></p>
+        
+</body>
+</html>

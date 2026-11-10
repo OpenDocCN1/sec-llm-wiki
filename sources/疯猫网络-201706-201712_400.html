@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>一个生成各种进制格式IP的小工具（附源码）</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>一个生成各种进制格式IP的小工具（附源码）</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzIyMzE5NTQ3Ng==&amp;mid=2650588474&amp;idx=3&amp;sn=d0ef57de7ff0b7cc9f759d966692aafd&amp;chksm=f0299d01c75e1417edb40480221c9e85f6bb0af964fabce883bcd65c99fedec72f53053d7c5c&amp;scene=126&amp;sessionid=1681370466#rd">http://mp.weixin.qq.com/s?__biz=MzIyMzE5NTQ3Ng==&amp;mid=2650588474&amp;idx=3&amp;sn=d0ef57de7ff0b7cc9f759d966692aafd&amp;chksm=f0299d01c75e1417edb40480221c9e85f6bb0af964fabce883bcd65c99fedec72f53053d7c5c&amp;scene=126&amp;sessionid=1681370466#rd</a></blockquote><p><img data-type="gif" data-src="http://mmbiz.qpic.cn/mmbiz_gif/5ZACCn1bWEwrm1niax0xWl6tFwyaPqCHRyskxXGvZQgOFTCFaUiaU6PSmdmwSdb3JEAuZwPx0lPWsHf2xuib8Asew/0?wx_fmt=gif" class="" data-ratio="0.15625" data-w="640" src="../Images/bd12d37e5b6d2b5b81389d88a9cef40a.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_gif/5ZACCn1bWEwrm1niax0xWl6tFwyaPqCHRyskxXGvZQgOFTCFaUiaU6PSmdmwSdb3JEAuZwPx0lPWsHf2xuib8Asew/0?wx_fmt=gif"/></p><h2 style="box-sizing: border-box; font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; font-weight: bold; line-height: 1.1; color: rgb(55, 56, 56); margin-top: 30px; margin-bottom: 15px; font-size: 18px; white-space: normal; background-color: rgb(255, 255, 255);">0×00. 前言</h2><p>一些防护SSRF漏洞的代码一般使用正则来判断访问IP是否为内部IP，比如下面这段网上比较常见的正则：</p><p><br/></p><blockquote><pre style=" box-sizing: border-box; overflow: auto; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; "><code class="hljs markdown" style=" box-sizing: border-box; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ">if re.match(r"^192\.168(\.([<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">2</span>][<span class="hljs-symbol" style="box-sizing: border-box; color: rgb(188, 96, 96);">0-4</span>]\d|[<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">2</span>][<span class="hljs-symbol" style="box-sizing: border-box; color: rgb(188, 96, 96);">5</span>][<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">0-5</span>]|[01]?\d?\d)){2}$", ip_address) or \
+ 
+    re.match(r"^172\.([<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">1</span>][<span class="hljs-symbol" style="box-sizing: border-box; color: rgb(188, 96, 96);">6-9</span>]|[<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">2</span>]\d|3[<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">01</span>])(\.([<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">2</span>][<span class="hljs-symbol" style="box-sizing: border-box; color: rgb(188, 96, 96);">0-4</span>]\d|[<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">2</span>][<span class="hljs-symbol" style="box-sizing: border-box; color: rgb(188, 96, 96);">5</span>][<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">0-5</span>]|[01]?\d?\d)){2}$", ip_address) or \
+    re.match(r"^10(\.([<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">2</span>][<span class="hljs-symbol" style="box-sizing: border-box; color: rgb(188, 96, 96);">0-4</span>]\d|[<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">2</span>][<span class="hljs-symbol" style="box-sizing: border-box; color: rgb(188, 96, 96);">5</span>][<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">0-5</span>]|[01]?\d?\d)){3}$", ip_address):
+    raise Execption("inner ip")<br style="box-sizing: border-box;"/></code></pre></blockquote><p>很明显这个正则有很多问题，可以有多种方式绕过，比如</p><p><br/></p><blockquote style="box-sizing: border-box; padding: 10px 20px; margin-bottom: 20px; font-size: 14px; border-left-width: 5px; border-left-color: rgb(238, 238, 238); background: rgb(247, 247, 247); color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; white-space: normal;"><p>1. 利用八进制IP地址绕过</p><p>2. 利用十六进制IP地址绕过</p><p>3. 利用十进制的IP地址绕过</p><p>4. 各种进制组合形成的IP绕过</p></blockquote><p>一般我们常见都是10进制表示的IP，其实系统是可以识别其他进制表示的IP，比如8进制，16进制，或者它们的组合，更多详情可以参考：那些不为人知的IP</p><p><br/></p><p>所以，我们在测试系统是否有SSRF漏洞的时候，有时候需要尝试各种进制的IP组合，看看是否能绕过系统的防护，于是就有了本文的这个小程序，用于自动生成各种进制形式的IP，以帮助我们进行安全测试</p><h2 style="box-sizing: border-box; font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; font-weight: bold; line-height: 1.1; color: rgb(55, 56, 56); margin-top: 30px; margin-bottom: 15px; font-size: 18px; white-space: normal; background-color: rgb(255, 255, 255);">0×01. 正文</h2><p><strong>程序代码</strong></p><p><strong><br/></strong></p><blockquote><pre style=" box-sizing: border-box; overflow: auto; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; "><code class="hljs python" style=" box-sizing: border-box; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; "><span class="hljs-comment" style="box-sizing: border-box; color: rgb(136, 136, 136);">#!/usr/bin/env python</span><span class="hljs-comment" style="box-sizing: border-box; color: rgb(136, 136, 136);"># -*- coding:utf8 -*-</span><span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">"""
+各种进制的IP表示及其它们的组合
+"""</span><span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">import</span> socket<span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">import</span> struct<span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">import</span> itertools<span class="hljs-function" style="box-sizing: border-box;"><span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">def</span> <span class="hljs-title" style="box-sizing: border-box; color: rgb(136, 0, 0); font-weight: bold;">ip_split_by_comma_oct</span><span class="hljs-params" style="box-sizing: border-box;">(ip)</span>:</span>    <span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">"""
+    :param ip:
+    :return:
+    """</span>    parsed_result = set()
+    ip_split = str(ip).split(<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">'.'</span>)
+    ip_split_oct = [oct(int(_)) <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">for</span> _ <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">in</span> ip_split]
+    parsed_result.add(<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">'.'</span>.join(ip_split_oct))
+    <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">return</span> parsed_result<span class="hljs-function" style="box-sizing: border-box;"><span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">def</span> <span class="hljs-title" style="box-sizing: border-box; color: rgb(136, 0, 0); font-weight: bold;">ip_split_by_comma_hex</span><span class="hljs-params" style="box-sizing: border-box;">(ip)</span>:</span>    <span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">"""
+    :param ip:
+    :return:
+    """</span>    parsed_result = set()
+    ip_split = str(ip).split(<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">'.'</span>)
+    ip_split_hex = [hex(int(_)) <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">for</span> _ <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">in</span> ip_split]
+    parsed_result.add(<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">'.'</span>.join(ip_split_hex))
+    <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">return</span> parsed_result<span class="hljs-function" style="box-sizing: border-box;"><span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">def</span> <span class="hljs-title" style="box-sizing: border-box; color: rgb(136, 0, 0); font-weight: bold;">combination_oct_int_ip</span><span class="hljs-params" style="box-sizing: border-box;">(ip)</span>:</span>    <span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">"""
+    :param ip:
+    :return:
+    """</span>    result = set()
+    parsed_result = set()
+    ip_split = str(ip).split(<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">'.'</span>)
+    oct_2 = list(itertools.combinations([<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">0</span>, <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">1</span>, <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">2</span>, <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">3</span>], <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">2</span>))
+    oct_3 = list(itertools.combinations([<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">0</span>, <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">1</span>, <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">2</span>, <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">3</span>], <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">3</span>))
+    <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">for</span> n, _ <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">in</span> enumerate(ip_split):
+        _tmp = oct(int(_))
+        _delete = ip_split[:n] + ip_split[n+<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">1</span>:]
+        _delete.insert(n, _tmp)
+        result.add(tuple(_delete))
+    <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">for</span> _ <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">in</span> oct_2:
+        _tmp_ip = ip_split[:]
+        _tmp1 = oct(int(ip_split[_[<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">0</span>]]))
+        _tmp2 = oct(int(ip_split[_[<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">1</span>]]))
+        <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">del</span> _tmp_ip[_[<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">0</span>]]
+        <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">del</span> _tmp_ip[_[<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">1</span>] - <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">1</span>]
+        _tmp_ip.insert(_[<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">0</span>], _tmp1)
+        _tmp_ip.insert(_[<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">1</span>], _tmp2)
+        result.add(tuple(_tmp_ip))
+    <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">for</span> _ <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">in</span> oct_3:
+        _tmp_ip = ip_split[:]
+        _tmp1 = oct(int(ip_split[_[<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">0</span>]]))
+        _tmp2 = oct(int(ip_split[_[<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">1</span>]]))
+        _tmp3 = oct(int(ip_split[_[<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">2</span>]]))
+        <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">del</span> _tmp_ip[_[<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">0</span>]]
+        <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">del</span> _tmp_ip[_[<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">1</span>] - <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">1</span>]
+        <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">del</span> _tmp_ip[_[<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">2</span>] - <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">2</span>]
+        _tmp_ip.insert(_[<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">0</span>], _tmp1)
+        _tmp_ip.insert(_[<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">1</span>], _tmp2)
+        _tmp_ip.insert(_[<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">2</span>], _tmp3)
+        result.add(tuple(_tmp_ip))
+    <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">for</span> _ <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">in</span> result:
+        parsed_result.add(<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">'.'</span>.join(_))
+    <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">return</span> parsed_result<span class="hljs-function" style="box-sizing: border-box;"><span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">def</span> <span class="hljs-title" style="box-sizing: border-box; color: rgb(136, 0, 0); font-weight: bold;">combination_hex_int_ip</span><span class="hljs-params" style="box-sizing: border-box;">(ip)</span>:</span>    <span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">"""
+    :param ip:
+    :return:
+    """</span>    result = set()
+    parsed_result = set()
+    ip_split = str(ip).split(<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">'.'</span>)
+    hex_2 = list(itertools.combinations([<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">0</span>, <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">1</span>, <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">2</span>, <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">3</span>], <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">2</span>))
+    hex_3 = list(itertools.combinations([<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">0</span>, <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">1</span>, <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">2</span>, <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">3</span>], <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">3</span>))
+    <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">for</span> n, _ <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">in</span> enumerate(ip_split):
+        _tmp = hex(int(_))
+        _delete = ip_split[:n] + ip_split[n+<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">1</span>:]
+        _delete.insert(n, _tmp)
+        result.add(tuple(_delete))
+    <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">for</span> _ <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">in</span> hex_2:
+        _tmp_ip = ip_split[:]
+        _tmp1 = hex(int(ip_split[_[<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">0</span>]]))
+        _tmp2 = hex(int(ip_split[_[<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">1</span>]]))
+        <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">del</span> _tmp_ip[_[<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">0</span>]]
+        <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">del</span> _tmp_ip[_[<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">1</span>] - <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">1</span>]
+        _tmp_ip.insert(_[<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">0</span>], _tmp1)
+        _tmp_ip.insert(_[<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">1</span>], _tmp2)
+        result.add(tuple(_tmp_ip))
+    <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">for</span> _ <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">in</span> hex_3:
+        _tmp_ip = ip_split[:]
+        _tmp1 = hex(int(ip_split[_[<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">0</span>]]))
+        _tmp2 = hex(int(ip_split[_[<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">1</span>]]))
+        _tmp3 = hex(int(ip_split[_[<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">2</span>]]))
+        <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">del</span> _tmp_ip[_[<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">0</span>]]
+        <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">del</span> _tmp_ip[_[<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">1</span>] - <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">1</span>]
+        <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">del</span> _tmp_ip[_[<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">2</span>] - <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">2</span>]
+        _tmp_ip.insert(_[<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">0</span>], _tmp1)
+        _tmp_ip.insert(_[<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">1</span>], _tmp2)
+        _tmp_ip.insert(_[<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">2</span>], _tmp3)
+        result.add(tuple(_tmp_ip))
+    <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">for</span> _ <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">in</span> result:
+        parsed_result.add(<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">'.'</span>.join(_))
+    <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">return</span> parsed_result<span class="hljs-function" style="box-sizing: border-box;"><span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">def</span> <span class="hljs-title" style="box-sizing: border-box; color: rgb(136, 0, 0); font-weight: bold;">combination_hex_int_oct_ip</span><span class="hljs-params" style="box-sizing: border-box;">(ip)</span>:</span>    <span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">"""
+    :param ip:
+    :return:
+    """</span>    result = set()
+    parsed_result = set()
+    ip_split = str(ip).split(<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">'.'</span>)
+    hex_3 = list(itertools.combinations([<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">0</span>, <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">1</span>, <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">2</span>, <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">3</span>], <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">3</span>))
+    <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">for</span> n1, n2, n3 <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">in</span> hex_3:
+        _tmp_ip = ip_split[:]
+        _tmp_2 = oct(int(_tmp_ip[n2]))
+        _tmp_3 = hex(int(_tmp_ip[n3]))
+        <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">del</span> _tmp_ip[n2]
+        <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">del</span> _tmp_ip[n3 - <span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">1</span>]
+        _tmp_ip.insert(n2, _tmp_2)
+        _tmp_ip.insert(n3, _tmp_3)
+        result.add(tuple(_tmp_ip))
+    <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">for</span> _ <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">in</span> result:
+        parsed_result.add(<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">'.'</span>.join(_))
+    <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">return</span> parsed_result<span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">if</span> __name__ == <span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">'__main__'</span>:
+    ip = <span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">'10.1.100.1'</span>    ip_int = struct.unpack(<span class="hljs-string" style="box-sizing: border-box; color: rgb(136, 0, 0);">'!L'</span>, socket.inet_aton(ip))[<span class="hljs-number" style="box-sizing: border-box; color: rgb(136, 0, 0);">0</span>]
+    ip_oct_no_comma = oct(ip_int)
+    ip_hex_no_comma = hex(ip_int)
+    ip_oct_by_comma = ip_split_by_comma_oct(ip)
+    ip_hex_by_comma = ip_split_by_comma_hex(ip)
+    all_result = ip_oct_by_comma | ip_hex_by_comma | combination_oct_int_ip(ip) | combination_hex_int_ip(ip) | combination_hex_int_oct_ip(ip)
+    <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">for</span> _ip <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">in</span> all_result:
+        <span class="hljs-keyword" style="box-sizing: border-box; font-weight: bold;">print</span> _ip<br style="box-sizing: border-box;"/></code></pre></blockquote><p>代码很容易看懂，首先生成纯8进制表示的IP、纯16进制表示的IP，然后在分别生成10进制和8进制混合组成的IP，16进制和10进制混合组成的IP， 16进制8进制10进制混合组成的IP，最后输出各种组合的结果</p><p>在使用其他脚本或者工具遍历测试这个脚本的结果，看看是否能绕过SSRF的防护</p><p>部分截图：</p><p>比如生成10.1.100.1 这个IP的其他各种进制形式：</p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEx0M3tsGvhLOmSYk59k45g1LbeA6nUc41OzZhbL6Q3eVzb37zEjRLMhLoO9EhFWxHiaibibibMlB43Pyg/0?wx_fmt=jpeg" class="" data-ratio="0.8072463768115942" data-w="690" src="../Images/77e23f96ac28a7b47676d1bf32e03339.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEx0M3tsGvhLOmSYk59k45g1LbeA6nUc41OzZhbL6Q3eVzb37zEjRLMhLoO9EhFWxHiaibibibMlB43Pyg/0?wx_fmt=jpeg"/></p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEx0M3tsGvhLOmSYk59k45g1o7oUicFGrraU2xiahw9RAMXftD5V8FbYPAaheAt7CJ5EtcnMlr3DghpA/0?wx_fmt=jpeg" class="" data-ratio="0.6765163297045101" data-w="643" src="../Images/16da24a979d9cfb44304942010e404f1.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWEx0M3tsGvhLOmSYk59k45g1o7oUicFGrraU2xiahw9RAMXftD5V8FbYPAaheAt7CJ5EtcnMlr3DghpA/0?wx_fmt=jpeg"/></p><p><br/></p><h2 style="box-sizing: border-box; font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; font-weight: bold; line-height: 1.1; color: rgb(55, 56, 56); margin-top: 30px; margin-bottom: 15px; font-size: 18px; white-space: normal; background-color: rgb(255, 255, 255);">0×02. 总结</h2><p>工具虽然简单，但却能给我们的渗透测试带来方便，其实工作中有很多可以总结沉淀的地方，都可以形成工具化，不仅能方便以后工作，还能有助于我们知识的沉淀，加快我们自身实力提升。也希望大家以后也能多多分享。</p><p><br/></p><p><img data-type="gif" data-src="http://mmbiz.qpic.cn/mmbiz_gif/5ZACCn1bWEwrm1niax0xWl6tFwyaPqCHRL7zA6G4OWxgibRsJT9lLafJppjibev1TUxHYEia92BiaAtlc7u0BcOmUvA/0?wx_fmt=gif" class="" data-ratio="0.7" data-w="500" src="../Images/e8c1330a4ae95198ebdb17e4f3bb4cbb.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_gif/5ZACCn1bWEwrm1niax0xWl6tFwyaPqCHRL7zA6G4OWxgibRsJT9lLafJppjibev1TUxHYEia92BiaAtlc7u0BcOmUvA/0?wx_fmt=gif"/></p><p><br/></p>
+        
+</body>
+</html>

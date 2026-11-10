@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>网络时间协议守护进程(ntpd)存在多个漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>网络时间协议守护进程(ntpd)存在多个漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA5ODA0NDE2MA==&amp;mid=201709302&amp;idx=2&amp;sn=fd025f0697e0670e01396c676fa087ed&amp;chksm=1966e6992e116f8fe0d15a690d3134045558f42abd576a866ac37bd306e5ed2185f189c55805&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA5ODA0NDE2MA==&amp;mid=201709302&amp;idx=2&amp;sn=fd025f0697e0670e01396c676fa087ed&amp;chksm=1966e6992e116f8fe0d15a690d3134045558f42abd576a866ac37bd306e5ed2185f189c55805&amp;scene=27#wechat_redirect</a></blockquote><p style=""><span style="font-weight: 900; font-size: 20px;">综述</span></p><p style=""><span style="">网络时间协议（NTP）为网络系统，各种服务和应用提供同步时间功能。 NTPD在版本4.2.7和之前的版本存在缓冲区溢出漏洞，可能允许执行恶意代码。 NTP-keygen早于4.2.7p230版本使用了非密码学的随机数生成器来产生对称密钥。</span></p><p style=""><span style="font-weight: 900; font-size: 20px;">描述</span></p><p style=""><span style="">CWE-332: 伪随机数生成器不完全熵 - CVE-2014-9293</span></p><p style=""><span style="">如果在ntp.conf中没有定义认证密钥，会产生一个密码学意义上的弱密钥</span></p><p style=""><span style="">CWE-338: 使用了密码学意义上的弱伪随机数生成器(PRNG) - CVE-2014-9294</span></p><p style=""><span style="">ntp-keygen 在4.2.7p230版本之前使用了一个非密码学的随机数生成器和一个种子来产生对称密钥。</span></p><p style=""><span style="">CWE-121: 堆栈缓冲区溢出- CVE-2014-9295</span></p><p style=""><span style="">一个远程攻击者可以在没有认证的情况下发送一个精心构造的数据包来触发ntpd中crypto_recv()，ctl_putdata()和configure()函数的缓冲区溢出漏洞(使用autokey认证)。缓冲区溢出漏洞可能导致攻击者执行与ntpd进程相同权限的任意代码。</span></p><p style=""><span style="">CWE-389: 错误条件，返回值，状态码- CVE-2014-9296</span></p><p style=""><span style="">Ntpd中有一段处理少见错误的代码缺失返回值，从而导致进程遇到错误时没有结束。这种情况可能被攻击者利用。</span></p><p style=""><span style="">NTP.org 提供了更多信息在其安全公告中。</span></p><p style=""><span style="font-weight: 900; font-size: 20px;">影响</span></p><p style=""><span style="">ntpd中存在的缓冲区溢出漏洞可能被攻击者利用执行任意代码。弱默认密钥和不安全的伪随机数生成器可能导致攻击者绕过完整性检查和认证加密来获取信息。</span></p><p style=""><span style="font-weight: 900; font-size: 20px;">解决方案</span></p><p style=""><span style="">上述问题将会在NTP 4.2.8中解决，请在ntp.org网站升级。</span></p><p style=""><strong><span style="font-size: 20px;">参考</span></strong></p><p style=""><span style="">·</span>http://support.ntp.org/bin/view/Main/SecurityNotice</p><p style=""><span style="">·</span>http://www.ntp.org/downloads.html</p><p style=""><span style="">·</span>http://www.ntp.org/ntpfaq/NTP-s-algo-crypt.htm</p><p style=""><span style="">·</span>https://ics-cert.us-cert.gov/advisories/ICSA-14-353-01</p><p><br/></p>
+        
+</body>
+</html>

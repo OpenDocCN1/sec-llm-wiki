@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>利用代码绕过Linux安全功能 系统易受攻击</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>利用代码绕过Linux安全功能 系统易受攻击</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485634&amp;idx=1&amp;sn=17b40fec08a7ca9e55bd92925371f2ee&amp;chksm=ea9739a8dde0b0be03d01a613e5297d64327438439310c97e4a1438646496322bd5e6f880351&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485634&amp;idx=1&amp;sn=17b40fec08a7ca9e55bd92925371f2ee&amp;chksm=ea9739a8dde0b0be03d01a613e5297d64327438439310c97e4a1438646496322bd5e6f880351&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiakegV5mGh2BTA3JwicZsW5AicIYGnN4OhGicanBhT7n3XicF6yCyymdoXdLYqfVwEGzlFWPJE1j0R83Lg/0?wx_fmt=jpeg" data-ratio="0.5294117647058824" data-w="340" src="../Images/ad1c2f161cd2f9ed6740e2cc33f079cb.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiakegV5mGh2BTA3JwicZsW5AicIYGnN4OhGicanBhT7n3XicF6yCyymdoXdLYqfVwEGzlFWPJE1j0R83Lg/0?wx_fmt=jpeg"/><br/></p><p><br/></p><p><strong>通常人们认为Linux操作系统更加安全，因为从被入侵次数、受恶意软件感染次数、被曝漏洞次数上来讲，Linux设备被攻击的次数要比Windows小得多，这一切都源自其操作系统中内置的安全功能。</strong></p><p><br/></p><p>不过研究人员Chris Evans认为入侵Linux操作系统要比想象中容易多了，攻击所需要的不过是一个无脚本的利用代码。</p><p><br/></p><p><strong>攻击原理</strong></p><p><br/></p><p>Evans表示他试图利用的是Linux设备中GStreamer框架中的内存损坏漏洞。利用代码会绕过整合到Linux中的两个安全系统ASLR（地址空间布局随机化）和DEP（数据执行保护）。ASLR的主要目的就是当代码加载到内存时进行随机化，这样任何活跃利用代码的成功率就会下降，并且能够减少对系统的影响。同时，DEP通过阻止利用代码加载到内存的办法添加一个新的保护层。</p><p><br/></p><p>而研究人员要做的就是通过利用代码绕过这两个安全机制并对目标设备实施进一步的行动。要攻击FLIC解码器，脚本并没有任何机会。攻击者需要提交一些无脚本字节到解码器中，然后在没有交互的情况下尝试并获取代码执行，这就是在ASLR环境下的无脚本利用。</p><p><br/></p><p>Evans表示同样的漏洞还存在于Ubuntu 16.04和其它安装GStreamer的设备中，不过要让利用代码在除Fedora之外的版本上起作用需要做点额外的工作，包括优化更多数量的堆和代码补偿。</p><p><br/></p><p>Evans指出，这个利用代码有点奇怪，不过值得尝试，因为它证明了无脚本利用代码也是有可能的，即使是在ASLR中也是如此。该漏洞可能会被尽快修复。目前利用代码仅适用于Fedora版本。</p>
+        
+</body>
+</html>

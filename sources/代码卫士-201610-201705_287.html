@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>谷歌共享安全基础架构详情</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>谷歌共享安全基础架构详情</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485598&amp;idx=2&amp;sn=f6c6bf61efb1e90e0e8bd0acee90bd9f&amp;chksm=ea9739f4dde0b0e24e5a825caef2f8d56702cf429a03ae1f4cc2ac7759bd980f3e42dc7e4c71&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485598&amp;idx=2&amp;sn=f6c6bf61efb1e90e0e8bd0acee90bd9f&amp;chksm=ea9739f4dde0b0e24e5a825caef2f8d56702cf429a03ae1f4cc2ac7759bd980f3e42dc7e4c71&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiam56aIxDRZAVZ48F855dRNd0AflqNQHMxOHfoTTtoldJjkOTDJVxFoiaIvsn7HnlMhvibJ4nibMETA6A/0?wx_fmt=jpeg" data-ratio="0.5" data-w="660" src="../Images/9d44dc717f21e9489a5aa3ac0eb86b75.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiam56aIxDRZAVZ48F855dRNd0AflqNQHMxOHfoTTtoldJjkOTDJVxFoiaIvsn7HnlMhvibJ4nibMETA6A/0?wx_fmt=jpeg"/><br/></p><p><br/></p><p><strong>谷歌最近分享了保护数据中心的安全基础架构详情。该数据中心托管着现有服务和不断增长的谷歌云平台（GCP）服务。</strong></p><p><br/></p><p>虽然很多组织机构一般都会担心将这么重要的信息公布会招来攻击者，但谷歌却反其道而行之，究其原因有两点，一是为潜在的GCP消费者展示数据中心的安全性，另外一个就是谷歌对自身的安全很有信心。</p><p><br/></p><p>在最近发布的文章中，谷歌展示了六层基础架构，包括硬件基础架构、服务部署、用户身份、存储服务、互联网通信和运行安全。谷歌对细节的注重可见一斑：构建并拥有自己的数据中心，并整合了“生物识别、金属探测、摄像头、车辆障碍、激光入侵检测系统”。谷歌将一些服务器托管在第三方数据中心时就会增加自己的安全措施如受谷歌控制的独立生物识别系统、摄像头和金属探测器。</p><p><br/></p><p>谷歌数据中心内数千台服务器都有谷歌自己自定义设置的服务器板。另外，弍还会设计自定义芯片，包括目前服务器和外围设备部署的一款硬件安全芯片。这些芯片能确保谷歌在硬件层面安全地识别出并验证合法的谷歌设备。</p><p><br/></p><p>谷歌托管在数据中心内部或中心之间的不同服务之间并没有既定的信任。所有必要的服务之间的通信都是由应用层的密码验证并授权的。这种方式适用于谷歌服务和用户为产品如谷歌App Engine或谷歌Compute Engine提供的代码中。敏感服务如集群业务流程和一些关键管理服务都在专门的服务器中运行。</p><p><br/></p><p>如果需要服务间通信并需要授权，那么基础架构就会为网络上的RPC数据提供加密隐私和整体性。所有的广域网流量即数据中心之间的流量都会被自动加密。这种自动化加密如今被延伸到了所有的内部流量中，数据中心内部都部署了硬件加密加速器。</p><p><br/></p><p>如果服务间通信是由终端用户发起的（如Gmail需要跟通讯录交互），那么就会生成短时效的许可票以确保Gmail账户只能跟该用户的通讯录进行交互。</p><p><br/></p><p>对于存储的数据，该基础架构使用的是中心关键管理服务。在写入物理存储之前，存储数据可通过这个关键管理服务使用密钥进行配置。应用层加密能够让基础架构跟低级的存储层中出现的潜在威胁如恶意磁盘固件隔离开。</p><p><br/></p><p>需要在互联网实现的服务也会通过GFE（谷歌Front End）实现。这就确保所有的TLS连接使用的是正确的证书并且会支持完美的前向安全。</p><p><br/></p><p>为了确保自身安全软件的开发，谷歌使用库和框架来清除XSS漏洞，利用自动化工具检测漏洞并手动进行安全审查。谷歌清除内部威胁的一个主要方式就是“大大限制并积极监控”管理员权限。方法包括自动化某些常见的管理员活动、执行某些行为时需要获得两方批准、限制允许调试的API并且不会泄露敏感信息。入侵检测和响应越来越多地使用机器学习。</p><p><br/></p><p>最后，谷歌还讨论了GCP。通过构建相同的基础架构，它能够从相同的安全进程中获益，不过还会增加额外的安全改进功能。</p><p><br/></p><p>2016年，谷歌的云业务开始对母公司阿尔法的总收入产生积极影响。加上通过谷歌应用商店出售的数字内容，云业务收入达到24亿美元，占据2016年第三季度谷歌总收入的10%左右。</p>
+        
+</body>
+</html>

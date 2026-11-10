@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>jQuery Mobile系统能导致网站遭受XSS攻击</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>jQuery Mobile系统能导致网站遭受XSS攻击</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485588&amp;idx=2&amp;sn=a8ba01c71fccde01ea3994cd382641f5&amp;chksm=ea9739fedde0b0e8d9b786a7aa13d8cef26cbfc976a3fdb587afc19c282e3bb1691dbb2fce0b&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI2NTg4OTc5Nw==&amp;mid=2247485588&amp;idx=2&amp;sn=a8ba01c71fccde01ea3994cd382641f5&amp;chksm=ea9739fedde0b0e8d9b786a7aa13d8cef26cbfc976a3fdb587afc19c282e3bb1691dbb2fce0b&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiamny7wXq4rRMibvM6QIETeAk1jmJib1Dbwy4dnj4iafiaoTiaXjxkfNEB7cUyUpkUicwxptnHh6ytlwSB7A/0?wx_fmt=jpeg" data-ratio="0.581294964028777" data-w="695" src="../Images/be2143c808cc00a5870af5bdb42a45e9.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/UsQySyjOKiamny7wXq4rRMibvM6QIETeAk1jmJib1Dbwy4dnj4iafiaoTiaXjxkfNEB7cUyUpkUicwxptnHh6ytlwSB7A/0?wx_fmt=jpeg"/></p><p><br/></p><p><strong>一名谷歌安全工程师发现jQuery Mobile能够将网站暴露到XSS攻击中，如果出现了开放重定向漏洞的话。</strong></p><p><br/></p><p>jQuery Mobile项目是一个基于HTML5的用户界面系统，旨在开发能够从任何类型的设备访问的响应式网站和网络应用程序。BuiltWith报道称，jQuery Mobile目前用于超过15万个活跃站点中。</p><p><br/></p><p>谷歌的工程师Eduardo Vela几个月前发现，jQuery Mobile会查看能返回URL锚点的location.hash。如果location.hash中存在一个URL，那么它就会通过history.pushState方法并将其添加到一个XMLHttpRequest对象中。而对该请求的响应是通过innerHTML使用的。</p><p><br/></p><p>使用history.pushState应该能够阻止XSS攻击，但是如果网站受到开放重定向漏洞的影响，那么利用仍然是有可能的。</p><p><br/></p><p>鉴于很多组织机构如谷歌并没有将开放重定向视作漏洞，因此可能有很多网站易受此类攻击。开放重定向出现于很多大型网站如谷歌、YouTube、Facebook、百度和雅虎。</p><p><br/></p><p>专家将研究结果告知jQuery Mobile的开发人员，但考虑到改变当前行为可能会破坏现有的应用程序，因此这个问题尚未解决。jQuery团队证实称开发人员应该注意这种风险带来的后果。</p>
+        
+</body>
+</html>

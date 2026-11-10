@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>如何使用Docker Machine创建Swarm集群</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>如何使用Docker Machine创建Swarm集群</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=Mzg5Mjc3MjIyMA==&amp;mid=2247542486&amp;idx=2&amp;sn=fe4aec20aaefe41fc41b424e9d085d45&amp;chksm=c03b6cc5f74ce5d39db168d841776995094b1d219ec16b5bcff87dfea90e401e6faa5f3575c8&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=Mzg5Mjc3MjIyMA==&amp;mid=2247542486&amp;idx=2&amp;sn=fe4aec20aaefe41fc41b424e9d085d45&amp;chksm=c03b6cc5f74ce5d39db168d841776995094b1d219ec16b5bcff87dfea90e401e6faa5f3575c8&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz/A1HKVXsfHNmYVWdGBKWiaYr786ZPqGLzBDjtw4cvkMsKVwps8x5DpXtMWXw61vwM0icbkz3Sm4jhgSBwDiaa6pickA/0?wx_fmt=jpeg" data-ratio="0.3669064748201439" data-w="" src="../Images/09b3c73301c7b5460aad9271dad30b84.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/A1HKVXsfHNmYVWdGBKWiaYr786ZPqGLzBDjtw4cvkMsKVwps8x5DpXtMWXw61vwM0icbkz3Sm4jhgSBwDiaa6pickA/0?wx_fmt=jpeg"/><br/></p><p style="margin-bottom: 1em; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em;">之前，Docker的安装流程非常复杂，用户需要登录到相应的主机上，根据官方的安装和配置指南来安装Docker，并且不同的操作系统的安装步骤也是不一样的。而有了Machine后，不管是在笔记本、虚拟机还是公有云实例上，用户仅仅需要一个命令就轻松搞定安装。当然那你需要先安装Docker Machine。Docker Machine是一个简化Docker安装的命令行工具，通过一个简单的命令行即可在相应的平台上安装Docker，比如VirtualBox、 Digital Ocean、Microsoft Azure。Swarm是Docker公司在2014年12月初发布的一套较为简单的工具，用来管理Docker集群，它将一群Docker宿主机变成一个单一的，虚拟的主机。通过本篇文章，让我们来了解一下Docker Machine，以及如何使用Docker Machine创建Swarm集群。</p><p style="margin-bottom: 1em; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em;">与Docker Compose一样，Docker Machine 也是旨在帮助开发人员快速使用Docker的工具。具体地说，就是Machine允许Windows和OS X用户在诸如 Amazon AWS、Google Container Engine、Azure、DigitalOcean等公有云上远程创建Docker主机。Docker客户端安装在本地，你就可以通过它远程访问Docker的API，能达到好像Docker引擎就运行本地一样的体验。Machine需要安装在客户机本地，是用来创建远程Docker主机的单独二进制文件。本地Docker客户端甚至可以是运行在VirtualBox虚拟机上的Docker。它的源代码托管在GitHub（https://github.com/docker/machine）。</p><p style="margin-bottom: 1em; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em;">在这篇文章中，我先简单介绍Docker Machine，再讲述怎么用它创建Swarm Docker集群。一旦你从单机测试过度到多机器分布式部署，这工具相当有用。Docker Compose用来启动你在Swarm集群中的应用，这个我会在以后的文章中详细叙述。</p><p style="margin-bottom: 1em; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em;">首先，你的机器上应该安装Docker Machine，官方的文档（https://docs.docker.com/machine/install-machine/）是最好的参考工具。第一步，我将介绍一个此文档中高亮的执行命令。</p><section style="border: none; margin-top: 0.5em; margin-bottom: 0.5em; box-sizing: border-box;" class="tn-Powered-by-XIUMI"><section style="border-left-width: 10px; border-left-style: solid; line-height: 2em; padding: 0.5em; border-radius: 5px 0px 0px 5px; box-shadow: rgb(153, 153, 153) 0em 0.2em 0.2em; font-size: 112.5%; font-family: inherit; text-decoration: inherit; border-color: rgb(44, 151, 246); box-sizing: border-box; background-color: rgb(239, 239, 239);" class="tn-Powered-by-XIUMI"><section class="tn-Powered-by-XIUMI" style="box-sizing: border-box;">安装Docker Machine</section></section><section style="width: 0px; height: 0px; clear: both;"/></section><p style="margin-top: 1em; margin-bottom: 1em; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em;">与安装Docker Compose相似，你可以从GitHub的release分支中获取Machine的二进制安装文件，也可以下载源代码自己编译安装或者安装Docker ToolBox，ToolBox打包了所有的Docker工具，提供UI界面的安装。</p><p style="margin-bottom: 1em; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em;">例如，在OS X 机器上，你可以在Github上获取安装文件，并存储在 <code>/usr/local/bin/docker-machine</code>路径下，然后赋予可执行权限，可以通过测试版本的方式测试是否安装正确。例如：</p><pre style="border: 1px solid rgb(204, 204, 204); padding: 10px 20px; margin-top: 0px; margin-bottom: 1em; line-height: 32px; overflow: auto; border-radius: 5px; background-color: rgb(250, 250, 250);">$ sudo curl -L https://github.com/docker/machine/releases/download/v0.6.0/
+docker-machine-`uname -s`-`uname -m` &gt; /usr/local/bin/docker-machine
+
+$ sudo chmod +x /usr/local/bin/docker-machine
+
+$ docker-machine version
+
+docker-machine version 0.6.0, build e27fb87</pre><p style="margin-bottom: 1em; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em;">因为Machine创建的实例在云端，Docker 引擎安装在云端的Docker中，所以要设置好客户端和Docker引擎正确的TSL验证权限。但是你还是要先要确认你本地是否安装了Docker。如果本地还未安装，在OS X中可以通过Homebrew安装Docker。</p><pre style="border: 1px solid rgb(204, 204, 204); padding: 10px 20px; margin-top: 0px; margin-bottom: 1em; line-height: 32px; overflow: auto; border-radius: 5px; background-color: rgb(250, 250, 250);">$ brew install docker</pre><p style="margin-bottom: 1em; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em;">现在应该准备好创建第一个Docker Machine了。</p><section style="border: none; margin-top: 0.5em; margin-bottom: 0.5em; box-sizing: border-box;" class="tn-Powered-by-XIUMI"><section style="border-left-width: 10px; border-left-style: solid; line-height: 2em; padding: 0.5em; border-radius: 5px 0px 0px 5px; box-shadow: rgb(153, 153, 153) 0em 0.2em 0.2em; font-size: 112.5%; font-family: inherit; text-decoration: inherit; border-color: rgb(44, 151, 246); box-sizing: border-box; background-color: rgb(239, 239, 239);" class="tn-Powered-by-XIUMI"><section class="tn-Powered-by-XIUMI" style="box-sizing: border-box;">使用Docker Machine</section></section><section style="width: 0px; height: 0px; clear: both;"/></section><p style="margin-top: 1em; margin-bottom: 1em; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em;">像我先前提及的，你可以用Machine在公有云平台上开启一个实例，但是你也可以在VirtualBox等虚拟机上安装Docker引擎到Docker中。在本地客户端，就好像所有的Docker 引擎运行在本地本地一样。在深入使用公有云服务之前，先让我们体验测试一下安装在VirtualBox上。</p><p style="margin-bottom: 1em; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em;">docker-machine有一个Create命令，可以把名字传递进入命令，指定创建的名字。如果还未创建任何实例，可以指定创建名字为default，下面的命令演示创建的过程：</p><pre style="border: 1px solid rgb(204, 204, 204); padding: 10px 20px; margin-top: 0px; margin-bottom: 1em; line-height: 32px; overflow: auto; border-radius: 5px; background-color: rgb(250, 250, 250);">$ docker-machine create -d virtualbox default
+
+Running pre-create checks...
+
+&lt;snip&gt;
+
+Docker is up and running!
+
+To see how to connect your Docker Client to the Docker Engine 
+running on this virtual machine, run: docker-machine env default</pre><p style="margin-bottom: 1em; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em;">命令执行后Machine就被创建，你将看到一个default的VM运行在VirtualBox上。用这个Machine可以配置本地Docker客户端，用到env命令完成：</p><pre style="border: 1px solid rgb(204, 204, 204); padding: 10px 20px; margin-top: 0px; margin-bottom: 1em; line-height: 32px; overflow: auto; border-radius: 5px; background-color: rgb(250, 250, 250);">$ docker-machine env default
+
+export DOCKER_TLS_VERIFY="1"
+
+export DOCKER_HOST="tcp://192.168.99.102:2376"
+
+export DOCKER_CERT_PATH="/Users/sebastiengoasguen/.docker/machine/machines/default"
+
+export DOCKER_MACHINE_NAME="default"
+
+# Run this command to configure your shell: 
+
+# eval $(docker-machine env default)
+
+$ eval $(docker-machine env default)
+
+$ docker ps</pre><p style="margin-bottom: 1em; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em;">当然，你的IP地址可能会不同，证书的路径也可能会不同。Docker客户端将会使用设置的相同的环境变量通过Docker API与运行在上面的机器互相通信。设置完成后，就可以在本地机器访问远程Docker。</p><p style="margin-bottom: 1em; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em;">在这个阶段，你就可以在OS X或者Windows上开启容器。</p><p style="margin-bottom: 1em; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em;">的确，你可以使用相同的命令在不同的共有云平台启动Docker，也能启动Docker集群。</p><p style="margin-bottom: 1em; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em;">每一个云平台的提供者都有自己完备的参考文档（https://docs.docker.com/machine/drivers/），如果你选择了其中的一家服务，请确保检查如何设置一些关键变量：例如权限秘钥或者令牌。这些可以工作设置环境变量实现，也可以直接通过docker-machine命令的参数传递。</p><section style="border: none; margin-top: 0.5em; margin-bottom: 0.5em; box-sizing: border-box;" class="tn-Powered-by-XIUMI"><section style="border-left-width: 10px; border-left-style: solid; line-height: 2em; padding: 0.5em; border-radius: 5px 0px 0px 5px; box-shadow: rgb(153, 153, 153) 0em 0.2em 0.2em; font-size: 112.5%; font-family: inherit; text-decoration: inherit; border-color: rgb(44, 151, 246); box-sizing: border-box; background-color: rgb(239, 239, 239);" class="tn-Powered-by-XIUMI"><section class="tn-Powered-by-XIUMI" style="box-sizing: border-box;">使用Docker Machine创建Swarm集群</section></section><section style="width: 0px; height: 0px; clear: both;"/></section><p style="margin-top: 1em; margin-bottom: 1em; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em;">有一个关键点，我们目前只有一个主机，如果真的想运行大规模分布式应用程序，我们将访问Docker主机的一个集群以便这些集群可以运行多个主机。对Docker来讲，一个Docker集群就叫做Swarm。谢天谢地，Docker Machine允许创建Swarm。不过请注意，你还可以使用比较有名的配置管理工具诸如Ansible、Chef、Puppet来创建集群，也可以使用其他的一些工具，比如Terraform。</p><p style="margin-bottom: 1em; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em;">在这一段，为了利用网络覆盖我们的集群，我直接介绍一些比较高级的配置方法。后端支持很过键值对的存储，但是这里我们使用了Consul，通常consul作为容器运行在我们创建的Docker Machine上，对主机暴露端口号。额外的节点（例如一个主节点和几个副节点）通过Docker Machine开始运行。他们每一个都会到达键值对存储，这样有助于管理集群，管理网络的覆盖。简单的设置你可以参考使用手册，这里不再赘述。</p><p style="margin-bottom: 1em; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em;">现在我们在DigitalOcean创建一个Machine。你必须要设置一个访问Token，也不要忘了检查下公有云平台提供的指导手册（https://docs.docker.com/swarm/provision-with-machine/）。跟VirtualBox创建不同的地方在设置集群名字。一旦机器已经正在运行，环境变化设置完成，你就可以在主机上创建一个Consul容器。下面是一下操作：</p><pre style="border: 1px solid rgb(204, 204, 204); padding: 10px 20px; margin-top: 0px; margin-bottom: 1em; line-height: 32px; overflow: auto; border-radius: 5px; background-color: rgb(250, 250, 250);">$ docker-machine create -d digitalocean kvstore
+
+$ eval $(docker-machine env kvstore)
+
+$ docker run --name consul --restart=always -p 8400:8400 -p 8500:8500 \
+-p 53:53/udp -d progrium/consul -server -bootstrap-expect 1 -ui-dir /ui</pre><p style="margin-bottom: 1em; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em;">既然我们的键值对存储正在运行，我们就准备一个swarm主节点。我们可以使用Docker Machine中的–swarm 和swarm-master选项完成这个操作。用我们创建的键值对配置Docker引擎。</p><pre style="border: 1px solid rgb(204, 204, 204); padding: 10px 20px; margin-top: 0px; margin-bottom: 1em; line-height: 32px; overflow: auto; border-radius: 5px; background-color: rgb(250, 250, 250);">$ docker-machine create -d digitalocean --swarm --swarm-master \ 
+
+--swarm-discovery="consul://$(docker-machine ip kvstore):8500" \
+
+--engine-opt="cluster-store=consul://$(docker-machine ip kvstore):8500" \ 
+
+--engine-opt="cluster-advertise=eth0:2376" swarm-master</pre><p style="margin-bottom: 1em; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em;">一旦swarm master运行，你就可以增加你想要的更过的节点。例如下面这一个，移除了命令中的–swarm-master选项：</p><pre style="border: 1px solid rgb(204, 204, 204); padding: 10px 20px; margin-top: 0px; margin-bottom: 1em; line-height: 32px; overflow: auto; border-radius: 5px; background-color: rgb(250, 250, 250);">$ docker-machine create -d digitalocean --swarm \
+
+--swarm-discovery="consul://$(docker-machine ip kvstore):8500" \ 
+
+--engine-opt="cluster-store=consul://$(docker-machine ip kvstore):8500" \ 
+
+--engine-opt="cluster-advertise=eth0:2376" swarm-node-1</pre><p style="margin-bottom: 1em; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em;">现在你就有一个运行在DigitalOcean上的Docker集群了。使用docker-machine ls`查看输出，你会查到默认的机器运行在VirtualBox ，还有其他几台机器，包括键值对存储，swarm master，还有你创建的几个节点。</p><pre style="border: 1px solid rgb(204, 204, 204); padding: 10px 20px; margin-top: 0px; margin-bottom: 1em; line-height: 32px; overflow: auto; border-radius: 5px; background-color: rgb(250, 250, 250);">$ docker-machine ls
+
+NAME           ACTIVE      DRIVER         URL   SWARM                   DOCKER    
+
+default        -           virtualbox     ...                           v1.10.3   
+
+kvstore        -           digitalocean   ...                           v1.10.3   
+
+swarm-master   * (swarm)   digitalocean   ...   swarm-master (master)   v1.10.3   
+
+swarm-node-1   -           digitalocean   ...   swarm-master            v1.10.3</pre><p style="margin-bottom: 1em; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em;">Machine 是非常有用的，使得机器之间非常容易转换，也帮助我们测试本地的机器和部署到云端的机器。</p><section style="border: none; margin-top: 0.5em; margin-bottom: 0.5em; box-sizing: border-box;" class="tn-Powered-by-XIUMI"><section style="border-left-width: 10px; border-left-style: solid; line-height: 2em; padding: 0.5em; border-radius: 5px 0px 0px 5px; box-shadow: rgb(153, 153, 153) 0em 0.2em 0.2em; font-size: 112.5%; font-family: inherit; text-decoration: inherit; border-color: rgb(44, 151, 246); box-sizing: border-box; background-color: rgb(239, 239, 239);" class="tn-Powered-by-XIUMI"><section class="tn-Powered-by-XIUMI" style="box-sizing: border-box;">使用集群或者本地安装</section></section><section style="width: 0px; height: 0px; clear: both;"/></section><p style="margin-top: 1em; margin-bottom: 1em; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em;">使用docker-machine ls命令输出查询到运行中的Machine都是独立的。这就意味着如果有两个终端其中一个设置默认基于VirtualBox机器，这个就是那个正在运行的，另外的一台就指向Swam master。这样通过终端就可以实现转换Docker的endpoints。同样我们可以用这种方式在swarm上测试Docker compose本地文件。</p><p style="margin-bottom: 1em; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em;">指向你的Swarm，跟单个主机的命令语法略有不同，你需要传递–swarm选项到docker env，例如：</p><pre style="border: 1px solid rgb(204, 204, 204); padding: 10px 20px; margin-top: 0px; margin-bottom: 1em; line-height: 32px; overflow: auto; border-radius: 5px; background-color: rgb(250, 250, 250);">$ docker-machine env --swarm swarm-master
+
+$ eval $(docker-machine env --swarm swarm-master)</pre><p style="margin-bottom: 1em; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em;">使用docker info可以检查你的集群是否正确。你可以看到你的master节点和其他节点的信息。例如：</p><pre style="border: 1px solid rgb(204, 204, 204); padding: 10px 20px; margin-top: 0px; margin-bottom: 1em; line-height: 32px; overflow: auto; border-radius: 5px; background-color: rgb(250, 250, 250);">$ docker info
+
+&lt;snip..&gt;
+
+Nodes: 2
+
+swarm-master: 45.55.180.111:2376
+
+└ Status: Healthy
+
+└ Containers: 2
+
+└ Reserved CPUs: 0 / 1
+
+└ Reserved Memory: 0 B / 513.4 MiB
+
+└ Labels: executiondriver=native-0.2, kernelversion=4.2.0-27-generic, 
+operatingsystem=Ubuntu 15.10, provider=digitalocean, storagedriver=aufs
+
+└ Error: (none)
+
+└ UpdatedAt: 2016-03-20T17:59:15Z
+
+swarm-node-1: 104.131.180.199:2376
+
+└ Status: Healthy
+
+└ Containers: 1
+
+└ Reserved CPUs: 0 / 1
+
+└ Reserved Memory: 0 B / 513.4 MiB
+
+└ Labels: executiondriver=native-0.2, kernelversion=4.2.0-27-generic, 
+operatingsystem=Ubuntu 
+
+&lt;snip…&gt;</pre><p style="margin-bottom: 1em; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em;">在这个例子中我用了基于键值对存储发现机制的Consul ，你可能还想了解其他的机制。既然我们已经有创建好的Swarm，我们就可以在集群上仔细研究。</p><p style="margin-bottom: 1em; color: rgb(63, 63, 63); font-size: 17px; line-height: 1.75em;">为了确保容器之间的相互通信，而不用关注正在运行的节点，在下篇文章中重点讲一下Docker中基于libnetwork如何覆盖网络，附加一部分Docker引擎内容。如果想获取更多的信息，请关注libnetwork项目。</p><p style="max-width: 100%; min-height: 1em; white-space: pre-wrap; color: rgb(62, 62, 62); line-height: 1.75em; box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);"><strong style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;"><span style="max-width: 100%; font-size: 17px; box-sizing: border-box !important; word-wrap: break-word !important;">@Container容器技术大会正在火热报名中，知名公司的Docker、Kubernetes、Mesos应用案例，点击下图可查看大会具体内容。</span></strong></p><p style="max-width: 100%; min-height: 1em; white-space: pre-wrap; color: rgb(62, 62, 62); text-align: center; line-height: 1.75em; box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);"><a href="http://mp.weixin.qq.com/s?__biz=MzA5OTAyNzQ2OA==&amp;mid=2649689935&amp;idx=1&amp;sn=73fa45b78497ed3e30834d3924d9dfca&amp;scene=21#wechat_redirect" target="_blank" data_ue_src="http://mp.weixin.qq.com/s?__biz=MzA5OTAyNzQ2OA==&amp;mid=2649689935&amp;idx=1&amp;sn=73fa45b78497ed3e30834d3924d9dfca&amp;scene=21#wechat_redirect" style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;"><img data-s="300,640" data-type="jpeg" data-ratio="0.5" data-w="" width="auto" data-src="http://mmbiz.qpic.cn/mmbiz/A1HKVXsfHNlicFbicOnCO4aCVShsS5O97KFicoDEudutrwA626xSJb3WOGSWibfb90t0Zd2s02nGPY5MT9eUspnqVg/640?wx_fmt=jpeg" style="box-sizing: border-box !important; word-wrap: break-word !important; width: auto !important; visibility: visible !important;" src="../Images/33840223781eaa3dd0d7ebbccfe2ba23.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/A1HKVXsfHNlicFbicOnCO4aCVShsS5O97KFicoDEudutrwA626xSJb3WOGSWibfb90t0Zd2s02nGPY5MT9eUspnqVg/640?wx_fmt=jpeg"/></a></p><p style="max-width: 100%; min-height: 1em; white-space: pre-wrap; color: rgb(62, 62, 62); line-height: 1.75em; box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);"><strong style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;"><span style="max-width: 100%; font-size: 17px; box-sizing: border-box !important; word-wrap: break-word !important;">点击左下角阅读原文链接可进入大会官网。</span></strong></p>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>【牛工具】20秒钟绕过硬件防火墙</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>【牛工具】20秒钟绕过硬件防火墙</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5Njc3NjM4MA==&amp;mid=200841742&amp;idx=1&amp;sn=77217afeb443fae929fa4fe61afaa041&amp;chksm=28e82add1f9fa3cb606674fc7009193485a63685b017b5f18caf9ade7f5d22de4d1c0e20d752&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5Njc3NjM4MA==&amp;mid=200841742&amp;idx=1&amp;sn=77217afeb443fae929fa4fe61afaa041&amp;chksm=28e82add1f9fa3cb606674fc7009193485a63685b017b5f18caf9ade7f5d22de4d1c0e20d752&amp;scene=27#wechat_redirect</a></blockquote><p>想在20秒钟之内绕过防火墙和程序白名单，并拿到远程桌面吗？</p><p><br/>渗透测试人员或黑客有时在使用命令控制台时会碰到防火墙的阻止，白帽子通常到此为止，但某些人这个时候就可以把这款名为Hikit的工具包拿出来了。</p><p><br/>Hikit可以建立新的网络接口，捕获发到合法服务器的流量。如果后门通讯在流量中被检测到，数据流就会以不同的方式处理。在硬件防火墙这个级别，通讯流量被允许通过，因为它与合法流量一样，使用相同的TCP端口。这样攻击者得以绕过硬件防火墙，而渗透测试人员则被阻挡。这就是白帽子与黑客的区别，当然这个区别必需弥补，其也正是“绕过硬件防火墙”(hwfwbypass)工具的产生理念。</p><p><br/>拥有系统管理员权限的攻击者，可以在硬件防火墙上把后门端口设置成正常的通讯端口，比如22、80、443等。但首先攻击者必需侵入服务器，然后才能对防火墙进行设置。没有进入服务器之前，这个工具毫无用武之地。</p><p><br/>hwfwbypass的源码已可以从网上下载，实际上它是一个网络过滤的内核驱动程序。安装此工具需要管理员权限，该工具已经带有数字签名。<em>（关注“<strong>信息安全知识</strong>”，回复“<strong>hwfw</strong>”获得下载地址）</em></p><p><br/>使用hwfwbypass的四步：</p><p><br/>1.    把恶意软件上传到远程桌面服务器上；<br/>2.    修改APPLocker策略以执行任意代码；<br/>3.    提升到管理员权限；<br/>4.    使用hwfwbypass绕过硬件防火墙。</p><p><br/>使用hwfwbypass的好处有四点：</p><p><br/>1.    该驱动使用Windows支持的网络过滤器，这样它的功能以后也可以正常运行<br/>2.    它是有效签名的驱动程序<br/>3.    任何后门通讯都可以通过这个工作实现，比如Netcat，Meterpreter TCP<br/>4.    服务器端无需额外的工具，客户端需要有Netcat</p><p><br/>Hwfwbypass适用于windows server 2012和windows 8，但如果在服务器与攻击者之间存在网络地址转换(NAT)，则无法使用该工具。</p><p><br/>最后，感谢安全公司MRG Effitas的首席技术官Zoltan Balazs在不久前的Def Con 22大会给大家带来这款工具的介绍。<em>（关注“<strong>信息安全知识</strong>”，回复“<strong>hwfwpdf</strong>”可下载该演讲报告）</em></p><p>－－－<br/></p><p><span style="color:#7F7F7F">要闻、干货、原创、专业</span></p><p><span style="color:#7F7F7F">关注“信息安全知识”</span></p><p><span style="color:#7F7F7F">我们是安全牛！<br/></span></p><p style="text-align:center"><img data-w="200" data-ratio="1" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/kuIKKC9tNkB8pQ3CTSGictAAAJL9tlrp5fY1dZLqqu1hlZys3BibaYTwKE2lXQe9tzpegvCECZqhNSg0icku7teTw/0" src="../Images/b7c37b7066302548960da8a2e74a40e4.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/kuIKKC9tNkB8pQ3CTSGictAAAJL9tlrp5fY1dZLqqu1hlZys3BibaYTwKE2lXQe9tzpegvCECZqhNSg0icku7teTw/0"/></p><p><br/></p>
+        
+</body>
+</html>

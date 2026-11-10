@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>某系列光猫几处漏洞分析</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>某系列光猫几处漏洞分析</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI5MzY2MzM0Mw==&amp;mid=2247484396&amp;idx=2&amp;sn=52126b56834a077624df5599ed4f6de4&amp;chksm=ec6fe4ecdb186dfaf34ccb67350f2d6af32b4dcb20e38165a64322d3b7478a0b39f3752d9f12&amp;scene=126&amp;sessionid=1681378740#rd">http://mp.weixin.qq.com/s?__biz=MzI5MzY2MzM0Mw==&amp;mid=2247484396&amp;idx=2&amp;sn=52126b56834a077624df5599ed4f6de4&amp;chksm=ec6fe4ecdb186dfaf34ccb67350f2d6af32b4dcb20e38165a64322d3b7478a0b39f3752d9f12&amp;scene=126&amp;sessionid=1681378740#rd</a></blockquote><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.4em;border-bottom: 1px solid rgb(238, 238, 238);">前言</h2><p style="margin-bottom: 1.2em !important;">由于漏洞并未公布在互联网上，所以具体是哪个厂家的光猫就不说明了，感兴趣的朋友可以自己找找看。</p><p style="margin-bottom: 1.2em !important;">拿到光猫固件，大概看了下，用的是CGI+SH的编程方式，并且源代码都没有做权限的验证，相关代码也没有加密，所以分析也就简单了许多。</p><p style="margin-bottom: 1.2em !important;">下面我们来看下漏洞详情</p><h3 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.3em;">远程命令执行</h3><p style="margin-bottom: 1.2em !important;">漏洞在文件telnet.cgi文件中，首先文件判断是否为POST发包，如果是就进行处理</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">if [ "$REQUEST_METHOD" == "POST" ];then
+   settelnet
+else
+   gettelnet
+fi</code></pre><p style="margin-bottom: 1.2em !important;">我们跟进settelnet这个函数，进入函数后，看到函数调用了getpostdata.cgi这个文件对post包进行接收并赋值给QUERY_STRING变量，最终经过处理赋值给变量CGIParam.</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">settelnet()
+{
+    QUERY_STRING=`./getpostdata.cgi $CONTENT_LENGTH`
+    [ "x$QUERY_STRING" == "x" ] &amp;&amp; READERR=1
+    [ "x$QUERY_STRING" != "x" ] &amp;&amp; QUERY_STRING=`./urldecode.cgi $QUERY_STRING`
+
+paramIndex="1"
+CGIParam=`echo "$QUERY_STRING&amp;" | cut -d '&amp;' -f $paramIndex`</code></pre><p style="margin-bottom: 1.2em !important;">我们看看变量CGIParam被怎么处理，这里用了一个while判断变量$CGIParam是否有值，随后带入处理，可以看到这里把InputCmd的值给取出来，也就是执行的系统命令赋值给了INPUTCMD，我们往下看</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">while [ "$CGIParam" != "" ]
+    do
+    par=`echo "$CGIParam" | cut -d '=' -f 1`
+    val=`echo "$CGIParam" | cut -d '=' -f 2`
+    if [ "$val" != "" ]; then
+        case $par
+            in
+            "InputCmd")
+            INPUTCMD=$val
+            INPUTCMD=`echo "$INPUTCMD" | sed 's/%23/ /g'`
+            ;;
+        esac
+    fi
+    paramIndex=$((paramIndex+1))
+    CGIParam=`echo "$QUERY_STRING&amp;" | cut -d '&amp;' -f $paramIndex`
+    is_submit="1"
+done</code></pre><p style="margin-bottom: 1.2em !important;">这里把INPUTCMD的值写入到telnet_input.sh文件里面，随后对telnet_input.sh文件进行执行，执行结果输出到telnet_output.log文件中</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">if [ "$is_submit" == "1" ]; then
+    rm /var/WEB-GUI/telnet_* &gt;/dev/null 2&gt;&amp;1
+    echo "${INPUTCMD}" &gt;/var/WEB-GUI/telnet_input.log
+    echo "${INPUTCMD}" &gt;/var/WEB-GUI/telnet_input.sh
+    chmod +x /var/WEB-GUI/telnet_input.sh
+    cd /var/WEB-GUI/
+    ./telnet_input.sh &gt;/var/WEB-GUI/telnet_output.log 2&gt;&amp;1
+fi</code></pre><p style="margin-bottom: 1.2em !important;">由于执行后是没有回显的，所以在本地搭建个监听端来监听连接</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIrBuf1PvaxbTJSjeJ5akyNjZbFcaBYLh4vNGppEbFzXibJ5okP1tOkRtnAv6UBhaniacubFnK9EftXQ/0?wx_fmt=png" class="" data-ratio="0.3996696944673823" data-w="1211" data-type="png" src="../Images/5aa53bac849d0932051e465b9f73f240.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIrBuf1PvaxbTJSjeJ5akyNjZbFcaBYLh4vNGppEbFzXibJ5okP1tOkRtnAv6UBhaniacubFnK9EftXQ/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">后来在submit.cgi文件里发现，请求这个文件就能读取执行后的结果，所以要看到回显需要执行提交两次</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">#!/bin/sh
+echo Content-type: text/html
+echo
+
+echo "&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body&gt;"
+echo "&lt;/body&gt;&lt;/html&gt;"
+
+     echo "
+    &lt;textarea rows='50' cols='160' name='text'&gt;"
+    while read line; do
+        echo "${line}"
+    done &lt; /var/WEB-GUI/telnet_input.log    
+
+    while read line; do
+        echo "${line}"
+    done &lt; /var/WEB-GUI/telnet_input.sh  
+
+    while read line; do
+        echo "${line}"
+    done &lt; /var/WEB-GUI/telnet_output.log</code></pre><h3 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.3em;">修改用户密码</h3><p style="margin-bottom: 1.2em !important;">漏洞在文件password_CM.cgi文件中，首先文件判断是否为POST发包，如果是就进行处理</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">if [ "$REQUEST_METHOD" == "POST" ];then
+        setpassword
+    fi
+
+    getpassword</code></pre><p style="margin-bottom: 1.2em !important;">我们跟进setpassword函数,函数调用getpostdata.cgi文件对post进行接收，包赋值给LINE变量，处理后赋值给CGIParam变量</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">setpassword()
+    {
+        LINE=`./getpostdata.cgi $CONTENT_LENGTH`
+        [ "x$LINE" == "x" ] &amp;&amp; READERR=1
+        [ "x$LINE" != "x" ] &amp;&amp; LINE=`./urldecode.cgi $LINE`
+
+        paramIndex="1"
+        CGIParam=`echo "$LINE&amp;" | cut -d '&amp;' -f $paramIndex`</code></pre><p style="margin-bottom: 1.2em !important;">这里还是是一个while来判断，一样是取出值然后进行处理，不过这里只能改密码，帐号是不能改的，代码被注释掉了。最后进行密码设置</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">while [ "$CGIParam" != "" ]
+        do
+          par=`echo "$CGIParam" | cut -d '=' -f 1`
+          val=`echo "$CGIParam" | cut -d '=' -f 2`
+          if [ "$val" != "" ]; then
+            case $par
+                in
+    #           "password_username")
+    #           USERNAME=$val
+    #           ;;
+                "password_pass")
+                PASSWORD=$val
+                PASSWORD=`echo "$PASSWORD" | sed 's/123fiberhome321/\&amp;/g'`
+                PASSWORD=`echo "$PASSWORD" | sed 's/321telecomadmin123/\!/g'`
+                ;;
+            esac
+          fi
+          paramIndex=$((paramIndex+1))
+          CGIParam=`echo "$LINE&amp;" | cut -d '&amp;' -f $paramIndex`
+        done
+
+        RETURN_STR=`$INTER_WEB set $CMIGD_DI_XFIBCOMUA_Password "$PASSWORD"`
+
+    }</code></pre><p style="margin-bottom: 1.2em !important;">执行完后获取帐号密码，当然了，直接访问此页面也是可以获取帐号密码的</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">getpassword()
+    {
+        USERNAME=`$INTER_WEB get $CMIGD_DI_XFIBCOMUA_UserName | cut -d '&amp;' -f 1`
+        PASSWORD=`$INTER_WEB get $CMIGD_DI_XFIBCOMUA_Password | sed 's/&amp;$//'`
+
+        echo "
+        {\"RETURN\":
+          {\"success\": true},
+         \"PASSWORD\":
+          {\"password_username\":\"$USERNAME\",
+           \"password_DLUSERNAME\":\"$DLUSERNAME\",
+           \"password_area\":\"$area\",
+           \"password_pass\":\"$PASSWORD\"}
+        }"
+    }</code></pre><p style="margin-bottom: 1.2em !important;">执行结果</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIrBuf1PvaxbTJSjeJ5akyNj40ILzTfV6dfcH6NLCbYCQicjBYR4fqLPVvQYqLXEVO1QbeoTHNREqWw/0?wx_fmt=jpeg" class="" data-ratio="0.5394912985274432" data-w="747" data-type="jpeg" src="../Images/9d6b5a28661173594d889aef37d976a8.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIrBuf1PvaxbTJSjeJ5akyNj40ILzTfV6dfcH6NLCbYCQicjBYR4fqLPVvQYqLXEVO1QbeoTHNREqWw/0?wx_fmt=jpeg"/></p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIrBuf1PvaxbTJSjeJ5akyNjfJnJeic9ZzFLDwWCmsLWpmau4WxkJzB4hgPcCAcKGAEQficObCWRWN2A/0?wx_fmt=jpeg" class="" data-ratio="0.6248216833095578" data-w="701" data-type="jpeg" src="../Images/13fb4432e7d2c680c63af653ab3dcbbc.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIrBuf1PvaxbTJSjeJ5akyNjfJnJeic9ZzFLDwWCmsLWpmau4WxkJzB4hgPcCAcKGAEQficObCWRWN2A/0?wx_fmt=jpeg"/></p><h3 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.3em;">任意文件上传</h3><p style="margin-bottom: 1.2em !important;">漏洞文件在loadfile.cgi文件中，我们看到上传文件的地方</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">&lt;form method=\"post\" action=\"../cgi-bin/uploadfile.htm.cgi\" enctype=\"multipart/form-data\" onsubmit=\"return JudgeKeywordImage(this);\"&gt;
+        &lt;label class='trad' key='paneltip_choose'&gt;&lt;/label&gt;   
+        &lt;input size=50 name=\"uploadfile\" type=\"file\" ${UPLOAD}/&gt;
+        &lt;br&gt;&lt;br&gt;
+        &lt;label class='trad' key='paneltip_path'&gt;&lt;/label&gt;           
+        &lt;span&gt;&lt;input type='input' name=\"uploadpath\" value=\"/var/\" style=\"width:300px\"&gt;&lt;/span&gt;
+        &lt;br&gt;&lt;br&gt;
+        &lt;input name=\"submit\" type=\"submit\" value=\"上传\" style=\"height:23px\" ${UPLOAD}/&gt;
+        &lt;/form&gt;
+        &lt;/blockquote&gt;
+   &lt;/body&gt;
+&lt;/html&gt;"</code></pre><p style="margin-bottom: 1.2em !important;">这里的数据包发送到uploadfile.htm.cgi文件，我们跟进，这里执行了uploadcgi.cgi这个cgi文件，这个文件是用来处理上传文件数据包的，这个文件是编译好了的ELF文件，我们逆向看看。</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">./uploadcgi.cgi
+UPPATH=$GETCFG ${BROANCONF} upload
+if [ -f /var/Image ]; then
+    mv /var/Image $UPPATH &gt;/dev/null 2&gt;&amp;1
+fi 
+if [ -f $UPPATH ]; then
+    success=1
+else
+    success=0
+fi</code></pre><p style="margin-bottom: 1.2em !important;">找到入口点，这里首先判断了是否是POST过来的数据包，如果不是就进入函数loc_400A34 中, 返回没有找到方法，继而退出，上传失败。如果是就进入数据包的处理loc_400A74这个函数里面</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIrBuf1PvaxbTJSjeJ5akyNj7ZqkBf4tGfgyXtu7Paia0eumCfjQVWJMibORD7VtHfLAE4iajuG6E8M2w/0?wx_fmt=jpeg" class="" data-ratio="0.38663745892661555" data-w="913" data-type="jpeg" src="../Images/605a20b68d212cf0e84514a850c16f4e.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIrBuf1PvaxbTJSjeJ5akyNj7ZqkBf4tGfgyXtu7Paia0eumCfjQVWJMibORD7VtHfLAE4iajuG6E8M2w/0?wx_fmt=jpeg"/></p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIrBuf1PvaxbTJSjeJ5akyNjaAAoQrpFMfa0X3sKfqoW7ibJS8s7l1UceeA42hPkibSHMN4OKNbL3iaoQ/0?wx_fmt=jpeg" class="" data-ratio="0.41025641025641024" data-w="1053" data-type="jpeg" src="../Images/0bac1bd4dd57f17244e654a7d8f8eb95.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIrBuf1PvaxbTJSjeJ5akyNjaAAoQrpFMfa0X3sKfqoW7ibJS8s7l1UceeA42hPkibSHMN4OKNbL3iaoQ/0?wx_fmt=jpeg"/></p><p style="margin-bottom: 1.2em !important;">loc_400A74函数主要对CONTENT_TYPE进行判断，比较CONTENT_TYPE是否是multipart/form-data类型，随后就是各个函数又进行了一系列的判断，文件主要判断了[Content-Type，
+ REQUEST_METHOD ,CONTENT_LENGTH ,UPLOADPATH]</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIrBuf1PvaxbTJSjeJ5akyNj9y66kLb4DCXnkYb2x1TyqEUlvOAuxWf949hzhAhpPyrib0F326rbE0Q/0?wx_fmt=jpeg" class="" data-ratio="0.42741116751269037" data-w="985" data-type="jpeg" src="../Images/1c3156e9aceb36d2ee2edc07ab418fcd.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIrBuf1PvaxbTJSjeJ5akyNj9y66kLb4DCXnkYb2x1TyqEUlvOAuxWf949hzhAhpPyrib0F326rbE0Q/0?wx_fmt=jpeg"/></p><p style="margin-bottom: 1.2em !important;">分析过程中发现程序并没有对文件类型做任何的限制，uploadcgi.cgi只是判断是否为POST包而已，判断了一些header类型，所以我们可以把任何文件上传到任何目录，结合正常发包的数据包进行构造数据包，构造的数据包如下</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">POST /cgi-bin/uploadfile.htm.cgi HTTP/1.1
+Accept: text/html, application/xhtml+xml, */*
+Referer: http://10.214.99.131/index_main_CM
+Accept-Language: zh-CN
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko
+Content-Type: multipart/form-data
+Accept-Encoding: gzip, deflate
+Host: 10.214.99.131
+Pragma: no-cache
+Connection: close
+
+Content-Disposition: form-data; name="uploadfile"; filename="test.html"
+Content-Type: text/html
+HGU TEST
+Content-Disposition: form-data; name="uploadpath"
+/var/WEB-GUI/
+Content-Disposition: form-data; name="submit"
+submit</code></pre><p style="margin-bottom: 1.2em !important;">上传结果</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIrBuf1PvaxbTJSjeJ5akyNjImNOicfhdFKJuyPqlvlOV44kgESvKrtcxiaJXiaCBibbHhf3YhVgReBWzw/0?wx_fmt=jpeg" class="" data-ratio="0.49038461538461536" data-w="1040" data-type="jpeg" src="../Images/b7c256b4939a04435917cab10b812f2b.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIrBuf1PvaxbTJSjeJ5akyNjImNOicfhdFKJuyPqlvlOV44kgESvKrtcxiaJXiaCBibbHhf3YhVgReBWzw/0?wx_fmt=jpeg"/></p><section class="" data-tools="135&#x7F16;&#x8F91;&#x5668;" data-id="86357" style="max-width: 100%;box-sizing: border-box;color: rgb(62, 62, 62);font-size: 16px;white-space: normal;background-color: rgb(255, 255, 255);line-height: 25.6px;font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;;border-width: 0px;border-style: none;border-color: initial;word-wrap: break-word !important;"><section style="max-width: 100%;text-align: center;box-sizing: border-box !important;word-wrap: break-word !important;"><section style="display: inline-block;max-width: 100%;width: 192px;box-sizing: border-box !important;word-wrap: break-word !important;"><section class="" data-tools="135编辑器" data-id="86357" style="max-width: 100%;box-sizing: border-box;border-width: 0px;border-style: none;border-color: initial;word-wrap: break-word !important;"><section style="max-width: 100%;box-sizing: border-box !important;word-wrap: break-word !important;"><p style="max-width: 100%;min-height: 1em;display: inline-block;width: 192px;box-sizing: border-box !important;word-wrap: break-word !important;"><img class="" data-ratio="0.125" data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZmbX5NFgic65Bo4SIYUK4ib9ibvpyoaPJibpkS2Q8Q24DicBfEtnh6xBcFSw/640.png?" data-type="png" data-w="600" style="display: inline;box-sizing: border-box !important;word-wrap: break-word !important;visibility: visible !important;width: 192px !important;" title="墨迹晕染分割线" width="192px" src="../Images/c96a1b435221f7e6cf4c4e3eca199d9e.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZmbX5NFgic65Bo4SIYUK4ib9ibvpyoaPJibpkS2Q8Q24DicBfEtnh6xBcFSw/640.png?"/></p></section></section></section></section></section><p style="max-width: 100%;min-height: 1em;color: rgb(62, 62, 62);font-size: 16px;white-space: normal;background-color: rgb(255, 255, 255);line-height: 25.6px;font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;;box-sizing: border-box !important;word-wrap: break-word !important;"><br style="max-width: 100%;box-sizing: border-box !important;word-wrap: break-word !important;"/></p><p style="max-width: 100%;min-height: 1em;color: rgb(62, 62, 62);font-size: 16px;white-space: normal;background-color: rgb(255, 255, 255);line-height: 25.6px;font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;;box-sizing: border-box !important;word-wrap: break-word !important;"><img class="" data-ratio="0.3036773428232503" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZ0Y7FsbxeE68njy7pfZf9hstOTLqPHS1uljxrnicvns89MRJ7DMQowOg/640.jpeg?" data-type="jpeg" data-w="843" style="line-height: 25.6px;box-sizing: border-box !important;word-wrap: break-word !important;visibility: visible !important;width: auto !important;" width="auto" src="../Images/4f6f4b18070490b9670250379d20693d.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZ0Y7FsbxeE68njy7pfZf9hstOTLqPHS1uljxrnicvns89MRJ7DMQowOg/640.jpeg?"/></p>
+        
+</body>
+</html>

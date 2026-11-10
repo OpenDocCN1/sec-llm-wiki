@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CTF线下赛AWD套路小结</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>CTF线下赛AWD套路小结</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI5MzY2MzM0Mw==&amp;mid=2247484246&amp;idx=1&amp;sn=3744c967a8e9c982d17245755fbcd847&amp;chksm=ec6fe456db186d40086f48114ea8258b6886d18e9d9cf8300c351aa5af1838f58d1eb07ce751&amp;scene=126&amp;sessionid=1681378750#rd">http://mp.weixin.qq.com/s?__biz=MzI5MzY2MzM0Mw==&amp;mid=2247484246&amp;idx=1&amp;sn=3744c967a8e9c982d17245755fbcd847&amp;chksm=ec6fe456db186d40086f48114ea8258b6886d18e9d9cf8300c351aa5af1838f58d1eb07ce751&amp;scene=126&amp;sessionid=1681378750#rd</a></blockquote><p style="margin-bottom: 1.2em !important;">    最近打了2场CTF线下赛，把AWD模式中的一些小套路做一些总结，本人web狗，二进制部分就不班门弄斧了。</p><h4 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.2em;">一、 <strong>AWD模式简介</strong></h4><p style="margin-bottom: 1.2em !important;">AWD：Attack With Defence，比赛中每个队伍维护多台服务器，服务器中存在多个漏洞，利用漏洞攻击其他队伍可以进行得分，修复漏洞可以避免被其他队伍攻击失分。</p><ol style="" class=" list-paddingleft-2"><li><p>一般分配Web服务器，服务器（多数为Linux）某处存在flag（一般在根目录下）；</p></li><li><p>可能会提供一台流量分析虚拟机，可以下载流量文件进行数据分析；</p></li><li><p>flag在主办方的设定下每隔一定时间刷新一轮；</p></li><li><p>各队一般都有自己的初始分数；</p></li><li><p>flag一旦被其他队伍拿走，该队扣除一定积分；</p></li><li><p>扣除的积分由获取flag的队伍均分；</p></li><li><p>主办方会对每个队伍的服务进行check，服务宕机扣除本轮flag分数，扣除的分值由服务check正常的队伍均分；</p></li><li><p>一般每个队伍会给一个低权限用户，非root权限；</p></li></ol><h4 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.2em;">二、 <strong>网络环境</strong></h4><p style="margin-bottom: 1.2em !important;">网络拓扑如下图所示：</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqNzjABB7ic3kJiboFAhfewO11dSWTY3QHyTGgActAOjHVZliaQzaVImbibqnHLFibWz27ia45aDy8mFVwA/0?wx_fmt=png" class="" data-ratio="0.7147435897435898" data-w="624" data-type="png" src="../Images/e63ba3c3b58f3335c9790f99bf4c7704.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqNzjABB7ic3kJiboFAhfewO11dSWTY3QHyTGgActAOjHVZliaQzaVImbibqnHLFibWz27ia45aDy8mFVwA/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">比赛中获取flag一般有两种模式：</p><p style="margin-bottom: 1.2em !important;">(1)flag在根目录下，读取flag内容，提交即可得分</p><p style="margin-bottom: 1.2em !important;">(2)拿到其他队伍shell后，执行指定命令（curl 10.0.0.2），即可从上图中flag机获取flag内容；</p><p style="margin-bottom: 1.2em !important;">比赛可能会告诉你其他队伍的IP，也可能不会告诉你，一般在同一个C段或者B段，因此首先可以利用nmap等扫描工具发现其他队伍的IP：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border: 1px solid rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">nmap –sn 192.168.71.0/24</code></pre><p style="margin-bottom: 1.2em !important;">或者用https://github.com/zer0h/httpscan 的脚本进行扫描</p><h4 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.2em;">三、 <strong>比赛分工</strong></h4><p style="margin-bottom: 1.2em !important;">线下赛一般3人左右，2人攻击，1人防御，因为发现的漏洞可以攻击其他队伍，也要进行修复，所以攻防相辅相成，以攻为守。</p><p style="margin-bottom: 1.2em !important;">比赛中每个队伍可能会维护多个靶机，web、二进制等，也可以每人负责一台，各自负责攻击和防御。</p><h4 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.2em;">四、 <strong>一些“套路”</strong></h4><ol style="" class=" list-paddingleft-2"><li><p>备份！备份！备份！</p></li></ol><p style="margin-bottom: 1.2em !important;">重要的事情说三遍，比赛开始后第一时间备份服务器中web目录下的文件(/var/www/html)，这是自我审计的基础，也是防止服务器在比赛中出现异常的情况下可以立即恢复到初始状态的先决条件。有的比赛可以提供3次左右的恢复初始设置的机会，有的比赛不提供，所以备份十分重要。</p><p style="margin-bottom: 1.2em !important;">可以用scp命令，也可用一些图形化的工具：Winscp，FileZilla，操作起来比较方便。</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqNzjABB7ic3kJiboFAhfewO1teWtTz332o0gpFDZO7Pt7KFtkd1mbJVpS18SD8B29BZp6iaAm1u1GLA/0?wx_fmt=png" class="" data-ratio="0.5056451612903226" data-w="1240" data-type="png" src="../Images/7f4a5e5404d092409f5eb94ab8445fc6.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqNzjABB7ic3kJiboFAhfewO1teWtTz332o0gpFDZO7Pt7KFtkd1mbJVpS18SD8B29BZp6iaAm1u1GLA/0?wx_fmt=png"/></p><ol style="" class=" list-paddingleft-2"><li><p>口令问题</p></li></ol><p style="margin-bottom: 1.2em !important;">弱口令的问题几乎是必考，比赛开始后，如果发现每个队伍的SSH账号密码都是一样的（某次比赛中都是phpcms、wordpress），需要立即修改口令，如果被其他队伍改了那就gg了。</p><p style="margin-bottom: 1.2em !important;">Web后台很有可能存在弱口令，一般都是admin/admin,admin/123456,test/test等等，同样需要立即修改，也可以修改其他队伍的后台口令，为本队所用，说不定可以利用后台getshell，比如十分常见的wordpress。</p><p style="margin-bottom: 1.2em !important;">不过有的比赛不允许修改后台口令，如果修改视为服务宕机，这样还是不要动口令的心思了。</p><ol style="" class=" list-paddingleft-2"><li><p>预留后门</p></li></ol><p style="margin-bottom: 1.2em !important;">在维护的服务器上，很有可能已经预留了一个或多个后门，比如一句话木马，这个是送分题，可以利用这个漏洞迅速打一波，还可以视情况“搅屎”，利用这个漏洞一直维持权限，每轮都得分（后面细说）</p><p style="margin-bottom: 1.2em !important;">将服务器中web目录下载到本地，利用D盾扫描，一般就可以发现预留后门：</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqNzjABB7ic3kJiboFAhfewO1YDzAwNPiabCTzSE5ice19Jx1TVQS3II1Sy9tG7ycIKu769eiaAfqpiatSQ/0?wx_fmt=png" class="" data-ratio="0.7537399309551208" data-w="869" data-type="png" src="../Images/e9cb8b9a990635aaf7a522d44e7a390c.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqNzjABB7ic3kJiboFAhfewO1YDzAwNPiabCTzSE5ice19Jx1TVQS3II1Sy9tG7ycIKu769eiaAfqpiatSQ/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">发现后门后，第一时间删除，同时利用这个漏洞发起第一波攻击，如果利用菜刀连，显然不够优雅，还没连完，人家估计都删的差不多了，因此这个漏洞虽然是送分，但拼的是手速，因此得提前准备好脚本：</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqNzjABB7ic3kJiboFAhfewO1CJ9ym2HYCksENr26yYOA84VVf2QSElE72QBwlsa6kfjrMjr7Heb2Pw/0?wx_fmt=png" class="" data-ratio="0.6671159029649596" data-w="742" data-type="png" src="../Images/de11736c28166d00334937ad9144af70.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqNzjABB7ic3kJiboFAhfewO1CJ9ym2HYCksENr26yYOA84VVf2QSElE72QBwlsa6kfjrMjr7Heb2Pw/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">配置一下其他队伍地址、shell路径和密码，就可以进行攻击，flag记录在firstround_flag.txt中，某次比赛实际情况如下：</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqNzjABB7ic3kJiboFAhfewO1CN4XibDtwec9KR1gzd6FIiadXuNpf9bW3nbQwFsjsNs4VotvMl2YlH4g/0?wx_fmt=png" class="" data-ratio="0.5068762278978389" data-w="1018" data-type="png" src="../Images/ae7d2fde82f2d6e9cfe394e0638046b6.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqNzjABB7ic3kJiboFAhfewO1CN4XibDtwec9KR1gzd6FIiadXuNpf9bW3nbQwFsjsNs4VotvMl2YlH4g/0?wx_fmt=png"/></p><ol style="" class=" list-paddingleft-2"><li><p>常见漏洞</p></li></ol><p style="margin-bottom: 1.2em !important;">常见的漏洞包括SQL注入、文件包含、文件上传等等。对于SQL注入类的漏洞，一般不会有过滤，可以用<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">sqlmap</code>跑出来，再利用<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">—sql-shell</code>执行<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">select load_file(‘/flag’);</code>即可得到flag，也可以利用<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">into outfile</code>写木马维持权限，但要根据实际情况，可能会遇到权限问题。用sqlmap跑比较耗时，可以利用payload写一个python，自动化进行攻击：</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqNzjABB7ic3kJiboFAhfewO1Ub87cMibvpPPXWibkVfpGmy2QicKQhN8q42yAOutU442O2M2nZBjyhT3g/0?wx_fmt=png" class="" data-ratio="0.23258306538049303" data-w="933" data-type="png" src="../Images/a5351709f46c419539ea5200f6cfc5e4.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqNzjABB7ic3kJiboFAhfewO1Ub87cMibvpPPXWibkVfpGmy2QicKQhN8q42yAOutU442O2M2nZBjyhT3g/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">对于文件包含漏洞，直接可以通过<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">../../../../../../flag</code>的方式获取：</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqNzjABB7ic3kJiboFAhfewO1fclDpjAuhPCnBfu8SRccfQMQyqhy2iaCABhjnelSKDLq39Iwic50oLyA/0?wx_fmt=png" class="" data-ratio="0.24193548387096775" data-w="682" data-type="png" src="../Images/90ccedfee0b10f6a4df0152e91d61892.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqNzjABB7ic3kJiboFAhfewO1fclDpjAuhPCnBfu8SRccfQMQyqhy2iaCABhjnelSKDLq39Iwic50oLyA/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">上传漏洞一般也是比较简单的黑名单过滤、服务器解析漏洞等等，可以直接上传木马；</p><h4 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.2em;">五、 <strong>权限维持</strong></h4><p style="margin-bottom: 1.2em !important;">这里说的方法就比较“搅屎”了，上面说到利用预留后门可以维持权限，主要有两种，一种是“不死马”，另一种是反弹shell</p><ol style="" class=" list-paddingleft-2"><li><p>“不死马”</p></li></ol><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqNzjABB7ic3kJiboFAhfewO1a2NP1CXlFmX1qTO95mT4TvCTAznKRa2iaNSyQza1pFiam3ibNv6FjLEHA/0?wx_fmt=png" class="" data-ratio="0.3145491803278688" data-w="976" data-type="png" src="../Images/c120390b7832dfc9ce4060b24c437394.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqNzjABB7ic3kJiboFAhfewO1a2NP1CXlFmX1qTO95mT4TvCTAznKRa2iaNSyQza1pFiam3ibNv6FjLEHA/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">利用预留后门，上传上面的“不死马”并访问，就会一直生成.config.php的一句话木马，木马内容可以自行修改，只要别被其他队伍看懂就行。</p><p style="margin-bottom: 1.2em !important;">这个不死马比较猥琐，解决的方法需要重启apache，或者写一个程序不停kill这个不死马进程。</p><ol style="" class=" list-paddingleft-2"><li><p>反弹shell</p></li></ol><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqNzjABB7ic3kJiboFAhfewO1Uj21glDZqxM4cicZexj9otOxPTkDMZauX04KpdEgQwgMK71IzuVLV5Q/0?wx_fmt=png" class="" data-ratio="0.8622100954979536" data-w="733" data-type="png" src="../Images/2d5b3a6273d11217de1fcd3b07bb7ae5.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqNzjABB7ic3kJiboFAhfewO1Uj21glDZqxM4cicZexj9otOxPTkDMZauX04KpdEgQwgMK71IzuVLV5Q/0?wx_fmt=png"/><br/><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqNzjABB7ic3kJiboFAhfewO1r0sl0jmku4PiaLtZthKAh9ia8e0cN31R5R8wIx1f8kBsicHT3zLItMiaiaw/0?wx_fmt=png" class="" data-ratio="0.5853909465020576" data-w="972" data-type="png" src="../Images/9ae8be4c12b00e5ea132fe42622faac6.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqNzjABB7ic3kJiboFAhfewO1r0sl0jmku4PiaLtZthKAh9ia8e0cN31R5R8wIx1f8kBsicHT3zLItMiaiaw/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">利用预留后门上传上面的php文件并访问，就可以用nc反弹shell，之后就可以一直得分了</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqNzjABB7ic3kJiboFAhfewO14C2dnbic2SAHuKuoPK4aC8z8uoSWExGNIuZoDCph9qYDrUNXuxdmfoA/0?wx_fmt=png" class="" data-ratio="0.6459909228441755" data-w="661" data-type="png" src="../Images/466f81bf9457393591f6c884816d7818.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqNzjABB7ic3kJiboFAhfewO14C2dnbic2SAHuKuoPK4aC8z8uoSWExGNIuZoDCph9qYDrUNXuxdmfoA/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">需要注意的是，上面的2种方法，需要网站的权限为www-data，如果网站的权限是ctf，那么是没有权限上传文件的。</p><h4 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.2em;">六、 <strong>通用防御</strong></h4><p style="margin-bottom: 1.2em !important;">对于防御，一般通用有两种方法：WAF、文件监控</p><p style="margin-bottom: 1.2em !important;">(1)WAF</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqNzjABB7ic3kJiboFAhfewO1tYxpgIo4zsanokUesDfsyQUOEDiaZxziaRT6NjsRNPXeicgllTQt2eeNg/0?wx_fmt=png" class="" data-ratio="0.6435845213849287" data-w="982" data-type="png" src="../Images/7b21be68f19ba615a722869aff5a87e5.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqNzjABB7ic3kJiboFAhfewO1tYxpgIo4zsanokUesDfsyQUOEDiaZxziaRT6NjsRNPXeicgllTQt2eeNg/0?wx_fmt=png"/><br/><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqNzjABB7ic3kJiboFAhfewO1ic5WfoZp1iatEQo2atTHJRFpficESxnoibYJIqarnibFiaxoRDGBAAZQXLvA/0?wx_fmt=png" class="" data-ratio="0.5156431054461182" data-w="863" data-type="png" src="../Images/014ddfb1826a56668763c4506882c423.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqNzjABB7ic3kJiboFAhfewO1ic5WfoZp1iatEQo2atTHJRFpficESxnoibYJIqarnibFiaxoRDGBAAZQXLvA/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">使用方法：</p><p style="margin-bottom: 1.2em !important;">1.将waf.php传到要包含的文件的目录</p><p style="margin-bottom: 1.2em !important;">2.在页面中加入防护，有两种做法，根据情况二选一即可：</p><p style="margin-bottom: 1.2em !important;">a).在所需要防护的页面加入代码</p><p style="margin-bottom: 1.2em !important;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">require_once('waf.php');</code></p><p style="margin-bottom: 1.2em !important;">就可以做到页面防注入、跨站</p><p style="margin-bottom: 1.2em !important;">如果想整站防注，就在网站的一个公用文件中，如数据库链接文件config.inc.php中！</p><p style="margin-bottom: 1.2em !important;">添加<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">require_once('waf.php');</code>来调用本代码</p><p style="margin-bottom: 1.2em !important;">常用php系统添加文件</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border: 1px solid rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">PHPCMS V9 \phpcms\base.php
+PHPWIND8.7 \data\sql_config.php
+DEDECMS5.7 \data\common.inc.php
+DiscuzX2   \config\config_global.php
+Wordpress   \wp-config.php
+Metinfo   \include\head.php</code></pre><p style="margin-bottom: 1.2em !important;">b).在每个文件最前加上代码</p><p style="margin-bottom: 1.2em !important;">在php.ini中找到:</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border: 1px solid rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">Automatically add files before or after any PHP document.
+auto_prepend_file = 360_safe3.php路径;</code></pre><p style="margin-bottom: 1.2em !important;">需要注意的是，部署waf可能会导致服务不可用，需要谨慎部署。</p><p style="margin-bottom: 1.2em !important;">(2)文件监控</p><p style="margin-bottom: 1.2em !important;">文件监控可以对web目录进行监控，发现新上传文件或者文件被修改立即恢复，这样可以防止上传shell等攻击：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border: 1px solid rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;"># -*- coding: utf-8 -*-
+#use: python file_check.py ./
+
+import os
+import hashlib
+import shutil
+import ntpath
+import time
+
+CWD = os.getcwd()
+FILE_MD5_DICT = {}      # 文件MD5字典
+ORIGIN_FILE_LIST = []
+
+# 特殊文件路径字符串
+Special_path_str = 'drops_JWI96TY7ZKNMQPDRUOSG0FLH41A3C5EXVB82'
+bakstring = 'bak_EAR1IBM0JT9HZ75WU4Y3Q8KLPCX26NDFOGVS'
+logstring = 'log_WMY4RVTLAJFB28960SC3KZX7EUP1IHOQN5GD'
+webshellstring = 'webshell_WMY4RVTLAJFB28960SC3KZX7EUP1IHOQN5GD'
+difffile = 'diff_UMTGPJO17F82K35Z0LEDA6QB9WH4IYRXVSCN'
+
+Special_string = 'drops_log'  # 免死金牌
+UNICODE_ENCODING = "utf-8"
+INVALID_UNICODE_CHAR_FORMAT = r"\?%02x"
+
+# 文件路径字典
+spec_base_path = os.path.realpath(os.path.join(CWD, Special_path_str))
+Special_path = {
+    'bak' : os.path.realpath(os.path.join(spec_base_path, bakstring)),
+    'log' : os.path.realpath(os.path.join(spec_base_path, logstring)),
+    'webshell' : os.path.realpath(os.path.join(spec_base_path, webshellstring)),
+    'difffile' : os.path.realpath(os.path.join(spec_base_path, difffile)),
+}
+
+def isListLike(value):
+    return isinstance(value, (list, tuple, set))
+
+# 获取Unicode编码
+def getUnicode(value, encoding=None, noneToNull=False):
+
+    if noneToNull and value is None:
+        return NULL
+
+    if isListLike(value):
+        value = list(getUnicode(_, encoding, noneToNull) for _ in value)
+        return value
+
+    if isinstance(value, unicode):
+        return value
+    elif isinstance(value, basestring):
+        while True:
+            try:
+                return unicode(value, encoding or UNICODE_ENCODING)
+            except UnicodeDecodeError, ex:
+                try:
+                    return unicode(value, UNICODE_ENCODING)
+                except:
+                    value = value[:ex.start] + "".join(INVALID_UNICODE_CHAR_FORMAT % ord(_) for _ in value[ex.start:ex.end]) + value[ex.end:]
+    else:
+        try:
+            return unicode(value)
+        except UnicodeDecodeError:
+            return unicode(str(value), errors="ignore")
+
+# 目录创建
+def mkdir_p(path):
+    import errno
+    try:
+        os.makedirs(path)
+    except OSError as exc:
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else: raise
+
+# 获取当前所有文件路径
+def getfilelist(cwd):
+    filelist = []
+    for root,subdirs, files in os.walk(cwd):
+        for filepath in files:
+            originalfile = os.path.join(root, filepath)
+            if Special_path_str not in originalfile:
+                filelist.append(originalfile)
+    return filelist
+
+# 计算机文件MD5值
+def calcMD5(filepath):
+    try:
+        with open(filepath,'rb') as f:
+            md5obj = hashlib.md5()
+            md5obj.update(f.read())
+            hash = md5obj.hexdigest()
+            return hash
+    except Exception, e:
+        print u'[!] getmd5_error : ' + getUnicode(filepath)
+        print getUnicode(e)
+        try:
+            ORIGIN_FILE_LIST.remove(filepath)
+            FILE_MD5_DICT.pop(filepath, None)
+        except KeyError, e:
+            pass
+
+# 获取所有文件MD5
+def getfilemd5dict(filelist = []):
+    filemd5dict = {}
+    for ori_file in filelist:
+        if Special_path_str not in ori_file:
+            md5 = calcMD5(os.path.realpath(ori_file))
+            if md5:
+                filemd5dict[ori_file] = md5
+    return filemd5dict
+
+# 备份所有文件
+def backup_file(filelist=[]):
+    # if len(os.listdir(Special_path['bak'])) == 0:
+    for filepath in filelist:
+        if Special_path_str not in filepath:
+            shutil.copy2(filepath, Special_path['bak'])
+
+if __name__ == '__main__':
+    print u'---------start------------'
+    for value in Special_path:
+        mkdir_p(Special_path[value])
+    # 获取所有文件路径，并获取所有文件的MD5，同时备份所有文件
+    ORIGIN_FILE_LIST = getfilelist(CWD)
+    FILE_MD5_DICT = getfilemd5dict(ORIGIN_FILE_LIST)
+    backup_file(ORIGIN_FILE_LIST) # TODO 备份文件可能会产生重名BUG
+    print u'[*] pre work end!'
+    while True:
+        file_list = getfilelist(CWD)
+        # 移除新上传文件
+        diff_file_list = list(set(file_list) ^ set(ORIGIN_FILE_LIST))
+        if len(diff_file_list) != 0:
+            # import pdb;pdb.set_trace()
+            for filepath in diff_file_list:
+                try:
+                    f = open(filepath, 'r').read()
+                except Exception, e:
+                    break
+                if Special_string not in f:
+                    try:
+                        print u'[*] webshell find : ' + getUnicode(filepath)
+                        shutil.move(filepath, os.path.join(Special_path['webshell'], ntpath.basename(filepath) + '.txt'))
+                    except Exception as e:
+                        print u'[!] move webshell error, "%s" maybe is webshell.'%getUnicode(filepath)
+                    try:
+                        f = open(os.path.join(Special_path['log'], 'log.txt'), 'a')
+                        f.write('newfile: ' + getUnicode(filepath) + ' : ' + str(time.ctime()) + '\n')
+                        f.close()
+                    except Exception as e:
+                        print u'[-] log error : file move error: ' + getUnicode(e)
+
+        # 防止任意文件被修改,还原被修改文件
+        md5_dict = getfilemd5dict(ORIGIN_FILE_LIST)
+        for filekey in md5_dict:
+            if md5_dict[filekey] != FILE_MD5_DICT[filekey]:
+                try:
+                    f = open(filekey, 'r').read()
+                except Exception, e:
+                    break
+                if Special_string not in f:
+                    try:
+                        print u'[*] file had be change : ' + getUnicode(filekey)
+                        shutil.move(filekey, os.path.join(Special_path['difffile'], ntpath.basename(filekey) + '.txt'))
+                        shutil.move(os.path.join(Special_path['bak'], ntpath.basename(filekey)), filekey)
+                    except Exception as e:
+                        print u'[!] move webshell error, "%s" maybe is webshell.'%getUnicode(filekey)
+                    try:
+                        f = open(os.path.join(Special_path['log'], 'log.txt'), 'a')
+                        f.write('diff_file: ' + getUnicode(filekey) + ' : ' + getUnicode(time.ctime()) + '\n')
+                        f.close()
+                    except Exception as e:
+                        print u'[-] log error : done_diff: ' + getUnicode(filekey)
+                        pass
+        time.sleep(2)
+        # print '[*] ' + getUnicode(time.ctime())</code></pre><h4 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.2em;">七、 <strong>自动提交</strong></h4><p style="margin-bottom: 1.2em !important;">有的比赛只有几分钟一轮，手工提交其他队伍flag显然不行，需要准备批量提交flag的脚本：</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqNzjABB7ic3kJiboFAhfewO1GRUiaRRDTB2wgEWtD4gCjYzqva7JskwLTPf2Y6XAyE9rhY9qUHZuqqw/0?wx_fmt=png" class="" data-ratio="0.6963657678780774" data-w="853" data-type="png" src="../Images/fd3aff98993295555d543e7fe288886e.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqNzjABB7ic3kJiboFAhfewO1GRUiaRRDTB2wgEWtD4gCjYzqva7JskwLTPf2Y6XAyE9rhY9qUHZuqqw/0?wx_fmt=png"/></p><h4 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.2em;">八、 <strong>流量、日志</strong></h4><p style="margin-bottom: 1.2em !important;">通过流量、日志的分析：</p><p style="margin-bottom: 1.2em !important;">1.感知可能正在发生的攻击，从而规避存在的安全风险</p><p style="margin-bottom: 1.2em !important;">2.应急响应，还原攻击者的攻击路径，从而挽回已经造成的损失<br/><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqNzjABB7ic3kJiboFAhfewO13JCH5icv85RLzia8xuzmUNia51oTj4XicRiabl7SW56y46PuuUggLUTeV6Q/0?wx_fmt=png" class="" data-ratio="0.4205834683954619" data-w="1234" data-type="png" src="../Images/5c3fc808b1fb4f41a49bf714d8918c2b.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqNzjABB7ic3kJiboFAhfewO13JCH5icv85RLzia8xuzmUNia51oTj4XicRiabl7SW56y46PuuUggLUTeV6Q/0?wx_fmt=png"/><br/><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqNzjABB7ic3kJiboFAhfewO1d9FOHh2XciciaPbKQqZLcvFUOTTm5mDItUDicbBQcrPpGu9I3RQU8wtWw/0?wx_fmt=png" class="" data-ratio="0.4031791907514451" data-w="692" data-type="png" src="../Images/8a4a21d12e6d7005845e240bdda8ae6a.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqNzjABB7ic3kJiboFAhfewO1d9FOHh2XciciaPbKQqZLcvFUOTTm5mDItUDicbBQcrPpGu9I3RQU8wtWw/0?wx_fmt=png"/></p><section class="" data-tools="135&#x7F16;&#x8F91;&#x5668;" data-id="86357" style="max-width: 100%;box-sizing: border-box;color: rgb(62, 62, 62);font-size: 16px;line-height: 25.6px;white-space: normal;font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;;border: 0px none;word-wrap: break-word !important;background-color: rgb(255, 255, 255);"><section style="max-width: 100%;text-align: center;box-sizing: border-box !important;word-wrap: break-word !important;"><section style="max-width: 100%;display: inline-block;width: 192px;box-sizing: border-box !important;word-wrap: break-word !important;"><section class="" data-tools="135编辑器" data-id="86357" style="max-width: 100%;box-sizing: border-box;border: 0px none;word-wrap: break-word !important;"><section style="max-width: 100%;box-sizing: border-box !important;word-wrap: break-word !important;"><p style="max-width: 100%;min-height: 1em;display: inline-block;width: 192px;box-sizing: border-box !important;word-wrap: break-word !important;"><img class="" data-ratio="0.125" data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZmbX5NFgic65Bo4SIYUK4ib9ibvpyoaPJibpkS2Q8Q24DicBfEtnh6xBcFSw/640.png?" data-type="png" data-w="600" style="display: inline;box-sizing: border-box !important;word-wrap: break-word !important;visibility: visible !important;width: 192px !important;" title="墨迹晕染分割线" width="192px" src="../Images/c96a1b435221f7e6cf4c4e3eca199d9e.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZmbX5NFgic65Bo4SIYUK4ib9ibvpyoaPJibpkS2Q8Q24DicBfEtnh6xBcFSw/640.png?"/></p></section></section></section></section></section><p style="max-width: 100%;min-height: 1em;color: rgb(62, 62, 62);font-size: 16px;line-height: 25.6px;white-space: normal;font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;;box-sizing: border-box !important;word-wrap: break-word !important;background-color: rgb(255, 255, 255);"><br style="max-width: 100%;box-sizing: border-box !important;word-wrap: break-word !important;"/></p><p style="max-width: 100%;min-height: 1em;color: rgb(62, 62, 62);font-size: 16px;line-height: 25.6px;white-space: normal;font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;;box-sizing: border-box !important;word-wrap: break-word !important;background-color: rgb(255, 255, 255);"><img class="" data-ratio="0.3036773428232503" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZ0Y7FsbxeE68njy7pfZf9hstOTLqPHS1uljxrnicvns89MRJ7DMQowOg/640.jpeg?" data-type="jpeg" data-w="843" style="line-height: 25.6px;box-sizing: border-box !important;word-wrap: break-word !important;visibility: visible !important;width: auto !important;" width="auto" src="../Images/4f6f4b18070490b9670250379d20693d.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZ0Y7FsbxeE68njy7pfZf9hstOTLqPHS1uljxrnicvns89MRJ7DMQowOg/640.jpeg?"/></p>
+        
+</body>
+</html>

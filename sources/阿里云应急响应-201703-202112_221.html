@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>PHP mt_rand()随机数安全</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>PHP mt_rand()随机数安全</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI5MzY2MzM0Mw==&amp;mid=2247484208&amp;idx=1&amp;sn=ba6ee5ea1cfbac21332f0c93570b8308&amp;chksm=ec6fe430db186d26ef3ea9bcd1e7983f711ca225e02feeeac7cd574632947e799cd6ae255fa7&amp;scene=126&amp;sessionid=1681378755#rd">http://mp.weixin.qq.com/s?__biz=MzI5MzY2MzM0Mw==&amp;mid=2247484208&amp;idx=1&amp;sn=ba6ee5ea1cfbac21332f0c93570b8308&amp;chksm=ec6fe430db186d26ef3ea9bcd1e7983f711ca225e02feeeac7cd574632947e799cd6ae255fa7&amp;scene=126&amp;sessionid=1681378755#rd</a></blockquote><p><span style="font-size: 1.4em;font-weight: bold;line-height: 1.6;">前言</span><br/></p><p style="margin-bottom: 1.2em !important;">前段时间挖了不少跟mt_rand()相关的安全漏洞，基本上都是错误理解随机数用法导致的。这里又要提一下php官网manual的一个坑,看下关于mt_rand()的介绍:中文版^cn 英文版^en，可以看到英文版多了一块黄色的<strong>Caution</strong>警告</p><blockquote style="margin-top: 1.2em;margin-bottom: 1.2em;border-left-width: 4px;border-left-color: rgb(221, 221, 221);padding-right: 1em;padding-left: 1em;color: rgb(119, 119, 119);quotes: none;"><p style="margin-bottom: 1.2em !important;">This function does not 
+generate cryptographically secure values, and should not be used for 
+cryptographic purposes. If you need a cryptographically secure value, 
+consider using random_int(), random_bytes(), or 
+openssl_random_pseudo_bytes() instead.</p></blockquote><p style="margin-bottom: 1.2em !important;">很多国内开发者估计都是看的中文版的介绍而在程序中使用了mt_rand()来生成安全令牌、核心加解密key等等导致严重的安全问题。</p><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.4em;border-bottom-width: 1px;border-bottom-style: solid;border-bottom-color: rgb(238, 238, 238);">伪随机数</h2><p style="margin-bottom: 1.2em !important;">mt_rand()并不是一个<strong>真·随机数</strong>生成函数,实际上绝大多数编程语言中的随机数函数生成的都都是伪随机数。关于真随机数和伪随机数的区别这里不展开解释，只需要简单了解一点</p><blockquote style="margin-top: 1.2em;margin-bottom: 1.2em;border-left-width: 4px;border-left-color: rgb(221, 221, 221);padding-right: 1em;padding-left: 1em;color: rgb(119, 119, 119);quotes: none;"><p style="margin-bottom: 1.2em !important;">伪随机是由可确定的函数（常用线性同余），通过一个种子（常用时钟），产生的伪随机数。这意味着：如果知道了种子，或者已经产生的随机数，都可能获得接下来随机数序列的信息（可预测性）。</p></blockquote><p style="margin-bottom: 1.2em !important;">简单假设一下 mt_rand()内部生成随机数的函数为:<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">rand = seed+(i*10)</code>其中<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">seed</code>是随机数种子，<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">i</code>是第几次调用这个随机数函数。当我们同时知道<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">i</code>和<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">rand</code>两个值的时候，就能很容易的算出seed的值来。比如<strong>rand=21</strong>,<strong>i=2</strong>代入函数 <code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">21=seed+(2*10)</code>得到<strong>seed=1</strong>。是不是很简单，当我们拿到seed之后，就能计算出当<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">i</code>为任意值时候的<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">rand</code>的值了。</p><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.4em;border-bottom-width: 1px;border-bottom-style: solid;border-bottom-color: rgb(238, 238, 238);">PHP的自动播种</h2><p style="margin-bottom: 1.2em !important;">从上一节我们已经知道每一次mt_rand()被调用都会根据seed和当前调用的次数i来计算出一个伪随机数。而且seed是自动播种的：</p><blockquote style="margin-top: 1.2em;margin-bottom: 1.2em;border-left-width: 4px;border-left-color: rgb(221, 221, 221);padding-right: 1em;padding-left: 1em;color: rgb(119, 119, 119);quotes: none;"><p style="margin-bottom: 1.2em !important;">Note: 自 PHP 4.2.0 起，不再需要用 srand() 或 mt_srand() 给随机数发生器播种 ，因为现在是由系统自动完成的。</p></blockquote><p style="margin-bottom: 1.2em !important;">那么问题就来了，到底系统自动完成播种是在什么时候，如果每次调用mt_rand()都会自动播种那么破解seed也就没意义了。关于这一点manual并没有给出详细信息。网上找了一圈也没靠谱的答案 只能去翻源码^mtrand了：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border: 1px solid rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">PHPAPI void php_mt_srand(uint32_t seed)
+{
+    /* Seed the generator with a simple uint32 */
+    php_mt_initialize(seed, BG(state));
+    php_mt_reload();
+
+    /* Seed only once */
+    BG(mt_rand_is_seeded) = 1; 
+}
+/* }}} */
+
+/* {{{ php_mt_rand
+ */
+PHPAPI uint32_t php_mt_rand(void)
+{
+    /* Pull a 32-bit integer from the generator state
+       Every other access function simply transforms the numbers extracted here */
+
+    register uint32_t s1;
+
+    if (UNEXPECTED(!BG(mt_rand_is_seeded))) {
+        php_mt_srand(GENERATE_SEED());
+    }
+
+    if (BG(left) == 0) {
+        php_mt_reload();
+    }
+    --BG(left);
+
+    s1 = *BG(next)++;
+    s1 ^= (s1 &gt;&gt; 11);
+    s1 ^= (s1 &lt;&lt;  7) &amp; 0x9d2c5680U;
+    s1 ^= (s1 &lt;&lt; 15) &amp; 0xefc60000U;
+    return ( s1 ^ (s1 &gt;&gt; 18) );
+}</code></pre><p style="margin-bottom: 1.2em !important;">可以看到每次调用mt_rand()都会先检查是否已经播种。如果已经播种就直接产生随机数，否则调用php_mt_srand来播种。也就是说每个php
+ 
+cgi进程期间，只有第一次调用mt_rand()会自动播种。接下来都会根据这个第一次播种的种子来生成随机数。而php的几种运行模式中除了CGI(每个请求启动一个cgi进程，请求结束后关闭。每次都要重新读取php.ini
+ 
+环境变量等导致效率低下，现在用的应该不多了)以外，基本都是一个进程处理完请求之后standby等待下一个，处理多个请求之后才会回收（超时也会回收）。<br/>写个脚本测试一下</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border: 1px solid rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">&lt;?php
+//pid.php
+echo getmypid();</code></pre><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border: 1px solid rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">&lt;?php
+//test.php
+$old_pid = file_get_contents('http://localhost/pid.php');
+$i=1;
+while(true){
+    $i++;
+    $pid = file_get_contents('http://localhost/pid.php');
+    if($pid!=$old_pid){
+        echo $i;
+        break;
+    }
+}</code></pre><p style="margin-bottom: 1.2em !important;">测试结果：（windows+phpstudy）</p><blockquote style="margin-top: 1.2em;margin-bottom: 1.2em;border-left-width: 4px;border-left-color: rgb(221, 221, 221);padding-right: 1em;padding-left: 1em;color: rgb(119, 119, 119);quotes: none;"><p style="margin-bottom: 1.2em !important;">apache 1000请求<br/>nginx 500请求</p></blockquote><p style="margin-bottom: 1.2em !important;">当然这个测试仅仅确认了apache和nginx一个进程可以处理的请求数，再来验证一下刚才关于自动播种的结论：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border: 1px solid rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">&lt;?php
+//pid1.php
+if(isset($_GET['rand'])){
+    echo mt_rand();
+}else{
+    echo getmypid();
+}</code></pre><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border: 1px solid rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">&lt;?php
+//pid2.php
+echo mt_rand();</code></pre><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border: 1px solid rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">&lt;?php
+//test.php
+$old_pid = file_get_contents('http://localhost/pid1.php');
+echo "old_pid:{$old_pid}\r\n";
+while(true){
+    $pid = file_get_contents('http://localhost/pid1.php');
+    if($pid!=$old_pid){
+        echo "new_pid:{$pid}\r\n";
+        for($i=0;$i&lt;20;$i++){
+            $random = mt_rand(1,2);
+            echo file_get_contents("http://localhost/pid".$random.".php?rand=1")." ";
+        }
+
+        break;
+    }
+}</code></pre><p style="margin-bottom: 1.2em !important;">通过pid来判断,当新进程开始的时候，随机获取两个页面其中一个的 <strong>mt_rand()</strong> 的输出:</p><blockquote style="margin-top: 1.2em;margin-bottom: 1.2em;border-left-width: 4px;border-left-color: rgb(221, 221, 221);padding-right: 1em;padding-left: 1em;color: rgb(119, 119, 119);quotes: none;"><p style="margin-bottom: 1.2em !important;">old_pid:972<br/>new_pid:7752<br/>1513334371
+ 2014450250 1319669412 499559587 117728762 1465174656 1671827592 
+1703046841 464496438 1974338231 46646067 981271768 1070717272 571887250 
+922467166 606646473 134605134 857256637 1971727275 2104203195</p></blockquote><p style="margin-bottom: 1.2em !important;">拿第一个随机数<strong>1513334371</strong>去爆破种子：</p><blockquote style="margin-top: 1.2em;margin-bottom: 1.2em;border-left-width: 4px;border-left-color: rgb(221, 221, 221);padding-right: 1em;padding-left: 1em;color: rgb(119, 119, 119);quotes: none;"><p style="margin-bottom: 1.2em !important;">smldhz@vm:~/php_mt_seed-3.2$ ./php_mt_seed 1513334371<br/>Found 0, trying 704643072 - 738197503, speed 28562751 seeds per second<br/>seed = 735487048<br/>Found 1, trying 1308622848 - 1342177279, speed 28824291 seeds per second<br/>seed = 1337331453<br/>Found 2, trying 3254779904 - 3288334335, speed 28811010 seeds per second<br/>seed = 3283082581<br/>Found 3, trying 4261412864 - 4294967295, speed 28677071 seeds per second<br/>Found 3</p></blockquote><p style="margin-bottom: 1.2em !important;">爆破出了3个可能的种子，数量很少 手动一个一个测试:</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border: 1px solid rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">&lt;?php
+mt_srand(735487048);//手工播种
+for($i=0;$i&lt;21;$i++){
+    echo mt_rand()." ";
+}</code></pre><p style="margin-bottom: 1.2em !important;">输出:</p><blockquote style="margin-top: 1.2em;margin-bottom: 1.2em;border-left-width: 4px;border-left-color: rgb(221, 221, 221);padding-right: 1em;padding-left: 1em;color: rgb(119, 119, 119);quotes: none;"><p style="margin-bottom: 1.2em !important;">1513334371 2014450250 
+1319669412 499559587 117728762 1465174656 1671827592 1703046841 
+464496438 1974338231 46646067 981271768 1070717272 571887250 922467166 
+606646473 134605134 857256637 1971727275 2104203195 1515656265</p></blockquote><p style="margin-bottom: 1.2em !important;">前20位跟上面脚本获取的一模一样，确认种子就是<strong>1513334371</strong>。有了种子我们就能计算出任意次数调用mt_rand()生成的随机数了。比如这个脚本我生成了21位，最后一位是<strong>1515656265</strong> 如果跑完刚才的脚本之后没访问过站点，那么打开<strong>http://localhost/pid2.php</strong>就能看到相同的<strong>1515656265</strong>。<br/>所以我们得到结论：</p><blockquote style="margin-top: 1.2em;margin-bottom: 1.2em;border-left-width: 4px;border-left-color: rgb(221, 221, 221);padding-right: 1em;padding-left: 1em;color: rgb(119, 119, 119);quotes: none;"><p style="margin-bottom: 1.2em !important;">php的自动播种发生在php cgi进程中第一次调用mt_rand()的时候。跟访问的页面无关，只要是同一个进程处理的请求，都会共享同一个最初自动播种的种子。</p></blockquote><h1 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.6em;border-bottom-width: 1px;border-bottom-style: solid;border-bottom-color: rgb(221, 221, 221);">php_mt_seed</h1><p style="margin-bottom: 1.2em !important;">我们已经知道随机数的生成是依赖特定的函数，上面曾经假设为<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border: 1px solid rgb(234, 234, 234);border-radius: 3px;display: inline;background-color: rgb(248, 248, 248);">rand = seed+(i*10)</code>。对于这样一个简单的函数，我们当然可以直接计算（口算）出一个（组）解来，但 <strong>mt_rand()</strong> 实际使用的函数可是相当复杂且无法逆运算的。有效的破解方法其实是穷举所有的种子并根据种子生成随机数序列再跟已知的随机数序列做比对来验证种子是否正确。php_mt_seed^phpmtseed就是这么一个工具，它的速度非常快，跑完2^32位seed也就几分钟。它可以根据单次mt_rand()的输出结果直接爆破出可能的种子（上面有示例），当然也可以爆破类似mt_rand(1,100)这样限定了MIN MAX输出的种子（下面实例中有用到）。</p><h1 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.6em;border-bottom-width: 1px;border-bottom-style: solid;border-bottom-color: rgb(221, 221, 221);">安全问题</h1><p style="margin-bottom: 1.2em !important;">说了这么多，那到底随机数怎么不安全了呢？其实函数本身没有问题，官方也明确提示了生成的随机数不应用于安全加密用途（虽然中文版本manual没写）。问题在于开发者并没有意识到这并不是一个<strong>真·随机数</strong>。我们已经知道，通过已知的随机数序列可以爆破出种子。也就是说，只要任意页面中存在输出随机数或者其衍生值（可逆推随机值），那么其他任意页面的随机数将不再是“随机数”。常见的输出随机数的例子比如验证码，随机文件名等等。常见的随机数用于安全验证的比如找回密码校验值，比如加密key等等。一个理想中的攻击场景：</p><blockquote style="margin-top: 1.2em;margin-bottom: 1.2em;border-left-width: 4px;border-left-color: rgb(221, 221, 221);padding-right: 1em;padding-left: 1em;color: rgb(119, 119, 119);quotes: none;"><p style="margin-bottom: 1.2em !important;">夜深人静，等待apache(nginx)收回所有php进程（确保下次访问会重新播种），访问一次验证码页面，根据验证码字符逆推出随机数，再根据随机数爆破出随机数种子。接着访问找回密码页面，生成的找回密码链接是基于随机数的。我们就可以轻松计算出这个链接,找回管理员的密码…………XXOO</p></blockquote><h1 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.6em;border-bottom-width: 1px;border-bottom-style: solid;border-bottom-color: rgb(221, 221, 221);">实例</h1><ol style="" class=" list-paddingleft-2"><li><p>PHPCMS MT_RAND SEED CRACK致authkey泄露 雨牛写的比我好，看他的就够了</p></li><li><p>Discuz x3.2 authkey泄露 这个其实也差不多。官方已出补丁，有兴趣的可以自己去分析一下。</p></li></ol><section class="" data-tools="135&#x7F16;&#x8F91;&#x5668;" data-id="86357" style="max-width: 100%;box-sizing: border-box;color: rgb(62, 62, 62);font-size: 16px;line-height: 25.6px;white-space: normal;font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;;border: 0px none;word-wrap: break-word !important;background-color: rgb(255, 255, 255);"><section style="max-width: 100%;text-align: center;box-sizing: border-box !important;word-wrap: break-word !important;"><section style="max-width: 100%;display: inline-block;width: 192px;box-sizing: border-box !important;word-wrap: break-word !important;"><section class="" data-tools="135编辑器" data-id="86357" style="max-width: 100%;box-sizing: border-box;border: 0px none;word-wrap: break-word !important;"><section style="max-width: 100%;box-sizing: border-box !important;word-wrap: break-word !important;"><p style="max-width: 100%;min-height: 1em;display: inline-block;width: 192px;box-sizing: border-box !important;word-wrap: break-word !important;"><img class="" data-ratio="0.125" data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZmbX5NFgic65Bo4SIYUK4ib9ibvpyoaPJibpkS2Q8Q24DicBfEtnh6xBcFSw/640.png?" data-type="png" data-w="600" style="display: inline;box-sizing: border-box !important;word-wrap: break-word !important;visibility: visible !important;width: 192px !important;" title="墨迹晕染分割线" width="192px" src="../Images/c96a1b435221f7e6cf4c4e3eca199d9e.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZmbX5NFgic65Bo4SIYUK4ib9ibvpyoaPJibpkS2Q8Q24DicBfEtnh6xBcFSw/640.png?"/></p></section></section></section></section></section><p style="max-width: 100%;min-height: 1em;color: rgb(62, 62, 62);font-size: 16px;line-height: 25.6px;white-space: normal;font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;;box-sizing: border-box !important;word-wrap: break-word !important;background-color: rgb(255, 255, 255);"><br style="max-width: 100%;box-sizing: border-box !important;word-wrap: break-word !important;"/></p><p style="max-width: 100%;min-height: 1em;color: rgb(62, 62, 62);font-size: 16px;line-height: 25.6px;white-space: normal;font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;;box-sizing: border-box !important;word-wrap: break-word !important;background-color: rgb(255, 255, 255);"><img class="" data-ratio="0.3036773428232503" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZ0Y7FsbxeE68njy7pfZf9hstOTLqPHS1uljxrnicvns89MRJ7DMQowOg/640.jpeg?" data-type="jpeg" data-w="843" style="line-height: 25.6px;box-sizing: border-box !important;word-wrap: break-word !important;visibility: visible !important;width: auto !important;" width="auto" src="../Images/4f6f4b18070490b9670250379d20693d.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZ0Y7FsbxeE68njy7pfZf9hstOTLqPHS1uljxrnicvns89MRJ7DMQowOg/640.jpeg?"/></p>
+        
+</body>
+</html>

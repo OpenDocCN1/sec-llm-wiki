@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>IOT设备中NTP服务的RCE漏洞分析</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>IOT设备中NTP服务的RCE漏洞分析</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI5MzY2MzM0Mw==&amp;mid=2247484670&amp;idx=1&amp;sn=a1bbd87948af7b516457c8fb6b77d3cd&amp;chksm=ec6fe3fedb186ae860aff7bf2cc64683fa1e0026794e7f2e8a0afc96a2567051f11d411b5039&amp;scene=126&amp;sessionid=1681378710#rd">http://mp.weixin.qq.com/s?__biz=MzI5MzY2MzM0Mw==&amp;mid=2247484670&amp;idx=1&amp;sn=a1bbd87948af7b516457c8fb6b77d3cd&amp;chksm=ec6fe3fedb186ae860aff7bf2cc64683fa1e0026794e7f2e8a0afc96a2567051f11d411b5039&amp;scene=126&amp;sessionid=1681378710#rd</a></blockquote><section class="xmteditor" style="display:none;" data-tools="&#x65B0;&#x5A92;&#x4F53;&#x7BA1;&#x5BB6;" data-label="powered by xmt.cn"/><h3 style="white-space: normal;max-width: 100%;color: rgb(62, 62, 62);"><strong style="max-width: 100%;color: rgb(255, 41, 65);box-sizing: border-box !important;word-wrap: break-word !important;">先知安全技术社区独家发文，如需转载，请先联系社区授权；未经授权请勿转载。</strong></h3><p><br/></p><p style="margin-bottom: 1.2em !important;"><strong>概述：</strong><br/>在对某些厂家的IOT网关设备进行检测时，发现了一个RCE漏洞，这个漏洞存在于大多数网关路由器设备中，漏洞点位于更新ntp中。这些漏洞的利用是需要条件的，那就是首先得登录(当然不排除有未授权的情况发生)，个人感觉这个漏洞比较好玩，所以，就发出来分享一下，给大家提供一个思路。<br/>当然，如果你想测试这个漏洞，最好找以前的版本（光猫、路由器）测试，现在最新的版本大多数都已修复，如果你恰好遇到存在此漏洞的设备，那么祝君好运!</p><p style="margin-bottom: 1.2em !important;"><strong>漏洞分析</strong><br/>在我们传入参数之前，httpd程序（http服务器）会对传过来的URL进行CGI解析，随后选择调用sntp程序并传入参数。怎么调用这个不是我们要分析的重点（虽然这个也是RCE的一部分），重点是下面的过程。<br/>在SNTP程序文件中，它首先获取参数的传入<br/><img class="" data-ratio="0.4239917269906929" data-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqXhVXH0MpMIFkDianRuIicEFbBj5LdTf6TnzACT7liamImqPpf84wwsY07pdbC98nqe0ku0Z92xkFBQ/640?wx_fmt=png" data-type="png" data-w="967" src="../Images/bf6d533af52bb30d1d228cd237b25e91.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqXhVXH0MpMIFkDianRuIicEFbBj5LdTf6TnzACT7liamImqPpf84wwsY07pdbC98nqe0ku0Z92xkFBQ/640?wx_fmt=png"/><br/>随后把参数传入了ntpdate文件 , bin/ntpdate ntpserver地址<br/><img class="" data-ratio="0.4829106945975744" data-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqXhVXH0MpMIFkDianRuIicEFy2R8PO7um0xqiaQFey0QvwFORj15HPB973UEl7FBz5w1CGRpLEM1KKg/640?wx_fmt=png" data-type="png" data-w="907" src="../Images/79798b8be13d5f7ea336aa7d491c25d9.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqXhVXH0MpMIFkDianRuIicEFy2R8PO7um0xqiaQFey0QvwFORj15HPB973UEl7FBz5w1CGRpLEM1KKg/640?wx_fmt=png"/><br/>在获取了ntpserver地址后，进行了系统命令调用<br/><img class="" data-ratio="0.4045954045954046" data-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqXhVXH0MpMIFkDianRuIicEF3hdQuBoCDWNGiac1Q1evWvBrZqS8esGSvVvwQ538gHes72HEZibSB3Gw/640?wx_fmt=png" data-type="png" data-w="1001" src="../Images/9a27592f6c7710a7eb0cdfe5a96e6325.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqXhVXH0MpMIFkDianRuIicEF3hdQuBoCDWNGiac1Q1evWvBrZqS8esGSvVvwQ538gHes72HEZibSB3Gw/640?wx_fmt=png"/><br/>第一次system执行调用是初始化ntpdate程序（清理关闭干扰程序），随后system执行nptdate程序，获取当前ntp服务器的时间，加之写入配置文件。</p><p style="margin-bottom: 1.2em !important;"><strong>漏洞利用</strong></p><p style="margin-bottom: 1.2em !important;">我们来看下漏洞利用点，漏洞发生在设备的时间设定功能上<br/><img class="" data-ratio="0.5707656612529002" data-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqXhVXH0MpMIFkDianRuIicEFM5LU7KCc8Ss4vtjzKT6AweicBeqCgjuxYxqy1e2hggvuIial1nl7exOA/640?wx_fmt=png" data-type="png" data-w="862" src="../Images/59a0e765557b0de379ab71e4ac749d8e.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqXhVXH0MpMIFkDianRuIicEFM5LU7KCc8Ss4vtjzKT6AweicBeqCgjuxYxqy1e2hggvuIial1nl7exOA/640?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">因为这个漏洞是隐式RCE，所以没有返回，我们只能进系统进行验证。<br/>根据以上分析，我们后台监控看下<br/><img class="" data-ratio="0.3483443708609272" data-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqXhVXH0MpMIFkDianRuIicEFoJosHxgWl4mDoiaXBJoGwfMywowYrcZdZyPhR7XhnVLePc5nkk1Sc0Q/640?wx_fmt=png" data-type="png" data-w="755" src="../Images/5917dcfda1651ee57b3859096329023f.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqXhVXH0MpMIFkDianRuIicEFoJosHxgWl4mDoiaXBJoGwfMywowYrcZdZyPhR7XhnVLePc5nkk1Sc0Q/640?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">可以看到，sntp成功的调用了ntpdate程序来获取时间，而且ntpserver服务器的参数是我们可以控制的。<br/>这里我们需要输入分隔符“;”，这样，我们就能够执行多行命令了。<br/>我们向tmp目录写入test.txt文件<br/><img class="" data-ratio="0.5155875299760192" data-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqXhVXH0MpMIFkDianRuIicEFa6SHegZUawz5gXLXpZtdtDibmyw2j2jzSOk7icE4dm5ib3kArlFxrictCg/640?wx_fmt=png" data-type="png" data-w="834" src="../Images/069fac1ab770dabfe4d0558cff910300.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqXhVXH0MpMIFkDianRuIicEFa6SHegZUawz5gXLXpZtdtDibmyw2j2jzSOk7icE4dm5ib3kArlFxrictCg/640?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">后台监控看下是否利用成功<br/><img class="" data-ratio="0.4686536485097636" data-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqXhVXH0MpMIFkDianRuIicEFbaxQ5QXgCAyt00ujBRxq4ibSXPWlDTyYIelXWZYicRDAbNFbs6RyicFew/640?wx_fmt=png" data-type="png" data-w="973" src="../Images/c0bfed68eb35afdc02bc10002038c937.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqXhVXH0MpMIFkDianRuIicEFbaxQ5QXgCAyt00ujBRxq4ibSXPWlDTyYIelXWZYicRDAbNFbs6RyicFew/640?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">在这里，我们还是来看下前端代码吧，因为代码太长，所以选择主要函数讲解。<br/>在我们提交保存按钮后，会调用btnApply()函数，我们跟进</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">function btnApply() {
+  var loc = 'sntpcfg.cgi?ntp_enabled=';
+  with( document.forms[0] ) {
+    if( ntpEnabled.checked ) {
+      loc += '1&amp;ntpServer1=';
+      if( ntpServer1.selectedIndex == ntpServers.length ) {
+        if( ntpServerOther1.value.length == 0 ) { // == Other
+          alert('第一时间服务器为“其它”，可是“其它”域为空');
+          return;
+        } else {
+          loc += ntpServerOther1.value;
+        }
+      } else {
+        loc += ntpServer1[ntpServer1.selectedIndex].value;
+      }
+
+      loc += '&amp;ntpServer2=';
+      if( ntpServer2.selectedIndex == ntpServers.length+1 ) {
+        if( ntpServerOther2.value.length == 0 ) { // == Other
+          alert('第二时间服务器为“其它”，可是“其它”域为空');
+          return;
+        } else {
+          loc += ntpServerOther2.value;
+        }
+      } else {
+        if( ntpServer2.selectedIndex &gt; 0 )
+          loc += ntpServer2[ntpServer2.selectedIndex].value;
+      }
+
+      loc += '&amp;ntpServer3=';
+      if( ntpServer3.selectedIndex == ntpServers.length+1 ) {
+        if( ntpServerOther3.value.length == 0 ) { // == Other
+          alert('第三时间服务器为“其它”，可是“其它”域为空');
+          return;
+        } else {
+          loc += ntpServerOther3.value;
+        }
+      } else {
+        if( ntpServer3.selectedIndex &gt; 0 )
+          loc += ntpServer3[ntpServer3.selectedIndex].value;
+      }
+      loc += '&amp;ntpServer4=';
+      if( ntpServer4.selectedIndex == ntpServers.length+1 ) {
+        if( ntpServerOther4.value.length == 0 ) { // == Other
+          alert('第四时间服务器为“其它”，可是“其它”域为空');
+          return;
+        } else {
+          loc += ntpServerOther4.value;
+        }
+      } else {
+        if( ntpServer4.selectedIndex &gt; 0 )
+          loc += ntpServer4[ntpServer4.selectedIndex].value;
+      }
+      loc += '&amp;ntpServer5=';
+      if( ntpServer5.selectedIndex == ntpServers.length+1 ) {
+        if( ntpServerOther5.value.length == 0 ) { // == Other
+          alert('第五时间服务器为“其它”，可是“其它”域为空');
+          return;
+        } else {
+          loc += ntpServerOther5.value;
+        }
+      } else {
+        if( ntpServer5.selectedIndex &gt; 0 )
+          loc += ntpServer5[ntpServer5.selectedIndex].value;
+      }
+
+      loc += '&amp;timezone_offset=' + cboTimeZone[cboTimeZone.selectedIndex].value;
+      loc += '&amp;timezone=' + getTimeZoneName(cboTimeZone.selectedIndex);
+      loc += '&amp;ntpWan=' + ntpWan.value;
+      loc += '&amp;use_dst=0';
+
+      var ntpIntervalVal = parseInt(ntpInterval.value);
+      if(isNaN(ntpIntervalVal) || ntpIntervalVal &lt; 3600 || ntpIntervalVal &gt; 604800){
+          alert('同步间隔范围为3600-604800');
+          return;
+      }
+       loc += '&amp;ntpInterval=' + ntpIntervalVal;
+    } else {
+      loc += '0';
+    }
+  }
+  loc += '&amp;sessionKey=' + sessionKey;
+  var code = 'location="' + loc + '"';
+  eval(code);
+}</code></pre><p style="margin-bottom: 1.2em !important;">函数先对是否开启自动更新时间进行判断，随后进入操作。<br/>在我们设置完参数后，函数会把我们提交过来的参数经过几个步骤的参数拼接，然后用eval()函数进行提交操作，最后httpd调用sntp程序对参数进行操作。<br/><img class="" data-ratio="0.4474671669793621" data-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqXhVXH0MpMIFkDianRuIicEFDHrnWoEC03PFMRLv3fdcicYZcQO1xpjYgXHVJOBa6bziasj2ZhPBVHkA/640?wx_fmt=png" data-type="png" data-w="1066" src="../Images/db06a4bac3efa2ca9d10476c9afa5f6e.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIqXhVXH0MpMIFkDianRuIicEFDHrnWoEC03PFMRLv3fdcicYZcQO1xpjYgXHVJOBa6bziasj2ZhPBVHkA/640?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">我们可以看到，在一系列的操作中，没有任何的函数对我们提交的参数进行过滤和拦截，最后此漏洞的发生还是在过滤不严上面。<br/>下面我们来看下华为和中兴对NTP漏洞的防范，他们的代码一样。。。<br/>在我们提交ntpserver地址后，会对我们自定义的值进行检查和过滤,由isTValidName()函数进行,只有合规的参数才能进入后面操作</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">if(isTValidName(ntpServerOther1.value) == false)
+{
+   AlertEx('第一级SNTP服务器的地址无效。');
+   return;                
+}
+Form.addParameter('NTPServer1',ntpServerOther1.value)</code></pre><p style="margin-bottom: 1.2em !important;">我们来跟进 isTValidName()函数，可以看到，对大多数的特殊字符进行了检测，这些字符正是我们执行命令需要的，有了这个安全函数的检测，漏洞自然就不存在了。</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">function isTValidName(name) {
+   var i = 0;   
+   var unsafeString = "\"&lt;&gt;%\\^[]`\+\$\,='#&amp;:;*/{} \t";
+   for ( i = 0; i &lt; name.length; i++ ) {
+      for( j = 0; j &lt; unsafeString.length; j++)
+        if ( (name.charAt(i)) == unsafeString.charAt(j) )
+         return false;
+   }
+  return true;
+}</code></pre><p style="white-space: normal;"><br/></p><section class="xmt-style-block" data-tools="&#x65B0;&#x5A92;&#x4F53;&#x6392;&#x7248;" style="white-space: normal;color: rgb(51, 51, 51);"><section class="" style="margin-top: 5px;font-size: 16px;line-height: normal;border-width: 0px;border-style: none;border-color: initial;background-image: none;"><section class="white" style="margin-top: -1px;min-height: 40px;visibility: visible;height: 40px;line-height: 40px;border-radius: 10px;box-shadow: rgb(190, 190, 190) 0px 3px 5px;background-color: rgb(51, 179, 235);color: rgb(255, 255, 255);"><span style="font-size: 14px;text-align: center;">↙↙↙   点击“阅读原文”查看相关内容的链接地址</span></section></section></section>
+        
+</body>
+</html>

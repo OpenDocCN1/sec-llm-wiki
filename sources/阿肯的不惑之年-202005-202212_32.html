@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>随时随地远程研发/联调安全的前景</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>随时随地远程研发/联调安全的前景</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzIyMjUzNzYyNA==&amp;mid=2247483698&amp;idx=1&amp;sn=f6ec6244d79a0f4e5e0620a4295ab499&amp;chksm=e82ab3c5df5d3ad36cb159a1e32f9a9f81d492beb8c05bc1963af84e7fb7f2bdcebd26bbf8d5&amp;scene=126&amp;sessionid=1681322025#rd">http://mp.weixin.qq.com/s?__biz=MzIyMjUzNzYyNA==&amp;mid=2247483698&amp;idx=1&amp;sn=f6ec6244d79a0f4e5e0620a4295ab499&amp;chksm=e82ab3c5df5d3ad36cb159a1e32f9a9f81d492beb8c05bc1963af84e7fb7f2bdcebd26bbf8d5&amp;scene=126&amp;sessionid=1681322025#rd</a></blockquote><p>     疫情期间，很多公司都开始了远程办公，一般员工只要能上网就能访问业务系统，或者开通VPN就可以访问内部应用系统。但是设计、开发、测试、运维等人员，如何在不影响业务的情况下，能远程安全地开展工作，做代码开发、联调测试，服务器/数据库操作等设计敏感数据的操作？如果有这类完美方案，是否意味着以后一般的开发人员也会像10年前的SA顾问一样，可以成为自由人，社会资源共享？<br/></p><p>     我突然想到，我的一句话安全应该在这个场景下有很好的应用和需求。遵守公司安全底线的开发、测试、运维、大数据员工，使用公司认证过的电脑设备、安装安全软件，登陆自己的账号，访问后台授予权限的应用/服务器，这样就可以实现随时随地的远程研发工作了，而省去了平时上下班的通勤时间。<br/></p><p>     安全底线很简单，参加公司的安全技能和底线考试，签署保密协议基本可以了。</p><p>     公司认证的电脑才能登陆后台系统，也简单，只要堡垒机/特权平台能识别电脑是否在公司电脑的认证库中，是否具备公司的账号即可。</p><p>   电脑鉴权后，研发人员能使用哪些工具/协议（ssh\mysql\xshell\http等），访问那些服务器，也很简单，只要在堡垒机/特权平台上开发更细粒度的授权模块，并给予之前鉴权后接入的账号token授权，并记录日志。</p><p>     最后问题就是，这个公司认证的电脑有代码、有敏感数据、能直联数据库，如何保障数据落地的安全？代码的安全，电脑上还有沙箱就可以解决。ssh\mysql\xshell\http等工具访问的敏感数据，桌面虚拟服务应该可以解决。</p><p>     这样看来，只要公司科技基础较好，这个方案落实下来难度也不是很大。希望有时间实践此方案。</p>
+        
+</body>
+</html>

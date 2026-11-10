@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>API安全：CSRF</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>API安全：CSRF</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI5MzY2MzM0Mw==&amp;mid=2247484372&amp;idx=1&amp;sn=4f37d831cfadbc064cc206d96a021f7a&amp;chksm=ec6fe4d4db186dc255ebb49dbe59d03db8a8972dface7702f44ff6b7338666ac09dc8fa6a1a4&amp;scene=126&amp;sessionid=1681378740#rd">http://mp.weixin.qq.com/s?__biz=MzI5MzY2MzM0Mw==&amp;mid=2247484372&amp;idx=1&amp;sn=4f37d831cfadbc064cc206d96a021f7a&amp;chksm=ec6fe4d4db186dc255ebb49dbe59d03db8a8972dface7702f44ff6b7338666ac09dc8fa6a1a4&amp;scene=126&amp;sessionid=1681378740#rd</a></blockquote><section class="xmteditor" style="display:none;" data-tools="&#x65B0;&#x5A92;&#x4F53;&#x7BA1;&#x5BB6;" data-label="powered by xmt.cn"/><p style="margin-bottom: 1.2em !important;">好吧，这篇文章要说的是CSRF。我知道这已经是个很老的话题了，也没多少人对它感兴趣。但在做API／微服务架构防御的时候我觉得还是有些值得探讨的地方。<br/>先搞个demo吧，以下是两个servlet，分别处理get和post请求：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">@WebServlet("/data/get")
+public class GetData extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public GetData() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+    /**
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.getWriter().print("Received data:"+request.getParameter("data"));
+        System.out.println("Received data:"+request.getParameter("data"));
+    }
+
+}</code></pre><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">@WebServlet("/data/post")
+public class PostData extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public PostData() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+    /**
+     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.getWriter().print("Received data:"+request.getParameter("data"));
+        System.out.println("Received data:"+request.getParameter("data"));
+    }
+
+}</code></pre><p style="margin-bottom: 1.2em !important;">再来一个响应过滤器:</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">@WebFilter(filterName = "filter1")
+public class CORSResponseFilter implements Filter {
+
+    @Override
+    public void destroy() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void doFilter(ServletRequest arg0, ServletResponse arg1,
+            FilterChain arg2) throws IOException, ServletException {
+        HttpServletResponse resp = (HttpServletResponse) arg1;
+        HttpServletRequest request = (HttpServletRequest) arg0;
+        resp.addHeader("Access-Control-Allow-Origin", "*");
+        arg2.doFilter(request, resp);
+    }
+
+    @Override
+    public void init(FilterConfig arg0) throws ServletException {
+        // TODO Auto-generated method stub
+
+    }
+
+}</code></pre><p style="margin-bottom: 1.2em !important;">客户端代码:</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">&lt;html&gt;
+&lt;script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+$.ajax({
+   url: "http://localhost:8080/TestWeb/data/get",
+   type: 'GET',
+   data: { data: "get method" },
+   success: function(data) {
+    alert(data);
+
+  },
+  error: function(e) {
+    alert("Error");
+  }
+});
+&lt;/script&gt;
+&lt;body&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre><p style="margin-bottom: 1.2em !important;">对于大多数开发者来说，都知道用<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">Access-Control-Allow-Origin</code>来防御CSRF，但其实还有更多的问题需要考虑，比如：<br/>1，你的配置是否正确。错误的<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">Access-Control-Allow-Origin</code>配置并不少见，但这不是我想讨论的。<br/>2，就算正确配置了，万一本站或者子站存在XSS，依旧有可能造成CSRF。而这也不是我想讨论的。。<br/>3，再者就是，就算用了<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">Access-Control-Allow-Origin</code>，你觉得就够了么？<br/>我们先来做个实验，在响应过滤器中加入以下代码，那么通常的理解应该就是除了来自abc.com的请求，其他源发来的请求应该都无效。<br/><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">resp.addHeader("Access-Control-Allow-Origin", "abc.com")</code>;<br/>运行客户端代码，得到以下结果：<br/><img data-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIok3HYFeZmMN0go5vXC2U0EGmECqLOgbj7clumicY9oianS9tVJdk6ic47whB1TXfSoRbrpPbudGbPZA/0?wx_fmt=jpeg" class="" data-ratio="1.2064846416382253" data-w="586" data-type="jpeg" src="../Images/1159362e7721bbbd1f8e48ebdc8df0ff.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIok3HYFeZmMN0go5vXC2U0EGmECqLOgbj7clumicY9oianS9tVJdk6ic47whB1TXfSoRbrpPbudGbPZA/0?wx_fmt=jpeg"/></p><p style="margin-bottom: 1.2em !important;">如预想的一样，无法得到请求结果。但你真的以为<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">Access-Control-Allow-Origin</code>阻止了这个请求么？完全没有。。。在服务器端的控制台可以看到如下输出：</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIok3HYFeZmMN0go5vXC2U0EqXvQoUcsgiaQYKNAoYOH9uMAutCxHnuoX69sw34AKPkzaw02tkpTe4g/0?wx_fmt=jpeg" class="" data-ratio="0.3183431952662722" data-w="845" data-type="jpeg" src="../Images/2b0fffff5b2ea9ce19734540d06b1c47.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIok3HYFeZmMN0go5vXC2U0EqXvQoUcsgiaQYKNAoYOH9uMAutCxHnuoX69sw34AKPkzaw02tkpTe4g/0?wx_fmt=jpeg"/></p><p style="margin-bottom: 1.2em !important;">如果发的是POST请求也会得到一样的结果：</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIok3HYFeZmMN0go5vXC2U0EKBpbmhU89ibNfvwLBEhHoHKDboewd4NR3FhDfsicaMYzmXQxAC8hicjFQ/0?wx_fmt=jpeg" class="" data-ratio="1.2430555555555556" data-w="576" data-type="jpeg" src="../Images/a25c002afd7e4d2fbe7bd0959af43003.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIok3HYFeZmMN0go5vXC2U0EKBpbmhU89ibNfvwLBEhHoHKDboewd4NR3FhDfsicaMYzmXQxAC8hicjFQ/0?wx_fmt=jpeg"/></p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIok3HYFeZmMN0go5vXC2U0EOtiatYEA5dguAzjsh4QsfRHNJfFxPib3nfzlSXt5CgjkMbhH7eWhjcDw/0?wx_fmt=jpeg" class="" data-ratio="0.248" data-w="625" data-type="jpeg" src="../Images/00f40c23cf8a0f53ea83d883f3552ae9.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIok3HYFeZmMN0go5vXC2U0EOtiatYEA5dguAzjsh4QsfRHNJfFxPib3nfzlSXt5CgjkMbhH7eWhjcDw/0?wx_fmt=jpeg"/></p><p style="margin-bottom: 1.2em !important;">POST请求代码：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">&lt;html&gt;
+&lt;script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+$.ajax({
+   url: "http://localhost:8080/TestWeb/data/post",
+   type: 'POST',
+   data: { data: "post method" },
+   success: function(data) {
+    alert(data);
+
+  },
+  error: function(e) {
+    alert("Error");
+  }
+});
+&lt;/script&gt;
+&lt;body&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre><p style="margin-bottom: 1.2em !important;">也就是说，就算你正确配置了<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">Access-Control-Allow-Origin</code>，最多也就是防止别人从响应中偷数据。对于修改数据的请求完全没用，不知道有多少人意识到这点，我刚发现的时候觉得很是蛋疼。<br/>之后呢，有人会说，<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">restful API的GET</code>请求本就该设计为不修改数据（有木有见过同一个<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">service</code>同时支持<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">GET</code>和<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">POST</code>的？），而<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">POST</code>请求的话内容应该是<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">JSON，Content-Type</code>也应该是<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">application/json</code>，而当不同源客户端修改<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">Content-Type</code>为<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">application/json</code>的时候浏览器会进行预检，之后请求就会失败。这个思路是对的，也在此提醒开发者，一定要在服务器端坚持<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">Content-type</code>，很多搞开发的会忘记这个。<br/>然而，要考虑的不仅有这些。如果把其他响应头设置错误甚至会导致以上的防御失效。来看下一个例子，服务器端检查了所有POST请求的<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">Content-type</code>，必须存在且必须为<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">application/json</code>，允许任何源发<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">OPTIONS</code>请求，其他请求只允许abc.com发，但不小心在<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">Access-Control-Allow-Headers</code>中加入了<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">Content-type</code>。<br/>在响应过滤器代码中加入:</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">if (request.getMethod().equals("POST")
+                &amp;&amp; (request.getHeader("Content-Type") == null || !request
+                        .getHeader("Content-Type").toLowerCase()
+                        .startsWith("application/json"))) {
+            resp.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
+            return;
+        }
+        if(request.getMethod().equals("OPTIONS")){
+            resp.addHeader("Access-Control-Allow-Origin", "*");
+        }
+        else
+        {
+            resp.addHeader("Access-Control-Allow-Origin", "abc.com");
+        }
+        resp.addHeader("Access-Control-Allow-Headers", "Content-Type");
+        resp.addHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");</code></pre><p style="margin-bottom: 1.2em !important;">客户端代码：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">&lt;html&gt;
+&lt;script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+$.ajax({
+   url: "http://localhost:8080/TestWeb/data/post",
+   type: 'POST',
+   contentType: "application/json",
+   data: JSON.stringify({ data: "post method" }),
+   success: function(data) {
+    alert(data);
+
+  },
+  error: function(e) {
+    alert("Error");
+  }
+});
+&lt;/script&gt;
+&lt;body&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre><p style="margin-bottom: 1.2em !important;">结果就是服务器端依旧接收到了这个请求并处理了:</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIok3HYFeZmMN0go5vXC2U0EB5ghEBSoFgicEiaaGKnkWrM2qpjDWh5SdX4Os5Yxce6S6Q9VKDsUut5A/0?wx_fmt=jpeg" class="" data-ratio="0.569078947368421" data-w="1216" data-type="jpeg" src="../Images/49be9db1ecd809b0e0380a1a6af8ab0e.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIok3HYFeZmMN0go5vXC2U0EB5ghEBSoFgicEiaaGKnkWrM2qpjDWh5SdX4Os5Yxce6S6Q9VKDsUut5A/0?wx_fmt=jpeg"/></p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIok3HYFeZmMN0go5vXC2U0EFg2FzXpvglQMPvnO8GnVgQKtrvqkR6CVGmpFITM6nvKxQk0iar6NdOw/0?wx_fmt=jpeg" class="" data-ratio="0.3126934984520124" data-w="646" data-type="jpeg" src="../Images/2c3cdf7a28cbe12067303c5e851b528d.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIok3HYFeZmMN0go5vXC2U0EFg2FzXpvglQMPvnO8GnVgQKtrvqkR6CVGmpFITM6nvKxQk0iar6NdOw/0?wx_fmt=jpeg"/></p><p style="margin-bottom: 1.2em !important;">数据值为null是因为客户端发的是JSON格式，服务器端需要特别处理一下才会显示。</p><p style="margin-bottom: 1.2em !important;">至此，你可以看到，在做<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">API CSRF</code>防护的时候需要很谨慎，稍微配置错就可能导致防护失效。<br/>首先你要确保GET请求就只是用来做数据获取的，而不是修改。<br/>其次服务器端要检查<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">Content-typ</code>。<br/>然后在设置<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">Access-Control-Allow-Origin</code>的时候不仅要把域名范围考虑周全，还要把<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">OPTIONS</code>也考虑进去。<br/>有人会说可以直接服务器端检查<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">referral</code>或者<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">origin</code>，这么做也是个解决方案，但并不是最佳实践。而如果遇到有要用API提供文件上传功能的时候，似乎也只能硬着头皮搞了，毕竟上传功能很可能需要支持<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">multi-part</code>，这种<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">Content-type</code>是不会触发预检的。<br/>还有。。似乎在IE上预检的触发条件不一样。。。以上的例子在我机器上就没有触发。。<br/>此文写出来仅是希望与大家共同探讨API安全，虽然现在微服务架构的应用还不多，但未来很可能成为趋势。</p><section class="" data-tools="135&#x7F16;&#x8F91;&#x5668;" data-id="86357" style="max-width: 100%;box-sizing: border-box;color: rgb(62, 62, 62);font-size: 16px;white-space: normal;background-color: rgb(255, 255, 255);line-height: 25.6px;font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;;border-width: 0px;border-style: none;border-color: initial;word-wrap: break-word !important;"><section style="max-width: 100%;text-align: center;box-sizing: border-box !important;word-wrap: break-word !important;"><section style="display: inline-block;max-width: 100%;width: 192px;box-sizing: border-box !important;word-wrap: break-word !important;"><section class="" data-tools="135编辑器" data-id="86357" style="max-width: 100%;box-sizing: border-box;border-width: 0px;border-style: none;border-color: initial;word-wrap: break-word !important;"><section style="max-width: 100%;box-sizing: border-box !important;word-wrap: break-word !important;"><p style="max-width: 100%;min-height: 1em;display: inline-block;width: 192px;box-sizing: border-box !important;word-wrap: break-word !important;"><img class="" data-ratio="0.125" data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZmbX5NFgic65Bo4SIYUK4ib9ibvpyoaPJibpkS2Q8Q24DicBfEtnh6xBcFSw/640.png?" data-type="png" data-w="600" style="display: inline;box-sizing: border-box !important;word-wrap: break-word !important;visibility: visible !important;width: 192px !important;" title="墨迹晕染分割线" width="192px" src="../Images/c96a1b435221f7e6cf4c4e3eca199d9e.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZmbX5NFgic65Bo4SIYUK4ib9ibvpyoaPJibpkS2Q8Q24DicBfEtnh6xBcFSw/640.png?"/></p></section></section></section></section></section><p style="max-width: 100%;min-height: 1em;color: rgb(62, 62, 62);font-size: 16px;white-space: normal;background-color: rgb(255, 255, 255);line-height: 25.6px;font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;;box-sizing: border-box !important;word-wrap: break-word !important;"><br style="max-width: 100%;box-sizing: border-box !important;word-wrap: break-word !important;"/></p><p style="max-width: 100%;min-height: 1em;color: rgb(62, 62, 62);font-size: 16px;white-space: normal;background-color: rgb(255, 255, 255);line-height: 25.6px;font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;;box-sizing: border-box !important;word-wrap: break-word !important;"><img class="" data-ratio="0.3036773428232503" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZ0Y7FsbxeE68njy7pfZf9hstOTLqPHS1uljxrnicvns89MRJ7DMQowOg/640.jpeg?" data-type="jpeg" data-w="843" style="line-height: 25.6px;box-sizing: border-box !important;word-wrap: break-word !important;visibility: visible !important;width: auto !important;" width="auto" src="../Images/4f6f4b18070490b9670250379d20693d.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZ0Y7FsbxeE68njy7pfZf9hstOTLqPHS1uljxrnicvns89MRJ7DMQowOg/640.jpeg?"/></p><p><br/></p>
+        
+</body>
+</html>

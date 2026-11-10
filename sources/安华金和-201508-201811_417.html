@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>DBA五大致命失误：数据损坏了，你还不知道?</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>DBA五大致命失误：数据损坏了，你还不知道?</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA3MTQwNTQxMg==&amp;mid=401205962&amp;idx=1&amp;sn=d9e9d245178302b3f332c61b2f96665e&amp;chksm=0d3350c13a44d9d7dbdfb351d43331a4dcdcd75c9e21929ed3fc815a4fb2895181bedcc09e16&amp;scene=126&amp;sessionid=1681266789#rd">http://mp.weixin.qq.com/s?__biz=MzA3MTQwNTQxMg==&amp;mid=401205962&amp;idx=1&amp;sn=d9e9d245178302b3f332c61b2f96665e&amp;chksm=0d3350c13a44d9d7dbdfb351d43331a4dcdcd75c9e21929ed3fc815a4fb2895181bedcc09e16&amp;scene=126&amp;sessionid=1681266789#rd</a></blockquote><p style="line-height: 2em; margin-bottom: 15px;">DBA在掌握着企业的数据库，在一定程度上掌握了企业的命脉。那么作为DBA的五大致命失误你了解吗？<br/></p><p style="line-height: 2em; margin-bottom: 15px;">数据损坏随时可能发生在任何人身上，没有任何办法可保证它不会发生。DBA的职责是，尽量尽早发现损坏，并及时处理。数据受损是灾难事件中的一部分，现在单独拿出来讨论，希望大家能够重视它的重要性。大多数DBA没有丰富经验
+如何处理损坏，因为这并不是定期会遇到的问题。真正发生时，关键措施之一就是迅速找到损坏的数据所在。如果不这样做，可能会导致无法从损坏之处进行恢复，
+并且不丢失数据，相反，可能有时会丢失大量数据。</p><p style="text-align: center; line-height: 2em; margin-bottom: 15px;"><a target="_blank"><img data-w="496" data-ratio="0.532258064516129" data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz/dJB8lTLkJZ7JhBRq5Py36nxkYy3kxbERKBLvvyzYlEyz4135Rw390VpsSTvrZ0KCjfcxoJ8FuSsictAOskYZjLQ/0?wx_fmt=jpeg" src="../Images/a564afbf0e0d3e192dd8e37a55578b59.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/dJB8lTLkJZ7JhBRq5Py36nxkYy3kxbERKBLvvyzYlEyz4135Rw390VpsSTvrZ0KCjfcxoJ8FuSsictAOskYZjLQ/0?wx_fmt=jpeg"/><br/></a></p><p style="line-height: 2em; margin-bottom: 15px;">SQL Server提供了很多内置的方法帮助检测损坏。 
+我在之前一文介绍了用于备份和恢复的CHECKSUM选项，并在以后会介绍页校验(page 
+verification)选项。现在要介绍的是使用DBCC CHECKDB命令或其他DBCC CHECK命令进行基本的数据完整性检查。</p><p style="line-height: 2em; margin-bottom: 15px;">DBA再忙，但至少应该定期检查所有数据库的完整性。经常被DBA忽视的是“定期检查”。恢复受损数据不丢失任何数据，并将停机时间最小化，这就意
+味着要对部分或整个数据库进行备份。但是，如果你备份的数据库已经受损(没有使用CHECKSUM选项)，那你得到的就是受损的备份。如果这个受损备份长
+时间没有被发现，你不太可能有一个好的、未损坏的备份，并能够把数据库恢复到当前时间。</p><p style="line-height: 2em; margin-bottom: 15px;">即使是在磁带上长期存储，你可能也需要及时检查备份是否有损坏。也有可能你并没有从受损点之后的所有日志文件，以致你无法把数据库恢复至当前。这可
+能意味着相当多的数据会丢失。至少，如果通过异地存储进行恢复，可能造成长时间的宕机。最糟的情况是，大多数(或全部)的数据可能丢失。曾有过这样的公司
+因为发生类似的事件，造成最后公司倒闭。</p><p style="line-height: 2em; margin-bottom: 15px;">虽然DBCC CHECKDB WITH 
+REPAIR_ALLOW_DATA_LOSS这个选项操作简单，但自动修复损坏应该作为最后不得已的选择。这个选项通过重新分配受损页进行修复，但如果
+数据页一旦消失了，就永久消失了。在无法快速查找损坏，也没有未受损的有效备份时，很多DBA可能会采用这种方法。但，这是DBA很严重的疏忽之处，不及
+时检测受损数据，会让自己时刻面临被炒的危险。</p>
+        
+</body>
+</html>

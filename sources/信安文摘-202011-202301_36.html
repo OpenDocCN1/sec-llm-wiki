@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>zabbix saml单点登录 任意用户登录漏洞复现</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>zabbix saml单点登录 任意用户登录漏洞复现</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=Mzg3OTEwMzIzNA==&amp;mid=2247484167&amp;idx=1&amp;sn=f6dfb79ddbb745168d4fa0b4edf272e1&amp;chksm=cf08df6af87f567ce298b2ff2f5d59f3f20f3c64f246610b01ea49df3e65a2bdc1d3a0462d67&amp;scene=126&amp;sessionid=1681656579#rd">http://mp.weixin.qq.com/s?__biz=Mzg3OTEwMzIzNA==&amp;mid=2247484167&amp;idx=1&amp;sn=f6dfb79ddbb745168d4fa0b4edf272e1&amp;chksm=cf08df6af87f567ce298b2ff2f5d59f3f20f3c64f246610b01ea49df3e65a2bdc1d3a0462d67&amp;scene=126&amp;sessionid=1681656579#rd</a></blockquote><h2/><h2>前言</h2><p>在GitHub发现zabbix配置单点登录系统saml后，存在任意用户登录漏洞，目前漏洞exp已公开在GitHub。</p><h2>漏洞介绍</h2><p>在启用了SAML SSO身份验证(非默认情况下)的情况下，会话数据可能会被恶意的参与者修改，因为存储在会话中的用户登录没有经过验证。未经身份验证的恶意参与者可能利用此问题升级特权并获得对Zabbix Frontend的管理访问权。要执行攻击，需要启用SAML身份验证，并且参与者必须知道Zabbix用户的用户名(或者使用guest帐户，默认情况下是禁用的)。</p><h2>漏洞复现</h2><p>以下漏洞复现来自：https://github.com/jweny/zabbix-saml-bypass-exp</p><p>fofa指纹：</p><p>fofa: app="ZABBIX-监控系统" &amp;&amp; body="saml" </p><p>由于saml单点登录系统不是默认配置，所以我们需要body="saml"限制条件。</p><p>运行exp（需要提供一个存在的用户名，Admin默认）</p><p><br/></p><p><img class="item item-image" data-type="2" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/ibq2PfPib58XXoMxZIb8AUSnC30IozEict39rk739JYcbPdv4YzgRLIE9nk2oic7shLh0n6XTvDfY7El1zicFUER4rQ/640?wx_fmt=jpeg" style="height: px;" src="../Images/7f9be6acadcae160c13d1213cd7217fd.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/ibq2PfPib58XXoMxZIb8AUSnC30IozEict39rk739JYcbPdv4YzgRLIE9nk2oic7shLh0n6XTvDfY7El1zicFUER4rQ/640?wx_fmt=jpeg"/></p><p>替换cookie中zbx_signed_session字段为exp生成的</p><p><br/></p><p><img class="item item-image" data-type="2" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/ibq2PfPib58XXoMxZIb8AUSnC30IozEict3tSaibDjBqHLq7cicfRLQiaHwG2hwE3KTKKZ8cB8UUdInjetUYCzYkBvKg/640?wx_fmt=jpeg" style="height: px;" src="../Images/8c1c2ffe73d2f875de9428d66baffdeb.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/ibq2PfPib58XXoMxZIb8AUSnC30IozEict3tSaibDjBqHLq7cicfRLQiaHwG2hwE3KTKKZ8cB8UUdInjetUYCzYkBvKg/640?wx_fmt=jpeg"/></p><p>即可登录Admin用户</p><h2>参考链接</h2>https://github.com/jweny/zabbix-saml-bypass-exp<p>exp</p><p>https://github.com/Mr-xn/cve-2022-23131</p>
+        
+</body>
+</html>

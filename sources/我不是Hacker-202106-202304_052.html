@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Postgres JDBC任意文件写入漏洞（可Getshell）</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Postgres JDBC任意文件写入漏洞（可Getshell）</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzkwNDI1NDUwMQ==&amp;mid=2247485657&amp;idx=1&amp;sn=4d47d5ecf773fefa7ae390318732ab49&amp;chksm=c0888d93f7ff04854abac2548038e5f4b1b9ea6a891788ba685144feee190418b4b00fbe07d4&amp;scene=126&amp;sessionid=1681654879#rd">http://mp.weixin.qq.com/s?__biz=MzkwNDI1NDUwMQ==&amp;mid=2247485657&amp;idx=1&amp;sn=4d47d5ecf773fefa7ae390318732ab49&amp;chksm=c0888d93f7ff04854abac2548038e5f4b1b9ea6a891788ba685144feee190418b4b00fbe07d4&amp;scene=126&amp;sessionid=1681654879#rd</a></blockquote><p><span style="font-size: 20px;font-weight: bold;"/></p><section><section style="display: inline-block;"><img data-ratio="1" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/ZZc0TFxLh19XzXuvB6D1JDTg2kBOCebLg95tvdYf0Dqd1QhhDMibBjNt7nLBpt6cpNborJ0hyVvwbnBaGuXan3w/640?wx_fmt=jpeg" data-type="jpg" data-w="auto" src="../Images/65ce8dfa2c592344e9f79621cd0df688.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/ZZc0TFxLh19XzXuvB6D1JDTg2kBOCebLg95tvdYf0Dqd1QhhDMibBjNt7nLBpt6cpNborJ0hyVvwbnBaGuXan3w/640?wx_fmt=jpeg"/></section>​</section><p><span style="font-size: 20px;font-weight: bold;">影响版本</span></p><p>42.3.x, 42.1.x</p><p><span style="font-size: 20px;font-weight: bold;">修复版本</span></p><p>42.3.3</p><p><span style="font-size: 20px;font-weight: bold;">攻击场景</span></p><p>可以攻击db管理系统，或作为攻击链中的一环</p><p>和其他jdbc攻击场景类似</p><p><span style="font-size: 20px;font-weight: bold;">poc</span></p><p>https://github.com/cckuailong/reapoc/tree/main/No-CVE/pgjdbc_arbitrary_file_write</p><p><br/></p><p><span style="font-size: 20px;font-weight: bold;">使用方法</span></p><p>直接运行，会写入webshell到/tmp/evil.jsp，如有需要，自行修改poc中的写入文件位置和内容</p><section><section style="display: inline-block;"><img data-ratio="1" data-src="https://mmbiz.qpic.cn/mmbiz_png/ZZc0TFxLh19XzXuvB6D1JDTg2kBOCebLpNavSRsbtZVWRpTo0Wom1pcaiaLiatcWZ8yXUPgKv5MmbJCPQztKZQvQ/640?wx_fmt=png" data-type="jpg" data-w="auto" src="../Images/bf5046e93c8064567bd6e1fbef2c0b75.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/ZZc0TFxLh19XzXuvB6D1JDTg2kBOCebLpNavSRsbtZVWRpTo0Wom1pcaiaLiatcWZ8yXUPgKv5MmbJCPQztKZQvQ/640?wx_fmt=png"/></section>​</section><p>P.S. 无需postgres环境即可触发</p><section><br/></section><p><span style="font-size: 20px;font-weight: bold;">参考链接</span></p><p>https://github.com/pgjdbc/pgjdbc/security/advisories/GHSA-673j-qm5f-xpv8</p><p><br/></p><section class="mp_profile_iframe_wrp"><mpprofile class="js_uneditable custom_select_card mp_profile_iframe" data-id="MzkwNDI1NDUwMQ==" data-headimg="http://mmbiz.qpic.cn/mmbiz_png/ZZc0TFxLh196kCjIZj2Utu4K9ADXKEq2P19mbUw8OObdL72pjAQfOriclE5eQdUZ2ItxzmrxBBOQuHjiawsOOlaw/0?wx_fmt=png" data-nickname="我不是Hacker" data-alias="" data-signature="漏洞情报，漏洞靶场，漏洞复现，安全技术分享，开发技术交流。安全，开发两手抓！" data-from="0" data-pluginname="mpprofile"/></section>
+        
+</body>
+</html>

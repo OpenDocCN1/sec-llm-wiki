@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>一句话POC之5分钟登录后台</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>一句话POC之5分钟登录后台</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzkwNDI1NDUwMQ==&amp;mid=2247485021&amp;idx=1&amp;sn=e736c392f0c6781d967119fb678b82e2&amp;chksm=c0888317f7ff0a014df92c23244ba7862225de152b86be75dfdc3fb694d2730121b7806265a0&amp;scene=126&amp;sessionid=1681654899#rd">http://mp.weixin.qq.com/s?__biz=MzkwNDI1NDUwMQ==&amp;mid=2247485021&amp;idx=1&amp;sn=e736c392f0c6781d967119fb678b82e2&amp;chksm=c0888317f7ff0a014df92c23244ba7862225de152b86be75dfdc3fb694d2730121b7806265a0&amp;scene=126&amp;sessionid=1681654899#rd</a></blockquote><section style="font-size: 16px;"><p>cat urls.txt | qsreplace "?admin=true" | gau | phpggc | anew | kxss | awk  -v  -q txt | sed 's/http/\nhttp/g' | grep ^http | sed 's/\(^http[^ &lt;]*\)\(.*\)/\1/g' | grep -vi -e dalfox -e lElLxtainw| sort -u | waybackurls<br/><br/>poc来源网络，真伪自辫，作者称用这个tip，刷了20500美元的漏洞奖励。</p><p><br/></p><p>P.S. </p><p>gau: https://github.com/lc/gau</p><p>phpggc: https://github.com/ambionics/phpggc</p><p>anew: https://github.com/tomnomnom/anew</p><p>kxss: https://github.com/Emoe/kxss</p><p>wayback<span style="background-color: transparent;caret-color: var(--weui-BRAND);letter-spacing: 0.034em;">urls: https://github.com/tomnomnom/waybackurls</span></p></section>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>关于 Apache Struts 2 存在远程代码执行漏 洞的安全公告</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>关于 Apache Struts 2 存在远程代码执行漏 洞的安全公告</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=Mzg2NDcwNjkzNw==&amp;mid=2247484706&amp;idx=1&amp;sn=3a3d90b265af734d33349d4103e4ce36&amp;chksm=ce640d34f9138422f094c84bbc16780b86e496ac33f8a9bbbc67cb08ffc0dd661b95ddc2303a&amp;scene=126&amp;sessionid=1681666181#rd">http://mp.weixin.qq.com/s?__biz=Mzg2NDcwNjkzNw==&amp;mid=2247484706&amp;idx=1&amp;sn=3a3d90b265af734d33349d4103e4ce36&amp;chksm=ce640d34f9138422f094c84bbc16780b86e496ac33f8a9bbbc67cb08ffc0dd661b95ddc2303a&amp;scene=126&amp;sessionid=1681666181#rd</a></blockquote><p>2022 年 4 月 12 日，Apache 官方公布 S2-062 远程代码执<br/>行漏洞安全公告，漏洞编号为 CVE-2021-31805。<br/>一、漏洞描述<br/>Apache Struts 是一个免费的开源 MVC 框架，用于创建<br/>优雅的现代 Java Web 应用程序。它支持约定优于配置，可使<br/>用插件架构进行扩展，并附带支持 REST、AJAX 和 JSON 的插<br/>件。<br/>由于对 CVE-2020-17530(S2-061)的修复不完整，导致输<br/>入验证不正确。如果开发人员使用 %{...}语法应用强制 OGNL<br/>解析，某些特殊的 TAG 属性仍然可以执行双重解析。对不受信<br/>任的用户输入使用强制 OGNL 解析可能会导致远程代码执行。<br/>二、影响范围<br/>用户认证：不需要用户认证<br/>触发方式：远程<br/>配置方式：开发人员使用 %{...}语法应用强制 OGNL 解析<br/>影响版本：<br/>Struts 2.0.0 - Struts 2.5.29<br/>不受影响版本：<br/>Struts 2.5.30 或更高版本<br/>利用难度：低</p><p>威胁等级：一般<br/>漏洞POC已被利用<br/>三、安全建议<br/>1. 避免使用 %{...}语法应用强制 OGNL 解析，并配置防火墙对应规则<br/>2. 升级到 Struts 2.5.30 或更高版本。<br/>升级地址<br/>Struts 2.5.30<br/>https://struts.apache.org/download.cgi#struts-ga</p><p style="text-align: center;margin-bottom: 0em;"><img class="rich_pages wxw-img" data-galleryid="" data-ratio="0.5267857142857143" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/qXbmFE2wB53EuaG6ZWkOicWpdXacDVeF3XPQ0MFdBMsB2iaGx1HIcpib7DJr0ovLMTNulRKZtT5klchTQLzcC8FDQ/640?wx_fmt=png" data-type="png" data-w="2016" style="" src="../Images/57322da38fa8ccb080ae64d176b3833f.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/qXbmFE2wB53EuaG6ZWkOicWpdXacDVeF3XPQ0MFdBMsB2iaGx1HIcpib7DJr0ovLMTNulRKZtT5klchTQLzcC8FDQ/640?wx_fmt=png"/></p>
+        
+</body>
+</html>

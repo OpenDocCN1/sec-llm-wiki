@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>AD域信息收集小工具分享</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>AD域信息收集小工具分享</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI1MDk3NDc5Mg==&amp;mid=2247484113&amp;idx=1&amp;sn=fc2dfd3b7c61648a76917f56fcfb48d6&amp;chksm=e9fb45f6de8ccce0ffce6320af0c8a10aa28e0d9908b65d62cc6b1d01cff3c203b8fd2b5b02a&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI1MDk3NDc5Mg==&amp;mid=2247484113&amp;idx=1&amp;sn=fc2dfd3b7c61648a76917f56fcfb48d6&amp;chksm=e9fb45f6de8ccce0ffce6320af0c8a10aa28e0d9908b65d62cc6b1d01cff3c203b8fd2b5b02a&amp;scene=27#wechat_redirect</a></blockquote><p>介绍一款国外的工具，ADCollector 是一种轻量级工具，可枚举 Active Directory 环境以识别可能的攻击媒介。它将让您对环境的配置/部署有一个基本的了解作为起点。</p><p><br/></p><p><strong>枚举</strong></p><ul class="list-paddingleft-2"><li><p>当前域/林信息</p></li><li><p>当前林中的域（带有域 SID）</p></li><li><p>当前域中的域控制器 [GC/RODC]（带有 ~~IP、OS Site 和 ~~Roles）</p></li><li><p>域/林信任以及受信任的域对象[SID 过滤状态]</p></li><li><p>特权用户（目前在 DA 和 EA 组中）</p></li><li><p>无约束委派账户（不包括DC）</p></li><li><p>约束委派（S4U2Self、S4U2Proxy、基于资源的约束委派）</p></li><li><p>MSSQL/Exchange/RDP/PS 远程 SPN 帐户</p></li><li><p>设置了 SPN 和密码的用户帐户不会过期</p></li><li><p>机密属性 ()</p></li><li><p>ASREQROAST（DontRequirePreAuth 帐户）</p></li><li><p>AdminSDHolder 保护帐户</p></li><li><p>域属性（MAQ、minPwdLength、maxPwdAge lockoutThreshold、gpLink[链接到当前域对象的组策略]）</p></li><li><p>LDAP 基本信息（支持的 LDAP 版本、支持的 SASLM 机制、域/森林/DC 功能）</p></li><li><p>Kerberos 策略</p></li><li><p>域对象上的有趣 ACL，解析 GUID（未来用户定义的对象）</p></li><li><p>不寻常的 DCSync 帐户</p></li><li><p>GPO 上有趣的 ACL</p></li><li><p>关于用户对象的有趣描述</p></li><li><p>敏感且非委托账户</p></li><li><p>SYSVOL/Cache 中的组策略首选项密码</p></li><li><p>当前用户/计算机上的有效 GPO</p></li><li><p>受限群体</p></li><li><p>嵌套组成员资格</p></li></ul><p><br/></p><p><img data-ratio="1.0745814307458144" data-src="https://mmbiz.qpic.cn/mmbiz_png/1ZzmH7NBcG5s9ny3GNUrUs3Kl8YHmdJx7j3posicurjqzTibicqfBZic8nKxMXQic1nJngUTbxU9fHqLibIOHYv6j41w/640?wx_fmt=png" data-type="png" data-w="657" src="../Images/7629ad4afbfd200c884b8f0de0379748.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/1ZzmH7NBcG5s9ny3GNUrUs3Kl8YHmdJx7j3posicurjqzTibicqfBZic8nKxMXQic1nJngUTbxU9fHqLibIOHYv6j41w/640?wx_fmt=png"/></p><p><br/></p><p>分享链接：https://github.com/dev-2null/ADCollector/</p><p><br/></p>
+        
+</body>
+</html>

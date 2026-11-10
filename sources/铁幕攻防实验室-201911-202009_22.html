@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>【漏洞情报】FusionAuth远程命令执行漏洞 （CVE-2020-7799）</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>【漏洞情报】FusionAuth远程命令执行漏洞 （CVE-2020-7799）</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyODE3NzYxMw==&amp;mid=2247483951&amp;idx=1&amp;sn=2d44cbd58909773f7259024472104e37&amp;chksm=fa75028dcd028b9b89455e87f8ec296233aa8702e854e225ab5e2e21cbb6c44e2f0297436083&amp;scene=126&amp;sessionid=1681668052#rd">http://mp.weixin.qq.com/s?__biz=MzUyODE3NzYxMw==&amp;mid=2247483951&amp;idx=1&amp;sn=2d44cbd58909773f7259024472104e37&amp;chksm=fa75028dcd028b9b89455e87f8ec296233aa8702e854e225ab5e2e21cbb6c44e2f0297436083&amp;scene=126&amp;sessionid=1681668052#rd</a></blockquote><p><span style="font-size: 15px;">漏洞等级 ：中</span></p><p><span style="font-size: 15px;">类型 ：远程命令执行</span></p><p><span style="font-size: 15px;">是否已有poc :  已有</span></p><p><span style="font-size: 15px;"><br/></span></p><p><strong><span style="font-size: 15px;">漏洞描述</span></strong></p><p><span style="font-size: 14px;">FusionAuth是现代的访问管理开源应用程序，可以与多种技术和平台集成。可以通过管理仪表板以多种方式配置和自定义FusionAuth，为任何应用程序提供身份验证、授权和用户管理。近日，爆出一个FusionAuth存在Apache Freemarker模板远程命令执行（CVE-2020-7799）的漏洞；发现在FusionAuth中经过身份验证且具有权限可以编辑电子邮件模板(Home-&gt;Settings-&gt;Email Templates)或主题(Home-&gt;Settings-&gt;Themes)的用户，可通过处理自定义模板的Apache FreeMarker引擎中的freemarker.template.utility.Execute在底层操作系统上执行任意命令，对系统安全造成严重威胁。 </span><br/></p><p><span style="font-size: 14px;"><br/></span></p><p><strong><span style="font-size: 15px;">影响范围 </span></strong></p><p><span style="font-size: 15px;">FusionAuth &lt;= 1.10.1</span></p><p><span style="font-size: 15px;"><br/></span></p><p><strong><span style="font-size: 15px;">漏洞处置措施</span></strong></p><p><span style="font-size: 14px;">受影响的产品可升级至最新版本来修复漏洞，具体升级过程请参考官方文档 https://fusionauth.io/docs/v1/tech/installation-guide/upgrade</span></p><p><span style="font-size: 14px;"><br/></span></p><p><strong><span style="font-size: 15px;">漏洞检测方法</span></strong></p><p><span style="font-size: 14px;">暂无</span></p><p><span style="font-size: 14px;"><br/></span></p><p><strong><span style="font-size: 15px;">漏洞编号</span></strong></p><p><span style="font-size: 14px;">CVE: CVE-2020-7799</span></p><p><span style="font-size: 14px;">CNVD: 暂无</span></p><p><span style="font-size: 14px;">CNNVD: 暂无</span></p><p><span style="font-size: 14px;"><br/></span></p><p><strong><span style="font-size: 15px;">情报来源</span></strong></p><p><span style="font-size: 14px;">绿盟科技安全情报</span></p><p><br/></p>
+        
+</body>
+</html>

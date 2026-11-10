@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>高风险判定指引：判例内容及其建议（技术部分5）</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>高风险判定指引：判例内容及其建议（技术部分5）</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI3MDY0Nzg1Nw==&amp;mid=2247485062&amp;idx=1&amp;sn=672517670083bad08d64540125b4e922&amp;chksm=eacc91d8ddbb18cedb74f33aee4f2f19e2a2e40765dbed6ad0411a24f22f5763e4b0585d65a0&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI3MDY0Nzg1Nw==&amp;mid=2247485062&amp;idx=1&amp;sn=672517670083bad08d64540125b4e922&amp;chksm=eacc91d8ddbb18cedb74f33aee4f2f19e2a2e40765dbed6ad0411a24f22f5763e4b0585d65a0&amp;scene=27#wechat_redirect</a></blockquote><p><span style="font-size:16px;font-family:宋体;color:#0070C0;"/>5/安全管理中心/集中管控</p><p><strong>6.5.1运行监控措施缺失</strong></p><p>本判例包括以下内容：</p><p>a）标准要求：应对网络链路、安全设备、网络设备和服务器等的运行状况进行集中监测。</p><p>b）适用范围：高可用性的三级及以上系统。</p><p>c）判例场景：对网络链路、安全设备、网络设备和服务器等的运行状况无任何监控措施，发生故障后无法及时对故障进行定位和处理。</p><p>d）补偿因素：无。</p><p><strong>建议</strong>部署统一监控平台或运维监控软件对网络链路、安全设备、网络设备和服务器等的运行状况进行集中监测。</p><p> </p><p><strong>6.5.2审计记录存储时间不满足要求</strong></p><p>本判例包括以下内容：</p><p>a）标准要求：应对分散在各个设备上的审计数据进行收集汇总和集中分析，并保证审计记录的留存时间符合法律法规要求。</p><p>b）适用范围：三级及以上系统。</p><p>c）判例场景：关键网络设备、关键安全设备、关键主机设备（包括操作系统、数据库等）的重要操作、安全事件等审计记录的留存不满足法律法规规定的相关要求（不少于六个月）。</p><p>d）补偿因素：对于被测对象上线运行时间不足六个月的情况，可从当前日志保存情况、日志备份策略、日志存储容量等角度进行综合风险分析，根据分析结果，酌情判定风险等级。</p><p><strong>建议</strong>部署日志服务器，统一收集各设备的审计数据，进行集中分析，并根据法律法规的要求留存日志。</p><p> </p><p><strong>6.5.3安全事件发现处置措施缺失</strong></p><p>本判例包括以下内容：</p><p>a）标准要求：应能对网络中发生的各类安全事件进行识别、报警和分析。</p><p>b）适用范围：三级及以上系统。</p><p>c）判例场景：无法对网络中发生的网络攻击、恶意代码传播等安全事件进行识别、报警和分析。</p><p>d）补偿因素：对于与互联网完全物理隔离的系统，可从网络管控措施、介质管控措施、应急措施等角度进行综合风险分析，根据分析结果，酌情判定风险等级。</p><p><strong>建议</strong>根据系统场景需要，部署IPS，应用防火墙、防毒墙（杀毒软件）、垃圾邮件网关、新型网络攻击防护等防护设备，对网络中发生的各类安全事件进行识别、报警和分析，确保相关安全事件得到及时发现和及时处置。</p><p><br/></p>
+        
+</body>
+</html>

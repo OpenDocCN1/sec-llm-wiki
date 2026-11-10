@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>红队Tips</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>红队Tips</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzkxNjIxNDQyMQ==&amp;mid=2247490532&amp;idx=1&amp;sn=6dd94cb81a3c73e0251ae209df2cf22a&amp;chksm=c1521c1ef625950886ce906925340cc30495d3b9a0436fbb585c74fd9edae11e561a34b8d258&amp;scene=126&amp;sessionid=1681667115#rd">http://mp.weixin.qq.com/s?__biz=MzkxNjIxNDQyMQ==&amp;mid=2247490532&amp;idx=1&amp;sn=6dd94cb81a3c73e0251ae209df2cf22a&amp;chksm=c1521c1ef625950886ce906925340cc30495d3b9a0436fbb585c74fd9edae11e561a34b8d258&amp;scene=126&amp;sessionid=1681667115#rd</a></blockquote><p style="text-align: left;" data-mpa-powered-by="yiban.io"><span style="font-size: 15px;">在Windows上使用prtsc键时，taskhost/taskhostw会试图获得对一个不存在的文件的读取权限。</span><br/></p><p><br/></p><section class="code-snippet__fix code-snippet__js"><ul class="code-snippet__line-index code-snippet__js"><li/></ul><pre class="code-snippet__js" data-lang="shell"><code><span class="code-snippet_outer"><span class="code-snippet__meta">%</span>windir%\System32\SnapShot</span></code></pre></section><p><br/></p><p style="text-align: left;"><span style="font-size: 15px;">通过创建一个空字节的文件并对访问进行审计，我们可以记录任何一次用户通过这个密钥进行的截图。(仅适用于此密钥)</span></p><p><br/></p><p style="text-align: center;"><img class="rich_pages wxw-img" data-galleryid="" data-ratio="0.3287037037037037" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/aPmkR80bcV0hzHdMsPC496gKbFa2NL2AvbZDMuDv5s6LJ8S58hlW8BYicNjQGic4zJ5mHuhY02TBuqkfG2vaN8lw/640?wx_fmt=png" data-type="png" data-w="1728" style="" src="../Images/7f6c8276574911f8fe1cf328422f0d12.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/aPmkR80bcV0hzHdMsPC496gKbFa2NL2AvbZDMuDv5s6LJ8S58hlW8BYicNjQGic4zJ5mHuhY02TBuqkfG2vaN8lw/640?wx_fmt=png"/></p><p><br/></p><p style="text-align: center;"><img class="rich_pages wxw-img" data-galleryid="" data-ratio="1.2564469914040115" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/aPmkR80bcV0hzHdMsPC496gKbFa2NL2AzvJtJVs8aL8haJ4Otianqk4abV0YvXUalIH9AxLC7xL7rRusk2O27sQ/640?wx_fmt=png" data-type="png" data-w="698" style="" src="../Images/2136fe9870f5044a09a9169ba4130a93.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/aPmkR80bcV0hzHdMsPC496gKbFa2NL2AzvJtJVs8aL8haJ4Otianqk4abV0YvXUalIH9AxLC7xL7rRusk2O27sQ/640?wx_fmt=png"/></p><section class="mp_profile_iframe_wrp"><mpprofile class="js_uneditable custom_select_card mp_profile_iframe" data-pluginname="mpprofile" data-id="MzkxNjIxNDQyMQ==" data-headimg="http://mmbiz.qpic.cn/mmbiz_png/WGmib8icxISlTIm6YMuzrTu4W5BJIlX7NgEsibGa9icvLmVmwh8Swehb0nuRoBPGnHMhhKoE2plMLEHFcRo3Yib314A/0?wx_fmt=png" data-nickname="天驿安全" data-alias="tianyisec" data-signature="渗透测试，红蓝技术，应急响应，实战案例。" data-from="0"/></section>
+        
+</body>
+</html>

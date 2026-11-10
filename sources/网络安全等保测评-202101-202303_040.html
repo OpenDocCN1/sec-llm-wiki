@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>测评综合得分是怎么计算的？</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>测评综合得分是怎么计算的？</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI3MDY0Nzg1Nw==&amp;mid=2247486539&amp;idx=1&amp;sn=1363f260ce2f5bc1060193f7b65c9715&amp;chksm=eacc9b15ddbb1203de1ebb8a708cc0766ffc13bde29efc44e6688c7be9e16ce60b4961956658&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI3MDY0Nzg1Nw==&amp;mid=2247486539&amp;idx=1&amp;sn=1363f260ce2f5bc1060193f7b65c9715&amp;chksm=eacc9b15ddbb1203de1ebb8a708cc0766ffc13bde29efc44e6688c7be9e16ce60b4961956658&amp;scene=27#wechat_redirect</a></blockquote><p>有网友留言想知道2021年的综合得分计算公式，实际上，做过等级保护测评的公司可以在报告中查看到公式以及具体分数。</p><p><br/></p><p>等保测评结果中，综合分数的计算过程和百分制考试的计分是一样的，满分是100分，扣掉经过加权后的由于不符合和部分符合导致的失分，即得到综合得分。具体计算公式如下：</p><p> <img class="rich_pages wxw-img" data-fileid="100002071" data-ratio="0.7179023508137432" data-src="https://mmbiz.qpic.cn/mmbiz_png/5vf0CFuhE5iauEqr5cXrM4PqxnKTp0xR5ePIdNYicbJbJibaJDP7ndQnic0icoV8WqUWG6WzvIt1JUlFGibr5UVtHXNg/640?wx_fmt=png" data-type="png" data-w="553" src="../Images/bb9bde1ab34145f70cf025ae57167a90.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/5vf0CFuhE5iauEqr5cXrM4PqxnKTp0xR5ePIdNYicbJbJibaJDP7ndQnic0icoV8WqUWG6WzvIt1JUlFGibr5UVtHXNg/640?wx_fmt=png"/></p><p>具体的计算步骤和说明如下：</p><ol style="list-style-type:decimal;" class="list-paddingleft-1"><li><p>关于关注系数y，y体现着总分100分如何在技术和管理之间分配：假如y取默认值0.5，表示技术和管理得到的关注度是一样的，各占50%，意味着技术得分和管理得分的总分分别为50分；假设技术得到的关注度比较高，例如y=0.6，那么意味着技术总分为60分，管理总分为40分。</p></li><li><p>在测评中，每个测评项的<strong>符合程度</strong>结果有四种情况：<strong>符合、部分符合、不符合、不适用</strong>，分别对应的基准分数为1、0.5、0,、N/A（不计分）。测评项的<strong>权重</strong>分为<strong>关键、重要、一般</strong>，对应的权重值为3、2、1。</p></li><li><p>按照各测评项的权重，计算加权后的扣分值。</p></li></ol><p>    以某测评对象的安全物理环境为例，计算其扣分值的过程如下：</p><ul class="list-paddingleft-1" style="list-style-type: disc;"><li><p>第一项得分1（符合），所以扣0分；</p></li><li><p>第二项得分0.5（部分符合），损失=1-0.5=0.5，由于权重属于“重要”，所以权重Wk取值为2，第二项扣分=0.5X2=1分；</p></li><li><p>第三项得分0.5（部分符合）,损失=0.5，由于权重属于“关键”，所以权重Wk取值是3，第三项扣分=0.5*3=1.5；</p></li></ul><p>如下图所示，安全物理环境22个测评项的总扣分值=1+1.5+2=4.5分。</p><p><img class="rich_pages wxw-img" data-fileid="100002072" data-ratio="0.49005424954792043" data-src="https://mmbiz.qpic.cn/mmbiz_png/5vf0CFuhE5iauEqr5cXrM4PqxnKTp0xR53Q3mC7hynlPRctqzJyNz9hTa3Zd3sWgWuRwsYdiaduiaRX9zibunwe15w/640?wx_fmt=png" data-type="png" data-w="553" src="../Images/719c1d57440c615625c0b568b6f3d5a7.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/5vf0CFuhE5iauEqr5cXrM4PqxnKTp0xR53Q3mC7hynlPRctqzJyNz9hTa3Zd3sWgWuRwsYdiaduiaRX9zibunwe15w/640?wx_fmt=png"/></p><p>4.累计所有测评项为211项，剔除所有不适用项17项，得到总的测评项数=211-17=194项</p><p>5.累计所有十类测评项，得到总的扣分值为40分，</p><p>6.按百分制计算得分=100*（194-40）/194=79.38分</p><p style="text-indent:0;"> </p><p style="text-indent: 0px;">这样就得到了最后的百分制得分79.38。</p>
+        
+</body>
+</html>

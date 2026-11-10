@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>【实用文章】故障诊断：恢复ESXi中内存显示</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>【实用文章】故障诊断：恢复ESXi中内存显示</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5MzMwMDU5NQ==&amp;mid=200189486&amp;idx=2&amp;sn=98f19f316cfc9b7edbb3b497f40b9fbc&amp;chksm=28832f321ff4a624cf33fc1028e7acdc0585eee95d14ff66c77f325512fba8e530def9292ef4&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5MzMwMDU5NQ==&amp;mid=200189486&amp;idx=2&amp;sn=98f19f316cfc9b7edbb3b497f40b9fbc&amp;chksm=28832f321ff4a624cf33fc1028e7acdc0585eee95d14ff66c77f325512fba8e530def9292ef4&amp;scene=27#wechat_redirect</a></blockquote><p><strong><span style="background-color: rgb(146, 208, 80);">【导读】某单位ESXi 5.1服务器不能显示虚拟机占用的CPU、内存情况，在VMware ESXi的“摘要”中，CPU与内存的使用情况也统计出错。解决方法有两种，一种是永久解决，另一种是临时解决。本文介绍临时解决方法。</span></strong></p><p><br/></p><p><strong>故障现象</strong></p><p>某单位机房有4台ESXi 5.1服务器，其中三台ESXi Server不能显示各个虚拟机占用的CPU、内存情况了（如图1）。另外，在VMware ESXi的“摘要”中，CPU与内存的使用情况也统计出错（如图2）。</p><p><img data-src="http://mmbiz.qpic.cn/mmbiz/co91jb4rYkM1VzTkf2bCQvhUh9I8c6ibGaRSEZLianS2JJcYSS7AO8qfiakkVB5sibibWUwGgDgH7nnjXXRjBJOFHBQ/0" src="../Images/537086ccd8f24d1dd1dc5e8b45c74c47.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/co91jb4rYkM1VzTkf2bCQvhUh9I8c6ibGaRSEZLianS2JJcYSS7AO8qfiakkVB5sibibWUwGgDgH7nnjXXRjBJOFHBQ/0"/></p><p>                         图1</p><p><img data-src="http://mmbiz.qpic.cn/mmbiz/co91jb4rYkM1VzTkf2bCQvhUh9I8c6ibGnG7Ghjj9GE9wIx8tj2GmxBczY5Wdzlawbej1aJ05ibbYHX2oH1kq3EA/0" src="../Images/1534609286456fcd5996c01dc00730c4.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/co91jb4rYkM1VzTkf2bCQvhUh9I8c6ibGnG7Ghjj9GE9wIx8tj2GmxBczY5Wdzlawbej1aJ05ibbYHX2oH1kq3EA/0"/></p><p>                         图2</p><p>在出现这个问题时，各个ESXi Server上的虚拟机可以正常启动、关闭，并且各虚拟机运行的系统及应用不受影响。</p><p><br/></p><p><strong>故障排查</strong></p><p>在正常情况下，每台VMware ESXi，还应该有“硬件状态”选项卡，可以看到该服务器的处理器、内存、风扇、电源等情况。</p><p>通过使用QQ远程协助，笔者检查“插件管理器”，看到“vCenter硬件状态”插件已经被禁用。</p><p>如果硬件状态没有被禁用，在出现图1与图2的错误提示时，则会在“硬件状态”中显示当前服务器己关闭电源，但服务器实际上是正在运行的。</p><p>当出现这种情况时，会有什么后果呢？你可能认为只是vCenter Server统计出错，不会影响实际使用。但是在虚拟化的数据中心中，当多台主机组成群集时，如果出现这种错误，当群集中的某台主机意外宕机时，正常情况下，出现故障的主机上的虚拟机会在群集中其他主机重新启动，但由于vCenter Server统计或者“认为”其他主机已经处于“关机”状态，则vCenter Server会认为群集中没有可用的主机，不会在其他主机上重新启动这些虚拟机，造成业务长时间中断。</p><p><br/></p><p><strong>故障解决</strong></p><p>怎么解决这个问题呢？我个人认为，如果是永久解决，重新安装vCenter Server，重新配置群集、重新将VMware ESXi添加到数据中心是最好的方法。如果没有时间重新安装vCenter Server，也可以将出现故障的ESXi Server，从vCenter Server中“移除”，然后再将其添加进来，问题就可以解决。主要解决步骤：</p><p>1.先将出现故障上的ESXi主机中的虚拟机，迁移到其他主机。</p><p>2.当所有虚拟机迁移完成后，将当前主机置于“维护模式”，然后从vCenter Server清单中“移除”该ESXi主机。</p><p>4.当主机移除之后，重新添加该主机到vCenter Server，问题即可解决。</p><p><strong><span style="background-color: rgb(146, 208, 80);"><br/></span></strong><br/></p>
+        
+</body>
+</html>

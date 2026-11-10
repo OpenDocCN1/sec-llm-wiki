@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>【实用文章】网络管理：巧解“ARP攻击”</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>【实用文章】网络管理：巧解“ARP攻击”</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5MzMwMDU5NQ==&amp;mid=200661822&amp;idx=2&amp;sn=775fab9792ea9c97db60e93685429c9e&amp;chksm=289852221fefdb34f2175568f32e44f92e74b4973ed904396af79ad50534157ab6b0e06a06c6&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5MzMwMDU5NQ==&amp;mid=200661822&amp;idx=2&amp;sn=775fab9792ea9c97db60e93685429c9e&amp;chksm=289852221fefdb34f2175568f32e44f92e74b4973ed904396af79ad50534157ab6b0e06a06c6&amp;scene=27#wechat_redirect</a></blockquote><p><strong><span style="background-color: rgb(195, 214, 155);">      【导读】ARP攻击是一种局域网中常见的网络攻击模式，从出现到现象已经有10余年的时间了，虽然局域网无论在组网模式上还是病毒查杀方式都有了相应的改进，但仍无法根除ARP攻击。看来对于ARP攻击的防范还得继续进行下去。</span></strong></p><p><br/></p><p>       我们接到局域网中某用户的报修，反映上不去网，影响了他正常的办公应用。接到报修后我们随即赶到现场进行处理，同时机房同事对局域网的使用情况作了了解，目前只是个别用户报修，大部分用户使用是正常的，这说明是个别用户的网络出现了问题。我们使用带去的笔记本电脑进行拨号上网没有问题，难道是用户电脑的问题？我们仔细检查用户的电脑的配置，发现没有安装安全卫士，于是安装了安全卫士，并开启了防范局域网的ARP攻击功能，果然安全卫士马上就提示受到了ARP的攻击和欺骗告警，如图1所示。</p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/co91jb4rYkPtFW3QKiaqqkP9Bj5PbiakjeM36x8UPZIicT4AnSXgwNx1l2Bn1UtS0FIBQqU55Tun388BKfV5G00yA/0" src="../Images/bc2db5474b65bf2b877ed1c8450090e1.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/co91jb4rYkPtFW3QKiaqqkP9Bj5PbiakjeM36x8UPZIicT4AnSXgwNx1l2Bn1UtS0FIBQqU55Tun388BKfV5G00yA/0"/></p><p>  图1   电脑受到ARP攻击时安全卫士告警信息</p><p>       从图1中我们可以清晰的看到该用户电脑正在遭受局域网内部ARP攻击，另外从攻击源IP地址：192.168.1.1判断，这应该不是一台计算机，很可能是一台宽带路由器。而且虽然我们在该用户的电脑上安装了安全卫士，但也是只是暂时解决了这个问题，并没有斩断产生ARP攻击的源头，于是我们了解到的攻击源MAC，进行顺藤摸瓜式的查找，整体局域网的网络如图2所示。</p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/co91jb4rYkPtFW3QKiaqqkP9Bj5PbiakjeUguUg1VhcVMOX1FNX9gjTiavV8n2QRxdfnfkHSeiaVUWtAhBdJcVKlQw/0" src="../Images/fa4b32512f34a16aede6dbdfbbc8dd27.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/co91jb4rYkPtFW3QKiaqqkP9Bj5PbiakjeUguUg1VhcVMOX1FNX9gjTiavV8n2QRxdfnfkHSeiaVUWtAhBdJcVKlQw/0"/></p><p> 图2   网络拓扑图</p><p>        通过在接入层交换机上应用基于MAC的ACL来防范ARP攻击。根据图2的描述，我们在汇聚层交换机A上执行命令show interface dynamic-mac可以看到在端口1上的MAC地址。</p><p>我们可以看到攻击源的MAC地址在端口1上出现，然后我们在接入层交换机B上执行同样的命令，发现攻击源的MAC也是在交换机B的端口1上出现，为了阻止该ARP攻击进行扩散，我们在接入层交换上进行了如下操作：</p><p>Config</p><p>Access-list 1</p><p>//命名ACL 1</p><p>rule 1 mac 08:10:77: D7:50:F1 any</p><p>//定义规则1关联攻击源MAC</p><p>rule 1 action deny</p><p>//定义规则1不允许它访问任何设备</p><p>interface ethernet 1</p><p>//进入攻击源设备的端口1</p><p>match access-list 1</p><p>//将ACL条目进行应用</p><p>       我们对该MAC地址所在的端口应用了一条ACL，意思是禁止该MAC地址的设备访问其他设备，即切断了它的网络连接。应用了该ACL之后，在安全卫士上可以显示该攻击源已经失去网络连接，问题得到了解决，</p><p><br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>垃圾邮件、勒索软件、DDoS攻击三合一 Necurs僵尸网络正在不断联合壮大自己</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>垃圾邮件、勒索软件、DDoS攻击三合一 Necurs僵尸网络正在不断联合壮大自己</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5MzMwMDU5NQ==&amp;mid=2649138695&amp;idx=3&amp;sn=1a09262e770526fe2149e4222845bf3b&amp;chksm=be8b2f1b89fca60d66865ed43454b05dd486a47394fca5eaa898e02158b2952faf7cd797571b&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5MzMwMDU5NQ==&amp;mid=2649138695&amp;idx=3&amp;sn=1a09262e770526fe2149e4222845bf3b&amp;chksm=be8b2f1b89fca60d66865ed43454b05dd486a47394fca5eaa898e02158b2952faf7cd797571b&amp;scene=27#wechat_redirect</a></blockquote><p style="text-indent: 2em;">Necurs僵尸网络吸收了新技术。此臭名昭著的僵尸网络之前是通过发送垃圾邮件传递Locky勒索软件，而现在却能发动DDoS攻击。</p><p style="text-indent: 2em;">比特赛特科技公司的Anubis实验室表明，该款恶意软件于9月进行了调整，新增了一个模块提供DDoS能力和新的代理C&amp;C通信功能。Anubis实验室的威胁情报研究员Tiago Pereira表示，Necurs恶意软件构成了Necurs僵尸网络，该恶意软件目前活跃在100万台Windows PC上。他说，</p><blockquote><p>“Necurs是一款模块化恶意软件，可用于多种用途。我们发现，此恶意软件样本中新增了一个模块，提供SOCKS/HTTP代理和DDoS能力。”</p></blockquote><h2 style="text-indent: 0em;"><strong><br/></strong></h2><h2 style="text-indent: 0em;"><strong>Necurs僵尸网络新增了C&amp;C服务器通信能力 有可能进行DDoS攻击</strong></h2><p style="text-indent: 2em;">大约6个月前，Pereira说Anubis实验室注意到，除了通常的80端口通信，感染了Necurs的系统正基于不同协议与各种IP地址通过不同端口进行通信。</p><p style="text-indent: 2em;">Anubis实验室的研究人员对Necurs恶意软件样本进行了逆向分析，发现样本中似乎存在一款简单的SOCKS/HTTP代理模块，用于样本与C&amp;C服务器进行通信。Pereira在周五发布的一篇研究博文中称，</p><blockquote><p>“我们在查看该僵尸程序从C2接受的指令时发现，还有另外一条指令，让该僵尸程序持续构建HTTP或UDP请求，发送给任意攻击目标，构成一个死循环。这种方式可视为DDoS攻击。”</p></blockquote><p style="text-indent: 2em;">研究人员谨慎指出，DDoS功能目前尚未被Necurs僵尸网络背后的攻击者利用。</p><h2><strong><br/></strong></h2><h2><strong>100万台的Necurs僵尸网络 拥有发动 HTTP Flood和UDP Flood的DDoS攻击能力</strong></h2><p style="text-indent: 2em;">报告指出僵尸网络拥有者将被入侵的肉鸡用作代理（HTTP、SOCKSv4和SOCKSv5协议），通过两种运行模式（正向代理和反向代理）转发通信。Pereira表示，</p><blockquote><p>“C2会给肉鸡发送三种不同的消息（或命令）”。他说，这三种命令为Start Proxybackconnect、Sleep和Start DDoS。</p></blockquote><p style="text-indent: 2em;">可对这些命令进一步划分，Start DDoS攻击命令可划分为两种模式： HTTP Flood和UDP Flood。如果消息正文的第一个字节为“http:/”，Necurs肉鸡向攻击目标发动HTTP Flood攻击。如果消息正文的第一个字节不是“http:/”，Necurs肉鸡向攻击目标发动UDP Flood攻击。Pereira称，</p><blockquote><p>“鉴于Necurs僵尸网络规模庞大（最大的僵尸网络拥有100多万个IP地址，可随时发起攻击），即使最基本的技术也会造成强大攻击。”</p></blockquote><p style="text-indent: 2em;">该报告称，“HTTP攻击由16个线程持续发送HTTP请求导致，而UDP Flood攻击是通过持续发送有效净荷大小在128字节和1024字节之间的随机报文所引起的。”</p><p><br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>单次密本（One-time pads）</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>单次密本（One-time pads）</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI3MDY0Nzg1Nw==&amp;mid=2247484002&amp;idx=3&amp;sn=e36d18bd4504062d33ba1cc9f0a94721&amp;chksm=eacc953cddbb1c2a8df3842e19b2755733c043d38c51fe8f10af8bbf9e21807a100045bfabd0&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI3MDY0Nzg1Nw==&amp;mid=2247484002&amp;idx=3&amp;sn=e36d18bd4504062d33ba1cc9f0a94721&amp;chksm=eacc953cddbb1c2a8df3842e19b2755733c043d38c51fe8f10af8bbf9e21807a100045bfabd0&amp;scene=27#wechat_redirect</a></blockquote><p>“单次密本”(one-time pads)也叫Vemam，以发明者AT&amp;T贝尔实验室的Gilbert Sandford Vemam命名,是极其强力的一种<strong>替换密码</strong>。单次密本为明文消息中的每个字母使用一个不同的替换字母表。它们可用以下加密函数表示，其中K 是用千将明文字母P 加密成密文字母C 的加密密钥：<br/></p><p style="text-align: center;">C = (P + K) mod 26</p><p style="text-align: left;">单次密本通常被写成一个很长的数字系列插入函数。</p><p><br/>单次密本的优势在于，<strong>如果使用得当，它能够不可破解</strong>。字母表替换中不存在任何重复模式，这使密码分析的努力只能归于徒劳。但必须满足有几点要求才能保证算法的完整性：</p><ul style="list-style-type: disc;" class="list-paddingleft-2"><li><p>单次密本必须随机生成。若是使用从一本书中摘取的短语或段落，将使密码分析者有机会破解代码。</p></li><li><p>单次密本必须处于物理保护之下，以防泄露。敌人如果拿到密本拷贝，将能轻松解密经过加密的消息。</p></li><li><p>每个单次密本必须只使用一次。如果密本重复使用，密码分析者将能在用同一密本加密的多条消息之间比较相同点，进而有可能确定所使用的密钥值。</p></li><li><p><strong>密钥必须至少与将被加密的消息一样长</strong>,因为密钥的每个字符只用于给消息中的一个字符编码。</p><p><br/></p></li></ul><p>单次密本的这些安全要求是任何网络安全专业人员都必须掌握的基本知识。人们往往一方面尝试着执行单次密本密码系统，另一方面又不去满足其中的一项或多项基本要求。下面这个例子值得深思，它讲述了欧洲某国的整个代码系统因为这样的疏忽而被击破的情况。</p><p><br/></p><p>这些要求中若有任何一项未被满足，单次密本原本让人无法破解的特质会立刻失灵。事实上，正是密码分析员破解了一个依赖单次密本的欧洲某国绝密密码系统，造就了美国情报机构的一次重大成功。这个代号VENONA 的计划发现，该国为他们的密本生成密钥值时惯用的一种模式。这个模式的存在违背了单次密本密码系统的第一项要求：密钥必须随机生成，不可使用任何重复模式。整个VENONA 计划已于最近解密，所有内容在国家安全局网站上对公众开放。</p><p><br/></p><p>你可能发现，凯撒密码、Vigenere 密码和单次密本彼此很像。你想得没错！<br/>它们之间的唯一区别是密钥长度。凯撒移位密码所用密钥的长度为1,<strong> Vigenere 密码使用的密钥要长一些</strong>（通常是一个词或一句话），而单次密本使用的密钥与消息本身一样长。</p><p><br/></p><p>单次密本有着悠久的历史，被用来保护极其敏感的通信。单次密本始终未被推广使用，究其原因，主要是因为生成、分发和保护所要求的冗长密钥实在太难。由千密钥长度的关系，单次密本在现实中只能用于较短的消息。<br/></p>
+        
+</body>
+</html>

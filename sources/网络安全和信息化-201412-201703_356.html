@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>提高云平台中 VM 高可用性的三个方法</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>提高云平台中 VM 高可用性的三个方法</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5MzMwMDU5NQ==&amp;mid=208776789&amp;idx=3&amp;sn=c16e8298373651ab637e533ff82b7353&amp;chksm=2f1c2749186bae5f6d37f73a33ce55bc120c696e958a22a658e6d3e6fcb7ebfcf188dc61fa96&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5MzMwMDU5NQ==&amp;mid=208776789&amp;idx=3&amp;sn=c16e8298373651ab637e533ff82b7353&amp;chksm=2f1c2749186bae5f6d37f73a33ce55bc120c696e958a22a658e6d3e6fcb7ebfcf188dc61fa96&amp;scene=27#wechat_redirect</a></blockquote><p>在大规模云平台的日常运营中不可避免的会存在升级或者修复宿主机的情况，如内核安全漏洞、内核、基础软件或驱动 Bug，甚至潜在的硬件故障和计划性停机维护都需要宿主机进行重启操作，导致其上的 VM 存在服务不可用的情况，如 AWS Xen Issue 导致大规模的宿主机重启</p><p>宿主机的停机维护在实践中是一个不可避免的任务，通过内核热补丁技术只能解决需要停机重启的部分情况。云平台运营商需要切实有效的技术方案来降低或比买呢宿主机的重启问题造成的影响。</p><p><br/></p><p><strong>Save/Restore VM</strong></p><p><br/></p><p>比如AWS 在重启大规模宿主机就利用了 Xen 的 save/restore vm 特性来避免 VM 级的重启操作，实现用户在短暂服务不可用时间内无需额外的上线运维操作即可服务生效。VM Save/Restore 特性实际上广受欢迎应该是在 VirtualBox 上，通过保存 VM State 到持久化设备上来实现快速恢复 VM State 的能力，有效的避免了 VM 重启导致的额外操作和时间。</p><p><br/></p><p><strong>Live Migration</strong></p><p><br/></p><p>热迁移技术是目前解决宿主机重启最通用且有效的方式，在预先计划的系统故障或者停机维护前，通过热迁移将宿主机上所有 VM 迁移到其他机器上并保持 VM 的可用性。KVM 的 Live Migration 就是一个典型的例子，在启动 Live Migration 后，KVM 会在对端机器上启动一个新的 VM 然后开启监听端口等待来源数据，Source VM 会将目前 VM 的瞬间内存拷贝过去，并且在接下来的内存变化会在完整内存拷贝完成进行增量传输。块设备的传输是一个主要的问题，如果 VM 采用本地存储，那么通过网络来传输巨大的容量会成为一个非常不稳定的热迁移失败因素。因此，通常热迁移需要共享存储的支持来彻底避免块数据传输使得 VM 的热迁移可以在分钟内完成。这样，像 KVM 只需要将所有设备驱动(包括块设备)和内存数据通过网络方式传输到对端，可以在 ms 级别的服务不可用时间内完成迁移。具体 VM Live Migration 算法如 Pre-Copy 策略</p><p><br/></p><p><strong>Slave OS Hosting</strong></p><p><br/></p><p>因为热迁移需要 VM 全部使用能容灾的共享存储方案，使得一些特殊性能需求的云平台存在一定困难。云平台共享存储系统最大的痛点之一就是 IO 延迟，因此很多云平台会采取本地存储加上远端异步灾备的方式来实现高性能块存储和高可用的折中。因为灾备是异步的原因，热迁移的块设备迁移复杂性会大大提高，因此需要探索新的宿主机重启并不影响 VM 的方式。这就出现了以双系统为原型的宿主机重启方案，本质就是每个宿主机存在两个系统，一个主系统就是通常意义上的宿主系统，而副系统是一个只支持部分能力的 mini OS。在需要宿主机操作系统重启恢复的时候，主系统会将硬件的抽象服务(也就是操作系统的服务)转交给副系统提供服务，这时 VM 仍然能够进行正常的 CPU 计算和内存服务，只是提供服务的系统从原来的主系统变成了副系统。另外，mini OS 会在一些困难的服务转交如 IO 服务上采取妥协的方式，mini OS 会 block 或者减慢部分服务的能力。然后主系统在重载后启动重新接管，VM 恢复正常，期间可能会造成 VM 的 IO 能力下降等等问题，但是可以保证大部分 VM 业务服务的正常运作。</p><p><br/></p><p><strong>小结</strong></p><p><br/></p><p>本文简要介绍了目前云平台在对不可避免的宿主机重启处理上的优化技术，来减少用户 VM 不可服务时间来提升云平台的可用性。云平台服务商通过会根据自身系统和 Hypervisor 的类型来选择和实现特定的技术来实现这个目的。</p><p><br/></p>
+        
+</body>
+</html>

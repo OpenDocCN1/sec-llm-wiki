@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>13.3 物联网 入侵防范</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>13.3 物联网 入侵防范</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI3MDY0Nzg1Nw==&amp;mid=2247484685&amp;idx=4&amp;sn=abdcacd730a6d53c3d1b5d276369b49b&amp;chksm=eacc9253ddbb1b45105dd324b9d1a278d07e8c7ade623862f851b0da786650c2f9a8483e22ce&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI3MDY0Nzg1Nw==&amp;mid=2247484685&amp;idx=4&amp;sn=abdcacd730a6d53c3d1b5d276369b49b&amp;chksm=eacc9253ddbb1b45105dd324b9d1a278d07e8c7ade623862f851b0da786650c2f9a8483e22ce&amp;scene=27#wechat_redirect</a></blockquote><p>入侵防范是限制与感知节点和网关节点通信的目标地址，以避免对陌生地址的攻击行为。尽量降低或避免感知节点和网关节点被攻陷后参与DDOS攻击或成为攻击跳板。</p><table><tbody><tr><td width="557" valign="top"><p><strong><span style="color: rgb(0, 82, 255);">【安全要求】</span></strong></p><p><strong><span style="color: rgb(0, 82, 255);">应能够限制与感知节点通信的目标地址，以避免对陌生地址的攻击行为。</span></strong></p></td></tr><tr><td width="557" valign="top"><p>【要求解读】</p><p>对感知节点通信标址进行限制，防止被攻陷后参与DDOS攻击或成为攻击跳板。</p><p>【测评方法】</p><p>1）核查感知层安全设计文档，是否有对感知节点通信目标地址的控制措施说明；</p><p>2）核查感知节点设备，是否配置了对感知节点通信目标地址的控制措施，相关配置参数是否符合设计要求；</p><p>3）对感知节点设备进行渗透测试，测试是否能够限制感知节点设备对违反访问控制策略的通信目标地址进行访问或攻击。</p><p>【预期结果或主要证据】</p><p>1）感知层安全设计文档有对感知节点通信目标地址的控制措施说明。例如，在网络摄像机的汇聚交换机上划分VLAN。</p><p>2）感知节点设备配置了对感知节点通信目标地址的控制措施，相关配置参数符合设计要求。例如，在汇聚交换机上划分VLAN，在汇聚交换机的接口上配置相关的VLAN数据。</p><p>3）对感知节点设备进行渗透测试，能够限制感知节点设备对违反访问控制策略的通信目标地址进行访问或攻击。</p></td></tr></tbody></table><p><br/></p><p><br/></p><table><tbody><tr><td width="557" valign="top"><p><strong><span style="color: rgb(0, 82, 255);">【安全要求】</span></strong></p><p><strong><span style="color: rgb(0, 82, 255);">应能够限制与网关节点通信的目标地址，以避免对陌生地址的攻击行为。</span></strong></p></td></tr><tr><td width="557" valign="top"><p>【要求解读】</p><p>对网关节点通信目标地址进行限制，防止被攻陷后参与DDOS攻击或成为攻击跳板。</p><p>【测评方法】</p><p>1）核查感知层安全设计文档，是否有对网关节点通信目标地址的控制措施说明；</p><p>2）核查网关节点设备，是否配置了对网关节点通信目标地址的控制措施，相关配置参数是否符合设计要求；</p><p>3）对网关节点设备进行渗透测试，测试是否能够限制网关节点设备对违反访问控制策略的通信目标地址进行访问或攻击。</p><p>【预期结果或主要证据】</p><p><span style="font-size: 17px;">1）感知层安全设计文档有对网关节点通信目标地址的控制措施说明。例如，通过防火墙或配置交换机VLAN对网关节点通信目标地址进行控制。</span></p><p><span style="font-size: 17px;">2）网关节点设备配置了对网关节点通信目标地址的控制措施，相关配置参数符合设计要求。例如，相关防火墙或交换机VLAN的配置参数符合设计要求。</span></p><p><span style="font-size: 17px;font-family: 等线;">3）对网关节点设备进行渗透测试，能够限制网关节点设备对违反访问控制策略的通信目标地址进行访问或攻击。</span></p></td></tr></tbody></table><p><br/></p><p><span style="font-size:14px;font-family:等线;"/></p><p><br/></p>
+        
+</body>
+</html>

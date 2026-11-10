@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>【实用文章】故障诊断：EOC故障排除一例</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>【实用文章】故障诊断：EOC故障排除一例</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5MzMwMDU5NQ==&amp;mid=200152233&amp;idx=3&amp;sn=831d6ee31463e7960528d59af7308cbc&amp;chksm=28839db51ff414a36a906b40f888e7f60b79399b9acc552c73690b61959e9f049ef012773634&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5MzMwMDU5NQ==&amp;mid=200152233&amp;idx=3&amp;sn=831d6ee31463e7960528d59af7308cbc&amp;chksm=28839db51ff414a36a906b40f888e7f60b79399b9acc552c73690b61959e9f049ef012773634&amp;scene=27#wechat_redirect</a></blockquote><p><strong>       </strong><strong><span style="background-color: rgb(146, 208, 80);">【导读】某小区互联网用户PPPoE拨号上网时，经常出现断网现象。经排查，小区线路老化，由于EPON＋EOC结构传输IP数据对线路质量、SNR指标要求较高，导致故障的发生。</span></strong></p><p><strong><span style="background-color: rgb(146, 208, 80);"><br/></span></strong></p><p><strong><span style="background-color: rgb(146, 208, 80);"/></strong></p><p>      <strong>  故障现象</strong><br/></p><p>        某小区互联网用户PPPoE拨号上网时，经常出现断网现象，再次拨号时，出现“错误651”提示，显示链路不通。在网管软件刷新网络时，终端不能始终在线。网络结构如图1图所示。</p><p><img data-src="http://mmbiz.qpic.cn/mmbiz/co91jb4rYkNZuc4DzRAxooqqJzK57caV0vQejNnSVdEC2OP8xblVdrKf1t56RmsAUjAfEL1awvhm6PMzkas2EA/0" src="../Images/97e641fc21bb7c32b00b6e82fbb5bb71.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/co91jb4rYkNZuc4DzRAxooqqJzK57caV0vQejNnSVdEC2OP8xblVdrKf1t56RmsAUjAfEL1awvhm6PMzkas2EA/0"/></p><p>                                  图1</p><p><br/></p><p>       <strong>排查步骤</strong></p><p>       依故障现象，怀疑链路故障，分级排查电缆网络。公司使用的EOC产品采用homeplug  AV技术，将Data信号调制在低频段传输，TV信号在高频段传输。在3楼用数字场强仪测量电平指标30MHz为71dbuv（EOC局端输出的射频电平低），419MHz为94.3dbuv。在8楼测试指标30MHz时为70dbuv，419MHz时为89dbuv。3楼与8楼之间用“-9”电缆连接。在14楼测试指标30MHz时为55dbuv，在用户家测量指标，30MHz时为40dbuv，显然不能满足用户上网要求的最低电平值。</p><p><br/></p><p>       <strong>解决方案</strong></p><p>       从3楼至8楼采用“-9”电缆传输时，低频仅衰减了1db。从8楼至14楼使用的是“-5”电缆，低频衰减了15db，说明线路质量存在严重问题。经讨论，决定更换8楼至14楼的连接电缆，由“-5”更换为“-9”，降低电缆衰减电平值并加强屏蔽。再次测量14楼的输入电平值，30MHz时为65dbuv，在用户家中测量时，30MHz时为60dbuv。登录网管系统，查看终端在线情况，刷新网络时，终端始终在线，说明线路质量已符合要求。在用户家上网测试，正常。</p><p><br/></p><p>      <strong> 经验总结</strong></p><p>       EPON＋EOC结构传输IP数据对线路质量、SNR指标要求较高，一些老小区，线路已趋于老化，分支分配系统接头存在接触不良、氧化严重等现象。整改线路要耗费大量成本，建议老小区采用EPON＋LAN方式组网更为合理，可大幅降低故障率。对一些电缆指标较好的新建小区，可采用EPON＋EOC方式接入。</p><p><strong><span style="background-color: rgb(146, 208, 80);"><br/></span></strong><br/></p>
+        
+</body>
+</html>

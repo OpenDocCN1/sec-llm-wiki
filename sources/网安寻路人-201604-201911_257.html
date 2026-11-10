@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>个人信息对外提供时的指向性问题</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>个人信息对外提供时的指向性问题</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzIxODM0NDU4MQ==&amp;mid=2247484705&amp;idx=1&amp;sn=eb1fef8c64450cbb1308d7850076c297&amp;chksm=97eab8cba09d31dd1c3d58624eec363f9571614001d55ff285d9ef11cfeab057bd9ac37aff2a&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzIxODM0NDU4MQ==&amp;mid=2247484705&amp;idx=1&amp;sn=eb1fef8c64450cbb1308d7850076c297&amp;chksm=97eab8cba09d31dd1c3d58624eec363f9571614001d55ff285d9ef11cfeab057bd9ac37aff2a&amp;scene=27#wechat_redirect</a></blockquote><p><img data-s="300,640" data-type="png" data-src="https://mmbiz.qpic.cn/mmbiz_png/jErr674f9m8YoMhFjdU1Vg9WUrWmXKwKPICq5AicecWmP6N3ic38Uf2Asl9fDSN2fkXJkp89shl01CZJo83qsPpw/0?wx_fmt=png" data-copyright="0" style="" class="" data-ratio="0.13440320962888666" data-w="997" src="../Images/34e42fb158f6380a4e02f4055e4c1a62.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/jErr674f9m8YoMhFjdU1Vg9WUrWmXKwKPICq5AicecWmP6N3ic38Uf2Asl9fDSN2fkXJkp89shl01CZJo83qsPpw/0?wx_fmt=png"/>个人信息存在一个指向性的问题，即对谁来说，这些数据是个人信息。这个问题一直没能得到很好的解决。</p><p><br/></p><p>通说认为，数据是不是个人信息，主要是从持有个人信息的组织这个角度来说的。毕竟，如果对某个组织来说，其有能力从这些信息中识别出特定个人，则对该组织来说，这些信息就属于个人信息。</p><p><br/></p><p>但在对外提供这个环节，如果纯从数据持有者的角度来说，会至少存在两个问题：</p><p><br/></p><ol style="list-style-type: decimal;" class=" list-paddingleft-2"><li><p>个人信息保护规则，特别是共享的规则可以很容易被规避。考虑这样一个例子：一些IoT厂商从终端传感器收集来数据（假设不为个人信息），不做使用分析，直接对外转让这些数据（注：转让即为对外提供数据且自身不留备份）。对于持有这些数据的IoT厂商，由于对外提供的数据不属于个人信息，因此其对外提供的行为不受个人信息保护规则的要求。与此同时，有一特定企业专门从这些IoT厂商接收数据，并做汇聚、整合、清洗的工作，最终掌握了海量的个人信息。换句话说，将数据收集和使用两个动作，通过不同的组织来实现，从而规避了个人信息保护规则；</p><p><br/></p></li><li><p>按照现行法律要求，企业对外提供个人信息从合规角度有两条路径：征求个人同意或匿名化。考虑这样一个例子：企业为对外共享个人信息对一批个人信息（数据集A）进行匿名化处理，形成了数据集B。由于该企业同时掌握了数据集A和数据集B，因此从个人信息的定义来说，数据集B也是个人信息，所以该企业事实上是在对外提供个人信息。换句话说，只要企业一旦继续持有原始的数据集，就只能通过征求个人同意的路径来对外共享信息？如果要采取匿名化这个路径，就只能把原始的数据集销毁？如果是前者，那企业根本就没有动力去做匿名化。如果是后者，做了匿名化还会进一步变成了坏事。</p></li></ol><p><br/></p><p>那么，数据是不是个人信息，在对外提供这个场景中，主要应从接收方的角度来考虑？至少从接收方角度，可以有效地避免上述两个问题。</p><p><br/></p><p>在上文例1中，当IoT厂商对外转让数据时，如果有理由相信接收方有能力将这些数据与自身持有的数据相结合而识别出特定个人，或进一步掌握特定个人的活动情况，那对IoT厂商来说，就算这些数据不是个人信息，则对外共享时也应该接受个人信息保护规则的管辖。</p><p><br/></p><p>在上文例2中，如果有理由相信匿名化后的数据集B，对接收方来说不是个人信息，则该企业可以合法地将匿名化后的数据集B对外提供，哪怕数据集B对提供方来说始终是个人信息（因为原始的数据集A始终存于提供方手中）。</p><p><br/></p><p>但是从接收方角度来看数据是否是个人信息，进而决定是否向其提供。这样的思路也还是存在显著问题。还是以例子说明：</p><p><br/></p><ol style="list-style-type: decimal;" class=" list-paddingleft-2"><li><p>数据提供方需要对数据接收方开展评估，这就需要综合数据接收方处理数据的目的、意图、分析能力、已经掌握的数据情况等。显然，这个评估非常困难，近乎于不可能。</p><p><br/></p></li><li><p>即便在某个时间点，通过评估后发现数据对接收方来说不属于个人信息（例如数据集B），因而可以共享。但是随着接收方的分析能力、已掌握的数据资源等属于时刻变化的状态。某个时间点的评估可能随时面临着失效的局面。</p></li></ol><p><br/></p><p>来看欧盟的情况吧，似乎在GDPR看来，个人信息是全指向的，即指向持有的组织，也指向不特定的第三方。从GDPR recital 26来仔细研读：</p><p><br/></p><p>个人数据经假名化处理后所得到的数据，应视为可识别自然人相关的数据，也就是个人数据；因为假名化仅仅是做到了对个人数据进行一定的处理，使其在不借助额外信息的情况下，无法在回溯到特定数据主体。（<span class="fontstyle0">Personal
+ data which have undergone pseudonymisation, which could be attributed 
+to a natural person by the use of additional information should be 
+considered to be information on an identifiable natural person. ）<br/></span></p><p><span class="fontstyle0"><br/></span></p><p><span class="fontstyle0">而如何确定特定自然人是否可识别，则要综合考虑“所有的可资合理使用的方式”（<span class="fontstyle0">all the means reasonably likely to be used</span>）。注意，对于<span class="fontstyle0">“所有的可资合理使用的方式”</span>，GDPR强调了不只是对数据控制者来说的，还包括其他人。（To
+ determine whether a natural person is identifiable, account should be 
+taken of all the means reasonably likely to be used, such as singling 
+out, either by the controller <span style="color: rgb(255, 41, 65);"><strong>or by another person</strong></span> to identify the 
+natural person directly or indirectly. To ascertain whether means are 
+reasonably likely to be used to identify the natural person, account 
+should be taken of all objective factors, such as the costs of and the 
+amount of time required for identification, taking into consideration 
+the available technology at the time of the processing and technological
+ developments. ）<br/></span></p><p><br/></p><p>如果说对于假名化信息，欧盟采用的是同时指向各方的思路。那是不是对个人信息、匿名化信息也都是这个思路？</p><p><br/></p><p><br/></p><p><br/></p><p><br/></p>
+        
+</body>
+</html>

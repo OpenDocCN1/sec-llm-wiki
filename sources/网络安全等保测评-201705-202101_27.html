@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>访问控制矩阵</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>访问控制矩阵</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI3MDY0Nzg1Nw==&amp;mid=2247484055&amp;idx=6&amp;sn=9f583b78af47bd68fb6e7d4f3c7f714e&amp;chksm=eacc95c9ddbb1cdf19e9181d4ce9537e60f824dca2447d1baab759ee8279b922884e9049ab57&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzI3MDY0Nzg1Nw==&amp;mid=2247484055&amp;idx=6&amp;sn=9f583b78af47bd68fb6e7d4f3c7f714e&amp;chksm=eacc95c9ddbb1cdf19e9181d4ce9537e60f824dca2447d1baab759ee8279b922884e9049ab57&amp;scene=27#wechat_redirect</a></blockquote><p>Access control matrix</p><p><br/></p><p>访问控制矩阵是主体和客体的关系表，其<strong>指示每个主体可对每个客体执行的动作或功能</strong>。矩阵的每列是访问控制列表(ACL) 。矩阵的每一行都是一个能力列表。ACL 与客体绑定，它列出了每个主体可执行的有效操作。能力列表与主体相关联，它列出可对每个客体执行的有效操作。</p><p><br/></p><p>从管理角度看，仅使用能力列表进行访问控制是一项管理噩梦。访问控制的能力列表方法可通过在每个主体上存储主体对每个客体具有的权限列表来完成。这有效地为每个用户提供了关键的访问环和安全域中对象的权限。要删除对特定客体的访问权限，必须单独操作每个有权访问它的用户（主体）。因此，管理每个用户账户的访问权限比管理每个客体的访问权限要困难得多。</p><p><br/></p><p>实现访问控制矩阵模型通常涉及以下内容：</p><ul class="list-paddingleft-2" style="list-style-type: disc;"><li><p>构建可以创建和管理主体和客体列表的环境。</p></li><li><p>编写一个函数，它的输入可以是任何类型的对象，函数可以返回与此对象相关的类型（这很重要，因为客体的类型决定了可对它应用哪种操作）。</p></li></ul><p>下图所示的访问控制矩阵用于自主访问控制系统。可简单地通过使用分类或角色替换主体名称来构建强制型或基于规则的矩阵。系统使用访问控制矩阵来快速确定主体对客体所请求的动作是否被投权。</p><p><br/></p><p style="text-align: center;"><img class="rich_pages" data-ratio="0.32536382536382535" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/5vf0CFuhE5iaQr9oXibhRpdzMdic4fiabyLEXutrxGPkxnLIuwBGzic2JRrd7pFdQh94lEXDUVsY7AjVnRic0WicNVRpA/640?wx_fmt=png" data-type="png" data-w="962" style="" src="../Images/528f21b610369e1d15a69b8e2497558c.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/5vf0CFuhE5iaQr9oXibhRpdzMdic4fiabyLEXutrxGPkxnLIuwBGzic2JRrd7pFdQh94lEXDUVsY7AjVnRic0WicNVRpA/640?wx_fmt=png"/></p><p><br/></p>
+        
+</body>
+</html>

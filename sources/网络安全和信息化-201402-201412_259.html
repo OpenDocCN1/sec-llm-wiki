@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>【实用文章】终端小技巧：修复Win7的“Press F11”故障</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>【实用文章】终端小技巧：修复Win7的“Press F11”故障</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5MzMwMDU5NQ==&amp;mid=200191305&amp;idx=2&amp;sn=8f4d436179a89a8945273b2eeb15c274&amp;chksm=288324551ff4ad43875aa1d85fa138319ca1550e06d784002f6a7b8b842da8e5769b534952e3&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5MzMwMDU5NQ==&amp;mid=200191305&amp;idx=2&amp;sn=8f4d436179a89a8945273b2eeb15c274&amp;chksm=288324551ff4ad43875aa1d85fa138319ca1550e06d784002f6a7b8b842da8e5769b534952e3&amp;scene=27#wechat_redirect</a></blockquote><p><strong>        </strong><strong><span style="background-color: rgb(146, 208, 80);">【导读】电脑的各种装机软件越来越多，很多厂商的电脑也有自己的自动恢复程序。当这样的电脑安装了第三方的系统恢复软件后，就可能带来一些不便，本文笔者就出现了“Press F11”的问题，经过笔者的研究，得到了解决！</span></strong></p><p><br/></p><p><strong style="white-space: normal;">        </strong>为了方便还原电脑中的Windows 7系统，就在联想电脑上安装了最新版的一键还原精灵。然而是，在重新启动电脑后，电脑却出现了黑屏现象，显示“To start your Lenovo Rescue and Recovery program, Press F11”的提示。按键盘的“F11”键电脑没有响应，屏幕一直停在该画面处。多次重启电脑，均出现上述故障现象，按任何键也没反应。下面就是具体处理的过程，供读者参考。</p><p><br/></p><p><strong style="white-space: normal;">        </strong><strong>备份C盘</strong></p><p><strong style="white-space: normal;">        </strong>为了保护系统数据，最好对系统分区进行备份。首先，把“电脑店”系统U盘插入电脑中，按“F12”键调用电脑的引导菜单，选择用U盘启动系统，运行到Windows PE环境下。接着，双击Windows PE桌面的“Ghost手动”图标，打开Ghost11程序。然后，依次单击Ghost11窗口的“Local→Partition→To Image”菜单，选择好保存路径，并输入备份文件名，确定后即可进行备份操作。</p><p><br/></p><p><strong style="white-space: normal;">       </strong><strong> 重新安装Windows 7系统</strong></p><p><strong style="white-space: normal;">        </strong>在Windows PE环境下，双击PE桌面的“我的电脑”图标，打开“我的电脑”。右击C盘后，选择“格式化”菜单，对C盘进行格式化操作。接着，用Ghost盘重新安装Windows 7系统。等到Ghost安装成功后，重新启动电脑后，仍就发生黑屏现象，换成GhostXP盘安装也不行，这该怎么办呢？</p><p><br/></p><p><strong style="white-space: normal;">        </strong><strong>使用MBR工具</strong></p><p><strong style="white-space: normal;">        </strong>系统无法启动，也许是MBR出问题了。用U盘启动到Windows PE桌面，插入Windows 7安装盘。依次单击Windows PE桌面上“开始→运行”菜单，在命令框中输入“cmd”确定后，打开命令窗口。在命令提示符下输入“copy g:\boot\bootsect.exe e:\”，回车后把该程序拷贝得到E盘。然后，在“E：\&gt;”后输入 “boo test  /nt60 c:/mar”并回车，提示修复成功后重启电脑，虽说那个烦人的“Press F11”提示消失了。却又添新愁了，出现 “boomer is missing ”的提示。</p><p><br/></p><p><strong style="white-space: normal;">      </strong><strong>  修复启动菜单</strong></p><p><strong style="white-space: normal;">        </strong>既然最后出现的提示是启动菜单丢失了，那么我们就用“NTBOOTaurofix”来修复启动菜单。</p><p><strong style="white-space: normal;">        </strong>再次进入Windows PE桌面，双击PE桌面的“Windows启动引导修复”图标，打开NTBOOTaurofix窗口。选择“C：”后进入下一界面，单击“1.开始修复”后进行修复操作。不久就出现“主引导 程序写入-Yes”的提示，表明修复完成。退出PE系统重启电脑，哈哈，电脑终于可以正常运行了。</p><p><strong><span style="background-color: rgb(146, 208, 80);"><br/></span></strong><br/></p>
+        
+</body>
+</html>

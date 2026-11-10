@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>【实用文章】把握ACL配置的七个关节点(节选）</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>【实用文章】把握ACL配置的七个关节点(节选）</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5MzMwMDU5NQ==&amp;mid=200263938&amp;idx=2&amp;sn=bc11b7f5656546fceca85eb2c6ca8a1e&amp;chksm=2882401e1ff5c9086dcab47bb120d5dd2051f8010c8be918b389e1e3a420e30f3be706debb17&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5MzMwMDU5NQ==&amp;mid=200263938&amp;idx=2&amp;sn=bc11b7f5656546fceca85eb2c6ca8a1e&amp;chksm=2882401e1ff5c9086dcab47bb120d5dd2051f8010c8be918b389e1e3a420e30f3be706debb17&amp;scene=27#wechat_redirect</a></blockquote><p>       在路由器或三层交换机上，可以通过使用访问控制列表（ACL,Access Control List）来执行数据包过滤。访问控制列表可用来控制网络上数据包的传递、限制虚拟终端的通信量或者控制路由选择更新，限制网络访问特定的用户和设备。细节决定成败，我们在配置访问控制列表时往往因忽视一些细节，导致访问控制列表不起作用。为充分发挥访问控制列表强大功能，提高运行效率，在配置过程中应着重把握以下几个关节点。</p><p><br/></p><p>      <strong> 关节点之一：标准访问控制列表要应用在靠近目标端</strong></p><p>      标准的访问控制列表只能针对源地址进行控制，提供基本的过滤功能，用1～99的数值来作为列表的标识。配置标准访问控制列表分为两个步骤，第一步是创建列表，第二步是应用列表。但在配置过程中要弄清楚以下几点：一是要确定访问控制列表用在哪台设备上，二是要确定访问控制列表用在哪个接口上，三是要确定访问控制列表用在哪个方向上（是Out还是In），四是列表中的语句匹配顺序是从上而下，五是要将访问控制列表用在靠近目标端。</p><p><img data-src="http://mmbiz.qpic.cn/mmbiz/co91jb4rYkOj5zaIjHKFYkCfU8iaFicfLxYWF3BQLiajLmymqaZl7P0DF29AUwny1Yg9WN3cHfRBwpJnyibsULyEcA/0" src="../Images/6c6710c743ad2a584a5ab96a0449c940.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/co91jb4rYkOj5zaIjHKFYkCfU8iaFicfLxYWF3BQLiajLmymqaZl7P0DF29AUwny1Yg9WN3cHfRBwpJnyibsULyEcA/0"/></p><p>                       图1</p><p>       如图1所示，我们配置标准访问控制列表的要求是，不允许Router1访问Router3。首先进行分析：把Router1作为源地址，Router3作为目标地址，数据流的方向就是从左到右，从Router1到Router3，数据流共经过了4个接口，在4个接口上都可以配置访问控制列表，但所起的作用是不一样的。</p><p>      第一种情况：如果把访问控制列表用在Router1的S1/1端口，方向应该是Out，结果将不起作用。原因是访问控制列表仅对穿越路由器的数据包进行过滤，对本路由器发起的数据包不作过滤。</p><p>       第二种情况：如果用在Router2的S1/0端口，方向应该是In，结果起作用。Router1不能访问Router3了，可Router1也不能访问Router2了，因为标准访问控制列表只能针对源地址，当Router1访问Router2的数据包进入路由器Router2的S1/0端口时，源地址不符合，数据包被丢弃。</p><p>       第三种情况：如果用在Router2的S1/1端口，方向应该是Out，结果正确。</p><p>       第四种情况：如果用在Router3的S1/1端口，方向应该是In，结果正确。配置步骤如下：</p><p>1.在路由器上创建列表</p><p>Router3（config）#access-list 1 deny 36.136.1.1</p><p>/*拒绝Router1的IP地址36.136.1.1，通配符掩码0.0.0.0可以省略*/</p><p>Router3（config）# access-list 1 permit any</p><p>/*允许所有的IP地址，这一行不能省略，因为访问控制列表最后隐含了一条deny any的规则，如果没有这一行，所有的IP地址都将被拒绝，上面两行的顺序不能颠倒，因为匹配的顺序是从上而下的*/</p><p>2.在路由器的接口上应用列表</p><p>Router3（config）#int s1/1</p><p>Router3（config）#ip access-group 1 in</p><p>/*在接口下调用访问控制列表1，针对的是从S1/1端口进入路由器Router3的流量*/</p><p>       两个步骤的操作顺序没有关系，但两者缺一不可，创建列表没有在接口下调用，或者在接口下调用一个没有被创建的列表，都不会起作用。</p><p>       以上几种情况可以得出，符合要求的应用应该在Router3的S1/1端口上进行配置，为避免出现错误，标准访问列表要应用在靠近目标端。</p><p><br/></p><p><strong>       <span style="background-color: rgb(255, 0, 0);"> 欲知另外六个关键节点，请参阅2009年《网管员世界》合订本，更多精彩内容请关注最新《网络运维与管理》杂志，内容更新更全更精彩，没有你看不到的，只有你想不到的哦~</span><span style="background-color: rgb(255, 0, 0);"/><span style="background-color: rgb(255, 0, 0);"/></strong><br/></p><p><br/></p>
+        
+</body>
+</html>

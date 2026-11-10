@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>反制之sqlmap</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>反制之sqlmap</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=Mzk0NDI2MTQzMw==&amp;mid=2247484016&amp;idx=1&amp;sn=e36b9bbf51f9a1e2c6a0c61056ee3595&amp;chksm=c3261226f4519b30bf4f97868352a10245975d2409474a39680a3a261e344e6ad02d792556fb&amp;scene=126&amp;sessionid=1681408020#rd">http://mp.weixin.qq.com/s?__biz=Mzk0NDI2MTQzMw==&amp;mid=2247484016&amp;idx=1&amp;sn=e36b9bbf51f9a1e2c6a0c61056ee3595&amp;chksm=c3261226f4519b30bf4f97868352a10245975d2409474a39680a3a261e344e6ad02d792556fb&amp;scene=126&amp;sessionid=1681408020#rd</a></blockquote><p>最近看着漂亮鼠表哥发的各种反制，我这个菜鸡也想搞搞，正好我记得之前看过谁发过sqlmap反制的文章（烂大街的东西），顺手就敲一下，因为工作都是别的大佬做的，所以我就搬个砖，没声明原创，大佬勿喷<br/></p><p><strong><span style="font-size: 20px;">❗️免责申明</span> </strong></p><p>本文不会上传未公开的漏洞利用，也不允许工具中存在破坏性的语句，只是在网络安全防守中给出自己的防守思路，防止被恶意攻击。<strong>严格禁止一切通过本文进行的违反任何国家法律行为</strong>，请在合法范围内使用本程序。</p><p>观看本文则<strong>默认视为你同意</strong>我们的规则，请您务必遵守<strong>道德与法律准则</strong>。</p><p>如不遵守，请关闭本文否则<strong>后果自负</strong>，本文作者将不承担任何责任！</p><p><br/></p><p>构造payload方式：<br/></p><p>```</p><p>sqlmap -u "http://192.168.43.33/test.html?id=aaa&amp;b=\`ls`\"</p><p>```</p><p>效果图如下：<br/></p><p style="text-align: center;"><img class="rich_pages wxw-img" data-galleryid="" data-ratio="0.32043795620437954" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/yt59icser0CJX0lhYBJYxoguePic1ruyOqv9ljoUp7zg07IQ9tza7c9KQNVhvz1tWE6HOUSkvwVYBLibKloVHuWhw/640?wx_fmt=png" data-type="png" data-w="1370" style="" src="../Images/8dc87de15e7e096a4e3d8c3a1ea12ef8.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/yt59icser0CJX0lhYBJYxoguePic1ruyOqv9ljoUp7zg07IQ9tza7c9KQNVhvz1tWE6HOUSkvwVYBLibKloVHuWhw/640?wx_fmt=png"/></p><p>所以，搞渗透测试以及红蓝对抗的大哥们，别上来就工具干，容易被揍</p><p style="text-align: center;"><img class="rich_pages wxw-img" data-galleryid="" data-ratio="0.794425087108014" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/yt59icser0CJX0lhYBJYxoguePic1ruyOqD6OUfNL1ibSn34W3dg1UQfz0vff5MLg6wsn68RCSKPHqD4SfpoXRV7w/640?wx_fmt=png" data-type="png" data-w="287" style="" src="../Images/44d8d0829ca8554988eeec3145aa854c.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/yt59icser0CJX0lhYBJYxoguePic1ruyOqD6OUfNL1ibSn34W3dg1UQfz0vff5MLg6wsn68RCSKPHqD4SfpoXRV7w/640?wx_fmt=png"/></p><p><br/></p>
+        
+</body>
+</html>

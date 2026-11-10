@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>PC打开Android木马链接也要小心了！</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>PC打开Android木马链接也要小心了！</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAwMTMzMDUwNg==&amp;mid=2650878779&amp;idx=1&amp;sn=3b9f44149b8c2f61977c76c53790d083&amp;chksm=812ecf1eb65946088fe28749ae4c1cb428841d4d9931d53209c4cdf5af37acf1114f9eb32aed&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzAwMTMzMDUwNg==&amp;mid=2650878779&amp;idx=1&amp;sn=3b9f44149b8c2f61977c76c53790d083&amp;chksm=812ecf1eb65946088fe28749ae4c1cb428841d4d9931d53209c4cdf5af37acf1114f9eb32aed&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: left; text-indent: 28px;">我们都知道Android木马后缀是apk，本质上是zip文件。当然apk只能在Android系统下安装运行。一般我们也比较放心用PC去打开木马链接，觉得再厉害的安卓马也不会影响PC吧。但是今天碰到的例子告诉我们，PC打开Android木马链接也要小心了！</p><p style="text-align: left; text-indent: 28px;">短信是这样的：</p><p style="text-align: center;"><span style="z-index: 251661312; left: 0px; margin-left: 101px; margin-top: 169px; width: 44px; height: 24px;"/><span style="z-index: 251659264; left: 0px; margin-left: 129px; margin-top: 51px; width: 56px; height: 34px;"/><img data-ratio="0.7449664429530202" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_png/Z4jKmMQicbWMuOPJ3GURV5PmFXlrLzhd5ELhZtq4JboArcsDdlxQ74fBEZ4AicicvhpTzXtcGLCFibEDm45cpvcThg/640?wx_fmt=png" data-type="png" data-w="447" style="width: auto ! important; height: auto ! important; visibility: visible ! important;" src="../Images/a14b37a5acab1cdd3a2ff27b1ab3ccdf.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/Z4jKmMQicbWMuOPJ3GURV5PmFXlrLzhd5ELhZtq4JboArcsDdlxQ74fBEZ4AicicvhpTzXtcGLCFibEDm45cpvcThg/640?wx_fmt=png"/><br/></p><p style="text-indent: 28px;">短链接是新浪微博的，访问后自动跳转到：<a>http://win98765.com/itva/</a>。</p><p style="text-indent: 28px;">看网页源码，比较奇怪，在网页后面加了这么一大段的VB脚本。</p><p style="text-indent: 28px;"> </p><p><img data-ratio="0.371875" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_png/Z4jKmMQicbWMuOPJ3GURV5PmFXlrLzhd5Udic1xK3fJLooZ2BcjO6pxNP39GibW1kxTPQnEkIEWmvYY3rOGascrMw/640?wx_fmt=png" data-type="png" data-w="640" style="width: auto ! important; height: auto ! important; visibility: visible ! important;" src="../Images/09af5fb5800757b7117bd82b18681345.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/Z4jKmMQicbWMuOPJ3GURV5PmFXlrLzhd5Udic1xK3fJLooZ2BcjO6pxNP39GibW1kxTPQnEkIEWmvYY3rOGascrMw/640?wx_fmt=png"/><br/></p><p style="text-indent: 28px;">分析下大概的功能，应该是在TEMP目录下，建一个svchost.exe的文件，写入WriteData那一大段字符表示16进制代码。可以感染EXE,DLL,HTM等文件类型，感染后会自动在这些类型文件后面加入这段脚本。后续学习继续分析下这段脚本。</p><p style="text-indent: 28px;">这种脚本也比较古老了，因为从Internet Explorer 11开始，VBScript被视为已弃用，IE11 模式中显示的网页不会执行VBScript代码。所以这种脚本用网页传播的方式中招几率比较低。猜测可能是牧马人（木马所有人）的服务器中了？所有的网页都自动带上这段脚本了？</p><p style="text-indent: 28px;">不管脚本是牧马人放的，还是牧马人被放的，都提醒我们，用PC下载apk文件的时候也要小心，意外总是在不经意间发生啊！</p><p><br/></p><p><br/></p>
+        
+</body>
+</html>

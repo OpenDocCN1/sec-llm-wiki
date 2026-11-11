@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>社会工程学之诱饵攻击真实案列</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>社会工程学之诱饵攻击真实案列</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/mp/appmsg/show?__biz=MjM5NjA0NjgyMA==&amp;appmsgid=10000099&amp;itemidx=1&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/mp/appmsg/show?__biz=MjM5NjA0NjgyMA==&amp;appmsgid=10000099&amp;itemidx=1&amp;scene=27#wechat_redirect</a></blockquote><p>详细过程：</p><p>首先SpiderLabs收集了目标公司员工名单信息，包含姓名、住址等，然后决定使用让用户更新自己的杀毒软件的方法进行攻击。</p><p><strong>SpiderLabs提供了一个社工中攻击的经典模板，并与U盘或CD光盘一起寄送给目标用户，模板内容如下：</strong></p><p>亲爱的员工XX（直呼其名）<br/>在公司最近的一次安全风险评估中，我们在您的电脑上发现杀毒软件已经过期了。对公司造成了一定的潜在风险，通过网络我们查到了您的住址（真实住址），我们需要您合作，一起降低该风险。<br/>您收到的这个U盘中包含了杀毒软件更新程序，请将U盘连接到您的计算机，并按照下面的说明来安装更新：<br/>1：双击图标“我的电脑”。<br/>2：双击可移动磁图标上对应的U盘驱动器。<br/>3：双击“防病毒更新”程序。<br/>如果更新程序执行成功，你会看到以下信息：“杀毒软件更新成功”，一旦您执行这些步骤，能将您的杀毒软件更新到最新版本，并能保护您的计算机免受病毒威胁。</p><p>我们非常感谢您对（公司名称）的帮助</p><p>公司的名称<br/>信息安全团队<br/>地址</p><p>在此类攻击中，SpiderLabs表示通常使用的U盘，这些“防病毒更新”程序都是特殊定制的木马软件。在本次实验中总共寄出去15个包，其中1个用户中标。</p><p> 在另外一个实验中，SpiderLabs在目标公司的停车场扔了两个U盘，在大楼前的人行道上又扔了一个U盘。几天后，该公司的某管理人员就在计算机上插入了该U盘，通过用户名得知该用户为看门老大爷，虽然没有权限接入到该公司的核心系统，但是SpiderLabs可以通过该计算机来控制一些出入口、摄像头等。</p><p><img src="../Images/ca43b8cc403cc66c76a9d7a58da35b84.png" width="448" height="333" data-original-src="http://mmsns.qpic.cn/mmsns/qq5rfBadR38CbPhLQxXIbJITibpbkDFFiclYqTJibibc34N9zmqDuYNPiaQ/0"/></p><p>SpiderLabs使用“Named Pipe Impersonation” 方法提升到本地管理员权限，并能查找到注册表中存储的WPA密码，加入到无线内网中去，而且还可以穷举或字典破解无线网络密码。</p>
+        
+</body>
+</html>

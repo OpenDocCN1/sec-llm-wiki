@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title></title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1></h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzkyMDIxMjE5MA==&amp;mid=2247484198&amp;idx=1&amp;sn=fbdbcc442858d4a0e3f6262eb173c572&amp;chksm=c1970497f6e08d8126847150280454b98035b3ac637ccd2ab88fc060b3999fe0b49fa37b1c87&amp;scene=126&amp;sessionid=1681664930#rd">http://mp.weixin.qq.com/s?__biz=MzkyMDIxMjE5MA==&amp;mid=2247484198&amp;idx=1&amp;sn=fbdbcc442858d4a0e3f6262eb173c572&amp;chksm=c1970497f6e08d8126847150280454b98035b3ac637ccd2ab88fc060b3999fe0b49fa37b1c87&amp;scene=126&amp;sessionid=1681664930#rd</a></blockquote>
+                    
+          <div class="share_media_text">
+            <div aria-hidden="true" class="share_media_text_fake" id="js_text_content_fake"/>
+            <div class="share_media_text_inner js_underline_content" id="js_text_content"/>
+                        <script type="text/javascript" nonce="1551058552" reportloaderror="">
+              (function () {
+                var content = "遇到一个挺有意思的xss，过滤了 &amp;amp;lt;&amp;amp;gt;=()`&amp;amp;nbsp; 等符号。\n\n我将此漏洞抽象成ctf题目，代码放在&amp;amp;nbsp;https://gist.github.com/leveryd/40fcaed60727b6163b034145e332640f。\n\n感兴趣的师傅可以访问 https://04bdb3a0.o53.xyz/a1e60ae3-4bac-4012-a0f3-5b7018677979.php?a=1 玩一玩"; // 只保留a标签
+                var jsTextContent = document.getElementById("js_text_content");
+                var jsTextContentFake = document.getElementById("js_text_content_fake");
+                // console.log(content);
+                content = content.replace(/&amp;lt;(\/?)(?!((a(\s|&amp;gt;))|(\/a))).*?&amp;gt;/g, (s) =&amp;gt; {
+                  return s.html(true);
+                });
+                jsTextContent.innerHTML = window.__emojiFormat(content);
+                if (parseFloat(window.getComputedStyle(jsTextContent).height) &amp;gt; parseFloat(window.getComputedStyle(jsTextContentFake).height)) {
+                  jsTextContent.parentNode.className += ' share_media_text_overflow';
+                }
+              })();
+            </script>
+                      </div>
+                  
+        
+</body>
+</html>

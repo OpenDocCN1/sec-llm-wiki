@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>恶意软件Darkleech大肆感染Apache服务器</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>恶意软件Darkleech大肆感染Apache服务器</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/mp/appmsg/show?__biz=MjM5NjA0NjgyMA==&amp;appmsgid=10000108&amp;itemidx=1&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/mp/appmsg/show?__biz=MjM5NjA0NjgyMA==&amp;appmsgid=10000108&amp;itemidx=1&amp;scene=27#wechat_redirect</a></blockquote><p>假设每台服务器十个站点的话，至少有20000个网站被感染，其中包括知名网站如《洛杉矶时报》。</p><p>Darkleech主要使用了Apache的模块注入iframe到受害站点中，模块名称如mod_spm_headers.so 或 mod_spm_mem.so，该模块主要功能如下：</p><p>1：过滤来自搜索引擎和安全公司的IP地址<br/>2：过滤User-Agent是robot、自动化工具（如Curl, Indy Library等），以及一些IPHONE手机移动客户端等<br/>3：过滤黑名单IP<br/>4：最为复杂的一点，当确认该IP是自然流量之后，该模块会创建一个保持5分钟的session给该IP，然后请求一个js地址，如果用户在该页面浏览了js，那在接下来的7天里不会重复该动作。<br/>5：嵌入恶意的iframe，见下。、</p><p>该模块可能在每台服务器上名称不同，当用户访问目标站网站的时候会被连接到恶意的站点。如下代码：</p><p><strong>&lt;style&gt;.tlqvepxi { position:absolute; left:-1648px; top:-1752px} &lt;/style&gt; &lt;div class="tlqvepxi"&gt;</strong></p><p><strong>&lt;iframe src="hxxp://matisere .com/21234443.html" width="581" height="476"&gt;&lt;/iframe&gt;&lt;/div&gt;</strong></p><p>以及<br/><strong>document.write('&lt;style&gt;.hmfabv9 { position:absolute; left:-1141px; top:-1518px} &lt;/style&gt; &lt;div class="hmfabv9"&gt;<br/>&lt;iframe src="hxxp://sepatch .org/35204443.html" width="122" height="202"&gt;&lt;/iframe&gt;&lt;/div&gt;');</strong></p><p> 所有的数字和style的名称都是随机生成，并且每天数次同步感染受害者的服务器，检查iframe是否存在。</p><p>因为网站的其他源码没有变化，所以管理员及时发现被嵌入了iframe，但是很难检测到问题出在哪里。</p><p>并且如果来自安全公司和托管公司的IP地址访问了被感染的网站，它不会在终端用户展示的网页中嵌入恶意链接。</p><p>目前还不清楚攻击者利用了什么弱点入侵Apache机器，安全研究人员怀疑漏洞可能存在于用于管理网站的软件如Plesk和Cpanel中，也不排除密码破解和社会工程等攻击方法的可能性。</p>
+        
+</body>
+</html>

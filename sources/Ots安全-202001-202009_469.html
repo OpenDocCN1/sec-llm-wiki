@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>TINYMCE发现 严重XSS漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>TINYMCE发现 严重XSS漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxMjYyMzkwOA==&amp;mid=2247484939&amp;idx=1&amp;sn=619ba7000057a1a76c0bdc9df27baa25&amp;chksm=9bae4f40acd9c6564214a077644b78443888b927f1937453e70e03a9481b751b8bc947631bf6&amp;scene=126&amp;sessionid=1681670228#rd">http://mp.weixin.qq.com/s?__biz=MzAxMjYyMzkwOA==&amp;mid=2247484939&amp;idx=1&amp;sn=619ba7000057a1a76c0bdc9df27baa25&amp;chksm=9bae4f40acd9c6564214a077644b78443888b927f1937453e70e03a9481b751b8bc947631bf6&amp;scene=126&amp;sessionid=1681670228#rd</a></blockquote><p style="text-align: center;"><img class="rich_pages js_insertlocalimg" data-ratio="0.49653979238754326" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/rWGOWg48tacgvibVI4t39FIvZc6NlQkZ8AagAJKGZyqOmxJcH2NWkr70F0FoDpT32sR6KPB8ksExJMsjbCkYJqQ/640?wx_fmt=jpeg" data-type="jpeg" style="" data-w="578" src="../Images/f6a3b60eefd5494df73a8d98d9683c39.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/rWGOWg48tacgvibVI4t39FIvZc6NlQkZ8AagAJKGZyqOmxJcH2NWkr70F0FoDpT32sR6KPB8ksExJMsjbCkYJqQ/640?wx_fmt=jpeg"/></p><p>几天前，一位数字取证研究人员报告发现了一个跨站点脚本（XSS）漏洞，该漏洞影响了TinyMCE开源文本编辑器中的三个插件。</p><p><br/></p><p>该漏洞被认为是至关重要的，它的利用将允许通过使用剪贴板功能或其API将特殊设计的命令插入文本编辑器中来任意执行JavaScript，GitHub上发布的错误报告提到。</p><p><br/></p><p>数字取证专家指出，TinyMCE与JavaScript库具有广泛的兼容性，并且易于集成到内容管理系统（CMS）中，因此已成为全球开发人员最常用的工具之一。对于受影响的版本，除TinyMCE 5.1.3或更低版本外，TinyMCE 4.9.6或更低版本还可能遭受XSS漏洞的利用。</p><p><br/></p><p>在声明中，开发人员提到该问题与在上载到编辑器之前未正确清除内容有关。为了补救，TinyMCE 4和5的更新版本已发布。 </p><p><br/></p><p>这些版本中的任何一个的用户都应升级到TinyMCE 4.9.7和5.1.4。此外，还提到了受影响的插件是分析器，粘贴功能和visualchars。</p><p><br/></p><p>该漏洞的安全更新现已可用。此修复程序通过使用改进的解析器逻辑解决了该问题，除了包含HTML清理程序之外，还包括TinyMCE报告中找到的完整技术细节。</p><p><br/></p><p>报告此漏洞的数字取证专家还透露了一种解决方法，其中涉及禁用受影响的插件并使用BeforeSetContent事件手动清除内容。</p><p><br/></p><p>根据国际网络安全研究所（IICS）的数据，每天都有数百万的San TinyMCE用户，除了其插件外，还支持全球几乎40％的网站的运营，因此找到解决方案对于解决这一问题至关重要。威胁参与者开始在野外积极利用此漏洞之前。</p><p style="text-align: center;"><img class="rich_pages" data-ratio="0.6" data-src="https://mmbiz.qpic.cn/mmbiz_gif/rWGOWg48tafhoTF19gmo4GB2Gia1QM5jCiafdnMT3PdXHn9uUUoJCUa4m6EbsUfeUKLMf3SMSWBpOkfQCMN2PX7g/640?wx_fmt=gif" data-type="gif" data-w="640" style="" src="../Images/b3c42d40bb0cde010d398ee8f27769e6.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_gif/rWGOWg48tafhoTF19gmo4GB2Gia1QM5jCiafdnMT3PdXHn9uUUoJCUa4m6EbsUfeUKLMf3SMSWBpOkfQCMN2PX7g/640?wx_fmt=gif"/></p><p><br/></p>
+        
+</body>
+</html>

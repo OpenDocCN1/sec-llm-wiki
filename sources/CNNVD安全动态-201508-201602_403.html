@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Camera360被爆存在漏洞：数据存在泄露风险导致未经授权可访问他人照片</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Camera360被爆存在漏洞：数据存在泄露风险导致未经授权可访问他人照片</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxODY1OTM5OQ==&amp;mid=211365273&amp;idx=1&amp;sn=d9a742a8cf9d8e8efb80664105385d08&amp;chksm=12bf6cb125c8e5a76e17a454f58730fb0ca0803147acd0d00e551ae7a94890abb4572976312f&amp;scene=126&amp;sessionid=1681378477#rd">http://mp.weixin.qq.com/s?__biz=MzAxODY1OTM5OQ==&amp;mid=211365273&amp;idx=1&amp;sn=d9a742a8cf9d8e8efb80664105385d08&amp;chksm=12bf6cb125c8e5a76e17a454f58730fb0ca0803147acd0d00e551ae7a94890abb4572976312f&amp;scene=126&amp;sessionid=1681378477#rd</a></blockquote><p>       许多流行App都存在隐私数据泄漏的问题，我们在谷歌应用商店中发现了一款名为Camera360的摄影App。该App虽然能够让用户的照片变得十分漂亮，但是在无意之间泄漏了用户的隐私数据：恶意攻击者可以不经过授权就能够访问到Camera360用户的云账户和相册。在此之前，研究人员在Camera360以及其他一些主流应用中发现了SSL漏洞，这些漏洞可以使用中间人攻击进行利用，并且其对用户的隐私数据构成严重的威胁。</p><p>       Camera360全球用户近4.5亿，用户创建一个云账户后可通过登录cloud.camera360.com进行访问。Camera360通过验证用户名和密码来保护云，但是当访问云时，Camera360 App将会在安卓系统日志(logcat)以及网络通信中以加密方式泄露用户隐私数据。应用可以读取logcat，或者获取网络通信从而盗取数据。假设恶意攻击者现在与你处在同一WiFi环境，可以使用WiFi sniffing轻松盗取数据。</p><p>       泄漏的隐私数据可用于下载该用户除“私密专辑”外的所有照片，这个“私密专辑”是用户另外设置的一个密码。在安卓应用中不能看到这些“私密专辑”照片，值得一提的是：所有从设备上传到云上的数据默认情况下都是非“私密专辑”，这就意味着：隐私数据泄露后，从设备上传的照片都存在被黑客盗取的风险。</p><p>       （转载Freebuf）</p>
+        
+</body>
+</html>

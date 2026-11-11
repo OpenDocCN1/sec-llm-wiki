@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>WordPress Cookie处理流程可导致账户被劫持</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>WordPress Cookie处理流程可导致账户被劫持</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=200222009&amp;idx=4&amp;sn=0d3008650c8dbf4bde247d6923336591&amp;chksm=28f4b7b21f833ea4739ba3a2c97e995072d20304314c427729e9cb838832c5be077f688cba43&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=200222009&amp;idx=4&amp;sn=0d3008650c8dbf4bde247d6923336591&amp;chksm=28f4b7b21f833ea4739ba3a2c97e995072d20304314c427729e9cb838832c5be077f688cba43&amp;scene=27#wechat_redirect</a></blockquote><p style=""><strong style="margin: 0px; padding: 0px;">写在前面：</strong></p><p style=""><strong style="margin: 0px; padding: 0px;"><br/></strong></p><p style=""><span style="margin: 0px; padding: 0px; color: rgb(0, 176, 80);">这其实就是一个cookie传输没有使用https的问题，最然看似无关大局，但是在前一阵导致ebay账户泄露的</span><span style="margin: 0px; padding: 0px;">入侵事件</span><span style="margin: 0px; padding: 0px; color: rgb(0, 176, 80);">中，也有这种漏洞的影子。</span></p><p style=""><span style="margin: 0px; padding: 0px; color: rgb(0, 176, 80);"><br/></span></p><p style="">ps：貌似这个黑客还是个妹子~~~~(&gt;_&lt;)~~~~ <br style="margin: 0px; padding: 0px;"/></p><p style=""><strong style="margin: 0px; padding: 0px;"><br/></strong></p><p style=""><strong style="margin: 0px; padding: 0px;">正文：</strong></p><p style=""><br/></p><p style="">一位 Electronic Frontier Foundation (EFF)的安全工程师Yan Zhu，<strong style="margin: 0px; padding: 0px;">发现了WordPress cookie处理环节上的漏洞，WordPress会直接向服务器发送未经加密的cookie，如果这个cookie攻击者获取，他就会通过这个cookie登陆你的账号。</strong></p><p style=""><br/></p><p style="">Yan Zhu说:</p><p style=""><br/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; background-color: rgb(247, 247, 249);">当账号登陆之后，WordPress会使用一个叫做wordpress_logged_in的cookie来判断用户是否已经登陆，并且使用了HTTP协议传送这个cookie，这样做是不安全的。</pre><p style=""><br/></p><p style="">在wifi环境下我们可以使用一些嗅探工具(比如firesheep)轻易的抓取到这个cookie，使用抓取到的cookie,攻击者就可以在受害者的wordpress上执行任何不需要再次输入密码的操作。</p><p style=""><br/></p><p style="">"默认情况下这个session并不会过期，它会存在3年或者更长时间" Yan还在twitter这样说．</p><p><br/></p><p><img data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR38vgVCzfljlpgUiaG8gx4PxlH76sAygnczPKe6u1oPHyXspGPdCxkZgu9DiaibruSvWcwLmfG9HCIpDw/0" src="../Images/f7efc3990a9df911573881788c3267c5.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR38vgVCzfljlpgUiaG8gx4PxlH76sAygnczPKe6u1oPHyXspGPdCxkZgu9DiaibruSvWcwLmfG9HCIpDw/0"/></p>
+        
+</body>
+</html>

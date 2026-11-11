@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>免费主题暗藏后门，波及WordPress等知名CMS系统</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>免费主题暗藏后门，波及WordPress等知名CMS系统</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=201600299&amp;idx=3&amp;sn=9466475666ccac1eb04f6d4d543d60db&amp;chksm=2f1fbfa0186836b6125eaf49491a10d4b29d70f3e905861c5f493a77fd68350afb3846c7bfa6&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=201600299&amp;idx=3&amp;sn=9466475666ccac1eb04f6d4d543d60db&amp;chksm=2f1fbfa0186836b6125eaf49491a10d4b29d70f3e905861c5f493a77fd68350afb3846c7bfa6&amp;scene=27#wechat_redirect</a></blockquote><p>最近美国安全研究者爆料，针对CMS（内容管理系统）网站的数千种插件和主题被植入了名为CryptoPHP的后门，这可能导致大量的Web服务器被攻击者据为己有。</p><p><br/></p><p><strong>隐藏在CMS免费插件之中</strong></p><p><br/></p><p>这种新发现的后门插件名为“CryptoPHP”，这种后门通常会隐藏在WordPress、Joomla和Drupal的插件或主题中。</p><p><br/></p><p>为了让网站管理员中招，邪恶的攻击者使用了社会工程学的招数。一旦网站管理员下载并使用了包含了后门的盗版的CMS插件，后门便会在服务器上安家。</p><p><br/></p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR38iahujGVibtEZ5bvD4JcO3AIibhmn9XHtbia2ichQiapBMQTOLeAM03NmH4W6RO4ibXQaRZNS2hn6Wm60Wg/0" style="" data-ratio="0.8183556405353728" data-w="" src="../Images/f2913a5e860d8f569711d090abd3be4a.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR38iahujGVibtEZ5bvD4JcO3AIibhmn9XHtbia2ichQiapBMQTOLeAM03NmH4W6RO4ibXQaRZNS2hn6Wm60Wg/0"/></p><p><br/></p><pre><span style="font-size: 14px;">荷兰Fox-IT公司在揭密“CryptoPHP”的白皮书中提到：“演员一样的后门安插在盗版的主题和插件中，并免费提供给网站管理员安装到服务器中。”</span></pre><p><br/></p><p>白皮书链接请戳:</p><p>https://foxitsecurity.files.wordpress.com/2014/11/cryptophp-whitepaper-foxsrt-v4.pdf</p><p><br/></p><p>一旦后门被安插在服务器后，攻击者可以通过多种方式控制服务器，包括C&amp;C（command and control server）、邮件和人工控制。</p><p><br/></p><p><strong>后门功能特性</strong></p><p><br/></p><p>CryptoPHP后门的其他特性包括：</p><p><br/></p><pre><span style="font-size: 14px;">整合并支持多种内容管理系统包括WordPress、Drupal和Joomla
+与指控服务器（C&amp;C）的通讯使用公钥加密
+准备了大量的指控服务器域名和IP
+通过邮件防止指控服务器域名下线的备份机制
+手动控制后门
+远程更新指控服务器列表
+后门自动更新</span></pre><p><br/></p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR38iahujGVibtEZ5bvD4JcO3AIuNqbzSBZOZYwA2OxuWf2R2IUWcsCbjZNWh3V2mrQThHdc7Xyd0iaiaGA/0" style="" data-ratio="0.5124282982791587" data-w="" src="../Images/ef421b73af971a9fd7b5e4e6516cb3ee.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR38iahujGVibtEZ5bvD4JcO3AIuNqbzSBZOZYwA2OxuWf2R2IUWcsCbjZNWh3V2mrQThHdc7Xyd0iaiaGA/0"/></p><p><br/></p><p>同时，攻击者还利用置入了CryptoPHP后门的网站和服务器进行黑帽SEO。<br/></p><p><br/></p><p>截止11月12日，安全研究人员在上千种插件和主题中发现了超过16种CryptoPHP后门及其变种，而第一次发现此后门是在2013年9月。目前受到影响的网站数量难以准确统计，但至少已有上千个网站已经受到了此后门的威胁。</p><p><br/></p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR38iahujGVibtEZ5bvD4JcO3AIARvyVG4ovicxSDicpBcfDX0Eqfpq4Wo6wdkGDwb2ArnUHoSYGS08zibEw/0" style="" data-ratio="0.9636711281070746" data-w="" src="../Images/451d51cf8500e8df05bd9a2d0511cc08.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR38iahujGVibtEZ5bvD4JcO3AIARvyVG4ovicxSDicpBcfDX0Eqfpq4Wo6wdkGDwb2ArnUHoSYGS08zibEw/0"/></p><p><br/></p><p>[本文信息来自：THN，转载请注明来自FreeBuf.com]</p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR38iahujGVibtEZ5bvD4JcO3AIJX8ich9USdUQYxoCACoYjrVfsRMdFvcJVzgfhs3pc0xmT5iaNaXxyVnw/0" data-ratio="0.21223709369024857" data-w="" src="../Images/625711acd365260b6677077271ac4395.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR38iahujGVibtEZ5bvD4JcO3AIJX8ich9USdUQYxoCACoYjrVfsRMdFvcJVzgfhs3pc0xmT5iaNaXxyVnw/0"/></p>
+        
+</body>
+</html>

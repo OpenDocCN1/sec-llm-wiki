@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CompleteFTP路径遍历漏洞允许攻击者删除服务器文件</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>CompleteFTP路径遍历漏洞允许攻击者删除服务器文件</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485424&amp;idx=1&amp;sn=376859f6622439bec442a305f9a4293c&amp;chksm=fa76e60ecd016f1821305f86e492dc8748df78a534e3980dfb3448faf5b04761da94cb762b70&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485424&amp;idx=1&amp;sn=376859f6622439bec442a305f9a4293c&amp;chksm=fa76e60ecd016f1821305f86e492dc8748df78a534e3980dfb3448faf5b04761da94cb762b70&amp;scene=27#wechat_redirect</a></blockquote><blockquote><p>文件传输软件CompleteFTP中的一个安全漏洞允许未经身份验证的攻击者删除受影响安装上的任意文件。CompleteFTP由澳大利亚的EnterpriseDT开发，是一款专有的Windows FTP和SFTP服务器，支持FTPS、SFTP和HTTPS。</p></blockquote><p style="margin-bottom: 0em;"><img class="rich_pages wxw-img" data-ratio="0.5625" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJnfOxqibYicWmc8SL4PlQclAQL1yVgnficfFdpT6hlwY44c1CdrWkpOJmcvswqWicXQGNxcwqlYHticyLQ/640?wx_fmt=jpeg" data-type="jpeg" data-w="1200" height="675" width="1200" src="../Images/e324df8ac19e1a5f3005498c61a848c8.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJnfOxqibYicWmc8SL4PlQclAQL1yVgnficfFdpT6hlwY44c1CdrWkpOJmcvswqWicXQGNxcwqlYHticyLQ/640?wx_fmt=jpeg"/></p><p><br/></p><p>拥有rgod句柄的安全研究人员发现了HttpFile类中的一个缺陷，该缺陷是由于在文件操作中使用用户提供的路径之前缺乏适当的验证所致。</p><p><br/></p><p>“此漏洞允许远程攻击者删除EnterpriseDT CompleteFTP服务器受影响安装上的任意文件，”安全公告解释说。</p><p><br/></p><p>“攻击者可以利用此漏洞在SYSTEM上下文中删除文件。”</p><p><br/></p><p>该问题被分配为CVE-2022-2560，并在CompleteFTP版本22.1.1中得到修复。</p><p><br/></p><p>此版本包括RSA签名的SHA-2加密哈希函数形式的其他安全增强功能和PuTTY私钥的新格式。</p><p><br/></p>
+        
+</body>
+</html>

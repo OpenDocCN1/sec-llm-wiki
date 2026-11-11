@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CVE-2020-3446默认凭证错误</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>CVE-2020-3446默认凭证错误</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxMjYyMzkwOA==&amp;mid=2247487852&amp;idx=3&amp;sn=710f7cdce9da39f8346165b87da7907a&amp;chksm=9bae5827acd9d131f9d8e219a136f5d1a4453c4a8da5387786eb3c35a26d2b9c95c0f3fb9487&amp;scene=126&amp;sessionid=1681670157#rd">http://mp.weixin.qq.com/s?__biz=MzAxMjYyMzkwOA==&amp;mid=2247487852&amp;idx=3&amp;sn=710f7cdce9da39f8346165b87da7907a&amp;chksm=9bae5827acd9d131f9d8e219a136f5d1a4453c4a8da5387786eb3c35a26d2b9c95c0f3fb9487&amp;scene=126&amp;sessionid=1681670157#rd</a></blockquote><p>思科解决了一个严重的默认凭据漏洞（CVE-2020-3446），它影响了其ENCS 5400-W系列和CSP 5000-W系列设备的某些配置。</p><p>思科修复了一个严重的默认凭据漏洞，该漏洞影响了其ENCS 5400-W系列和CSP 5000-W系列设备的某些配置。</p><p><br/></p><p>思科广域网应用服务（WAAS）是由思科系统公司开发的技术，可以优化在广域网（WAN）环境中运行的任何基于TCP的应用程序的性能，同时保留并增强分支机构的安全性。WAAS将WAN优化，基于TCP的应用程序的加速以及思科的广域文件服务（WAFS）集成在单个设备或刀片中。</p><p><br/></p><p>用于WAAS的思科云服务平台（CSP-W）是用于部署思科数据中心网络功能虚拟化（VNF）的思科开放x86硬件平台。 </p><p><br/></p><p>思科企业网络计算系统（ENCS）是用于分支机构部署和托管WAAS应用程序的混合平台。</p><p><br/></p><p>思科专家透露，针对ENCS 5400-W系列和5000-W系列设备的带有企业NFV基础架构软件（NFVIS）捆绑映像的虚拟WAAS（vWAAS）包含默认的静态密码。</p><p><br/></p><p>跟踪为CVE-2020-3446的漏洞可以由未经身份验证的远程攻击者利用默认的带有静态密码的漏洞利用具有管理员权限的NFVIS命令行界面（CLI）登录。</p><p><br/></p><p>“针对Cisco ENCS 5400-W系列和CSP 5000-W系列设备的带有Cisco Enterprise NFV基础设施软件（NFVIS）捆绑映像的Cisco虚拟广域网应用服务（vWAAS）中的漏洞可能允许未经身份验证的远程攻击者登录到NFVIS CLI通过使用具有默认静态密码的帐户来实现。” 阅读思科发布的安全公告。“存在此漏洞是因为受影响的软件具有使用默认静态密码的用户帐户。有权访问受影响设备的NFVIS CLI的攻击者可以通过登录CLI来利用此漏洞。成功利用此漏洞可能使攻击者能够以管理员权限访问NFVIS CLI。”</p><p><br/></p><p>评级为严重的漏洞的CVSS评分为9.8。可以连接到目标设备的NFVIS CLI的攻击者可以利用此问题。</p><p><br/></p><p>据思科称，攻击者可以通过以下方式连接到设备的NFVIS CLI：</p><ul class="list-paddingleft-2" style="list-style-type: disc;"><li><p>受影响的ENCS 5400-W系列设备上CPU的以太网管理端口。如果配置了路由IP，则可以远程访问此接口。</p></li><li><p>受影响的CSP 5000-W系列设备上四端口I350 PCIe以太网适配器卡上的第一个端口。如果配置了路由IP，则可以远程访问此接口。</p></li><li><p>到vWAAS软件CLI的连接和有效的用户凭证，以便首先在vWAAS CLI上进行身份验证。</p></li><li><p>与ENCS 5400-W系列或CSP 5000-W系列设备的Cisco集成管理控制器（CIMC）接口的连接，以及一个有效的用户凭证，该凭证首先需要对CIMC进行身份验证。</p></li></ul><p><br/></p><p>思科确认该漏洞不会影响在Cisco ENCS 5000系列和Cisco CSP 5000系列设备上运行的独立NFVIS，也不会影响在思科广域网虚拟化引擎（WAVE）设备上运行的独立vWAAS软件或WAAS软件。</p><p><br/></p><p>这家IT巨头不知道有利用CVE-2020-3446漏洞进行野蛮攻击的情况。</p><p style="text-align: center;"><img class="rich_pages" data-ratio="0.6" data-src="https://mmbiz.qpic.cn/mmbiz_gif/rWGOWg48tafpdkMXEu7lic8tichnb6z7n9daVOKbWibUics0VZu3QW6oBUzY66YpcuotxSh40J2NCjBVPWNHgsW3Bw/640?wx_fmt=gif" data-type="gif" data-w="640" style="" src="../Images/809d91c93c47d76d2915928083da44d5.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_gif/rWGOWg48tafpdkMXEu7lic8tichnb6z7n9daVOKbWibUics0VZu3QW6oBUzY66YpcuotxSh40J2NCjBVPWNHgsW3Bw/640?wx_fmt=gif"/></p>
+        
+</body>
+</html>

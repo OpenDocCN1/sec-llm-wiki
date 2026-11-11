@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>ElastAlert监控日志告警Web攻击行为</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>ElastAlert监控日志告警Web攻击行为</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=2651067307&amp;idx=3&amp;sn=64eef125de8f0f67ef5cfa9fa8c4713e&amp;chksm=bd1f81208a680836e4536669c8bb1c682ed6c2785556290c51cc10c5c91b609c2f9e332a2ffa&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=2651067307&amp;idx=3&amp;sn=64eef125de8f0f67ef5cfa9fa8c4713e&amp;chksm=bd1f81208a680836e4536669c8bb1c682ed6c2785556290c51cc10c5c91b609c2f9e332a2ffa&amp;scene=27#wechat_redirect</a></blockquote><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;"><strong>*</strong>本文作者：shystartree，本文属 FreeBuf 原创奖励计划，未经许可禁止转载。</p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;"><strong>由于公司需要监控web攻击行为，而因某些原因搭不了waf，才不得不用ElastAlert进行告警，此为前提。</strong></p><h2 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 18px;border-bottom: 1px solid rgb(238, 238, 238);color: black;"><span style="color: rgb(0, 0, 0);">一、ELK安装</span></h2><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">Elasticsearch 是一个分布式、可扩展、实时的搜索与数据分析引擎。 它能从项目一开始就赋予你的数据以搜索、分析和探索的能力。</p><blockquote style="border-left: 4px solid rgb(221, 221, 221);padding: 0px 1em;margin: 0px 1em;quotes: none;"><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;color: rgb(119, 117, 117) !important;">Logstash是一款轻量级的日志搜集处理框架，可以方便的把分散的、多样化的日志搜集起来，并进行自定义的处理，然后传输到指定的位置，</p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;color: rgb(119, 117, 117) !important;">Kibana是一个开源的分析与可视化平台，设计出来用于和Elasticsearch一起使用的。你可以用kibana搜索、查看、交互存放在Elasticsearch索引里的数据，使用各种不同的图表、表格、地图等kibana能够很轻易地展示高级数据分析与可视化。</p></blockquote><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">ELK这一套软件可以当作一个MVC模型，logstash是controller层，Elasticsearch是一个model层，kibana是view层。首先将数据传给logstash，它将数据进行过滤和格式化（转成JSON格式），然后传给Elasticsearch进行存储、建搜索的索引，kibana提供前端的页面再进行搜索和图表可视化，它是调用Elasticsearch的接口返回的数据进行可视化。logstash和Elasticsearch是用Java写的，kibana使用node.js框架。</p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">安装方法网上有好多，此处就不再阐述。在试用了几乎所有的安装方法后，介绍下本人觉得比较快捷有效的安装方法：</p><h3 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 16px;color: blue;"><strong>1.1 下载安装匹配版本的elk</strong></h3><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">elastalert目前还不支持elk6.0以上版本，本人就是因为版本问题而折腾了好久，所以在安装elk的时候需要特别注意版本问题。</p><pre style="font-family: Avenir, SimSun;font-size: 1em;line-height: 1.2em;margin: 1.2em 0em;"><code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);font-size: 0.9em;border-radius: 2px;white-space: pre;overflow: auto;padding: 0.5em 0.7em;display: block !important;">我的服务器概况：
+Distributor ID:   Ubuntu
+Description:  Ubuntu 16.04.1 LTS
+Release:  16.04
+Codename: xenial</code></pre><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">在尝试了众多安装方法后，还是发现在官方网站下载deb包直接安装最为有效便捷。 （系统若为centos，下载对应的rpm包）</p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">搜索版本下载</p><pre style="font-family: Avenir, SimSun;font-size: 1em;line-height: 1.2em;margin: 1.2em 0em;"><code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);font-size: 0.9em;border-radius: 2px;white-space: pre;overflow: auto;padding: 0.5em 0.7em;display: block !important;">Elasticsearch：5.5.2
+Kibana：5.5.2
+Logstash：6.0.0
+filebeat：6.0.0 （轻量级的logstash，这个下载tar包）</code></pre><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">理论上,Elasticsearch及Kibana版本为5.x都可以，而Logstash与elastalert没啥联系，所以Logstash（大于或等于Elasticsearch及Kibana的5.x版本）能向Elasticsearch传递日志信息即可。</p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">下载完elk的deb包后，使用<code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);padding: 0.2em 0.5em;font-size: 0.9em;border-radius: 2px;display: inline;white-space: pre-wrap;">dpkg -i</code>命令很快就能顺利安装。</p><h3 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 16px;color: blue;"><strong>1.2 elk配置</strong></h3><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">同样，此处也只介绍本人的简单配置。我这里是只让Logstash对外开放负责收集日志，而Elasticsearch及Kibana仅在内网访问，故Elasticsearch及Kibana并未开启账户认证登陆，有需要开启或其他需求的读者们请自行搜索。</p><pre style="font-family: Avenir, SimSun;font-size: 1em;line-height: 1.2em;margin: 1.2em 0em;"><code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);font-size: 0.9em;border-radius: 2px;white-space: pre;overflow: auto;padding: 0.5em 0.7em;display: block !important;">/etc/elasticsearch/elasticsearch.yml:</code></pre><pre style="font-family: Avenir, SimSun;font-size: 1em;line-height: 1.2em;margin: 1.2em 0em;"><code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);font-size: 0.9em;border-radius: 2px;white-space: pre;overflow: auto;padding: 0.5em 0.7em;display: block !important;"># Set the bind address to a specific IP (IPv4 or IPv6):
+#
+network.host: 127.0.0.1
+#
+# Set a custom port for HTTP:
+#
+http.port: 9200</code></pre><pre style="font-family: Avenir, SimSun;font-size: 1em;line-height: 1.2em;margin: 1.2em 0em;"><code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);font-size: 0.9em;border-radius: 2px;white-space: pre;overflow: auto;padding: 0.5em 0.7em;display: block !important;">/etc/kibana/kibana.yml:</code></pre><pre style="font-family: Avenir, SimSun;font-size: 1em;line-height: 1.2em;margin: 1.2em 0em;"><code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);font-size: 0.9em;border-radius: 2px;white-space: pre;overflow: auto;padding: 0.5em 0.7em;display: block !important;"> Kibana is served by a back end server. This setting specifies the port to use.
+  server.port: 5601
+
+  # Specifies the address to which the Kibana server will bind. IP addresses and host names are both valid values.
+  # The default is 'localhost', which usually means remote machines will not be able to connect.
+  # To allow connections from remote users, set this parameter to a non-loopback address.
+  server.host: "localhost"
+
+  # The URL of the Elasticsearch instance to use for all your queries.
+  elasticsearch.url: "http://localhost:9200"</code></pre><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">我这里需要用到自定义的配置文件，故配置文件是自行创建的，放在/usr/share/logstash/bin中，取名为filebeat_log.conf ：</p><pre style="font-family: Avenir, SimSun;font-size: 1em;line-height: 1.2em;margin: 1.2em 0em;"><code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);font-size: 0.9em;border-radius: 2px;white-space: pre;overflow: auto;padding: 0.5em 0.7em;display: block !important;">  input {
+  beats {
+  port =&gt; 5044
+  client_inactivity_timeout =&gt; 90
+  codec =&gt; json
+      }
+
+  }
+
+  filter {
+    date {
+      match =&gt; [ "timestamp", "dd/MMM/yyyy:HH:mm:ss Z" ]
+      target =&gt; ["datetime"]
+    }
+    geoip {
+      source =&gt; "remote_addr"
+    }
+
+    mutate {
+  remove_field =&gt; ["tags", "beat"]
+    }
+  }
+
+  output {
+  elasticsearch {
+  hosts =&gt; "localhost:9200"
+  index =&gt; "logstash-%{+YYYY.MM.dd}"
+  }
+  stdout {
+  codec =&gt; rubydebug
+  }</code></pre><h3 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 16px;color: blue;">1.3 启动方法</h3><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;"><strong>elasticsearch&amp;kibana启动</strong></p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">扫描新的单元&amp;重新载入systemd：</p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;"><code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);padding: 0.2em 0.5em;font-size: 0.9em;border-radius: 2px;display: inline;white-space: pre-wrap;">systemctl daemon-reload</code></p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">加入开机自启动:</p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;"><code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);padding: 0.2em 0.5em;font-size: 0.9em;border-radius: 2px;display: inline;white-space: pre-wrap;">systemctl enable elasticsearch.service</code></p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;"><code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);padding: 0.2em 0.5em;font-size: 0.9em;border-radius: 2px;display: inline;white-space: pre-wrap;">systemctl enable kibana.service</code></p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">启动：</p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;"><code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);padding: 0.2em 0.5em;font-size: 0.9em;border-radius: 2px;display: inline;white-space: pre-wrap;">systemctl start elasticsearch</code></p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;"><code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);padding: 0.2em 0.5em;font-size: 0.9em;border-radius: 2px;display: inline;white-space: pre-wrap;">systemctl start kibana</code></p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">查看状态：</p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;"><code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);padding: 0.2em 0.5em;font-size: 0.9em;border-radius: 2px;display: inline;white-space: pre-wrap;">systemctl status elasticsearch</code></p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;"><code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);padding: 0.2em 0.5em;font-size: 0.9em;border-radius: 2px;display: inline;white-space: pre-wrap;">systemctl status kibana</code></p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;"><strong>logstash启动</strong></p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">进入/usr/share/logstash/bin：</p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;"><code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);padding: 0.2em 0.5em;font-size: 0.9em;border-radius: 2px;display: inline;white-space: pre-wrap;">nohup ./logstash -f filebeat_log.conf&gt; /dev/null 2&gt;&amp;1 &amp;</code></p><h2 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 18px;border-bottom: 1px solid rgb(238, 238, 238);color: black;">二、使用filebeat进行分布式收集</h2><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">一开始直接使用logstash进行日志收集，发现资源消耗实在太大，无奈寻找解决方法，发现filebeat是一个轻量级的日志传输工具，故使用filebeat作为日志收集，而logstash作为中心过滤器向es传递日志。</p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">所以整体的架构如：</p><blockquote style="border-left: 4px solid rgb(221, 221, 221);padding: 0px 1em;margin: 0px 1em;quotes: none;"><ul style="margin-left: 2em;margin-right: 2em;" class=" list-paddingleft-2"><li><p>A、B、C、D…（这些服务器是准备监控被攻击行为，装上filebeat）</p></li><li><p>主服务器（装上elk和elastalert，负责收集过滤分析filebeat传递的日志和告警）</p></li></ul></blockquote><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">下面以tomcat为例子，分享我的配置文件<code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);padding: 0.2em 0.5em;font-size: 0.9em;border-radius: 2px;display: inline;white-space: pre-wrap;">filebeat.yml</code>（nginx的话，修改<code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);padding: 0.2em 0.5em;font-size: 0.9em;border-radius: 2px;display: inline;white-space: pre-wrap;">paths</code>的路径）：</p><pre style="font-family: Avenir, SimSun;font-size: 1em;line-height: 1.2em;margin: 1.2em 0em;"><code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);font-size: 0.9em;border-radius: 2px;white-space: pre;overflow: auto;padding: 0.5em 0.7em;display: block !important;">  filebeat.prospectors:
+
+  # Each - is a prospector. Most options can be set at the prospector level, so
+  # you can use different prospectors for various configurations.
+  # Below are the prospector specific configurations.
+
+  - type: log
+
+    # Change to true to enable this prospector configuration.
+    enabled: true
+
+    # Paths that should be crawled and fetched. Glob based paths.
+    paths:
+      - /home/qy/apache-tomcat-9.0.1/logs/localhost_access_log.*.txt
+      #- c:\programdata\elasticsearch\logs\*
+    # Exclude lines. A list of regular expressions to match. It drops the lines that are
+    # matching any regular expression from the list.
+    #exclude_lines: ['^DBG']
+    document_type: tomcat-log
+    scan_frequency: 15s
+    ignore_older: 20m
+    close_inactive: 12m
+    clean_inactive: 30m
+    close_removed: true
+    clean_removed: true
+    ....
+    #----------------------------- Logstash output --------------------------------
+
+  output.logstash:
+    # The Logstash hosts
+    hosts: ["188.88.88.88:5044"]</code></pre><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">直接解压下载的tar包，进入目录修改配置文件。然后启动filebeat：<code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);padding: 0.2em 0.5em;font-size: 0.9em;border-radius: 2px;display: inline;white-space: pre-wrap;">nohup ./filebeat -e -c filebeat.yml &gt;/dev/null 2&gt;&amp;1 &amp;</code></p><h2 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 18px;border-bottom: 1px solid rgb(238, 238, 238);color: black;"><span style="color: rgb(0, 0, 0);">三、日志格式转json</span></h2><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">为方便kibana分析和elastalert的取值，日志的格式要为json格式，上述的logstash配置文件已适配json格式。</p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">公司的应用服务器中均为nginx和tomcat，故本文只介绍tomcat及nginx的json格式配置方法，其他服务器配置方法请自行搜索。</p><h3 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 16px;color: blue;">3.1 tomcat的json格式配置</h3><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">打开<code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);padding: 0.2em 0.5em;font-size: 0.9em;border-radius: 2px;display: inline;white-space: pre-wrap;">config/server.xml</code>,在最后的位置修改log的输出配置为：</p><pre style="font-family: Avenir, SimSun;font-size: 1em;line-height: 1.2em;margin: 1.2em 0em;"><code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);font-size: 0.9em;border-radius: 2px;white-space: pre;overflow: auto;padding: 0.5em 0.7em;display: block !important;">    &lt;Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs"
+                 prefix="localhost_access_log" suffix=".txt" pattern="{&amp;quot;time&amp;quot;:&amp;quot;%t&amp;quot;,&amp;quot;remote_addr&amp;quot;:&amp;quot;%h&amp;quot;,&amp;quot;remote_user&amp;quot;:&amp;quot;%l&amp;quot;,&amp;quot;request&amp;quot;:&amp;quot;%r&amp;quot;,&amp;quot;status&amp;quot;:&amp;quot;%s&amp;quot;,&amp;quot;body_bytes_sent&amp;quot;:&amp;quot;%b&amp;quot;,&amp;quot;http_referer&amp;quot;:&amp;quot;%{Referer}i&amp;quot;,&amp;quot;http_user_agent&amp;quot;:&amp;quot;%{User-Agent}i&amp;quot;,&amp;quot;http_x_forwarded_for&amp;quot;:&amp;quot; %{X-Forwarded-For}i&amp;quot;,&amp;quot;request_time&amp;quot;:&amp;quot;%T&amp;quot;,&amp;quot;host&amp;quot;:&amp;quot;%v&amp;quot;,&amp;quot;port&amp;quot;:&amp;quot;%p&amp;quot;}"/&gt;</code></pre><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">然后重启tomcat，即生效。</p><h3 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 16px;color: blue;">3.2 nginx的json格式配置</h3><pre style="font-family: Avenir, SimSun;font-size: 1em;line-height: 1.2em;margin: 1.2em 0em;"><code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);font-size: 0.9em;border-radius: 2px;white-space: pre;overflow: auto;padding: 0.5em 0.7em;display: block !important;">进入`/etc/nginx`打开`nginx.conf`，加入如下配置：</code></pre><pre style="font-family: Avenir, SimSun;font-size: 1em;line-height: 1.2em;margin: 1.2em 0em;"><code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);font-size: 0.9em;border-radius: 2px;white-space: pre;overflow: auto;padding: 0.5em 0.7em;display: block !important;">  http {
+
+          ##
+          # Basic Settings
+          ##
+
+          sendfile on;
+          tcp_nopush on;
+          tcp_nodelay on;
+          keepalive_timeout 65;
+          types_hash_max_size 2048;
+          # server_tokens off;
+
+          log_format logstash_json '{"time": "$time_local", '
+         '"remote_addr": "$remote_addr", '
+         '"remote_user": "$remote_user", '
+         '"request": "$request", '
+         '"status": "$status", '
+         '"body_bytes_sent": "$body_bytes_sent", '
+         '"http_referer": "$http_referer", '
+         '"http_user_agent": "$http_user_agent", '
+         '"http_x_forwarded_for": "$http_x_forwarded_for", '
+         '"request_time": "$request_time", '
+         '"request_length": "$request_length", '
+         '"host": "$http_host"}';
+       }</code></pre><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">最后<code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);padding: 0.2em 0.5em;font-size: 0.9em;border-radius: 2px;display: inline;white-space: pre-wrap;">nginx -s reload</code>即可</p><h2 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 18px;border-bottom: 1px solid rgb(238, 238, 238);color: black;">四、使用elastalert进行告警</h2><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">在经过上述的安装及配置后，终于轮到我们的主角—ElastAlert出来了，其他的告警工具还有<code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);padding: 0.2em 0.5em;font-size: 0.9em;border-radius: 2px;display: inline;white-space: pre-wrap;">411 Alert Management</code>、<code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);padding: 0.2em 0.5em;font-size: 0.9em;border-radius: 2px;display: inline;white-space: pre-wrap;">Elasticsearch watch</code> ，请读者们自行确定需要使用哪个。</p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">ElastAlert使用python编写，具有容易上手、文档全等特点，虽然这个工具拥有如此多的优点，在搭建过程还是遇到了很多很多的未知错误，主要原因是网上的资料大多是针对es5.x以前的版本而没什么现成的资料可供参考。</p><h3 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 16px;color: blue;">4.1 安装elastalert</h3><pre style="font-family: Avenir, SimSun;font-size: 1em;line-height: 1.2em;margin: 1.2em 0em;"><code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);font-size: 0.9em;border-radius: 2px;white-space: pre;overflow: auto;padding: 0.5em 0.7em;display: block !important;">  git clone https://github.com/Yelp/elastalert.git 
+  cd elastalert
+  python setup.py install            //可能需要sudo
+  Pip install -r requirements.txt    //可能需要sudo
+  cp config.yaml.example config.yaml</code></pre><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">具体的功能本文就不一一介绍了，请自行前往官方文档了解</p><h3 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 16px;color: blue;">4.2 创建索引</h3><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">安装完成后会系统中会自带三个命令：</p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;"><code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);padding: 0.2em 0.5em;font-size: 0.9em;border-radius: 2px;display: inline;white-space: pre-wrap;">elastalert-create-index</code>、<code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);padding: 0.2em 0.5em;font-size: 0.9em;border-radius: 2px;display: inline;white-space: pre-wrap;">elastalert-rule-from-kibana</code> 、<code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);padding: 0.2em 0.5em;font-size: 0.9em;border-radius: 2px;display: inline;white-space: pre-wrap;">elastalert-test-rule</code></p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">使用<code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);padding: 0.2em 0.5em;font-size: 0.9em;border-radius: 2px;display: inline;white-space: pre-wrap;">elastalert-create-index</code>，根据提示设置es后按回车默认即可。<br/> 配置完索引及配置文件后，可以使用<code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);padding: 0.2em 0.5em;font-size: 0.9em;border-radius: 2px;display: inline;white-space: pre-wrap;">elastalert-test-rule</code>进行测试。这里有个bug，如果出现<code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);padding: 0.2em 0.5em;font-size: 0.9em;border-radius: 2px;display: inline;white-space: pre-wrap;">TransportError(400, u'search_phase_execution_exception', u'No mapping found for [alert_time] in order to sort on')</code>之类的错误，在确认没有其他的问题时，可以先删除索引<code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);padding: 0.2em 0.5em;font-size: 0.9em;border-radius: 2px;display: inline;white-space: pre-wrap;">curl -XDELETE [http://localhost:9200/](http://localhost:9200/)*</code>,再使用<code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);padding: 0.2em 0.5em;font-size: 0.9em;border-radius: 2px;display: inline;white-space: pre-wrap;">elastalert-create-index</code>重新生成索引。</p><h3 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 16px;color: blue;">4.3 配置config.yaml</h3><pre style="font-family: Avenir, SimSun;font-size: 1em;line-height: 1.2em;margin: 1.2em 0em;"><code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);font-size: 0.9em;border-radius: 2px;white-space: pre;overflow: auto;padding: 0.5em 0.7em;display: block !important;">  rules_folder: example_rules
+
+  # How often ElastAlert will query Elasticsearch
+  # The unit can be anything from weeks to seconds
+  run_every:
+    seconds: 3   #每三秒向es请求数据
+  # ElastAlert will buffer results from the most recent
+  # period of time, in case some log sources are not in real time
+  buffer_time:
+    minutes: 15  
+    #日志会延迟进入es，这里是配置query的向前的时间范围，这是15分钟，即查询 time[now-15m, now]
+
+  # The Elasticsearch hostname for metadata writeback
+  # Note that every rule can have its own Elasticsearch host
+  es_host: 188.88.88.88
+
+  # The Elasticsearch port
+  es_port: 9200
+
+  # Optional URL prefix for Elasticsearch
+  #es_url_prefix: elasticsearch
+
+  # Connect with TLS to Elasticsearch
+  #use_ssl: True
+
+  # Verify TLS certificates
+  #verify_certs: True
+
+  # GET request with body is the default option for Elasticsearch.
+  # If it fails for some reason, you can pass 'GET', 'POST' or 'source'.
+  # See http://elasticsearch-py.readthedocs.io/en/master/connection.html?highlight=send_get_body_as#transport
+  # for details
+  #es_send_get_body_as: GET
+
+  # Option basic-auth username and password for Elasticsearch
+  #es_username: someusername
+  #es_password: somepassword
+
+  # The index on es_host which is used for metadata storage
+  # This can be a unmapped index, but it is recommended that you run
+  # elastalert-create-index to set a mapping
+  writeback_index: elastalert_status
+
+  # If an alert fails for some reason, ElastAlert will retry
+  # sending the alert until this time period has elapsed
+  alert_time_limit:
+    days: 1</code></pre><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">以上各字段的解释：</p><blockquote style="border-left: 4px solid rgb(221, 221, 221);padding: 0px 1em;margin: 0px 1em;quotes: none;"><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;color: rgb(119, 117, 117) !important;">Rules_folder：用来加载下一阶段rule的设置，默认是example_rules</p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;color: rgb(119, 117, 117) !important;">Run_every：用来设置定时向elasticsearch发送请求</p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;color: rgb(119, 117, 117) !important;">Buffer_time：用来设置请求里时间字段的范围，默认是45分钟</p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;color: rgb(119, 117, 117) !important;">Es_host：elasticsearch的host地址</p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;color: rgb(119, 117, 117) !important;">Es_port：elasticsearch 对应的端口号</p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;color: rgb(119, 117, 117) !important;">Use_ssl：可选的，选择是否用SSL连接es，true或者false</p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;color: rgb(119, 117, 117) !important;">Verify_certs：可选的，是否验证TLS证书，设置为true或者false，默认为- true</p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;color: rgb(119, 117, 117) !important;">Es_username：es认证的username</p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;color: rgb(119, 117, 117) !important;">Es_password：es认证的password</p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;color: rgb(119, 117, 117) !important;">Es_url_prefix：可选的，es的url前缀（我的理解是https或者http）</p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;color: rgb(119, 117, 117) !important;">Es_send_get_body_as：可选的，查询es的方式，默认的是GET</p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;color: rgb(119, 117, 117) !important;">Writeback_index：elastalert产生的日志在elasticsearch中的创建的索引</p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;color: rgb(119, 117, 117) !important;">Alert_time_limit：失败重试的时间限制</p></blockquote><h3 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 16px;color: blue;"><strong>4.4 告警配置介绍</strong></h3><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">在<code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);padding: 0.2em 0.5em;font-size: 0.9em;border-radius: 2px;display: inline;white-space: pre-wrap;">example_rules</code>目录中新建yaml配置文件 <code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);padding: 0.2em 0.5em;font-size: 0.9em;border-radius: 2px;display: inline;white-space: pre-wrap;">webattack_frequency.yaml</code>,下面分开介绍这个配置文件的内容（下个小节将分享我的配置文件，此小节仅解释其中的必要设置项）：</p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;"><strong>1、告警规则</strong></p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">ElastAlert支持11种告警规则，本文不一一介绍了，为响应web攻击行为，本文选用的告警规则是<code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);padding: 0.2em 0.5em;font-size: 0.9em;border-radius: 2px;display: inline;white-space: pre-wrap;">frequency</code>。</p><pre style="font-family: Avenir, SimSun;font-size: 1em;line-height: 1.2em;margin: 1.2em 0em;"><code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);font-size: 0.9em;border-radius: 2px;white-space: pre;overflow: auto;padding: 0.5em 0.7em;display: block !important;">name: web attack
+
+# (Required)
+# Type of alert.
+# the frequency rule type alerts when num_events events occur with timeframe time
+type: frequency
+
+# (Required, frequency specific)
+# Alert when this many documents matching the query occur within a timeframe
+num_events: 10
+
+# (Required, frequency specific)
+# num_events must occur within this amount of time to trigger an alert
+timeframe:
+  minutes: 1
+
+# (Required)
+# Index to search, wildcard supported
+index: logstash-*      #对应logstash的配置文件中output的elasticsearch index前缀
+
+filter:
+- query_string:
+# sql insert  xss detect
+        query: "request: select.+(from|limit) OR request: union(.*?)select OR request: into.+(dump|out)file "</code></pre><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">上述配置文件的意图即是：在一分钟内将匹配query里面的sql注入规则，若匹配次数达到10次，即进行报警。</p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;"><strong>2、使用邮箱进行告警</strong></p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">ElastAlert提供了 10 多种通知的类型，本文选用的是邮箱告警，还有微信告警、钉钉告警，若有需要，请自行配置。</p><pre style="font-family: Avenir, SimSun;font-size: 1em;line-height: 1.2em;margin: 1.2em 0em;"><code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);font-size: 0.9em;border-radius: 2px;white-space: pre;overflow: auto;padding: 0.5em 0.7em;display: block !important;">smtp_host: smtp.qiye.163.com
+smtp_port: 25
+
+smtp_auth_file: /Users/qy/Downloads/work/elastalert/example_rules/smtp_auth_file.yaml
+#回复给那个邮箱
+email_reply_to: xxx@163.com
+#从哪个邮箱发送
+from_addr: xxx@163.com
+
+# (Required)
+# The alert is use when a match is found
+alert:
+- "email"
+
+# (required, email specific)
+# a list of email addresses to send alerts to
+email:
+- "shystartree@163.com"
+
+alert_subject: "web attack may be by {} at @{}"
+alert_subject_args:
+  - remote_addr
+  - time
+
+alert_text_type: alert_text_only
+
+alert_text: |
+  你好，服务器({})可能正在受到web攻击，请采取手段阻止！！！！
+  ### 截止发邮件前匹配到的请求数：{}
+  &gt; 发生时间: {}
+  &gt; timestamp:{}
+  &gt; attacker's ip: {}
+  &gt; request: {}
+  &gt; status:{}
+  &gt; UA头:{}
+  &gt;&gt;&gt; 参考来源：{}
+
+alert_text_args:
+  - host
+  - num_hits
+  - time
+  - "@timestamp"
+  - remote_addr
+  - request
+  - status
+  - http_user_agent
+  - source</code></pre><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;"><code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);padding: 0.2em 0.5em;font-size: 0.9em;border-radius: 2px;display: inline;white-space: pre-wrap;">smtp_auth_file.yaml</code>的配置内容会在下个小节给出，在这个配置中，我自定义了 alert 的内容，更为精确地突出了攻击者ip、受攻击的服务器、攻击事件等信息。</p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;"><strong>3、减少重复告警的频率</strong></p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">在实际的使用中，若使用上述的配置，受到攻击的时候邮箱将不断地收到邮件，而这些邮件都对应着同一个攻击实例，根本没必要重复收取，于是，我使用了如下的配置：</p><pre style="font-family: Avenir, SimSun;font-size: 1em;line-height: 1.2em;margin: 1.2em 0em;"><code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);font-size: 0.9em;border-radius: 2px;white-space: pre;overflow: auto;padding: 0.5em 0.7em;display: block !important;">   # 用来区分报警，跟 realert 配合使用，在这里意味着，
+   # 5 分钟内如果有重复报警，那么当 name 不同时，会当做不同的报警处理，可以是数组
+   query_key:
+     - name
+
+   # 5 分钟内相同的报警不会重复发送
+   realert:
+     minutes: 5
+
+   # 指数级扩大 realert 时间，中间如果有报警，
+   # 则按照 5 -&gt; 10 -&gt; 20 -&gt; 40 -&gt; 60 不断增大报警时间到制定的最大时间，
+   # 如果之后报警减少，则会慢慢恢复原始 realert 时间
+   exponential_realert:
+     hours: 1</code></pre><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">在本人实际测试的攻击场景中，发现使用了<code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);padding: 0.2em 0.5em;font-size: 0.9em;border-radius: 2px;display: inline;white-space: pre-wrap;">exponential_realert</code>后，会错过很多告警（这些告警并不是同一个攻击实例），暂时不确定原因，还请读者们自行确定是否开启该设置。</p><h3 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 16px;color: blue;"><strong>4.5<code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);padding: 0.2em 0.5em;font-size: 0.9em;border-radius: 2px;display: inline;white-space: pre-wrap;">webattack_frequency.yaml</code>及<code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);padding: 0.2em 0.5em;font-size: 0.9em;border-radius: 2px;display: inline;white-space: pre-wrap;">smtp_auth_file.yaml</code>配置文件内容</strong></h3><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">上述的4.4小节中对每个配置都作了简单的介绍，这里就直接放出web攻击预警的配置文件供各位读者参考。</p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;"><code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);padding: 0.2em 0.5em;font-size: 0.9em;border-radius: 2px;display: inline;white-space: pre-wrap;">webattack_frequency.yaml:</code></p><pre style="font-family: Avenir, SimSun;font-size: 1em;line-height: 1.2em;margin: 1.2em 0em;"><code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);font-size: 0.9em;border-radius: 2px;white-space: pre;overflow: auto;padding: 0.5em 0.7em;display: block !important;"># Alert when the rate of events exceeds a threshold
+
+# (Optional)
+# Elasticsearch host
+#es_host: 188.88.88.88
+
+# (Optional)
+# Elasticsearch port
+#es_port: 9200
+
+# (OptionaL) Connect with SSL to Elasticsearch
+#use_ssl: True
+
+# (Optional) basic-auth username and password for Elasticsearch
+#es_username: someusername
+#es_password: somepassword
+
+# (Required)
+# Rule name, must be unique
+name: web attack
+
+realert:
+  minutes: 5
+
+# (Required)
+# Type of alert.
+# the frequency rule type alerts when num_events events occur with timeframe time
+type: frequency
+
+# (Required)
+# Index to search, wildcard supported
+index: logstash-*
+
+# (Required, frequency specific)
+# Alert when this many documents matching the query occur within a timeframe
+num_events: 10
+
+# (Required, frequency specific)
+# num_events must occur within this amount of time to trigger an alert
+timeframe:
+  #hours: 4
+  minutes: 1
+
+# (Required)
+# A list of Elasticsearch filters used for find events
+# These filters are joined with AND and nested in a filtered query
+# For more info: http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl.html
+#filter:
+#- term:
+#    some_field: "some_value"
+
+filter:
+- query_string:
+# sql insert  xss detect
+        query: "request: select.+(from|limit) OR request: union(.*?)select OR request: into.+(dump|out)file OR
+
+        request: (base64_decode|sleep|benchmark|and.+1=1|and.+1=2|or%20|exec|information_schema|where%20|union%20|%2ctable_name%20|cmdshell|table_schema) OR
+
+        request: (iframe|script|body|img|layer|div|meta|style|base|object|input|onmouseover|onerror|onload) OR
+
+        request: .+etc.+passwd OR http_user_agent：(HTTrack|harvest|audit|dirbuster|pangolin|nmap|sqln|-scan|hydra|Parser|libwww|BBBike|sqlmap|w3af|owasp|Nikto|fimap|havij|PycURL|zmeu|BabyKrokodil|netsparker|httperf|bench) OR
+
+        status: (400|404|500|501)
+
+        NOT (request:_health.html OR remote_addr:222.222.222.222  )
+        "
+
+smtp_host: smtp.qiye.163.com
+smtp_port: 25
+
+smtp_auth_file: /Users/qy/Downloads/work/elastalert/example_rules/smtp_auth_file.yaml
+#回复给那个邮箱
+email_reply_to: xxx@163.com
+#从哪个邮箱发送
+from_addr: xxx@163.com
+
+# (Required)
+# The alert is use when a match is found
+alert:
+- "email"
+
+# (required, email specific)
+# a list of email addresses to send alerts to
+email:
+- "shystartree@163.com"
+
+alert_subject: "web attack may be by {} at @{}"
+alert_subject_args:
+  - remote_addr
+  - time
+
+alert_text_type: alert_text_only
+
+alert_text: |
+  你好，服务器({})可能正在受到web攻击，请采取手段阻止！！！！
+  ### 截止发邮件前匹配到的请求数：{}
+  &gt; 发生时间: {}
+  &gt; timestamp:{}
+  &gt; attacker's ip: {}
+  &gt; request: {}
+  &gt; status:{}
+  &gt; UA头:{}
+  &gt;&gt;&gt; 参考来源：{}
+
+alert_text_args:
+  - host
+  - num_hits
+  - time
+  - "@timestamp"
+  - remote_addr
+  - request
+  - status
+  - http_user_agent
+  - source</code></pre><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;"><code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);padding: 0.2em 0.5em;font-size: 0.9em;border-radius: 2px;display: inline;white-space: pre-wrap;">smtp_auth_file.yaml:</code></p><pre style="font-family: Avenir, SimSun;font-size: 1em;line-height: 1.2em;margin: 1.2em 0em;"><code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);font-size: 0.9em;border-radius: 2px;white-space: pre;overflow: auto;padding: 0.5em 0.7em;display: block !important;">user: xxx@163.com
+password: password</code></pre><h3 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 16px;color: blue;">4.6 运行elastalert</h3><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">在成功配置完ElastAlert后将生成三个配置文件：</p><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;"><code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);padding: 0.2em 0.5em;font-size: 0.9em;border-radius: 2px;display: inline;white-space: pre-wrap;">config.yaml、webattack_frequency.yaml、smtp_auth_file.yaml</code></p><ul style="margin-left: 2em;margin-right: 2em;" class=" list-paddingleft-2"><li><p>启动elastalert服务，监听elasticsearch：</p></li></ul><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;"><code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);padding: 0.2em 0.5em;font-size: 0.9em;border-radius: 2px;display: inline;white-space: pre-wrap;">nohup python -m elastalert.elastalert --verbose --rule webattack_frequency.yaml &gt;/dev/null 2&gt;&amp;1 &amp;</code></p><ul style="margin-left: 2em;margin-right: 2em;" class=" list-paddingleft-2"><li><p>为实现守护进程的作用，可以配合<code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);padding: 0.2em 0.5em;font-size: 0.9em;border-radius: 2px;display: inline;white-space: pre-wrap;">supervisor</code>进行使用，本文不再阐述。</p></li></ul><h3 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 16px;color: blue;">4.7 运行效果：</h3><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">当匹配到自定义攻击规则的时候，ElastAlert将会以邮件方式发送告警信息：</p><pre style="font-family: Avenir, SimSun;font-size: 1em;line-height: 1.2em;margin: 1.2em 0em;"><code style="font-family: Avenir, SimSun;background-color: rgb(248, 248, 248);font-size: 0.9em;border-radius: 2px;white-space: pre;overflow: auto;padding: 0.5em 0.7em;display: block !important;">web attack may be by 104.38.13.21 at @[13/Jan/2018:16:06:58 +0800]
+xxx 发给 shystartree   
+你好，服务器(199.222.36.31)可能正在受到web攻击，请采取手段阻止！！！！
+### 截止发邮件前匹配到的请求数：20
+&gt; 发生时间: [13/Jan/2018:16:06:58 +0800]
+&gt; timestamp:2018-01-13T08:07:04.930Z
+&gt; attacker's ip: 184.233.9.121
+&gt; request: GET /dbadmin/scripts/setup.php HTTP/1.0
+&gt; status:200
+&gt; UA头:ZmEu
+&gt;&gt;&gt; 参考来源：/log/localhost_access_log.2018-01-13.txt</code></pre><h2 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 18px;border-bottom: 1px solid rgb(238, 238, 238);color: black;">五、总结</h2><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">ElastAlert除了本文介绍的告警web攻击行为外，还能进行异常告警等。使用了frequency的规则后，基本能达到识别web攻击的目的。在实际的使用中，elastalert能稳定运行，且能根据自定义配置文件精确告警，缺点是告警的格式不够美观和需要频繁地修改配置文件。</p><h2 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 18px;border-bottom: 1px solid rgb(238, 238, 238);color: black;">参考链接：</h2><p style="font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;">ElastAlert：『Hi，咱服务挂了』:https://xizhibei.github.io/2017/11/19/alerting-with-elastalert/<br/>[ElastAlert]介绍和安装：https://segmentfault.com/a/1190000008227486<br/>被elastalert虐了：http://blog.csdn.net/vbaspdelphi/article/details/54291066</p><p style="font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;margin: 1em !important;text-align: justify !important;"><strong style="font-family: Avenir, SimSun !important;">*本文作者：shystartree，本文属 FreeBuf 原创奖励计划，未经许可禁止转载</strong><span style="font-family: Avenir, SimSun;"><strong><br/><br/></strong></span><img data-s="300,640" data-type="jpeg" data-src="https://mmbiz.qpic.cn/mmbiz/qq5rfBadR3ic8CiaI3jDNE1pjxMWoM1hibUOrQypt6TwLx2iaicDUk4fCkEVKrkPJ5ia00nc363FCB6SW6Gian7F80ibMQ/0?wx_fmt=jpeg" data-copyright="0" class="" data-ratio="0.6466666666666666" data-w="600" style="" src="../Images/402394fafbdaf09572b7ad2c881e910a.png" data-original-src="https://mmbiz.qpic.cn/mmbiz/qq5rfBadR3ic8CiaI3jDNE1pjxMWoM1hibUOrQypt6TwLx2iaicDUk4fCkEVKrkPJ5ia00nc363FCB6SW6Gian7F80ibMQ/0?wx_fmt=jpeg"/><span style="font-size: 0em;"/></p>
+        
+</body>
+</html>

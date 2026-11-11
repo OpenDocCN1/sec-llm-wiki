@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>SYNPROXY：廉价的抗DoS攻击方案</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>SYNPROXY：廉价的抗DoS攻击方案</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NjQ4MjYwMQ==&amp;mid=200090755&amp;idx=3&amp;sn=656666145e6fe07520a4d176f10d1128&amp;chksm=28f11fc51f8696d3b3256aca558d1dc31b9e84a03d2d9f7fa27fd1665fe059e0dbb593492733&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NjQ4MjYwMQ==&amp;mid=200090755&amp;idx=3&amp;sn=656666145e6fe07520a4d176f10d1128&amp;chksm=28f11fc51f8696d3b3256aca558d1dc31b9e84a03d2d9f7fa27fd1665fe059e0dbb593492733&amp;scene=27#wechat_redirect</a></blockquote><p style="word-wrap: break-word; margin-top: 10px; margin-bottom: 10px; padding: 0px; line-height: 2em; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; white-space: normal; background-color: rgb(255, 255, 255);">DoS攻击是一个永恒的问题，虽然专业厂商的防火墙，负载均衡类的网关设备能比较有效的防御DoS攻击，但黑客们更倾向于x86+GNU/Linux的组合，原因很简单：足够的廉价。</p><p style="word-wrap: break-word; margin-top: 10px; margin-bottom: 10px; padding: 0px; line-height: 2em; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; white-space: normal; background-color: rgb(255, 255, 255);"/><p style="word-wrap: break-word; margin-top: 10px; margin-bottom: 10px; padding: 0px; line-height: 2em; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; white-space: normal; background-color: rgb(255, 255, 255);">在linux内核3.13里终于加入了SYNPROXY的新功能，这个模块是一个基于链接跟踪的netfilter扩展，主要干的工作就是把来自客户端的初始SYN包标记成UNTRACKED然后直接导入iptables的"SYNPROXY"的动作(类似ACCEPT,NFQUEUE和DROP)，这时内核会扮演网关设备的角色继续跟客户端进行TCP的常规握手流程，SYNPROXY会等到最终的ACK(三次握手)的cookie被验证合法后才会开始让包真正的进入目标端。</p><p style="word-wrap: break-word; margin-top: 10px; margin-bottom: 10px; padding: 0px; line-height: 2em; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; white-space: normal; background-color: rgb(255, 255, 255);">开发者Jesper Dangaard Brouer的数据表明SYNPROXY对于对抗SYN FLOOD DOS攻击是非常有效的，笔者今天也在Debian和SLES-12-beta2对SYNPROXY进行了DoS测试，大致结果是在使用hping3和metasploit进行测试，开启SYNPROXY后ksoftirq占用会从8%降低到3%以内。<br style="word-wrap: break-word;"/><br style="word-wrap: break-word;"/></p><p style="word-wrap: break-word; margin-top: 10px; margin-bottom: 10px; padding: 0px; line-height: 2em; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; white-space: normal; background-color: rgb(255, 255, 255);">本文地址：http://linux.cn/article-2732-1.html</p><p><img src="../Images/25a3067db826ab8f919f5769d91856e4.png" style="" data-original-src="http://img.linux.net.cn/static/image/common/weixin_sign_1.png"/><span style=""> </span></p>
+        
+</body>
+</html>

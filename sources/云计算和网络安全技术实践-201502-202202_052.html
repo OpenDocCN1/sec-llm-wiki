@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Kata Containers的实践（二）</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Kata Containers的实践（二）</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650746208&amp;idx=1&amp;sn=64930e6e49fbb055e34b063297e68827&amp;chksm=87148c60b063057636c0e49ca170066f176a87a86fa35a9e1af1c51d72183a454d3130edf54a&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650746208&amp;idx=1&amp;sn=64930e6e49fbb055e34b063297e68827&amp;chksm=87148c60b063057636c0e49ca170066f176a87a86fa35a9e1af1c51d72183a454d3130edf54a&amp;scene=27#wechat_redirect</a></blockquote><p>本来这周想实践k8s用kata，但是有事儿耽搁了，而又想延续这个系列，不如这样吧，咱们继续证明一下Kata Containers对容器安全方案的影响，</p><p>就拿falco来做这个实验吧，falco是啥，感兴趣的可以往前翻，有一篇《容器安全实践之falco》，不过那个是在k8s下实践的，这次简单点，顺着上期的环境，就在普通docker环境下实践一下，</p><p>安装falco，</p><p>curl -s https://s3.amazonaws.com/download.draios.com/DRAIOS-GPG-KEY.public | sudo apt-key add -，</p><p>sudo curl -s -o /etc/apt/sources.list.d/draios.list https://s3.amazonaws.com/download.draios.com/stable/deb/draios.list，</p><p>sudo apt install falco，</p><p>配置falco，本次就简单实践一下，只改个日志输出配置就好了，</p><p>sudo vim /etc/falco/falco.yaml，<br/></p><p>file_output:<br/>  enabled: true<br/>  keep_alive: false<br/>  filename: /var/log/falco.log</p><p>可以检查一下配置文件是否有错误，</p><p>falco -c /etc/falco/falco.yaml -L，</p><p>启动falco，sudo systemctl start falco，</p><p>重启falco，sudo systemctl restart falco，</p><p>安装部署就这些，比k8s下简单多了，</p><p>接着就可以做实验了，就直接用上期环境里的两个容器，</p><p>sshd-runc和sshd-kata，</p><p>分别进入两个容器的shell，<br/></p><p>docker exec -it sshd-runc /bin/bash，</p><p>docker exec -it sshd-kata /bin/bash，</p><p>查看/var/log/falco.log，runc的能监控到正确的结果，kata的就乱了，</p><p>可以证明了Kata Containers对容器安全方案的影响，</p><p style="text-align: center;"><img class="rich_pages js_insertlocalimg" data-ratio="0.50078125" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ2v8bxmiaU6v8dR6Hxpse6mbQMLZwZoC8J1pwFDY8saLdFDNGcGpgjL2fI6BxQibgRzPudFG3544f2A/640?wx_fmt=png" data-type="png" data-w="1280" style="" src="../Images/24165238c5e0c4c07d32d30e4060034e.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ2v8bxmiaU6v8dR6Hxpse6mbQMLZwZoC8J1pwFDY8saLdFDNGcGpgjL2fI6BxQibgRzPudFG3544f2A/640?wx_fmt=png"/></p>
+        
+</body>
+</html>

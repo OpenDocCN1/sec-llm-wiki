@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>OSM的实践（二）</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>OSM的实践（二）</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650744438&amp;idx=1&amp;sn=f2076f807efbfca2df9ba16fd57d49a7&amp;chksm=87148776b0630e6025e541fda052ae82817ef07a97db3133b4cd76e52edbec3774684233516e&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650744438&amp;idx=1&amp;sn=f2076f807efbfca2df9ba16fd57d49a7&amp;chksm=87148776b0630e6025e541fda052ae82817ef07a97db3133b4cd76e52edbec3774684233516e&amp;scene=27#wechat_redirect</a></blockquote><p>元旦的时候装了个OSM，当时用OpenStack做VIM没搞定，后来才知道是内存没给够的原因，本周末把用OpenStack做VIM的成功实践记录一下。</p><p>先把OSM注册到OpenStack上，</p><p>osm vim-create --name openstack-site --user admin --password password --auth_url http://10.90.3.60:35357/v3 --tenant admin --account_type openstack</p><p>成功后的效果，</p><p><img class="" data-copyright="0" data-ratio="0.9408033826638478" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ0bKWbG0t2swRdY7qmrY8tsG2UTicgmOLdq2rdzf1yDq8RxTmGDUic7u9NwS4dnv7DyDickk9PVqhUSw/640?wx_fmt=png" data-type="png" data-w="473" style="" src="../Images/939ed7e9b6ad76c3de42e82d7bf01a6c.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ0bKWbG0t2swRdY7qmrY8tsG2UTicgmOLdq2rdzf1yDq8RxTmGDUic7u9NwS4dnv7DyDickk9PVqhUSw/640?wx_fmt=png"/></p><p>然后参考官网的指导，下载cirros_vnf.tar.gz和cirros_2vnf_ns.tar.gz，</p><p>创建VNFD，<br/></p><p><img class="" data-copyright="0" data-ratio="0.4698275862068966" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ0bKWbG0t2swRdY7qmrY8tsLUo11FqUg1bNo2IxJY5L0LPia9icPCxQkkCXhiax0T5oMuxusWraOMYVw/640?wx_fmt=png" data-type="png" data-w="928" style="" src="../Images/60deb58c13d491620d5fddfaf6edce34.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ0bKWbG0t2swRdY7qmrY8tsLUo11FqUg1bNo2IxJY5L0LPia9icPCxQkkCXhiax0T5oMuxusWraOMYVw/640?wx_fmt=png"/></p><p>创建NSD，             
+                
+                
+                
+                                
+             </p><p><img class="" data-copyright="0" data-ratio="0.5063694267515924" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ0bKWbG0t2swRdY7qmrY8tsdZZpmxMgHem3EzUf2WShMfwpTYTQYqicsXzaqhEtcAibRLGVQrL1YP9g/640?wx_fmt=png" data-type="png" data-w="942" style="" src="../Images/b0cfc542517f8a3952bdb015a5ff151f.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ0bKWbG0t2swRdY7qmrY8tsdZZpmxMgHem3EzUf2WShMfwpTYTQYqicsXzaqhEtcAibRLGVQrL1YP9g/640?wx_fmt=png"/></p><p>在UI上创建NS，</p><p><img class="" data-copyright="0" data-ratio="0.5052264808362369" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ0bKWbG0t2swRdY7qmrY8tsq7qiaZgOMjG6qibfQQnKicsjnX5j0M2HdI1gBHRD6yYbkfhIvEhkkaTsQ/640?wx_fmt=png" data-type="png" data-w="1148" style="" src="../Images/a41ef36bc7fbc0fb9c68d9f8fe389a40.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ0bKWbG0t2swRdY7qmrY8tsq7qiaZgOMjG6qibfQQnKicsjnX5j0M2HdI1gBHRD6yYbkfhIvEhkkaTsQ/640?wx_fmt=png"/></p><p>发现当前版本有问题，命令行没问题，</p><p>osm ns-create --nsd_name cirros_2vnf_ns --ns_name MyNS --vim_account openstack-site，</p><p>在OpenStack上查看虚机实例，</p><p><img class="" data-copyright="0" data-ratio="0.32134831460674157" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ0bKWbG0t2swRdY7qmrY8tsO5Mtuiay71LX8sep2Yzntwb4VEEEH3hAeRibDEsxSwibToo4ZF1KPRKfA/640?wx_fmt=png" data-type="png" data-w="1335" style="" src="../Images/a6d379ba01d0f1b58e0074000bfc86a4.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ0bKWbG0t2swRdY7qmrY8tsO5Mtuiay71LX8sep2Yzntwb4VEEEH3hAeRibDEsxSwibToo4ZF1KPRKfA/640?wx_fmt=png"/></p><p>OSM还有很多细节需要研究，未完待续。 
+
+                
+                                
+                
+                            
+                        
+                        <br/></p>
+        
+</body>
+</html>

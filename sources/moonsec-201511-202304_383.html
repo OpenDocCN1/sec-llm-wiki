@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>BBScan -- 一个信息泄漏批量扫描脚本</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>BBScan -- 一个信息泄漏批量扫描脚本</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAwMjc0NTEzMw==&amp;mid=401381744&amp;idx=1&amp;sn=fa61d81d3f08a9aac57d69cf4aac9a44&amp;chksm=08dd8f323faa06246137f8c4209051014bb8cdc90a06ed80bbcad2d9a1157d4fabb8e92bbc57&amp;scene=126&amp;sessionid=1681665176#rd">http://mp.weixin.qq.com/s?__biz=MzAwMjc0NTEzMw==&amp;mid=401381744&amp;idx=1&amp;sn=fa61d81d3f08a9aac57d69cf4aac9a44&amp;chksm=08dd8f323faa06246137f8c4209051014bb8cdc90a06ed80bbcad2d9a1157d4fabb8e92bbc57&amp;scene=126&amp;sessionid=1681665176#rd</a></blockquote><p><span style="">有些朋友手上有几十万甚至上百万个域名，比如，乌云所有厂商的子域名。 </span><br style=""/><span style="">如果把这30万个域名全部扔给wvs，APPscan这样的重量级扫描器，显然是不合适的。 </span><br style=""/><span style="">对于一个拥有上万IP的企业，又如何快速定位可能存在弱点的机器呢？ </span><br style=""/><span style="">试试信息泄漏批量扫描脚本 BBScan。 </span><br style=""/><br style=""/>https://github.com/lijiejie/BBScan<span style=""> </span><br style=""/><br style=""/><strong style="">BBScan</strong><span style="">是一个迷你的信息泄漏批量扫描脚本。规则字典非常小，但尽量保证准确和可利用性。 </span><br style=""/><br style=""/><span style="">特性： </span><br style=""/><span style="">1. 小字典 </span><br style=""/><span style="">2. 可以自动扫描 Target/Mask 这样网络中所有的主机 </span><br style=""/><span style="">3. 误报率小 </span><br style=""/><br style=""/><span style="">安装: </span><br style=""/><span style="">在pip已经安装的前提下，可以直接： </span><br style=""/><strong style="">pip install -r requirements.txt</strong><span style=""> </span><br style=""/><br style=""/><span style="">使用示例： </span><br style=""/><span style="">1. 扫描单个web服务 www.target.com </span><br style=""/><code style="">python BBScan.py  --host www.target.com --browser</code><br style=""/><br style=""/><span style="">2. 扫描www.target.com和www.target.com/28下的其他主机 </span><br style=""/><code style="">python BBScan.py  --host www.target.com --network 28 --browser</code><br style=""/><br style=""/><span style="">3. 扫描txt文件中的所有主机 </span><br style=""/><code style="">python BBScan.py -f wandoujia.com.txt</code><br style=""/><br style=""/><span style="">4. 从文件夹中导入所有的主机并扫描 </span><br style=""/><code style="">python BBScan.py -d targets/</code><br style=""/><br style=""/><br style=""/><span style="">--network 参数用于设置子网掩码，小公司设为28~30，中等规模公司设置26~28，大公司设为24~26 </span><br style=""/><span style="">当然，尽量避免设为24，扫描过于耗时，除非是想在各SRC多刷几个漏洞。 </span><br style=""/><span style="">该插件是从内部扫描器中抽离出来的，感谢 Jekkay Hu&lt;34538980[at]qq.com&gt; </span><br style=""/><br style=""/><span style="">如果你有非常有用的规则，请找几个网站验证测试后，再 pull request </span><br style=""/><span style="">脚本还会优化，接下来的事: </span><br style=""/><br style=""/><span style="">增加有用规则，将规则更好地分类，细化 </span><br style=""/><span style="">后续可以直接从 rules\request 文件夹中导入HTTP_request </span><br style=""/><span style="">优化扫描逻辑</span></p><p><span style="">from http://zone.wooyun.org/content/23900</span></p>
+        
+</body>
+</html>

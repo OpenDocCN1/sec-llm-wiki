@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Threema争议加密漏洞披露，提示安全漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Threema争议加密漏洞披露，提示安全漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247486039&amp;idx=1&amp;sn=08cf20c3d21552af97ba4158db39d83c&amp;chksm=fa76eba9cd0162bfae1516372b47c1a606e0628248684ef46706ebf55d8de96202e6f720d146&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247486039&amp;idx=1&amp;sn=08cf20c3d21552af97ba4158db39d83c&amp;chksm=fa76eba9cd0162bfae1516372b47c1a606e0628248684ef46706ebf55d8de96202e6f720d146&amp;scene=27#wechat_redirect</a></blockquote><blockquote><p>在加密消息应用程序开发人员批评他们的工作后，安全研究人员为发现Threema中几个严重安全漏洞的学者辩护。来自瑞士苏黎世联邦理工学院的一组计算机科学家在安全消息应用程序Threema中发现了总共七个漏洞，该应用程序拥有1000万用户，其中包括瑞士政府和现任德国总理Olaf Scholz。</p></blockquote><p><img class="rich_pages wxw-img" data-ratio="0.5625" data-src="https://mmbiz.qpic.cn/mmbiz_png/3RdEEWyTHJn9SIicZZxCsP1amX1s59GeU4lHW7pQicl4waQZ7S70kagp84yhf7TQLKa7WknFygFM9njTVVSt4ujA/640?wx_fmt=png" data-type="png" data-w="1200" height="675" width="1200" src="../Images/def146554b61ca9ff14fee1fc524af87.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/3RdEEWyTHJn9SIicZZxCsP1amX1s59GeU4lHW7pQicl4waQZ7S70kagp84yhf7TQLKa7WknFygFM9njTVVSt4ujA/640?wx_fmt=png"/></p><p>ETH团队——由Kenneth Paterson教授、Matteo Scarlata和Kien Tuong Truong组成——发现Threema既不具备“前向安全性”，也不具备妥协后安全性。</p><p>前向安全意味着即使在妥协之后，攻击者也无法解密在黑客入侵之前加密的数据。妥协后的安全性涉及建立这样的体系结构，以便在攻击后可以恢复安全性，前提是任何攻击者都被从通信交换过程中清除。</p><p>发现的七个漏洞涉及三种不同的威胁模型：网络攻击者、受感染的服务器和强制访问。</p><p>由于Threema使用定制的加密技术，出现了问题。例如，瑞士服务的定制客户端到服务器(C2S)协议具有临时密钥。从理论上讲，这应该使会话彼此独立。</p><p>然而，ETH研究人员发现，破坏单个客户端临时密钥允许攻击者无限期地冒充该客户端。</p><p>去年10月初，研究人员向Threema的开发人员披露了这个缺陷和其他六个漏洞。在Threema发布新协议Ibex之前进行了修改，以进一步减轻2022年11月下旬的攻击。</p><p>按照约定，研究人员推迟到1月9日星期一才公布他们的发现。</p><p>然后，Threema决定不尊重研究人员对他们发现的发表做出回应，并在此过程中激怒了更广泛的信息安全社区。</p><p>“有一篇关于Threema旧通信协议的新论文，”该供应商在其官方Twitter帐户上写道。“显然，今天的学术界迫使研究人员甚至学生无可救药地夸大他们的发现。这是一些真正的谈话。</p><p>在相关声明中，Threema承认“虽然从理论角度来看，论文中提出的一些发现可能很有趣，但它们都没有对现实世界产生任何重大影响”。</p><p>瑞士安全研究员Christian Folini将Threema的回应描述为“居高临下”。</p><p>“判断安全研究的质量不是你的工作。你的工作是齐心协力，向我们提供修复方案，然后将评估留给第三方，”Folini在Twitter上说。</p><p>萨里大学(University of Surrey)的计算机科学家艾伦伍德沃德(Alan Woodward)教授同意Threema不必要地攻击研究人员，因为他认为这是对加密消息应用程序的建设性批评。</p><p>“他们[Threema]的语气相当不屑一顾，说这是一个旧版本，他们已经解决了所有发现的问题，但Threema之所以能够这样说是因为工作和负责任的披露，”伍德沃德教授说。</p><p>“我忍不住[但]认为，如果应用程序开发人员采取这种态度，研究人员可能不太愿意负责任地合作。”</p><p>关于已确定的安全问题的实质，伍德沃德教授说，问题“似乎是因为他们[Threema]推出了自己的协议，而且他们正在处理所选库Nacl的一些限制”。</p><p>Kenneth Paterson教授公开表示他对Threema的回应感到失望。</p><p>“在负责任的披露期间与ThreemaApp进行了建设性接触后，这出乎意料地不屑一顾。我们以六种方式打破了他们的协议。由于我们的工作，他们更新了它，”帕特森教授在推特上说。</p><p><br/></p><p style="display: none;"><mp-style-type data-value="3"/></p>
+        
+</body>
+</html>

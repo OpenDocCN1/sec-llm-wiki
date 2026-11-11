@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>用keytool生成tomcat证书</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>用keytool生成tomcat证书</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA3MzYwNjQ3NA==&amp;mid=2651299446&amp;idx=1&amp;sn=6d87b023b471c5fbfd96036003d01233&amp;chksm=84ff4a53b388c34573d3f2bd740229ff6ac4bd400944c17843b3a388139cfa607c536021b4cf&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA3MzYwNjQ3NA==&amp;mid=2651299446&amp;idx=1&amp;sn=6d87b023b471c5fbfd96036003d01233&amp;chksm=84ff4a53b388c34573d3f2bd740229ff6ac4bd400944c17843b3a388139cfa607c536021b4cf&amp;scene=27#wechat_redirect</a></blockquote><p><br/></p><p>一些经验，希望对你有用</p><p><br/></p><p>java我安装到了/opt/java，可以换成你自己的路径</p><p>KEYTOOL=/opt/java/bin/keytool</p><p>CACERTS=/opt/java/jre/lib/security/cacerts</p><p><br/></p><p>DOMAIN=yunweibang.com（<span style="color: rgb(255, 0, 0);">修改为你的二级域名</span>）</p><p>DOMAIN_ALIAS=`echo $DOMAIN|sed 's/\.//g'`</p><p>$KEYTOOL -delete -alias $DOMAIN_ALIAS -keystore $CACERTS -storepass changeit</p><p>$KEYTOOL -genkey -v -alias $DOMAIN_ALIAS -keyalg RSA -storetype pkcs12 -keystore keystore -validity 36500 \</p><p>-dname "<span style="color: rgb(255, 0, 0);">CN=*.$DOMAIN,OU=$DOMAIN_ALIAS,O=$DOMAIN_ALIAS,L=BJ,ST=BJ,C=CN</span>" -storepass changeit -keypass changeit</p><p>$KEYTOOL -export -alias $DOMAIN_ALIAS -storetype pkcs12 -keystore keystore -file $DOMAIN_ALIAS.cer -storepass changeit</p><p>$KEYTOOL -import -trustcacerts -alias $DOMAIN_ALIAS -keystore $CACERTS -file $DOMAIN_ALIAS.cer -storepass changeit</p><p><br/></p>
+        
+</body>
+</html>

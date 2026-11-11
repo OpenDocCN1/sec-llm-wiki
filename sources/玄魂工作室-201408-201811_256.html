@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>PYTHON黑帽编程 4.1 SNIFFER(嗅探器)之数据捕获--补充</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>PYTHON黑帽编程 4.1 SNIFFER(嗅探器)之数据捕获--补充</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA4NDk5NTYwNw==&amp;mid=2651424730&amp;idx=1&amp;sn=1e159a4c49f0ea71ebed4a8008570436&amp;chksm=84239ca2b35415b42ce6757e248296d7e6662f4c0efce3a463e251e44c6195156032020a67db&amp;scene=126&amp;sessionid=1681656490#rd">http://mp.weixin.qq.com/s?__biz=MzA4NDk5NTYwNw==&amp;mid=2651424730&amp;idx=1&amp;sn=1e159a4c49f0ea71ebed4a8008570436&amp;chksm=84239ca2b35415b42ce6757e248296d7e6662f4c0efce3a463e251e44c6195156032020a67db&amp;scene=126&amp;sessionid=1681656490#rd</a></blockquote><h1 class="postTitle" style="padding-right: 100px; padding-bottom: 10px; padding-left: 5px; font-size: 14.3000001907349px; font-weight: bold; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: rgb(153, 153, 153); line-height: 1.5em; clear: both; border-left-width: 5px; border-left-style: solid; border-left-color: rgb(31, 166, 230); font-family: Verdana, Arial, Helvetica, sans-serif; white-space: normal; background-color: rgb(255, 255, 255);"><br/></h1><h1 style="margin-top: 10px; margin-bottom: 10px; font-size: 28px; font-weight: bold; line-height: 1.5;"> </h1><p style="margin: 10px auto;">荒废了一个多月了，重新捡起来，手生了不少。发现在《<a target="_blank" style="color: rgb(0, 0, 0); text-decoration: underline;">4.1下</a>》的文章里没有 提到pcap库，实在是不应该。</p><p style="margin: 10px auto;">在网络数据分析的工具中，tcpdump绝对是大名鼎鼎，tcpdump底层是libpcap库，由C语言编写。 Pcapy模块则是基于libpcap的Python接口。pcapy在github上的项目地址为：<a style="color: rgb(0, 0, 0); text-decoration: underline;">https://github.com/CoreSecurity/pcapy。</a></p><p style="margin: 10px auto;">下面我们来看看如何使用pcapy实现数据包的捕获。</p><pre style="margin-top: 0px; margin-bottom: 0px; padding: 0px; white-space: pre-wrap; word-wrap: break-word;"><code class="lang-python">#!/usr/bin/python
+
+import pcapy
+
+dev = "eth0"
+filter = "tcp and port 80"
+
+
+def handle_packet(hdr, data):
+    print data
+
+pcap = pcapy.open_live(dev, 1500, 0, 100)
+pcap.setfilter(filter)
+pcap.loop(0, handle_packet)</code></pre><p style="margin: 10px auto;">上面的代码很简单，首先导入pcapy模块，之后定义了两个变量，dev为要监听的网卡， filter是BPF 格式的过滤表达式，这里我们只捕获http协议的数据。 handle_packet方法是用来处理捕获的数据包的逻辑， 这里我们只是简单的打印捕获的数据，在之后的文章中，我们会继续扩展该方法，用来 做数据解析。</p><p style="margin: 10px auto;">最后三行代码是我们使用pcapy进行数据捕获的具体应用。</p><pre style="margin-top: 0px; margin-bottom: 0px; padding: 0px; white-space: pre-wrap; word-wrap: break-word;"><code class="lang-python">pcap = pcapy.open_live(dev, 1500, 0, 100)</code></pre><p style="margin: 10px auto;">open_live方法第一个参数是要打开的设备，第二个参数是捕获数据包的大小， 第三个参数是否打开混杂模式，第四个参数是等待数据包的延迟时间，该方法返回一个 pcapy对象。</p><pre style="margin-top: 0px; margin-bottom: 0px; padding: 0px; white-space: pre-wrap; word-wrap: break-word;"><code class="lang-python">pcap.setfilter(filter)</code></pre><p style="margin: 10px auto;">调用setfilter方法，设置过滤器。</p><pre style="margin-top: 0px; margin-bottom: 0px; padding: 0px; white-space: pre-wrap; word-wrap: break-word;"><code class="lang-python">pcap.loop(0, handle_packet)</code></pre><p style="margin: 10px auto;">调用loop方法，开始执行数据包捕获，该方法的第一个参数为执行次数，小于或等于0为不限制， 第二个参数为数据包处理函数。</p><p style="margin: 10px auto;">好了，就补充说明这么多，运行结果如下：</p><p style="margin: 10px auto;"><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/4CQUZJ9euSyYbyQYeoLlMQrlQvIczUJUsvickT2vJezgtusEJ08QNiaWicNPNBWwc3mF4d395UA8LOgpxSQl7jShg/0?wx_fmt=jpeg" data-ratio="0.4068965517241379" data-w="1160" src="../Images/631656d2f3087b4c41cbb5c4dbb72df9.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/4CQUZJ9euSyYbyQYeoLlMQrlQvIczUJUsvickT2vJezgtusEJ08QNiaWicNPNBWwc3mF4d395UA8LOgpxSQl7jShg/0?wx_fmt=jpeg"/><br/></p><hr/><p style="margin: 10px auto;">最后感谢那些不离不弃的朋友们！</p><p style="margin: 10px auto;"> </p><p style="margin: 10px auto;"><strong>第</strong><strong>4.2</strong><strong>节《</strong>4.1 Sniffer(嗅探器)之数据分析<strong>》已经在微信订阅号抢先发布，进入订阅号（二维码在下方），从菜单</strong><strong>“精华</strong><strong>”—&gt;”Python</strong><strong>黑帽编程</strong><strong>”</strong><strong>进入即可。</strong></p><p style="margin: 10px auto;"> </p><p style="margin: 10px auto;">查看完整系列教程，请关注我的微信订阅号（xuanhun521，下方二维码），回复“python”。问题讨论请加qq群：Hacking （1群）：303242737   Hacking （2群）：147098303。</p><p style="margin: 10px auto;"><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/4CQUZJ9euSxjUhVfZyeTyraHiakRH0mibO9PzMibZoBywtlK2fuydOqYuicfxRgR7Pqbtic2Tt1ztxhqQUaKVyLrrVQ/0?wx_fmt=jpeg" data-ratio="0.9927272727272727" data-w="275" src="../Images/b706b2cd49f84173069dd01224872d27.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/4CQUZJ9euSxjUhVfZyeTyraHiakRH0mibO9PzMibZoBywtlK2fuydOqYuicfxRgR7Pqbtic2Tt1ztxhqQUaKVyLrrVQ/0?wx_fmt=jpeg"/><br/><span style="line-height: 1.6;">欢迎关注“玄魂工作室”</span></p><p><br/></p>
+        
+</body>
+</html>

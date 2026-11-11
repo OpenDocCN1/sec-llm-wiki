@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Apache Struts2 远程代码执行漏洞CVE-2021-31805</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Apache Struts2 远程代码执行漏洞CVE-2021-31805</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247484562&amp;idx=1&amp;sn=aa87d6820b28e7614f9ce25875e14cd7&amp;chksm=fa76e56ccd016c7afbe2d897607dfeaafa39ccd9e71e4a6919aa1bce5e0585d3838b81592846&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247484562&amp;idx=1&amp;sn=aa87d6820b28e7614f9ce25875e14cd7&amp;chksm=fa76e56ccd016c7afbe2d897607dfeaafa39ccd9e71e4a6919aa1bce5e0585d3838b81592846&amp;scene=27#wechat_redirect</a></blockquote><blockquote><p>近日，我团队监测到Apache官方发布安全通告，披露了其Struts2框架存在远程代码执行漏洞（S2-062），该漏洞是由于对 CVE-2020-17530 (S2-061) 的修复不完善。导致一些标签的属性仍然可以执行 OGNL 表达式，最终可导致远程执行任意代码。</p></blockquote><p style="margin-bottom: 0em;"><img class="rich_pages wxw-img" data-ratio="0.5667870036101083" data-src="https://mmbiz.qpic.cn/mmbiz_png/3RdEEWyTHJkhicKxKvsBdsqHmEAGwqkNfEHmv7nMVQJAiciaZPibA5a8XYNnDwfiaZw6u7QZFbYlC2AosFZazliceia9A/640?wx_fmt=png" data-type="png" data-w="554" height="314" width="554" src="../Images/06921ef1f55071c8e2a2d329d5932d87.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/3RdEEWyTHJkhicKxKvsBdsqHmEAGwqkNfEHmv7nMVQJAiciaZPibA5a8XYNnDwfiaZw6u7QZFbYlC2AosFZazliceia9A/640?wx_fmt=png"/></p><p>Struts2是一个基于MVC设计模式的Web应用框架，它本质上相当于一个servlet，在MVC设计模式中，Struts2作为控制器(Controller)来建立模型与视图的数据交互。</p><p> </p><p><strong>影响版本：</strong></p><ul class="list-paddingleft-1"><li><p>Struts 2.0.0 - Struts 2.5.29</p></li></ul><p> </p><p><strong>安全版本：</strong></p><ul class="list-paddingleft-1"><li><p>Struts &gt;= 2.5.30</p></li></ul><p> </p><p><strong>修复建议：</strong></p><p>官方已发布安全版本，请及时下载更新，下载更新参考地址：</p><p>https://cwiki.apache.org/confluence/display/WW/Version+Notes+2.5.30</p><p><br/></p>
+        
+</body>
+</html>

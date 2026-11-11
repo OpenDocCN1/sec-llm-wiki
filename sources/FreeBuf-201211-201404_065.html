@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>SYNPROXY：最廉价的抗DoS攻击方案</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>SYNPROXY：最廉价的抗DoS攻击方案</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=200102595&amp;idx=2&amp;sn=f3276e5132bf3877c51fba2b0c767280&amp;chksm=28f6c0481f81495ecb2daf3b8e9beae9a28c8b25f6d27be07708b24959637d3bd6b3b56da064&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=200102595&amp;idx=2&amp;sn=f3276e5132bf3877c51fba2b0c767280&amp;chksm=28f6c0481f81495ecb2daf3b8e9beae9a28c8b25f6d27be07708b24959637d3bd6b3b56da064&amp;scene=27#wechat_redirect</a></blockquote><p style=""><span style="margin: 0px; padding: 0px; color: rgb(0, 176, 80);">对于防御Dos攻击来说，我这辈子都不一定能见到完美的解决方案。虽然，有成吨的商用防火墙，可以有效的防御Dos攻击，但是他们都太贵了。作为一个学术型人才，我倾向于使用简单廉价的组合来解决问题—x86+GNU/Linux。</span>在linux 3.13内核中加入了SYNPROXY这个功能，它的实现基于netfilter framework 和 connection tracking 模块。<br/></p><p style=""><br/></p><p style="">我猜测，他会把来自客户端的初始SYN包标记成UNTRACKED然后直接导入iptables的"SYNPROXY"的动作(类似ACCEPT,NFQUEUE和DROP)，这时内核会扮演网关设备的角色继续跟客户端进行TCP的常规握手流程，SYNPROXY会等到最终的ACK(三次握手)的cookie被验证合法后才会开始让包真正的进入目标端。</p><p style=""><br/></p><p style="">Jesper Dangaard Brouer曾给我我一份上个月DEVCON的报告，根据里面的内容，我和同事也做了实验，结果还不错。</p><p style=""><strong style="margin: 0px; padding: 0px;"><br/></strong></p><p style=""><strong style="margin: 0px; padding: 0px;">下面是测试结果，大家随意感受一下</strong></p><p style=""><strong style="margin: 0px; padding: 0px;"><br/></strong></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px;">平台: Debian, SLES-12-beta2
+硬件: Laptop, Server, 100Mbps Switch
+工具: hping3, metasploit
+root@d6-test:/home/shawn# iptables -t raw -A PREROUTING -i eth0 -p tcp --dport 8888 --syn -j NOTRACK
+root@d6-test:/home/shawn# iptables -A INPUT -i eth0 -p tcp --dport 8888 -m state --state UNTRACKED,INVALID -j SYNPROXY --sack-perm --timestamp --mss 1480 --wscale 7 --ecn
+echo 0 &gt; /proc/sys/net/netfilter/nf_conntrack_tcp_loose
+结果:
+不使用 SYNPROXY: ksoftirq is around 8%-9%
+使用 SYNPROXY: ksoftirq is less than 3%</pre><p style=""><img src="../Images/1c4283dbb96866bc8f129dda318a9463.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR38IlibiawRZib87DIj5nz8Edhiak1YKv56061IMxMUeibxIzk15LxPGr56tS7mgwrQYAvGGQBslnic9U5HA/0"/></p>
+        
+</body>
+</html>

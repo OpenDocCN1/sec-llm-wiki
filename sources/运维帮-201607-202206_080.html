@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>ansible交互提示用法</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>ansible交互提示用法</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA3MzYwNjQ3NA==&amp;mid=2651300085&amp;idx=1&amp;sn=6f069a6d81985a790cc92a9e4c82ecdb&amp;chksm=84ff74d0b388fdc648806442b79063b75f4ac2e4605d4f75ae487cc429cf5441d90a1b06ccc9&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA3MzYwNjQ3NA==&amp;mid=2651300085&amp;idx=1&amp;sn=6f069a6d81985a790cc92a9e4c82ecdb&amp;chksm=84ff74d0b388fdc648806442b79063b75f4ac2e4605d4f75ae487cc429cf5441d90a1b06ccc9&amp;scene=27#wechat_redirect</a></blockquote><div><p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">交互提示：使用关键字：vars_prompt</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">例：使用ansible的交互式功能创建用户和给定一个密码。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">--- </span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">- hosts: test50 </span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">  </span>remote_user: root </span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">  </span>vars_prompt: </span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">     </span>- name: user_name </span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">        </span>prompt: Enter Username private: no </span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">      </span>- name: user_passwd </span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">         </span>prompt: Enter Password encrypt: "sha512_crypt" confirm: yes </span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">  </span>tasks: </span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">     </span>- name: create user </span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">        </span>user: name: "{{user_name}}" </span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">         </span>password: "{{user_passwd}}"</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">关键字vars_prompt常用选项说明：</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">private：用户输入的值是否可见，当值为yes时，表示不可见，常用于密码，为no时，可见。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">default：设置默认值，当不输入任何值时，使用该默认值。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">confirm：再次确认，适合密码。</span></p>
+</div>
+        
+</body>
+</html>

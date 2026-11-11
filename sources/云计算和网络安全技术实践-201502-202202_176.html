@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>在ESXi里安装AzureStack（三）</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>在ESXi里安装AzureStack（三）</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650744704&amp;idx=1&amp;sn=9cd10f91ae090b3767d2b5841184f275&amp;chksm=87148680b0630f96445adfa475b4b4655106dedcae795affe5b42e5bba516218ff5ef2935f4c&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650744704&amp;idx=1&amp;sn=9cd10f91ae090b3767d2b5841184f275&amp;chksm=87148680b0630f96445adfa475b4b4655106dedcae795affe5b42e5bba516218ff5ef2935f4c&amp;scene=27#wechat_redirect</a></blockquote><p>本周继续在ESXi里安装AzureStack，用的最新的1807版本，还是没有成功，这次停的位置貌似比之前的1805版本还早，</p><p><img class="" data-copyright="0" data-ratio="0.75" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/F6TniceRacJ2hCjdibp9ff5VedaZTAlJt86st3Y79icBLx6sGa6QOJPAtfwQr81Rb9BwFUU665Jh0OtvsTWich5vuA/640?wx_fmt=jpeg" data-type="jpeg" data-w="1280" style="" src="../Images/8fc27ed935552ff9e1096b8ed291cc40.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/F6TniceRacJ2hCjdibp9ff5VedaZTAlJt86st3Y79icBLx6sGa6QOJPAtfwQr81Rb9BwFUU665Jh0OtvsTWich5vuA/640?wx_fmt=jpeg"/></p><p>决定暂时放弃了，为什么不用纯物理环境安装，因为环境条件要求太高，目前看至少5块磁盘，用ESXi嵌套非常方便，性能也都给足了，240G内存，40颗虚拟内核，但问题是，看每次停的位置并不是跟磁盘有关，也无法定位到原因。</p><p>现把完整的PoC过程总结一下，感兴趣的同仁可以自己尝试，</p><p>1、用AzureStackDownloader下载PoC环境压缩包</p><p>2、解压缩出来CloudBuilder.vhdx文件</p><p>3、把CloudBuilder.vhdx传到Hyper-V环境下扩展磁盘到200G</p><p>4、把扩展磁盘后的CloudBuilder.vhdx传到linux下用qemu-img转成vmdk</p><p>5、在ESXi里创建AzureStack虚机，配置允许向上传递CPU虚拟化能力</p><p>6、先给AzureStack虚机添加四块磁盘，一块是IDE类型的100G，另外三块SCSI类型的300G，注意SCSI控制器选择物理共享</p><p>7、把CloudBuilder.vmdk传到AzureStack虚机的目录里</p><p>8、进ESXi的shell，把CloudBuilder.vmdk克隆成thick模式，vmkfstools -i CloudBuilder.vmdk -d eagerzeroedthick AzureStack.vmdk</p><p>9、再把AzureStack.vmdk添加给AzureStack虚机，启动</p><p>10、启动到最后要求配置管理员账户的密码</p><p>11、进入系统后配置IP和网关，让AzureStack虚机能上网</p><p>12、打开服务器管理，把三块SCSI的磁盘都上线</p><p>13、打开电脑管理的磁盘管理，4块空磁盘都配置成MBR分区模式</p><p>14、把系统盘扩展到200G，把100G的空数据盘格式化成D盘</p><p>15、打开powershell控制台，开始安装，安装的脚本如下：</p><p>$adminpass = ConvertTo-SecureString 'Hillstone@123'-AsPlainText -Force<br/>cd C:\CloudDeployment\Setup<br/>.\InstallAzureStackPOC.ps1 -AdminPassword $adminpass -UseADFS -NatIPv4Subnet 10.90.3.0/24 -NatIPv4Address 10.90.3.5 -NatIPv4DefaultGateway 10.90.3.254 -TimeServer 203.107.6.88</p><p>剩下的就是等待，等待，等待，漫长的等待，还不成功。<br/></p>
+        
+</body>
+</html>

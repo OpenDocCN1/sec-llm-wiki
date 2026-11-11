@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>通过 Zend 目录提权</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>通过 Zend 目录提权</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247485231&amp;idx=1&amp;sn=38d595492ba356f6b6271096f3eeec33&amp;chksm=f9e06874ce97e162b42055cbf9716055586e337c97bc27e306ecf205d98a5d74e3389b76e21d&amp;scene=126&amp;sessionid=1681663477#rd">http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247485231&amp;idx=1&amp;sn=38d595492ba356f6b6271096f3eeec33&amp;chksm=f9e06874ce97e162b42055cbf9716055586e337c97bc27e306ecf205d98a5d74e3389b76e21d&amp;scene=126&amp;sessionid=1681663477#rd</a></blockquote><p>服务器上很多都装了 Zend<br/>就算 C:Program Files 设置过权限，安装Zend后，Zend 会自动配置目录的权限</p><p>C:Program FilesZendZendOptimizer-3.3.0 下的目录权限为 Everyone 权限,这导致入侵者能写入文件。</p><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/p5qELRDe5ick36HKmgz2EqVgDibzj0O50nciaaI7GcFh0mar6QVkoJyLQCYiahdcIjiaA7PzGfrkpIoc0TuCrKQ9b5g/0?wx_fmt=png" class="" data-ratio="0.9176276771004942" data-w="607" src="../Images/5d59409310f02fa845e5225c4d3ccaaf.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/p5qELRDe5ick36HKmgz2EqVgDibzj0O50nciaaI7GcFh0mar6QVkoJyLQCYiahdcIjiaA7PzGfrkpIoc0TuCrKQ9b5g/0?wx_fmt=png"/></p><p>如果黑客入侵一个服务器，只支持 asp,或php,没有执行权限，执行组件也给禁用了，只有读写文件的权限(只要读写权限就够)。<br/>C:Program FilesZendZendOptimizer-3.3.0lib 下有 ZendExtensionManager.dll 文件，</p><p>而这个文件就算加载了，也能通过”重命名”得以修改。</p><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/p5qELRDe5ick36HKmgz2EqVgDibzj0O50nHCkd6Fl9vabnEiaGicCPzN9rjuibibkuOcIIQbIibtLpvJwdiaRz3ty6qY9w/0?wx_fmt=png" class="" data-ratio="0.7271241830065359" data-w="612" src="../Images/e03b84d66bbb41b42de69e7c31916d52.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/p5qELRDe5ick36HKmgz2EqVgDibzj0O50nHCkd6Fl9vabnEiaGicCPzN9rjuibibkuOcIIQbIibtLpvJwdiaRz3ty6qY9w/0?wx_fmt=png"/></p><p>而黑客只要把这个DLL换成黑客的DLL，将能加载起来！</p><p>在测试中发现，如果直接换上DLL，替换的DLL不能被Zend加载！<br/>转换思路，软件应该是加载相关DLL再查看相关接口!<br/>Zend 加载 -&gt; 替换后的dll(文件名用 ZendExtensionManager.dll ) -&gt; 加载原DLL (这是原文件，把他改为名 ZendExtensionManager.dll.log 让自己的加载他)</p><p>测试能成功加载！</p><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/p5qELRDe5ick36HKmgz2EqVgDibzj0O50nQE99L5TbvfrNF5VOELFYfurK792GLaVVPH9K46CicUrT44MuDJ3oKPQ/0?wx_fmt=png" class="" data-ratio="0.28403141361256545" data-w="764" src="../Images/be734856bbc7c85982560e3305dc3faf.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/p5qELRDe5ick36HKmgz2EqVgDibzj0O50nQE99L5TbvfrNF5VOELFYfurK792GLaVVPH9K46CicUrT44MuDJ3oKPQ/0?wx_fmt=png"/></p><p><br/></p>
+        
+</body>
+</html>

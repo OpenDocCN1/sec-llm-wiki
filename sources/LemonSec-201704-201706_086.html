@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Android组件中最重要的四大组件之一</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Android组件中最重要的四大组件之一</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247483840&amp;idx=1&amp;sn=8bad47d8e8dd7cb6b314b7afe98f7a8b&amp;chksm=f9e06e9bce97e78d601e86fbc2bef871efbf71cce5ff01c2df402f913830b218ab1d247d9efa&amp;scene=126&amp;sessionid=1681663548#rd">http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247483840&amp;idx=1&amp;sn=8bad47d8e8dd7cb6b314b7afe98f7a8b&amp;chksm=f9e06e9bce97e78d601e86fbc2bef871efbf71cce5ff01c2df402f913830b218ab1d247d9efa&amp;scene=126&amp;sessionid=1681663548#rd</a></blockquote><p>Activity是Android组件中最基本也是最为常见用的四大组件（Activity，Service服务,Content Provider内容提供者，BroadcastReceiver广播接收器）之一<sup>[1]</sup> 。</p><p>Activity是一个应用程序组件，提供一个屏幕，用户可以用来交互为了完成某项任务。</p><p>Activity中所有操作都与用户密切相关，是一个负责与<strong>用户交互</strong>的组件，可以通过setContentView(View)来<strong>显示指定控件</strong>。</p><p>在一个android应用中，一个Activity通常就是一个单独的屏幕，它上面可以显示一些控件也可以监听并处理用户的事件做出响应。Activity之间通过Intent进行通信。</p><h3 class="title-text">基本状态</h3><p>在android 中，Activity 拥有四种基本状态：</p><ol class="custom_num para-list list-paddingleft-1"><li class="list-undefined1 list-num-paddingleft-1"><p><strong><em>Active/Running</em></strong></p></li></ol><p>一个新 Activity 启动入栈后，它显示在屏幕最前端，处理是处于栈的最顶端（Activity栈顶），此时它处于可见并可和用户交互的激活状态,叫做活动状态或者运行状态（active or running）。</p><p><em>2<strong>.</strong> </em><strong><em>Paused</em></strong></p><p>当 Activity失去焦点， 被一个新的非全屏的Activity 
+或者一个透明的Activity 
+被放置在栈顶，此时的状态叫做暂停状态（Paused）。此时它依然与窗口管理器保持连接，Activity依然保持活力（保持所有的状态，成员信息，和窗口管理器保持连接），但是在系统内存极端低下的时候将被强行终止掉。所以它仍然可见，但已经失去了焦点故不可与用户进行交互。</p><p><em>3<strong>. </strong></em><strong><em>Stopped</em></strong></p><p>如果一个Activity被另外的Activity完全覆盖掉，叫做停止状态（Stopped）。它依然保持所有状态和成员信息，但是它不再可见，所以它的窗口被隐藏，当系统内存需要被用在其他地方的时候，Stopped的Activity将被强行终止掉。</p><p><em>4<strong>. </strong></em><strong><em>Killed</em></strong></p><p>如果一个Activity是Paused或者Stopped状态，系统可以将该Activity从内存中删除，Android系统采用两种方式进行删除，要么要求该Activity结束，要么直接终止它的进程。当该Activity再次显示给用户时，它必须重新开始和重置前面的状态。</p><p><br/></p><p><br/></p><p><br/></p><p><br/></p><p>查看更多文章，关注下方二维码</p><p><img data-ratio="1" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/p5qELRDe5ickAiax1Nv77rYNEC3sRgfAkw8hAX4rSjibP0FMnud3ZM4f0Jc7nkoCL2t8STuhTbnuxj6W6T8JumElA/640?wx_fmt=jpeg" data-type="jpeg" data-w="258" style="visibility: visible ! important; width: auto ! important; height: auto ! important;" width="auto" src="../Images/60bd80188885b005ab426369f4086902.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/p5qELRDe5ickAiax1Nv77rYNEC3sRgfAkw8hAX4rSjibP0FMnud3ZM4f0Jc7nkoCL2t8STuhTbnuxj6W6T8JumElA/640?wx_fmt=jpeg"/></p><p><br/></p>
+        
+</body>
+</html>

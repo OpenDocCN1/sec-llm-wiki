@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Nessus的离线安装（二）</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Nessus的离线安装（二）</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650744393&amp;idx=1&amp;sn=9144ce3f5d964d7e8546e2860252b72c&amp;chksm=87148749b0630e5fb6e5904b66177b15b44b5944ccd492cec8567ecb686b66dfccd9eb95f672&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650744393&amp;idx=1&amp;sn=9144ce3f5d964d7e8546e2860252b72c&amp;chksm=87148749b0630e5fb6e5904b66177b15b44b5944ccd492cec8567ecb686b66dfccd9eb95f672&amp;scene=27#wechat_redirect</a></blockquote><p>上期中我最后留了个尾巴，从https://plugins.nessus.org/v2/offline.php上下载插件升级包，下载多次都中断，界面上直接升级或者命令行下升级也是多次中断。</p><p>转过天来，两个都能成功了，多亏记录了从https://plugins.nessus.org/v2/offline.php上下载插件升级包的URL，第二天还能下载，说明长期有效。</p><p>既然界面上直接升级或者命令行下升级能成功，也就懒的导入离线插件升级包了，直接导出OVA镜像，没想到再导回去走到下面这步就过不去了，</p><p><img data-s="300,640" data-type="png" data-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ1VY0ibLqvX4zMZg3xVD67f1hKZl7kMXDGjfxnibhm0LZTFuCHt2j9S1icGBJvJp10X4xlNdoNicBlZiaw/0?wx_fmt=png" data-copyright="0" style="" class="" data-ratio="0.7876344086021505" data-w="372" src="../Images/91c4cd10ee7182bc1913a3dc16ca757d.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ1VY0ibLqvX4zMZg3xVD67f1hKZl7kMXDGjfxnibhm0LZTFuCHt2j9S1icGBJvJp10X4xlNdoNicBlZiaw/0?wx_fmt=png"/></p><p>于是又试了导入离线插件升级包，成功后再导出OVA镜像，再导回去还是走到下面这步过不去，</p><p><img data-s="300,640" data-type="png" data-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ1VY0ibLqvX4zMZg3xVD67f1hKZl7kMXDGjfxnibhm0LZTFuCHt2j9S1icGBJvJp10X4xlNdoNicBlZiaw/0?wx_fmt=png" data-copyright="0" style="" class="" data-ratio="0.7876344086021505" data-w="372" src="../Images/91c4cd10ee7182bc1913a3dc16ca757d.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ1VY0ibLqvX4zMZg3xVD67f1hKZl7kMXDGjfxnibhm0LZTFuCHt2j9S1icGBJvJp10X4xlNdoNicBlZiaw/0?wx_fmt=png"/></p><p>没办法，先把没升级插件的导出OVA镜像吧，这回再导回去肯定没问题，因为还没升级插件嘛，再手动导入插件升级包或者在线升级，都没问题，</p><p><img data-s="300,640" data-type="png" data-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ1VY0ibLqvX4zMZg3xVD67f1EADrzLmIEhbMe2Mc3iaiauQSibm1yGvh4duvvzXnSpI9408WWF3CvPlwg/0?wx_fmt=png" data-copyright="0" style="" class="" data-ratio="0.35890652557319225" data-w="1134" src="../Images/dd91b67da4dc16d37fdfc5cf6f609cdd.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ1VY0ibLqvX4zMZg3xVD67f1EADrzLmIEhbMe2Mc3iaiauQSibm1yGvh4duvvzXnSpI9408WWF3CvPlwg/0?wx_fmt=png"/></p><p>最后虽然没能做出一个带插件的OVA，但最后能有一个不带插件的OVA+插件升级包还算不错了，只是有一个导回OVA后需要再手动升级插件的过程，总比新安装和注册的过程要简单多了。</p><p>这毕竟是一个hack过程，应该不是Nessus希望的，OVA和插件升级包就不公开分享了。<br/></p>
+        
+</body>
+</html>

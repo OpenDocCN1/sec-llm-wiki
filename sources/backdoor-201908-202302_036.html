@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>chrome rce 上线 msf</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>chrome rce 上线 msf</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI5MzkwMzU1Nw==&amp;mid=2247484482&amp;idx=1&amp;sn=1291381ec760fc208323ebde18d9046e&amp;chksm=ec6a49e8db1dc0fec914dccb3d69fd88f68a269b452eb93b0b61db57bf50972039f34e34d7c7&amp;scene=126&amp;sessionid=1681665094#rd">http://mp.weixin.qq.com/s?__biz=MzI5MzkwMzU1Nw==&amp;mid=2247484482&amp;idx=1&amp;sn=1291381ec760fc208323ebde18d9046e&amp;chksm=ec6a49e8db1dc0fec914dccb3d69fd88f68a269b452eb93b0b61db57bf50972039f34e34d7c7&amp;scene=126&amp;sessionid=1681665094#rd</a></blockquote><p><img class="item item-image" data-type="2" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/t7IZ9keh9k62yrUS4zlKhu6ptGmJxwkMGeD5Ecw3Z29BcWdDMsmMkdjcOEvdmcTmuvP9aNnaqn5OT7sicUT7Khg/640?wx_fmt=jpeg" style="height: px;" src="../Images/c7149ce5c760361849dd37c028596206.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/t7IZ9keh9k62yrUS4zlKhu6ptGmJxwkMGeD5Ecw3Z29BcWdDMsmMkdjcOEvdmcTmuvP9aNnaqn5OT7sicUT7Khg/640?wx_fmt=jpeg"/></p><div><span style="color: rgb(102, 102, 102); font-family: &quot;Open Sans&quot;, sans-serif, Arial, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei&quot;, 微软雅黑, STHeiti, &quot;WenQuanYi Micro Hei&quot;, SimSun; background-color: rgb(255, 255, 255);">最近chrome 爆出很多漏洞，都是弹计算器，感觉没啥作用。今天找到一个可以修改shellcode的poc，经过测试可以到达msf上线（还是要关闭沙箱 --no-sandbx）。不过payload 必须是x64的，已测试两个模块：windows/x64/exec , windows/x64/meterpreter/reverse_tcp 。cobaltstrike暂时还没有测试。</span><br style="box-sizing: border-box; color: rgb(102, 102, 102); font-family: &quot;Open Sans&quot;, sans-serif, Arial, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei&quot;, 微软雅黑, STHeiti, &quot;WenQuanYi Micro Hei&quot;, SimSun; background-color: rgb(255, 255, 255);"/><span style="color: rgb(102, 102, 102); font-family: &quot;Open Sans&quot;, sans-serif, Arial, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei&quot;, 微软雅黑, STHeiti, &quot;WenQuanYi Micro Hei&quot;, SimSun; background-color: rgb(255, 255, 255);">poc 上传到自己github: </span>https://github.com/badboycxcc/script<br/></div>
+        
+</body>
+</html>

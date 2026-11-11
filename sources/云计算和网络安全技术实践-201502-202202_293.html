@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>介绍一款暴力破解软件：Ncrack</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>介绍一款暴力破解软件：Ncrack</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650743764&amp;idx=1&amp;sn=f99b16de923e7bea697fb260ca527ffc&amp;chksm=871482d4b0630bc2bd3ab3b999e74d6846fd9754a3f26cd069c70687212002e28cc4602e7169&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650743764&amp;idx=1&amp;sn=f99b16de923e7bea697fb260ca527ffc&amp;chksm=871482d4b0630bc2bd3ab3b999e74d6846fd9754a3f26cd069c70687212002e28cc4602e7169&amp;scene=27#wechat_redirect</a></blockquote><p>最近需要搭建暴力破解的真实场景，做IPS的防御演示，发现Kali下有一款叫Ncrack的工具口碑不错，拿来做了一下实验。</p><p><span style="line-height: 0px; display: none;">‍</span>Ncrack号称支持FTP, SSH, Telnet, HTTP(S), POP3(S), SMB, RDP, VNC, SIP, Redis, PostgreSQL, MySQL等多种常见协议的用户名密码暴力破解，我仅实验了FTP。</p><p>用Windows下的轻量级FTP服务器软件Home Ftp Server搭建了一个FTP服务，用户名密码是test/123456，<br/></p><p><img data-src="http://mmbiz.qpic.cn/mmbiz/F6TniceRacJ0xNKWxESds3XUpcau6Q3kCiczYPhVVUJ1HtM6MsjicUrib6PD99FcfvT2w7mv3wfEeoUyu0lpKn5QzA/0?wx_fmt=png" data-ratio="0.5143884892086331" data-type="png" data-s="300,640" data-w="" src="../Images/c3d6634e0efb7d115ddeb9f7d942d3d0.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/F6TniceRacJ0xNKWxESds3XUpcau6Q3kCiczYPhVVUJ1HtM6MsjicUrib6PD99FcfvT2w7mv3wfEeoUyu0lpKn5QzA/0?wx_fmt=png"/><br/></p><p>然后就在Kali下用ncrack对ftp服务器进行用户名密码的盲破，不到1分钟，test/123456就被发现了，</p><p><img data-src="http://mmbiz.qpic.cn/mmbiz/F6TniceRacJ0xNKWxESds3XUpcau6Q3kCiaModxSoUF0ANibVZCGJvNMgsABJDuWtiauxAvcebpPNiauCsO33etTRug/0?wx_fmt=png" data-ratio="0.1851145038167939" data-type="png" data-s="300,640" data-w="524" src="../Images/7b829245130524aef4d8559de391e663.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/F6TniceRacJ0xNKWxESds3XUpcau6Q3kCiaModxSoUF0ANibVZCGJvNMgsABJDuWtiauxAvcebpPNiauCsO33etTRug/0?wx_fmt=png"/><br/>在系统日志中能看到Kali的IP地址在不断的尝试认证，</p><p><img data-src="http://mmbiz.qpic.cn/mmbiz/F6TniceRacJ0xNKWxESds3XUpcau6Q3kChVEibmKwQKWt38a9zCgicqXmDic0slQMzia5Nk2YNdtqFm5wq5YJ2PRlMw/0?wx_fmt=png" data-ratio="0.5143884892086331" data-type="png" data-s="300,640" data-w="" src="../Images/2904a77a34b1328a56f3af097c3816fb.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/F6TniceRacJ0xNKWxESds3XUpcau6Q3kChVEibmKwQKWt38a9zCgicqXmDic0slQMzia5Nk2YNdtqFm5wq5YJ2PRlMw/0?wx_fmt=png"/><br/>在活跃客户端中能看到Kali的IP地址发起的大量连接，最多并发80个，</p><p><img data-src="http://mmbiz.qpic.cn/mmbiz/F6TniceRacJ0xNKWxESds3XUpcau6Q3kCxz0eRTiatBG1XPLStogqJf2X2IadSTo5qicQNxRo8UGGOxR82YfibibqQg/0?wx_fmt=png" data-ratio="0.5143884892086331" data-type="png" data-s="300,640" data-w="" src="../Images/85d59b36abc1910d7518cd4023a4030c.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/F6TniceRacJ0xNKWxESds3XUpcau6Q3kCxz0eRTiatBG1XPLStogqJf2X2IadSTo5qicQNxRo8UGGOxR82YfibibqQg/0?wx_fmt=png"/><br/></p>
+        
+</body>
+</html>

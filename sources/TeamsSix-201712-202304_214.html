@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Python3学习笔记 | 十九、Python的函数－作用域</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Python3学习笔记 | 十九、Python的函数－作用域</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI5Mzk5NTIwMg==&amp;mid=2247484976&amp;idx=1&amp;sn=0dac42b0192e7d8e98cd4725b77a1f11&amp;chksm=ec68d19ddb1f588b192defb42a8a5a8ff366fb73a0573239d8fca68beb533ab34361471b6484&amp;scene=126&amp;sessionid=1681656197#rd">http://mp.weixin.qq.com/s?__biz=MzI5Mzk5NTIwMg==&amp;mid=2247484976&amp;idx=1&amp;sn=0dac42b0192e7d8e98cd4725b77a1f11&amp;chksm=ec68d19ddb1f588b192defb42a8a5a8ff366fb73a0573239d8fca68beb533ab34361471b6484&amp;scene=126&amp;sessionid=1681656197#rd</a></blockquote><p style="text-align: center;"><span style="color: rgb(136, 136, 136);font-size: 16px;text-align: center;">部分设备阅读本文会存在代码错乱的情况，可点击阅读原文链接到博客中进行查看</span></p><h1 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 1.6em;border-bottom: 1px solid rgb(221, 221, 221);text-align: left;">一、Python作用域基础</h1><p style="margin: 0px 0px 1.2em !important;text-align: left;"><span style="font-size: 16px;">作用域针对的是变量。在使用同一个变量名时，会出现作用域问题。如右边的x，在函数里与函数外是不同的变量。<br/>• 一个def内定义的变量名能够被def内部使用。不能在函数外部引用这个变量名。<br/>• def内的变量名与def外的变量名并不冲突。在def内赋值的与def外赋值的相同变量名是不同的变量。<br/>变量名有如下三种不同作用域：<br/>1、全局：在def外定义的变量名是全局变量<br/>2、本地：在def内部定义的叫做本地变量<br/>3、其它：嵌套def时,各自的变量也是独立的。</span></p><h1 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 1.6em;border-bottom: 1px solid rgb(221, 221, 221);text-align: left;">二、作用域法则</h1><p style="margin: 0px 0px 1.2em !important;text-align: left;"><span style="font-size: 16px;">内嵌的模块是全局作用域，全局作用域的作用范围仅限于单个文件，每次的函数的调用都创建了一个新的本地作用域，赋值的变量名除非声明全局变量或非本地变量（Python3.x有非本地变量说法），否则均为本地变量。所有其它的变量名都可以归纳为本地、全局或者内置。</span></p><p style="margin: 0px 0px 1.2em !important;text-align: left;"><span style="font-size: 16px;">变量名使用时，查找顺序：LEGB<br/>L：本地变量名 － 在本地是否使用此变量名赋值过。<br/>E：上一层结构中def或lambda的本地变量名 － 上一层是否使用此变量名赋值过。<br/>G：全局变量名 － 在整个文件里是否对变量名赋值过。<br/>B：内置变量名 － Python内部是否存在此变量名。<br/>要是都找不到相应变量名，就会报错。</span></p><pre style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin: 1.2em 0px;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin: 0px 0.15em;background-color: rgb(248, 248, 248);white-space: pre;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;text-align: left;display: block !important;">内置变量：exit、open等。
+&gt;&gt;&gt; l = 'global'; e = 'global'; g = 'global'  #全局变量
+&gt;&gt;&gt;def myenclosefunc():
+...     e = 'enclose';l = 'enclose'  #enclose func变量
+...     def mylocalfunc():
+...             l = 'local'  #本地变量
+...             print('in local: l={},e={},g={}'.format(l,e,g))
+...     mylocalfunc()
+...     print('in enclose: l={},e={},g={}'.format(l,e,g))
+...
+&gt;&gt;&gt; myenclosefunc()
+in local: l=local,e=enclose,g=global
+in enclose: l=enclose,e=enclose,g=global
+&gt;&gt;&gt; print('in global: l={},e={},g={}'.format(l,e,g))
+in global: l=global,e=global,g=global</code></pre><h1 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 1.6em;border-bottom: 1px solid rgb(221, 221, 221);text-align: left;">三、global语句</h1><p style="margin: 0px 0px 1.2em !important;text-align: left;"><span style="font-size: 16px;">在函数内，想改变全局变量，可以使用global语句来定义此变量为全局变量，如下所示。</span></p><pre style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin: 1.2em 0px;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin: 0px 0.15em;background-color: rgb(248, 248, 248);white-space: pre;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;text-align: left;display: block !important;">&gt;&gt;&gt; g = 'global'
+&gt;&gt;&gt; l = 'global'
+&gt;&gt;&gt; def myfunc():
+...     global g
+...     g = 'local'
+...     l = 'local'
+...
+&gt;&gt;&gt; g,l
+('global', 'global')
+&gt;&gt;&gt; myfunc()
+&gt;&gt;&gt; g,l
+('local', 'global')</code></pre><p style="margin: 0px 0px 1.2em !important;text-align: left;"><span style="font-size: 16px;">在myfunc函数里，都重新赋值了g与l，但在函数执行后，只有g改变了。当使用global g 之后，当前函数里所使用的所有对变量g的更改都会对全局变量g进行更改。<br/>除了这个方法，还有引用自己的方法(交互模式里，可以import main)与sys.modules的方法(可以使用引用过的所有模块，交互模式里本身可以用main方式），具体如下。</span></p><pre style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin: 1.2em 0px;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin: 0px 0.15em;background-color: rgb(248, 248, 248);white-space: pre;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;text-align: left;display: block !important;">&gt;&gt;&gt; x = 2
+&gt;&gt;&gt; import __main__
+&gt;&gt;&gt; __main__.x
+2
+&gt;&gt;&gt; def glob():
+...     __main__.x += 1
+...
+&gt;&gt;&gt; glob()
+&gt;&gt;&gt; x
+3</code></pre><pre style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin: 1.2em 0px;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin: 0px 0.15em;background-color: rgb(248, 248, 248);white-space: pre;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;text-align: left;display: block !important;">&gt;&gt;&gt; x = 2
+&gt;&gt;&gt; import  sys
+&gt;&gt;&gt; sys.modules['__main__'].x
+2
+&gt;&gt;&gt; def glob():
+...     sys.modules['__main__'].x += 1
+...
+&gt;&gt;&gt; glob()
+&gt;&gt;&gt; x
+3</code></pre><h1 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 1.6em;border-bottom: 1px solid rgb(221, 221, 221);text-align: left;">四、作用域与嵌套函数</h1><p style="margin: 0px 0px 1.2em !important;text-align: left;"><span style="font-size: 16px;">被嵌套函数的作用域也是上级函数里：</span></p><pre style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin: 1.2em 0px;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin: 0px 0.15em;background-color: rgb(248, 248, 248);white-space: pre;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;text-align: left;display: block !important;">&gt;&gt;&gt; def outer():
+...     def inner():
+...             print('inner')
+...</code></pre><p style="margin: 0px 0px 1.2em !important;text-align: left;"><span style="font-size: 16px;">在这里，想调用inner函数，必须是在函数outer里面，不能直接使用。这个时候，我们可以返回内部函数的方法来提取内部函数：</span></p><pre style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin: 1.2em 0px;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin: 0px 0.15em;background-color: rgb(248, 248, 248);white-space: pre;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;text-align: left;display: block !important;">&gt;&gt;&gt; def outer():
+...     def inner():
+...             print('inner')
+...     return inner()
+...
+&gt;&gt;&gt; func1 = outer()
+inner</code></pre><h3 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 1.3em;text-align: left;">工厂函数</h3><p style="margin: 0px 0px 1.2em !important;text-align: left;"><span style="font-size: 16px;">工厂函数为：根据要求的对象，一个能够记住嵌套作用域的变量值的函数。这种功能，使用类可以更好的实现，但使用函数也能简单实现。</span></p><pre style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin: 1.2em 0px;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin: 0px 0.15em;background-color: rgb(248, 248, 248);white-space: pre;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;text-align: left;display: block !important;">&gt;&gt;&gt; def funcl(x):
+...     def action(y):  #嵌套函数
+...             return x ** y  #返回x ** y的值
+...     return action  #返回嵌套的函数
+...
+&gt;&gt;&gt; a = funcl(3)  #定义x值为3后的嵌套函数赋值
+&gt;&gt;&gt; a(2)
+9
+&gt;&gt;&gt; a(3)
+27</code></pre><p style="margin: 0px 0px 1.2em !important;text-align: left;"><span style="font-size: 16px;">可以使用lambda，把之前函数变为：</span></p><pre style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin: 1.2em 0px;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin: 0px 0.15em;background-color: rgb(248, 248, 248);white-space: pre;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;text-align: left;display: block !important;">&gt;&gt;&gt; def func(x):
+...     return lambda y :x ** y
+...
+&gt;&gt;&gt; a = func(3)
+&gt;&gt;&gt; a(2)
+9</code></pre><p style="margin: 0px 0px 1.2em !important;text-align: left;"><span style="font-size: 16px;">关于lamdba的使用可以参考：</span><span style="font-size: 16px;">https://www.cnblogs.com/evening/archive/2012/03/29/2423554.html</span></p><h3 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 1.3em;text-align: left;">循环变量</h3><pre style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin: 1.2em 0px;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin: 0px 0.15em;background-color: rgb(248, 248, 248);white-space: pre;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;text-align: left;display: block !important;">&gt;&gt;&gt; def makeAction():
+...     acts = []
+...     for i in range(5):
+...             acts.append(lambda x:i ** x)
+...     return acts
+...</code></pre><p style="margin: 0px 0px 1.2em !important;text-align: left;"><span style="font-size: 16px;">执行后，返回值可能不是我们想象的结果：</span></p><pre style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin: 1.2em 0px;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin: 0px 0.15em;background-color: rgb(248, 248, 248);white-space: pre;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;text-align: left;display: block !important;">&gt;&gt;&gt; funclist = makeAction()
+&gt;&gt;&gt; funclist[0](2)
+16
+&gt;&gt;&gt; funclist[4](2)
+16</code></pre><p style="margin: 0px 0px 1.2em !important;text-align: left;"><span style="font-size: 17px;">原因在于，i  x的时候，i的值取的是for循环结束后的最后一个（4）。我们需要写成lambda x, i=i: i  x，这样，lambda里的i是本地变量，跟for循环里的i不冲突，优化后如下：</span></p><pre style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin: 1.2em 0px;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin: 0px 0.15em;background-color: rgb(248, 248, 248);white-space: pre;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;text-align: left;display: block !important;">&gt;&gt;&gt; def makeAction():
+...     acts = []
+...     for i in range(5):
+...             acts.append(lambda x,i = i : i ** x)
+...     return acts
+...
+&gt;&gt;&gt; funclist = makeAction()
+&gt;&gt;&gt; funclist[0](2)
+0
+&gt;&gt;&gt; funclist[2](2)
+4
+&gt;&gt;&gt; funclist[4](2)
+16</code></pre><h1 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 1.6em;border-bottom: 1px solid rgb(221, 221, 221);text-align: left;">五、nonlocal语句</h1><p style="margin: 0px 0px 1.2em !important;text-align: left;"><span style="font-size: 16px;">nonlocal关键字用来在函数或其他作用域中使用外层(非全局)变量，更多用法可以参考</span><span style="font-size: 16px;">https://blog.csdn.net/youngbit007/article/details/64905070</span></p><pre style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin: 1.2em 0px;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin: 0px 0.15em;background-color: rgb(248, 248, 248);white-space: pre;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;text-align: left;display: block !important;">&gt;&gt;&gt; x = 1  #全局变量x为1
+&gt;&gt;&gt; y = 1  #全局变量y为1
+&gt;&gt;&gt; def printxy():  
+...     x = 2  #printxy里的本地变量x为2
+...     y = 2  #printxy里的本地变量y为2
+...     def setxy():
+...             nonlocal x  #设定x为nonlocal
+...             global y  #设定y为global
+...             x =3
+...             y =3
+...     setxy()
+...     print(x)
+...     print(y)
+...
+&gt;&gt;&gt; printxy()
+3  #printxy里的x为3
+2  #printxy里的y没变，仍为2
+&gt;&gt;&gt; x,y
+(1, 3)  #全局变量x没变，y变为3</code></pre><hr style="border-style: solid;border-width: 1px 0 0;border-color: rgba(0,0,0,0.1);-webkit-transform-origin: 0 0;-webkit-transform: scale(1, 0.5);transform-origin: 0 0;transform: scale(1, 0.5);"/><p style="text-align: center;"><br/></p><p style="text-align: center;"><img class="" data-copyright="0" data-ratio="0.5625" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/lvTqB4HLwG0qsz6icqBCI0JTyFcQxdEwLVegqic5JibFtlwIDy4WZaVtnuwcnZkzFEfUiajgvINj5Y1BvR8bn8L5uw/640?wx_fmt=png" data-type="png" data-w="1920" style="border-radius: 4px;" src="../Images/1f35956fbe0f6122e92616f885b7240a.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/lvTqB4HLwG0qsz6icqBCI0JTyFcQxdEwLVegqic5JibFtlwIDy4WZaVtnuwcnZkzFEfUiajgvINj5Y1BvR8bn8L5uw/640?wx_fmt=png"/></p>
+        
+</body>
+</html>

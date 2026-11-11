@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>LaserCrack：一款可扩展的暴力破解框架</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>LaserCrack：一款可扩展的暴力破解框架</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=2651070138&amp;idx=4&amp;sn=93333111d94c18ebed5291d1437b305a&amp;chksm=bd1f8c318a680527bfecc37bb72d072e36f85768be1113fe8dbfdee04265383bec62a1d1c875&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=2651070138&amp;idx=4&amp;sn=93333111d94c18ebed5291d1437b305a&amp;chksm=bd1f8c318a680527bfecc37bb72d072e36f85768be1113fe8dbfdee04265383bec62a1d1c875&amp;scene=27#wechat_redirect</a></blockquote><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 18px;white-space: normal;border-bottom: 1px solid rgb(238, 238, 238);">0x01 简单说明</h2><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;"><strong><span style="color: rgb(0, 176, 80);">lasercrack是一款爆力破解工具，现如今市面上常见的暴力工具如hydra，medusa都有着不错的破解效率，不过我还没有找到ruby写的，一方面是想从原理上理解下暴力破解漏洞，另一方面练习一下ruby语言。此工具配置成交互式终端界面，服务爆破脚本可自定义。</span></strong></p><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 18px;white-space: normal;border-bottom: 1px solid rgb(238, 238, 238);">0x02 工具结构</h2><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">主目录中lasercrack.rb控制整体流程，接受用户参数并作出响应。</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;"><img class="" data-ratio="0.16231884057971013" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR38ysOCic0ZxCFDzhX7nFqKVXqvicyfcfiaNj5ibKKP2GkKv8EVicEtEDjNhLBicpMwlJAJKR28BcO46vLIA/640?wx_fmt=jpeg" data-type="jpeg" data-w="690" src="../Images/206052adc3857d9a5f22fb71287b756e.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR38ysOCic0ZxCFDzhX7nFqKVXqvicyfcfiaNj5ibKKP2GkKv8EVicEtEDjNhLBicpMwlJAJKR28BcO46vLIA/640?wx_fmt=jpeg"/></p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">utils目录中framework.rb是框架核心文件，控制与线程池相关，提供了三种方式的爆破，即单用户&lt;=&gt;单密码，单用户&lt;=&gt;多密码，单密码&lt;=&gt;多用户，目前暂不支持的多用户&lt;=&gt;多密码。其余文件是服务爆破相关文件，其中分为service.rb和serviceattack.rb。</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;"><img class="" data-ratio="0.4260869565217391" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR38ysOCic0ZxCFDzhX7nFqKVX6ibRg0NwhJ4icibrw6VT1LC12pgSTAia31dgfd8hZOOkfcvfNloicKat1YQ/640?wx_fmt=jpeg" data-type="jpeg" data-w="690" src="../Images/7963bdddcecc035f813d832259ca1077.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR38ysOCic0ZxCFDzhX7nFqKVX6ibRg0NwhJ4icibrw6VT1LC12pgSTAia31dgfd8hZOOkfcvfNloicKat1YQ/640?wx_fmt=jpeg"/></p><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 18px;white-space: normal;border-bottom: 1px solid rgb(238, 238, 238);">0x03 源码说明</h2><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">初始化函数定义了一些基本变量可以让用户自行设置，同时载入所有可用的服务爆破类。</p><pre style="margin: 1.2em 0em;font-size: 1em;font-family: Avenir, SimSun;line-height: 1.2em;"><code style="padding: 0.5em 0.7em;font-family: Avenir, SimSun;font-size: 0.9em;border-radius: 2px;overflow: auto;display: block !important;">    def initialize
+      @module = "nil"
+      @ip = "nil"
+      @port = 0
+      @username = "nil"
+      @password = "nil"
+      @user_file = "nil"
+      @pass_file = "nil"
+      @verbose = false
+      @threads = 10
+      @timeout = 10
+      @exploithash = {
+          "ftp" =&gt; FtpAttack.new,
+          "ssh" =&gt; SshAttack.new,
+          "mysql" =&gt; MysqlAttack.new,
+          "mssql" =&gt; MssqlAttack.new,
+          "smb" =&gt; SmbAttack.new,
+          "redis" =&gt; RedisAttack.new,
+          "mongo" =&gt; MongoAttack.new,
+          "telnet" =&gt; TelnetAttack.new,
+          "oracle" =&gt; OracleAttack.new,
+          "vnc" =&gt; VncAttack.new,
+      }
+    end</code></pre><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">参数校验函数针对用户输入或未输入的信息进行判断可以使用哪种爆破模式，对还未达到利用条件的参数抛出未定义。</p><pre style="margin: 1.2em 0em;font-size: 1em;font-family: Avenir, SimSun;line-height: 1.2em;"><code style="padding: 0.5em 0.7em;font-family: Avenir, SimSun;font-size: 0.9em;border-radius: 2px;overflow: auto;display: block !important;">   def checkarg
+      flag = true
+      if @user_file == "nil" and @pass_file == "nil"
+        puts "[*] Exploit by ip/ips..".light_blue
+        tmphash = {"ip" =&gt; @ip, "port" =&gt; @port, "username" =&gt; @username, "password" =&gt; @password}
+        tmphash.each {|key, value|
+          if value == "nil" or value == 0
+            tmpstr = "[-] "+key+" =&gt; "+value.to_s+"    ".light_red
+            puts tmpstr.light_red
+            flag = false
+          end
+        }
+      else
+        return false
+      end
+      return flag
+    end</code></pre><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">爆力破解函数载入线程池并批量对服务进行穷举尝试。其中在verbose为false的情况下使用processbar模块动态显示进程条信息。</p><pre style="margin: 1.2em 0em;font-size: 1em;font-family: Avenir, SimSun;line-height: 1.2em;"><code style="padding: 0.5em 0.7em;font-family: Avenir, SimSun;font-size: 0.9em;border-radius: 2px;overflow: auto;display: block !important;">   def exploit_ips_template
+      $semaphore = Mutex.new
+      $COUNTER = 0
+      $OFFSET = 0
+      puts "[*] Starting crack the #{@module}..".light_blue
+      puts "[*] target ip: "+@ip.light_blue
+      puts "[*] target port: "+@port.light_blue
+      @exploithash.each { |key, value|
+        if key == @module
+          iplist = checkcidr_iprange
+          if not iplist.nil?
+            pool = ThreadPool.new(@threads)
+            exploitips = value
+            iplist.each { |item|
+              pool.process {
+                  if exploitips.attack_once(item, @port.to_i, @username, @password, @timeout)
+                    result = "[+] Crack it!"+" "*6+item+" "*6+@username+":"+@password
+                    $OFFSET += 1
+                    $semaphore.lock
+                    puts result.light_green
+                    $semaphore.unlock
+                  else
+                    if @verbose
+                      $semaphore.lock
+                      puts "["+getnow+"]".light_white+" "*6+"Not found! ==&gt; "+item.light_red
+                      $semaphore.unlock
+                    else
+                      $semaphore.lock
+                      progressbar = ProgressBar.create(:format =&gt; 'Processing: |%b&gt;&gt;%i| %p%% %t', :starting_at =&gt; $COUNTER, :total =&gt; iplist.length-$OFFSET-1)
+                      $semaphore.unlock
+                      $COUNTER += 1
+                      sleep 0.05
+                      if progressbar.finished?
+                        puts "finished".light_blue
+                      end
+                    end
+                  end
+              }
+            }
+            gets
+          end
+        end
+      }
+    end</code></pre><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">服务登录验证函数对用户提供的信息进行验证，返回true或false表明是否可登录成功。用ftp举例，其他服务脚本类似，不做赘述。</p><pre style="margin: 1.2em 0em;font-size: 1em;font-family: Avenir, SimSun;line-height: 1.2em;"><code style="padding: 0.5em 0.7em;font-family: Avenir, SimSun;font-size: 0.9em;border-radius: 2px;overflow: auto;display: block !important;">    def hit
+        begin
+            ftp = Net::FTP.new
+            ftp.read_timeout = @timeout
+            ftp.open_timeout = @timeout
+            ftp.connect(@ip, @port)
+            ftp.login(@user, @password)
+            result = ftp.lastresp
+            ftp.close
+            if result == "200"
+                return true
+            else
+                return false
+            end
+        rescue
+            return false
+        end
+    end</code></pre><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 18px;white-space: normal;border-bottom: 1px solid rgb(238, 238, 238);">0x04 样例测试</h2><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">测试本地mysql。</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;"><img class="" data-ratio="0.372463768115942" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR38ysOCic0ZxCFDzhX7nFqKVXRV6C0Avd28ryDLLYvIibbTKyFbXzPstKWjGKn0jicNJsR2sKXAUv2D8g/640?wx_fmt=jpeg" data-type="jpeg" data-w="690" src="../Images/13c968edc7c8834e3dc029e24d4f7ed1.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR38ysOCic0ZxCFDzhX7nFqKVXRV6C0Avd28ryDLLYvIibbTKyFbXzPstKWjGKn0jicNJsR2sKXAUv2D8g/640?wx_fmt=jpeg"/></p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">由于字典比较小很快就可以出结果。</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;"><img class="" data-ratio="0.12608695652173912" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR38ysOCic0ZxCFDzhX7nFqKVX3iaicDbzyLmdqO2xGCFuCCDa4cBhtzkNs7ztEoe2HIPnu8S9LU6bIe8Q/640?wx_fmt=jpeg" data-type="jpeg" data-w="690" src="../Images/7288050a3d0bc3eca5d64907dbbfadd4.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR38ysOCic0ZxCFDzhX7nFqKVX3iaicDbzyLmdqO2xGCFuCCDa4cBhtzkNs7ztEoe2HIPnu8S9LU6bIe8Q/640?wx_fmt=jpeg"/></p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">设置verbose为true，显示攻击详细信息。</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;"><img class="" data-ratio="0.3536231884057971" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR38ysOCic0ZxCFDzhX7nFqKVX2WUibZfa4QSJxFNtXsMheUzVfadmMoIq3HJDCH1rNlnQ085u97uMtGQ/640?wx_fmt=jpeg" data-type="jpeg" data-w="690" src="../Images/7464b9238e9a9c5443a3c7d833fdf35c.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR38ysOCic0ZxCFDzhX7nFqKVX2WUibZfa4QSJxFNtXsMheUzVfadmMoIq3HJDCH1rNlnQ085u97uMtGQ/640?wx_fmt=jpeg"/></p><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 18px;white-space: normal;border-bottom: 1px solid rgb(238, 238, 238);">0x05 扩展支持服务</h2><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">如需自己扩充暴力破解服务，需要修改下面几个地方:</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">lasercrack.rb中将对应的服务添加到数组和字典中，字典里指定对应的端口信息。</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;"><img class="" data-ratio="0.2753623188405797" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR38ysOCic0ZxCFDzhX7nFqKVXYIlibibgt9ibHHpyyv80cR87snlZ21sGao4zVY4z11RpcibaJ9sEdm4LVQ/640?wx_fmt=jpeg" data-type="jpeg" data-w="690" src="../Images/3128211cdced7db16c29f0b6d0d6ee5d.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR38ysOCic0ZxCFDzhX7nFqKVXYIlibibgt9ibHHpyyv80cR87snlZ21sGao4zVY4z11RpcibaJ9sEdm4LVQ/640?wx_fmt=jpeg"/></p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">framework.rb中引入对应的attack文件，默认都在utils目录中编写。</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;"><img class="" data-ratio="0.2826086956521739" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR38ysOCic0ZxCFDzhX7nFqKVXicYnBzsUkr8vPHRMZGSq3WtY7Q8jNocpuSvkBibLvyAOxjNffxEqlebQ/640?wx_fmt=jpeg" data-type="jpeg" data-w="690" src="../Images/b6f591afc29c1af8d631b86d6a198f5b.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR38ysOCic0ZxCFDzhX7nFqKVXicYnBzsUkr8vPHRMZGSq3WtY7Q8jNocpuSvkBibLvyAOxjNffxEqlebQ/640?wx_fmt=jpeg"/>  同时init函数中添加exploithash，show函数中增加显示。</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;"><img class="" data-ratio="0.30434782608695654" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR38ysOCic0ZxCFDzhX7nFqKVXRe1iaA16uVGlcTiabA4fn4eNmacGicHL0pNc6YDj6AnBDsvPXukQV73Iw/640?wx_fmt=jpeg" data-type="jpeg" data-w="690" src="../Images/adc5b47159b00d7febd4b29609f8bf03.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR38ysOCic0ZxCFDzhX7nFqKVXRe1iaA16uVGlcTiabA4fn4eNmacGicHL0pNc6YDj6AnBDsvPXukQV73Iw/640?wx_fmt=jpeg"/></p><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 18px;white-space: normal;border-bottom: 1px solid rgb(238, 238, 238);">0x06 项目地址</h2><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;"><span style="color: rgb(61, 170, 214);"><strong>阅读原文获取</strong></span></p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;"><span style="color: rgb(159, 163, 168);"><strong>* 本文作者：六翼，转载注明来自FreeBuf.COM</strong></span></p><p><img class="" data-copyright="0" data-ratio="0.6466666666666666" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz/qq5rfBadR3ic8CiaI3jDNE1pjxMWoM1hibUOrQypt6TwLx2iaicDUk4fCkEVKrkPJ5ia00nc363FCB6SW6Gian7F80ibMQ/640?wx_fmt=jpeg" data-type="jpeg" data-w="600" style="" src="../Images/d09a983717374b07f3c07fc5bc0caf9f.png" data-original-src="https://mmbiz.qpic.cn/mmbiz/qq5rfBadR3ic8CiaI3jDNE1pjxMWoM1hibUOrQypt6TwLx2iaicDUk4fCkEVKrkPJ5ia00nc363FCB6SW6Gian7F80ibMQ/640?wx_fmt=jpeg"/></p>
+        
+</body>
+</html>

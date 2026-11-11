@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>GitHub Pages中的命令注入漏洞使漏洞猎手获得了4000美元的收益</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>GitHub Pages中的命令注入漏洞使漏洞猎手获得了4000美元的收益</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485554&amp;idx=1&amp;sn=843f1d1a8aa16834b705784899188370&amp;chksm=fa76e98ccd01609a24b61a33477fbea7df1c1ebc4ac89bf05e6411c4e373cbf6fe8477c4de78&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485554&amp;idx=1&amp;sn=843f1d1a8aa16834b705784899188370&amp;chksm=fa76e98ccd01609a24b61a33477fbea7df1c1ebc4ac89bf05e6411c4e373cbf6fe8477c4de78&amp;scene=27#wechat_redirect</a></blockquote><blockquote><p>一位安全研究人员发现了一种通过利用GitHub Pages构建过程来发起代码执行攻击的方法。如最近的一篇博文所述，Joren Vrancken通过GitHub的HackerOne漏洞赏金计划报告了一个命令注入漏洞，获得了4000美元的奖励。根据Vrancken的说法，GitHub Pages中存在安全问题，这是一种静态托管服务，能够从存储库中提取数据，通过构建过程运行代码，然后发布网站。</p></blockquote><p style="margin-bottom: 0em;"><img class="rich_pages wxw-img" data-ratio="0.5625" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJmFwDSib2W7ynVXDufGOmLrg57yKkAM0mPxNY1mAsaFcZuEexsWkrUJVts7r1iaT0wLokpXdsJR4rOw/640?wx_fmt=jpeg" data-type="jpeg" data-w="1200" height="675" width="1200" src="../Images/452494455158837fc78c5608d174d57c.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJmFwDSib2W7ynVXDufGOmLrg57yKkAM0mPxNY1mAsaFcZuEexsWkrUJVts7r1iaT0wLokpXdsJR4rOw/640?wx_fmt=jpeg"/></p><p><br/></p><p>为了简化流程，GitHub Pages支持Jekyll静态站点生成器。</p><p>Jekyll设置存储在YAML配置文件中，服务的某些方面由GitHub自动化，包括主题，其中GitHub将发出POST请求并自动创建新的提交以对源进行更改。</p><p>这些进程需要管理员权限，并且只能指定两个目录——分支的根目录和/docs。但是，也可以在主题选择器URL中指定用户输入目录。</p><p>您可以选择任意目录用作GitHub Pages源，然后运行GitHub作业工作流，其中包括启动Jekyll、静态文件部署和上传页面工件。最终，此过程可以通过tar命令触发有效负载，从而导致任意代码执行。</p><p>但是，攻击者已经拥有管理员权限，所以这不一定是一个大问题。</p><p>Vrancken找到了将这种工作流程功能转变为更严肃的方法的方法。如果攻击者想要访问托管在私有仓库中的代码，他们所需要的只是URL和用户交互。</p><p>通过制作从第三方来源下载并执行脚本的恶意URL，攻击者可以使用网络钓鱼或其他社会工程策略诱使管理员用户单击链接并遵循“选择主题”流程，从而触发恶意负载并暴露存储库。</p><p>攻击者只需要提供一个URL——他们不需要GitHub帐户，也不需要与目标repo的任何连接。</p><p>在7月27日将他的发现通知GitHub后，Vrancken在同一天收到了回复，并在8月2日收到了确认。到8月23日，GitHub安全团队通过删除主题选择器功能解决了这个问题。</p><p>Vrancken获得了GitHub Pro订阅以及4000美元的漏洞奖励。</p><p>“这绝对是我做过的最有趣的漏洞赏金之一，因为它结合了多个GitHub特定的功能和一些更传统的Hack The Box式技术，”研究人员评论道。“我全心全意地推荐GitHub漏洞赏金计划。”</p><p>GitHub产品安全工程响应总监Jill Moné-Corallo说：“每次提交给我们的漏洞赏金计划都是一个让GitHub、我们的产品和我们的客户更加安全的机会。Joren的发现表明了他们对安全研究的热情，并且让像他们这样的研究人员参与进来是我们继续看到我们的漏洞赏金计划价值的原因。”</p><p><br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Linux 底层函数库“glibc”再现重大安全漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Linux 底层函数库“glibc”再现重大安全漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxNDM3NTM0NQ==&amp;mid=408094969&amp;idx=2&amp;sn=6cda3ed87f6b13462f358714c70da5c5&amp;chksm=0633e827314461316477f3b26052219800b3f6649aede2d168e0915602780dd32bae6100e23f&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzAxNDM3NTM0NQ==&amp;mid=408094969&amp;idx=2&amp;sn=6cda3ed87f6b13462f358714c70da5c5&amp;chksm=0633e827314461316477f3b26052219800b3f6649aede2d168e0915602780dd32bae6100e23f&amp;scene=27#wechat_redirect</a></blockquote><p>Google 的安全研究团队近日披露了glibc getaddrinfo 溢出漏洞。</p><p>漏洞的详细发现过程可以参见Google的博客 。(题外话，Google 的工程师都真牛)</p><h2><span style="color: rgb(0, 128, 255);"><strong>漏洞描述：</strong></span></h2><p>漏洞成因在于DNS Server Response返回过量的(2048 ) 字节, 导致接下来的response 触发栈溢出。</p><blockquote><p>The vulnerability relies on an oversized (2048  bytes) 
+UDP or TCP response, which is followed by another response that will 
+overwrite the stack.</p></blockquote><h2><span style="color: rgb(0, 128, 255);"><strong>影响范围：</strong></span></h2><p>所有Debian 系列、Red Hat 系列的Linux 发行版，只要glibc 版本大于2.9 就会受到影响。</p><p>目前Google 已提供了POC，据Google 博客中所述，该漏洞应该是可以绕过内存防护技术，从而形成代码执行漏洞。</p><p><br/></p><h2><span style="color: rgb(0, 128, 255);"><strong>POC 使用测试</strong></span></h2><p>POC 地址：github.com/fjserna/CVE-2015-7547</p><p>我在自己的本地 lubuntu 上进行测试，libc 版本为 2.19。lubuntu系列也属于Debian 的一个发行版，故理论上满足漏洞条件。</p><p>测试过程如下：</p><p>根据漏洞描述，我们可以做一个假的DNS Server 作为中间人，来验证该漏洞。</p><ol class=" list-paddingleft-2"><li><p>更改DNS 解析为 127.0.0.1，刷新DNS 缓存 sudo /etc/init.d/nscd restart</p></li><li><p>执行 CVE-2015-7547-poc.py , 注意无需更改 ip_addr 。</p></li><li><p> 编译 CVE-2015-7547-client.c , 执行CVE-2015-7547-client</p></li></ol><p>若含有漏洞，会造成Segmentation Fault。</p><p><br/></p><p>由于gilbc 2.9 是在2008年发行的，所以大量Linux 系统都会受到该漏洞影响。若一旦绕过内存防护技术，则该漏洞可以成为一大杀器。<strong><span style="color: #ff6600;">被劫持的DNS server进行中间人攻击，可直接批量获取大量主机权限。</span><br/></strong></p><h2><span style="color: rgb(0, 128, 255);"><strong>修复方案：</strong></span></h2><p>1） 打patch，可参考官方介绍</p><p><br/></p><p><br/></p><p/><p style="max-width: 100%; min-height: 1em; white-space: pre-wrap; color: rgb(62, 62, 62); box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);"><span style="max-width: 100%; color: rgb(0, 176, 80); box-sizing: border-box !important; word-wrap: break-word !important;">-------后续精彩文章点击左下角“阅读原文”</span></p><p><span style="max-width: 100%; color: rgb(0, 176, 80); box-sizing: border-box !important; word-wrap: break-word !important;">-------安全脉搏SecPulse.com 分享技术 悦享品质</span></p>
+        
+</body>
+</html>

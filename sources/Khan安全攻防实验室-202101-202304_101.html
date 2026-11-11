@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>小技巧</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>小技巧</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAwMjQ2NTQ4Mg==&amp;mid=2247490121&amp;idx=1&amp;sn=c1bd5d979670b8e0b585937a558606df&amp;chksm=9acb51ecadbcd8fa11bf66e95b988b5318aafde9111025cf6a9ae62f9fabaf3e82673312dc2a&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzAwMjQ2NTQ4Mg==&amp;mid=2247490121&amp;idx=1&amp;sn=c1bd5d979670b8e0b585937a558606df&amp;chksm=9acb51ecadbcd8fa11bf66e95b988b5318aafde9111025cf6a9ae62f9fabaf3e82673312dc2a&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center;margin-bottom: 0em;" data-mpa-powered-by="yiban.io"><img class="rich_pages wxw-img" data-galleryid="" data-ratio="0.5906515580736544" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/aPmkR80bcV3SS2VAsF4dlAtB7jyvsJI19ric2Qw4bHmhnGN0DQibSKfS4ANViabJRnHztEw1N9GphCeygSJHQzsRA/640?wx_fmt=png" data-type="png" data-w="706" style="" src="../Images/0605455fffeab99b833071f7b8166250.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/aPmkR80bcV3SS2VAsF4dlAtB7jyvsJI19ric2Qw4bHmhnGN0DQibSKfS4ANViabJRnHztEw1N9GphCeygSJHQzsRA/640?wx_fmt=png"/></p><p>使用卷影副本隐藏恶意软件执行</p><section class="code-snippet__fix code-snippet__js"><ul class="code-snippet__line-index code-snippet__js"><li/><li/><li/><li/></ul><pre class="code-snippet__js" data-lang="sql"><code><span class="code-snippet_outer">1. vssadmin <span class="code-snippet__keyword">create</span> shadow /<span class="code-snippet__keyword">for</span>=c:</span></code><code><span class="code-snippet_outer"><span class="code-snippet__number">2.</span> vssadmin <span class="code-snippet__keyword">list</span> shadows</span></code><code><span class="code-snippet_outer"><span class="code-snippet__number">3.</span> \?\GLOBALROOT\Device\HarddiskVolumeShadowCopy1\cthulhu.exe</span></code><code><span class="code-snippet_outer"><span class="code-snippet__number">3.</span> vssadmin <span class="code-snippet__keyword">delete</span> shadows /shadow=&lt;<span class="code-snippet__keyword">id</span>&gt;</span></code></pre></section><p><br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>linux提权之mysql的root权限通过system函数提权</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>linux提权之mysql的root权限通过system函数提权</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247484333&amp;idx=2&amp;sn=27730d6391bab078ecf532d1488fac55&amp;chksm=f9e06cf6ce97e5e07190beb91cef337b4124bc226b48dcd9265af290af9e742192ea2543cb02&amp;scene=126&amp;sessionid=1681663512#rd">http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247484333&amp;idx=2&amp;sn=27730d6391bab078ecf532d1488fac55&amp;chksm=f9e06cf6ce97e5e07190beb91cef337b4124bc226b48dcd9265af290af9e742192ea2543cb02&amp;scene=126&amp;sessionid=1681663512#rd</a></blockquote><p>linux提权之mysql的root权限通过system函数提权</p><p>linux系统环境下，mysql以root权限 登录时提权<br/>
+            <br/>
+            mysql5.x  的linux版本下面有一个函数，可以帮助我们干很多猥琐的事情，这个函数4。x下面貌似没有，原来一直没发现，也没去查函数手册，就我自己的经验来写点东西。4,x的  明天再看看函数手册，再装一个实验一下。<br/>
+            <br/>
+            mysql  5.x里面引入了一个system函数，这个函数可以执行系统命令  ，当mysql以root登陆的时候，就可以利用这个函数执行命令，当然是在权限许可的 范围内。<br/>
+            <br/>
+            下面开始提权：</p><p>实验环境：</p><p>A:192.168.211.128 (mysql版本：5.0.77)</p><p>B：192.168.211.131</p><p>实验过程：</p><p>在B机上通过root用户(这里一定要区分，这个root用户是mysql的，并不是linux系统的)连接到A机的数据库</p><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/p5qELRDe5icmmfUSOLmQujE4fKuN7rvuibEfkhics9KtTAeeI427e0auH6CEHpgX733PGdnxsoia6EmzXIPXuJAPaw/0?wx_fmt=png" data-ratio="0.3622704507512521" data-w="599" src="../Images/46527bbce18f7314c549a79b6e3d0ce8.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/p5qELRDe5icmmfUSOLmQujE4fKuN7rvuibEfkhics9KtTAeeI427e0auH6CEHpgX733PGdnxsoia6EmzXIPXuJAPaw/0?wx_fmt=png"/></p><p>现在已经连到A机的数据库了，下来就开始调用system函数了。</p><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/p5qELRDe5icmmfUSOLmQujE4fKuN7rvuiblTrb7JFKNEDRSp4NibzYFggtUysvMpKwkc17A14210p5gBfKmzaicriaA/0?wx_fmt=png" data-ratio="0.43141153081510936" data-w="503" src="../Images/88211cbcbcdf2807496d0f771007a450.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/p5qELRDe5icmmfUSOLmQujE4fKuN7rvuiblTrb7JFKNEDRSp4NibzYFggtUysvMpKwkc17A14210p5gBfKmzaicriaA/0?wx_fmt=png"/></p><p>好了，思路就到这里，剩下的大家自己发挥吧。<br/></p>
+        
+</body>
+</html>

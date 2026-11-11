@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>发现针对 Linux服务器和代码库的勒索软件</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>发现针对 Linux服务器和代码库的勒索软件</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxODY1OTM5OQ==&amp;mid=400709226&amp;idx=6&amp;sn=7b3dcf0a3500af42a862a7fb739e72d7&amp;chksm=09c417423eb39e541de23ff7286e64240eb9e1b039d52171c3cca612b6f4f91ef822d242141d&amp;scene=126&amp;sessionid=1681378446#rd">http://mp.weixin.qq.com/s?__biz=MzAxODY1OTM5OQ==&amp;mid=400709226&amp;idx=6&amp;sn=7b3dcf0a3500af42a862a7fb739e72d7&amp;chksm=09c417423eb39e541de23ff7286e64240eb9e1b039d52171c3cca612b6f4f91ef822d242141d&amp;scene=126&amp;sessionid=1681378446#rd</a></blockquote><p>来源：Freebuf</p><p>       研究人员发现一种新型勒索恶意软件，该勒索软件瞄准了Linux用户，目前该恶意软件已经感染了数十个用户。</p><p>       在网络犯罪生态系统中，恶意软件是一种有利可图的工具，安全专家每周都会发现新型变种的恶意软件。然而，在这一周他们发现了专业勒索吸金恶意软件Cryptowall的新变种Cryptowall 4.0。根据他们的消息，Cryptowall 4.0目前正在网络上活跃，与此同时一种离线的恶意软件正瞄准俄罗斯用户。</p><p>       今天的消息，研究人员发现了一种新的文件加密恶意软件，命名为Linux.Encoder.1，这是一种针对Linux系统的恶意软件。据估计，数十个用户已经成为这个Linux恶意软件的受害者。</p><p>       该研究人员在一篇博文中陈述道：“提醒用户注意这个瞄准Linux系统的新型加密恶意软件。根据该木马加密文件的目录判断，可以得出结论这样的结论，即网络罪犯的主要目标是机器上部署了Web服务器的网站管理员。据推测，至少数十个用户已经成为这个木马的受害者。”这个Linux恶意软件使用C语言编写，并利用了PolarSSL库，它启动后作为一个守护进程来加密数据，以及从系统中删除原始文件。</p><p>       此外，它需要管理员权限才能工作，一旦它成功感染用户机器，它将下载包含攻击者要求的文件，并下载一个包含某个公共RSA密钥路径的文件。另外，这个Linux恶意软件作为一个守护进程而启动，并且随后它会删除原始的文件。其中，RSA密钥用于存储用来加密文件的AES密钥。博文中继续提到：“首先，Linux.Encoder.1会加密主目录中的所有文件，以及与网站管理相关的目录。然后，该木马会从启动目录开始递归地遍历整个文件系统；下一次，它会从根目录开始（“/”）。在这种情况下，它仅仅会加密有特定扩展名的文件，且此时的目录名必须以攻击者指定的字符串之一开始。此外，为了对每个文件进行加密，该木马会生成一个AES密钥。在使用AES-CBC-128对文件加密之后，会在文件尾部加上“.encrypted”扩展名。然后，恶意软件会将一个带有勒索赎金要求的README_FOR_DECRYPT.txt文件植入到每一个包含加密文件的目录中。”</p><p>       为了恢复加密的文件，恶意软件要求受害者支付1比特币。一旦受害者支付了赎金，恶意程序就会使用一个私有RSA密钥解密这些文件，其中这个私有RSA密钥会从加密文件中恢复AES密钥。</p><p><br/></p>
+        
+</body>
+</html>

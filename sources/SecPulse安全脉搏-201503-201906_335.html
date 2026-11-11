@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>兄弟域名查询工具BroDomain</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>兄弟域名查询工具BroDomain</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxNDM3NTM0NQ==&amp;mid=2657031522&amp;idx=2&amp;sn=4d02713d562b1ce8745347fce737e40d&amp;chksm=803ff5bcb7487caad510bd54ada2aa0ccf6036d6b063cd70ae00d664b4786456cc15cdef12f9&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzAxNDM3NTM0NQ==&amp;mid=2657031522&amp;idx=2&amp;sn=4d02713d562b1ce8745347fce737e40d&amp;chksm=803ff5bcb7487caad510bd54ada2aa0ccf6036d6b063cd70ae00d664b4786456cc15cdef12f9&amp;scene=27#wechat_redirect</a></blockquote><p><strong><span style="color: rgb(0, 82, 255);">福利来袭 ~ </span></strong><span style="color: rgb(0, 0, 0);">隆重推出一款别具风格的域名查询工具</span><strong><span style="color: rgb(0, 82, 255);"> BRODOMAIN</span></strong>，主要做了除子域名外的一些如备案邮箱登反查等。</p><p><img data-w="" data-ratio="0.6510791366906474" data-type="png" class="alignnone wp-image-50911 size-large img-responsive" data-src="http://mmbiz.qpic.cn/mmbiz/5u08OUQmyqfZ5AUiaKgub6M3WIJVYjQyjQHFVLhLuASnpuE6ia9GIiaKV9BS4D9203tZKkibCE3aYjLlfp6NvC3T6w/0?wx_fmt=png" height="667" width="1024" src="../Images/d0ce3f18b19d189b43c07e65912ee1ce.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/5u08OUQmyqfZ5AUiaKgub6M3WIJVYjQyjQHFVLhLuASnpuE6ia9GIiaKV9BS4D9203tZKkibCE3aYjLlfp6NvC3T6w/0?wx_fmt=png"/></p><h2><br/><strong><span style="color: rgb(0, 82, 255);"/></strong></h2><h2><strong><span style="color: rgb(0, 82, 255);">使用方法</span></strong></h2><pre><code>python brodomain.py baidu.com</code></pre><h2><strong><span style="color: rgb(0, 82, 255);">运行逻辑</span></strong></h2><pre><code>brodomain.py
+|---输入域名
+|    |---查询域名注册邮箱
+|    |---通过域名查询备案号
+|    |---通过备案号查询域名
+|    |---反查注册邮箱
+|    |---反查注册人
+|    |---通过注册人查询到的域名在查询邮箱
+|    |---通过上一步邮箱去查询域名
+|    |---查询以上获取出的域名的子域名
+|    \---结束
+\---生成html和log报告</code></pre><h2><strong><span style="color: rgb(0, 82, 255);">报告DEMO</span></strong></h2><pre><code>  ./log/ly.com.html
+  ./log/ly.com.log</code></pre><p><img data-w="" data-ratio="0.8776978417266187" data-type="png" class="alignnone size-full wp-image-50912 img-responsive" data-src="http://mmbiz.qpic.cn/mmbiz/5u08OUQmyqfZ5AUiaKgub6M3WIJVYjQyj62gSjGvTWOgwaMZ6eJJ97PiaMia1xhnfc9OXKnicVOpYN2ib3qgw0icaICA/0?wx_fmt=png" height="878" width="1000" src="../Images/f3530e7b6ec0b3814a202b6b3527cbac.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/5u08OUQmyqfZ5AUiaKgub6M3WIJVYjQyj62gSjGvTWOgwaMZ6eJJ97PiaMia1xhnfc9OXKnicVOpYN2ib3qgw0icaICA/0?wx_fmt=png"/></p><h2><br/></h2><h2><strong><span style="color: rgb(0, 82, 255);">脉搏小编寄语：</span></strong></h2><p>子域名相关的查询小工具太多了，像Layer子域名挖掘机，脉搏推荐的李姐姐的subDomainsBrute等等如是。</p><p>Brodomain主要做了除子域名外的一些如备案邮箱登反查等。<br/>Brodomain的报表不错，但是github里面的代码query.GetDomainFromReglist()被注释了，使用的时候千万记得放开，否则抓不到东西。<br/>其实无外乎几种姿势：</p><ul class=" list-paddingleft-2"><li><p>1.Baidu，Google,Bing等搜索或者接口</p></li><li><p>2.其他子域名相关接口查询，如http://i.links.cn/subdomain/</p></li><li><p>3.子域名爆破</p></li><li><p>4.利用存在的DNS域传送漏洞</p></li><li><p>5.被动式扫描器爬完后统计出来的列表</p></li></ul><h2>下载BRODOMAIN:链接地址为:https://github.com/code-scan/BroDomain</h2><p><br/></p><p><br/></p><p style="line-height: 25.6px; max-width: 100%; min-height: 1em; color: rgb(62, 62, 62); box-sizing: border-box ! important; word-wrap: break-word ! important; background-color: rgb(255, 255, 255);"><span style="max-width: 100%; color: rgb(0, 176, 80); box-sizing: border-box ! important; word-wrap: break-word ! important;">-------后续精彩文章点击左下角“阅读原文”</span></p><p style="line-height: 25.6px; max-width: 100%; min-height: 1em; color: rgb(62, 62, 62); box-sizing: border-box ! important; word-wrap: break-word ! important; background-color: rgb(255, 255, 255);"><span style="max-width: 100%; color: rgb(0, 176, 80); box-sizing: border-box ! important; word-wrap: break-word ! important;">-------安全脉搏SecPulse.com 分享技术 悦享品质</span></p>
+        
+</body>
+</html>

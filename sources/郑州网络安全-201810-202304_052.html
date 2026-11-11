@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Safeurl HTTP库为Go应用程序带来SSRF保护功能</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Safeurl HTTP库为Go应用程序带来SSRF保护功能</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485992&amp;idx=1&amp;sn=952c04235c04015818e9ac84da7e5469&amp;chksm=fa76ebd6cd0162c02e9e7b616f817c6b3b7b14162eb34618cb44468f19943dced1c1041cc8f2&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485992&amp;idx=1&amp;sn=952c04235c04015818e9ac84da7e5469&amp;chksm=fa76ebd6cd0162c02e9e7b616f817c6b3b7b14162eb34618cb44468f19943dced1c1041cc8f2&amp;scene=27#wechat_redirect</a></blockquote><blockquote><p>据其架构师称，一个旨在阻止服务器端请求伪造(SSRF)攻击的新开源库填补了Go开发人员军械库中的一个重大缺口。Safeurl是Go原生net/http.Client的单行替代品，根据允许和阻止列表验证传入的HTTP请求，并防御DNS重新绑定攻击。“所有解析、验证和发出请求的繁重工作都由图书馆完成，”Doyensec安全工程师和Safeurl创建者Viktor Chuchurski和Alessandro Cotto在博客文章中说。“该库以最少的配置开箱即用，同时为开发人员提供他们可能需要的自定义和过滤选项。开发人员不应为解决应用程序安全问题而苦苦挣扎，而应专注于为客户提供高质量的功能。”</p></blockquote><p><img class="rich_pages wxw-img" data-ratio="0.5625" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJmEhwCpnDStpQE2fouiawqLUxFCaYO5cRPdXO9LjfJqx6cqUEKxQia86GMUUqZ0luXx5PFTRysdRy6g/640?wx_fmt=jpeg" data-type="jpeg" data-w="1200" height="675" width="1200" src="../Images/c111b6b35c130d176087939d6320b6b4.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJmEhwCpnDStpQE2fouiawqLUxFCaYO5cRPdXO9LjfJqx6cqUEKxQia86GMUUqZ0luXx5PFTRysdRy6g/640?wx_fmt=jpeg"/></p><p>Chuchurski和Cotto表示，他们希望通过SafeCURL和（名称相同但大写不同的）SafeURL为Go应用程序提供与用其他语言编写的对应程序相同的保护。</p><p>“我们的客户正在寻求有关减轻SSRF攻击的Go特定解决方案的建议，”两人说。“没有专门为Go构建的东西，所以我们接受了挑战。”</p><p>SSRF攻击涉及诱导服务器端应用程序向非预期位置发出请求。</p><p>“现代Web应用程序发出HTTP请求很常见，但安全实施可能非常困难，”Chuchurski和Cotto继续说道。</p><p>“我们希望我们的图书馆能够满足这一需求。它的设计考虑了易用性，并通过其嵌入式默认设置简单地保护应用程序。”</p><p>根据RFC1918的规定，Safeurl默认阻止所有流向私有或保留IP地址的流量。</p><p>“明确设置允许的目的地更容易（也更安全），而不是在当今不断扩大的威胁形势下必须处理更新阻止列表，”博客文章解释道。</p><p>safeurl.Config可用于自定义safeurl.Client以设置AllowedPorts、AllowedSchemes、AllowedHosts、BlockedIPs、AllowedIPs、AllowedCIDR、BlockedCIDR、IsIPv6Enabled、AllowSendingCredentials和IsDebugLoggingEnabled。</p><p>开源库允许配置HTTP重定向、cookie jar设置和请求超时。</p><p>DNS重新绑定攻击利用两个或多个连续HTTP请求之间的DNS响应不匹配，通过对用于通过Go的net/dialer包和控制挂钩发出HTTP请求的IP地址执行允许/阻止列表验证来阻止。</p><p>研究人员为Safeurl创建了一个夺旗CTF挑战，并向任何成功的人提供“赃物和一些很酷的小工具”。</p><p>“我们对我们的代码充满信心，CTF正在对这种信心进行测试，”Chuchurski和Cotto说。“这是一个带有SSRF漏洞的简单Web服务器。</p><p>“不同之处在于，触发漏洞的点受到‘safeurl’库的保护。如果有人能够找到旁路，他们会找到进一步的说明。”</p><p><br/></p><p style="display: none;"><mp-style-type data-value="3"/></p>
+        
+</body>
+</html>

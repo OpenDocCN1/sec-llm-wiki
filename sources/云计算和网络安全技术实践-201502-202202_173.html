@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>手动安装Kubernetes</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>手动安装Kubernetes</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650744728&amp;idx=1&amp;sn=832797dc5cad708d0869a38258be4209&amp;chksm=87148698b0630f8e46f15f7d27e4ed88a7285db30f52f98d6eaf30bc90f48072994e25ce1366&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650744728&amp;idx=1&amp;sn=832797dc5cad708d0869a38258be4209&amp;chksm=87148698b0630f8e46f15f7d27e4ed88a7285db30f52f98d6eaf30bc90f48072994e25ce1366&amp;scene=27#wechat_redirect</a></blockquote><p>上次实践了用minikube安装kubernetes，安装是成功了，但创建容器实例时不行，于是又找了其它自动化安装kubernetes的方法，没有一个顺的，最后狠下心来自己手动安装，</p><p>先安装docker环境，</p><p>apt-get update，<br/>apt-get install apt-transport-https ca-certificates curl software-properties-common，</p><p>curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -，</p><p>apt-key fingerprint 0EBFCD88，</p><p>add-apt-repository  "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"，</p><p>apt-get update，</p><p>apt-get install docker-ce，</p><p>然后安装kubernetes环境，</p><p>curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -，</p><p>vim /etc/apt/sources.list.d/kubernetes.list，</p><p>deb http://apt.kubernetes.io/ kubernetes-xenial main，</p><p>apt-get update，</p><p>apt-get install -y kubelet kubeadm kubernetes-cni，</p><p>关闭swap，swapoff -a，</p><p>初始化，</p><p>kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=127.0.0.1，</p><p>切换到普通用户，ubuntu/ubuntu，</p><p>mkdir -p $HOME/.kube，<br/>sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config，<br/>sudo chown $(id -u):$(id -g) $HOME/.kube/config，</p><p>让控制节点也能当计算节点，</p><p>kubectl taint nodes --all node-role.kubernetes.io/master-，</p><p>配置网络，</p><p>kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/k8s-manifests/kube-flannel-rbac.yml，</p><p>kubectl create -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml，</p><p>kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml，</p><p>检查系统状态，</p><p>kubectl get all --namespace=kube-system，</p><p>创建测试容器，</p><p>kubectl create -f https://raw.githubusercontent.com/sverrirab/kube-test-container/master/kubernetes/kube-test-container.yaml，</p><p style="text-align: center;"><img class="" data-copyright="0" data-ratio="0.13997879109225875" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ0YxQLHmlI2ywGyU1jodTedlRan6IddwXjpO681dc5vpQM0djvibbPSjcWsnuAVjgpYnWpQd3df69A/640?wx_fmt=png" data-type="png" data-w="943" style="" src="../Images/e6bbe795af6435b94e8da20d78692029.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ0YxQLHmlI2ywGyU1jodTedlRan6IddwXjpO681dc5vpQM0djvibbPSjcWsnuAVjgpYnWpQd3df69A/640?wx_fmt=png"/></p><p><br/></p>
+        
+</body>
+</html>

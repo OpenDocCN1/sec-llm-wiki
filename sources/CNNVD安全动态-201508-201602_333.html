@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>YOKOGAWA修复了目前正在被广泛利用的SCADA漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>YOKOGAWA修复了目前正在被广泛利用的SCADA漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxODY1OTM5OQ==&amp;mid=211912371&amp;idx=3&amp;sn=832f89eff5c2cd6c8abe349ccfc79a32&amp;chksm=1287c79b25f04e8d82793a5e7631f395a2d06b0456ffc3292ec3b1f3c776d40cd09f10ec6928&amp;scene=126&amp;sessionid=1681378456#rd">http://mp.weixin.qq.com/s?__biz=MzAxODY1OTM5OQ==&amp;mid=211912371&amp;idx=3&amp;sn=832f89eff5c2cd6c8abe349ccfc79a32&amp;chksm=1287c79b25f04e8d82793a5e7631f395a2d06b0456ffc3292ec3b1f3c776d40cd09f10ec6928&amp;scene=126&amp;sessionid=1681378456#rd</a></blockquote><p>       Yokogawa是一家日本公司，该公司是目前世界上最主要的工业网络控制工具的提供商之一。目前，该公司已经向世人公开表示，研究人员已经在该公司旗下的二十一款工业产品中发现了安全漏洞。ICS－CERT安全公告已经将该公司旗下受到漏洞影响的产品披露了出来，这些产品包括CENTUM, ProSafe-RS, STARDOM, 以及FAST/TOOLS等等。</p><p>       根据这份安全公告的描述：“这些漏洞都是基于栈的缓冲区溢出漏洞。”缓冲区溢出将会发生在Windows接口或者嵌入系统的相关接口（例如ProSafe的人机交互接口）。</p><p>       除此之外，该公司旗下的产品中还存在两个拒绝服务（DoS）漏洞，如果一个远程攻击者向“处理网络通信的进程”发送一个经过精心设计的数据包，那么他们就可以触发这个漏洞，并且切断目标主机系统的网络通信链路。</p><p>       更加可怕的是，一个由攻击者精心设计的数据包同样有可能会引起网络通信进程的崩溃，这样一来，攻击者就可以在目标主机的系统中执行任意代码了。在该公司的官方公告中，Yokogawa表示：“公司已经发布了一些产品的最新版本了，用户可以从网上进行下载和安装。针对其他没有发布最新版本的产品，公司会推送相应的更新补丁来修复相关的漏洞。”</p><p>       公司表示，只有处理和控制网络通信的进程才存在这些漏洞，这也就意味着，网络攻击并不会对同一网络中的其他IT业务产生影响。公司还补充说到：“使用了相关产品的工业系统如果能够妥善地从互联网中隔离出来，那么就不会受到这些漏洞的影响了。</p><p>       （转载360安全播报）<br/></p>
+        
+</body>
+</html>

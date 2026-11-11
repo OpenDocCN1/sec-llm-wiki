@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>在ESXi里安装AzureStack（一）</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>在ESXi里安装AzureStack（一）</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650744693&amp;idx=1&amp;sn=07366f42b2a74025436b1e6c7c78149e&amp;chksm=87148675b0630f63df43185875e72f61e6cbafcbd5327eb7607db791bac707cdeafe0898fe44&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650744693&amp;idx=1&amp;sn=07366f42b2a74025436b1e6c7c78149e&amp;chksm=87148675b0630f63df43185875e72f61e6cbafcbd5327eb7607db791bac707cdeafe0898fe44&amp;scene=27#wechat_redirect</a></blockquote><p>本周一有空就都在折腾在ESXi里安装AzureStack，尽管没成功，还是记录一下，按照官方的安装指南https://docs.microsoft.com/zh-cn/azure/azure-stack/asdk/asdk-download，首先是在win2016虚机里操作的，但是被检查出了不是物理机，不往下继续了，</p><p><img class="" data-copyright="0" data-ratio="0.08766716196136701" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ0CibicMNYibk3ibefpgpgU31pplZu7CJOI27bNEWLBicy6PxkgfxZQvVWnURLDuu2eu7gnqxPoX6z4lPg/640?wx_fmt=png" data-type="png" data-w="1346" style="" src="../Images/c50931bcdbd0a732712ec80abc828ae8.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ0CibicMNYibk3ibefpgpgU31pplZu7CJOI27bNEWLBicy6PxkgfxZQvVWnURLDuu2eu7gnqxPoX6z4lPg/640?wx_fmt=png"/></p><p>于是就想到把<span data-ttu-id="73f08-123">CloudBuilder.vhdx</span>先传到linux下用qemu-img convert转成vmdk，</p><p>然后再用<span data-ttu-id="73f08-123">CloudBuilder.vmdk当系统盘创建AzureStack虚机，能成功，说明思路没问题，但是继续<span data-ttu-id="27563-110"/>asdk-installer.ps1安装的时候发现了几个问题，</span></p><p><span data-ttu-id="73f08-123">首先是检查系统盘不够175G，这点通过把<span data-ttu-id="73f08-123">CloudBuilder.vhdx</span>先扩展到200G，然后再转成vmdk的方法解决，<span data-ttu-id="73f08-123">AzureStack虚机启动后还需要在磁盘管理中手动进行扩展，不然还是仅120G，</span></span></p><p><span data-ttu-id="73f08-123">然后又是环境是虚拟机的检查和服务器CPU核数的检查，都没能通过，只能在C:\CloudDeployment\Roles\PhysicalMachines\Tests\BareMetal.Tests.ps1里把检查部分注释掉了，</span></p><p><span data-ttu-id="73f08-123">最后是3块数据盘的检查，每块不小于135G，先在外面给的IDE类型的，检查不通过，不支持ATA的Bus类型，于是改成SCSI类型的，<span data-ttu-id="73f08-123">Bus类型</span>是SAS，才通过检查，接下来先是online成了GTP的分区，并格式化，安装过程中说找不到可用的磁盘，后经过不断尝试，终于验证出了<span data-ttu-id="73f08-123">online成MBR分区且不格式化的方案，<span data-ttu-id="73f08-123">安装过程中</span>才能够正确识别3块满足条件的磁盘，然而最终安装还是没能成功，表面上看还是磁盘问题，由于对报错点的机制不熟悉，未能定位出具体问题，</span></span></p><p><img class="" data-copyright="0" data-ratio="0.6275071633237822" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ0CibicMNYibk3ibefpgpgU31ppvGkCZxZozlQwCwYlVAXD0lWIvATKAO7SD7rcVoqyYGglXibBjY1PHHg/640?wx_fmt=png" data-type="png" data-w="1047" style="" src="../Images/628b65287e0bbec70a66dcb6f3204544.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ0CibicMNYibk3ibefpgpgU31ppvGkCZxZozlQwCwYlVAXD0lWIvATKAO7SD7rcVoqyYGglXibBjY1PHHg/640?wx_fmt=png"/></p><p>Hack精神就是不信邪，以后有空再继续研究。<br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>UnRAR路径遍历漏洞可能导致Zimbra中的RCE</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>UnRAR路径遍历漏洞可能导致Zimbra中的RCE</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485126&amp;idx=1&amp;sn=3d4a1d837746f2158544cc9dcf76b87e&amp;chksm=fa76e738cd016e2e7f9676d0d83be426358b27b25ba1746c705d285581e664b0b25421f858f0&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485126&amp;idx=1&amp;sn=3d4a1d837746f2158544cc9dcf76b87e&amp;chksm=fa76e738cd016e2e7f9676d0d83be426358b27b25ba1746c705d285581e664b0b25421f858f0&amp;scene=27#wechat_redirect</a></blockquote><blockquote><p>RarLab的UnRAR二进制文件中的路径遍历漏洞可导致企业电子邮件平台Zimbra上的远程代码执行(RCE)，并可能影响其他软件。UnRAR实用程序用于将RAR存档解压缩到临时目录，以进行病毒扫描和垃圾邮件检查。然而，根据Simon发布的博客文章，最近修补的文件写入漏洞CVE-2022-30333意味着未经身份验证的攻击者可以“在应用程序或受害者用户提取不受信任的存档时在目标提取目录之外创建文件” Scannell，瑞士安全公司Sonar前身为SonarSource的漏洞研究员。</p></blockquote><p style="margin-bottom: 0em;"><img class="rich_pages wxw-img" data-ratio="0.5625" data-src="https://mmbiz.qpic.cn/mmbiz_png/3RdEEWyTHJmdGCrrCqzx9nbuxI3GRB2ABianawqkTfeAqbSr2vvDMZ3ic4DOARmlcVfegv7ILFZyPuJKcGVe3eXg/640?wx_fmt=png" data-type="png" data-w="1200" height="675" width="1200" src="../Images/0211dfb8e8cd98842521f6a36f3c2370.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/3RdEEWyTHJmdGCrrCqzx9nbuxI3GRB2ABianawqkTfeAqbSr2vvDMZ3ic4DOARmlcVfegv7ILFZyPuJKcGVe3eXg/640?wx_fmt=png"/></p><p><br/></p><p>如果恶意黑客设法写入已知位置，Scannell继续说，他们可能会在系统上执行任意命令。</p><p><br/></p><p>成功利用Zimbra上的高严重性(CVSS 7.5)问题，这是一个被超过200000家企业使用的开源平台，“使攻击者可以访问受感染的电子邮件服务器上发送和接收的每一封电子邮件”。</p><p><br/></p><p>Scannell警告说，他们还可以悄悄地后门登录功能并窃取用户的凭据，以及升级对组织其他内部服务的访问。</p><p><br/></p><p>该漏洞存在于UnRAR用于防止Unix系统上的符号链接(symlink)攻击的机制中，其中用于验证相对符号链接的函数<code>IsRelativeSymLinkSafe()</code>检查符号链接目标是否在Unix上包含<code>../</code>或在Windows上包含<code>..\</code>。</p><p><br/></p><p>然而，这个检查可以被否定，因为不受信任的输入有时会在它被验证后被修改，这打破了在验证步骤中所做的假设。</p><p><br/></p><p>具体来说，一旦符号链接被验证，UnRAR使用<code>DosSlashToUnix()</code>将反斜杠<code>(\)</code>转换为正斜杠<code>(/)</code>，以确保可以在Unix系统上提取在Windows上创建的RAR存档。</p><p><br/></p><p>“通过利用这种行为，攻击者可以在目标文件系统的任何位置写入文件，”Scannell说。</p><p><br/></p><p>由于Zimbra用于分析提取文件的Amavis内容过滤器以Zimbra用户的身份运行，Scannell补充说，文件写入原语也允许在其他服务的工作目录中创建和覆盖文件。</p><p><br/></p><p>研究人员详细介绍了攻击者如何通过将JSP shell写入Web目录、使用基于文件的命令注入或创建SSH密钥来实现 Zimbra 上的RCE。</p><p><br/></p><p>Sonar于2022年5月4日将该漏洞通知了RarLab，并在5月6日发布的6.12版二进制文件中包含了一个安全补丁。</p><p><br/></p><p>Zimbr开发商Synacor在5月4日也收到了有关该漏洞的警告，因此它可以警告用户修补他们的云实例。</p><p><br/></p><p>6月28日发布了一篇详细介绍技术细节的博客文章。</p><p><br/></p><p>只有Unix二进制文件（不包括Android）和使用RarLab代码的实现会受到影响。</p><p><br/></p><p>Scannell感谢RarLab的开发人员“他们非常快速和专业地处理了这个问题”，并称赞Zimbra的安全团队“警告他们的客户帮助防止利用”。</p><p><br/></p><p>Zimbra是Sonar的专长，其研究人员在过去12个月中发现了一个导致Zimbra服务器全面妥协的漏洞链、一个驱动鱼叉式网络钓鱼活动的XSS漏洞，以及仅在两周前，一个memcached注入漏洞危及登录信息。</p><p><br/></p>
+        
+</body>
+</html>

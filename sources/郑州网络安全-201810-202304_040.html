@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Yellowfin解决了为RCE打开大门的身份验证绕过漏洞三重奏</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Yellowfin解决了为RCE打开大门的身份验证绕过漏洞三重奏</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247486054&amp;idx=1&amp;sn=446867b32f0af8c70e2e605e13743f5b&amp;chksm=fa76eb98cd01628e8cda4eadb32e63415a667be0eae96090a4ab3464bb4423bf584e8e5aeabe&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247486054&amp;idx=1&amp;sn=446867b32f0af8c70e2e605e13743f5b&amp;chksm=fa76eb98cd01628e8cda4eadb32e63415a667be0eae96090a4ab3464bb4423bf584e8e5aeabe&amp;scene=27#wechat_redirect</a></blockquote><blockquote><p>流行的企业分析平台Yellowfin BI中修复了因使用硬编码密钥而导致的三个身份验证绕过漏洞。在发现预身份验证漏洞后，Assetnote的安全研究人员随后找到了一条执行命令的身份验证后路径。这些由Assetnote的Max Garrett发现的漏洞已分配了CVE编号，但尚未分配CVSS分数。</p></blockquote><p><img data-ratio="0.5625" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJmrOEt8hTD2ialiaHibM48xPJJicicNjcCmluic9Cp3UkaTRdlfyLLC8tFibVp5qH5XcjZTgtQTOT6SdyaDA/640?wx_fmt=jpeg" data-type="jpeg" data-w="1200" height="675" width="1200" src="../Images/a49c5b3f2dfcff8054df80ebdf42c84f.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJmrOEt8hTD2ialiaHibM48xPJJicicNjcCmluic9Cp3UkaTRdlfyLLC8tFibVp5qH5XcjZTgtQTOT6SdyaDA/640?wx_fmt=jpeg"/><br/>这些问题是通过session.setAttribute("SessionData",BEAN)指示的身份验证逻辑实例发现的。</p><p>一种身份验证绕过(CVE-2022-47884) 的出现是因为com/hof/mi/web/action/StoryBodyAction.java包含“StoryBoardAction允许我们以任何用户身份登录的逻辑，只要通过签名检查”，根据1月24日Garrett和Assetnote首席技术官兼联合创始人Shubham Shah发表的一篇博文。硬编码的RSA私钥意味着任何人都可以通过签名检查。</p><p>在JsAPI servlet中发现的第二个绕过意味着攻击者可以通过EXTAPI-IPID cookie进行身份验证，该cookie使用硬编码密钥的用户ID(CVE-2022-47885)进行AES加密。</p><p>“因此，任何知道受害者用户ID的人都可以创建一个有效的会话作为他们的帐户，”博客文章解释道。</p><p>第三个也是最后一个绕过(CVE-2022-47882)的重点是Yellowfin在REST API中对JWT的次优实现。</p><p>有效的刷新令牌ID和提取的硬编码密钥允许以任何用户身份创建有效的JWT，尽管鉴于需要从成功的/api/refresh-tokens登录生成有效的刷新令牌ID，影响仅限于特权升级。</p><p>在执行身份验证绕过后，第四个漏洞CVE-2022-47883使攻击者能够执行远程代码执行(RCE)。</p><p>注意到Yellowfin BI与任意数据源的连接以将数据提取到应用程序中，研究人员调查了JNDI或JDBC注入是否可以启用命令执行 - 并且JNDI机制通过使用forceString小工具，适当地证明是富有成果的。</p><p>Assetnote在GitHub上发布了完整的概念验证利用链。</p><p>这些漏洞已在Yellowfin BI 9.8.1中得到修补。</p><p>“在我们对企业应用程序的评估中，我们经常发现会导致重大安全影响的硬编码密钥（例如，我们在VMWare AirWatch 中的错误），”Shah说。“由于资质和销售流程，许多企业产品很难获得。然而，一旦获得源代码，通常会有许多可以轻松利用的关键漏洞。”</p><p>Yellowfin是一个Java整体应用程序，Shah和Garrett为其他在类似代码库中搜索的安全研究人员提供了方法论建议：“尽可能详细地绘制出预身份验证攻击面，”他们说。</p><p>“了解所有静态和动态路由，然后确定这些路由中的哪一部分无需任何身份验证即可实际访问。”</p><p>在映射预身份验证路由后，“确定这些路由如何处理用户输入，并了解哪些路由接受哪些用户输入”，他们继续说道。这将发现需要进一步调查的问题，“仅基于控制器或参数的名称”。</p><p><br/></p><p style="display: none;"><mp-style-type data-value="3"/></p>
+        
+</body>
+</html>

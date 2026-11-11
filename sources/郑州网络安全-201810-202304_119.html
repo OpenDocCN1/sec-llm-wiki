@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>WatchGuard防火墙漏洞威胁黑客接管设备</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>WatchGuard防火墙漏洞威胁黑客接管设备</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485559&amp;idx=1&amp;sn=6f31b267d528e46864747a8a27aa00ec&amp;chksm=fa76e989cd01609f7bc54df1d8e3207cf3b2c4c1dcfd46e10f03f331ea1ee2a2e5c892cf0cc9&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485559&amp;idx=1&amp;sn=6f31b267d528e46864747a8a27aa00ec&amp;chksm=fa76e989cd01609f7bc54df1d8e3207cf3b2c4c1dcfd46e10f03f331ea1ee2a2e5c892cf0cc9&amp;scene=27#wechat_redirect</a></blockquote><blockquote><p>WatchGuard已经修复了两个主要防火墙品牌中的几个漏洞，这些漏洞的严重程度介于中等和严重之间。结合起来，其中两个缺陷使Ambionics安全工程师Charles Fol能够在每个WatchGuard Firebox或XTM设备上获得预身份验证远程根。今年早些时候，Firebox和XTM系列都被卷入了多次黑客攻击，俄罗斯国家支持的威胁演员Sandworm滥用特权升级漏洞来构建一个名为Cyclops Blink的僵尸网络，该僵尸网络已于4月被删除。在四个月的时间里，WatchGuard发布了三个固件更新，修补了许多关键漏洞。</p></blockquote><p style="margin-bottom: 0em;"><img class="rich_pages wxw-img" data-ratio="0.5625" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJmJWjcwossWofNcNBQea60Z97IcLDiaaXFyP8sVrG66ibeuPFQ1yUNBNx15IhovBysWXQwJ59SoWyaQ/640?wx_fmt=jpeg" data-type="jpeg" data-w="1200" height="675" width="1200" src="../Images/0a5bc577a5c75cd3812d81f610a39956.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJmJWjcwossWofNcNBQea60Z97IcLDiaaXFyP8sVrG66ibeuPFQ1yUNBNx15IhovBysWXQwJ59SoWyaQ/640?wx_fmt=jpeg"/></p><p><br/></p><p>而且，巧合的是，Fol说，这是他开始在防火墙中寻找可利用的漏洞以进行红队参与的时候。他在WatchGuard产品中发现了五个，其中两个在他的研究过程中被修补，这在本周早些时候发表的一篇文章中有记录。</p><p>剩下的三个缺陷是盲Xpath注入，允许他检索设备的配置，包括主凭据；整数溢出，允许攻击者在远程设备上执行恶意代码；第三个漏洞意味着可以将权限从低权限用户升级到root。</p><p>“通过结合后者，远程、未经身份验证的攻击者可以作为超级用户或root完全访问防火墙系统，”Fol说。</p><p>“这是最坏的影响。他或她现在可以读取或更改配置、拦截流量等。</p><p>“在某些情况下，第一个允许攻击者获取身份验证服务器的主凭据，并可能使用它以管理员身份连接防火墙。”</p><p>Fol认为，由于在他的研究期间产生了许多安全警报，包括与Cyclops Blink相关的警报，因此现在更少的WatchGuard用户将他们的管理界面暴露在互联网上。</p><p>然而，他说，“第一个漏洞——Xpath——可以通过标准的客户端接口访问，因此更容易被暴露；快速的shodan搜索发现了大约350000个实例。”</p><p>他建议用户从互联网上删除他们的管理界面，并确保他们的系统保持最新。</p><p>Fol说他在3月底报告了这些漏洞，并得到了快速响应。一个月后，WatchGuard的安全团队确认将在6月21日发布补丁。</p><p>他说，总体而言，披露是一个“伟大的、令人尊重的过程”。</p><p><br/></p>
+        
+</body>
+</html>

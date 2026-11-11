@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>API安全：2022年访问控制中断、注入攻击困扰企业安全格局</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>API安全：2022年访问控制中断、注入攻击困扰企业安全格局</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485514&amp;idx=1&amp;sn=af6bfe41271837fbf8b3364e61cde049&amp;chksm=fa76e9b4cd0160a2487cf7f320c7d580941a2fdcd0e834fe7979d8321a2173db550f16243430&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485514&amp;idx=1&amp;sn=af6bfe41271837fbf8b3364e61cde049&amp;chksm=fa76e9b4cd0160a2487cf7f320c7d580941a2fdcd0e834fe7979d8321a2173db550f16243430&amp;scene=27#wechat_redirect</a></blockquote><blockquote><p>API相关的安全漏洞仍然是企业的眼中钉，访问控制漏洞现在与高严重性CVE相关联。根据API安全公司Wallarm发布的题为“2022年第一季度发现和利用的API漏洞”的新白皮书，第一季度共发现并报告了48个与API相关的漏洞。报告(PDF)称，根据行业标准，18个被认为是高风险，19个被标记为中等严重性。公开披露的关键漏洞为自己赢得 CVSS v3分数，从8.1到10不等。</p></blockquote><p style="margin-bottom: 0em;"><img data-ratio="0.5625" data-src="https://mmbiz.qpic.cn/mmbiz_png/3RdEEWyTHJnC5Och5WVfhVee3B5EeJVRbdVzcDJB9tibtycTnLyWJ7bQ5emTtV0FDGfwdJPSgiaVhtJIWFxBQokg/640?wx_fmt=png" data-type="png" data-w="1200" height="675" width="1200" src="../Images/6c96c4f92e6185beaa06c653665ecb52.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/3RdEEWyTHJnC5Och5WVfhVee3B5EeJVRbdVzcDJB9tibtycTnLyWJ7bQ5emTtV0FDGfwdJPSgiaVhtJIWFxBQokg/640?wx_fmt=png"/></p><p>这家网络安全公司合并了OWASP Top 10和OWASP API Security Top 10标准，将最重要的API威胁披露归类为与访问控制损坏（或功能级别授权损坏，取决于OWASP标准）以及注入攻击有关的问题。</p><p>虽然包括加密失败、不安全设计、过多数据暴露和错误配置在内的安全漏洞也列在名单上，但2022年第一季度披露的最危险、被利用的API漏洞涉及注入攻击、不正确的授权或完全绕过以及不正确的权限分配。</p><p>2022年第一季度披露和报告的四个最危险的API漏洞列表中，位居榜首的是CVE-2022-22947，也称为“Spring4Shell”。</p><p>Spring4Shell与两个漏洞有关——CVE-2022-22963，Spring Cloud Function中的SpEL表达式注入漏洞，以及CVE-2022-22947，导致Spring Framework的基于Java的核心模块中的远程代码执行(RCE)的代码注入攻击.</p><p>一位开发人员在3月份公开发布了针对该严重漏洞的漏洞利用代码，尽管很快被删除，但发布的有效RCE代码确保 Spring4Shell成为需要快速应用Spring紧急补丁的开发人员的头疼问题。</p><p>由于Spring框架的流行，该漏洞与Log4j进行了比较。不久之后，微软和CISA就积极利用零日漏洞发出警告。攻击者随后利用该漏洞发展Mirai僵尸网络。</p><p>API漏洞列表顶部的第二个漏洞是CVE-2022-26501(CVSS 9.8)，这是Veeam Backup and Replication中的一个不正确的身份验证漏洞，允许攻击者在未经身份验证的情况下远程执行任意代码。Veeam支持超过400000名客户，其中许多是企业公司。</p><p>根据与其他两个人一起披露关键漏洞的Positive Technologies研究员Nikita Petrov的说法，CVE-2022-26501有可能“在实际攻击中被利用，并使许多组织面临重大风险”。</p><p>第三个缺陷，另一个CVSS得分为9.8，影响了企业级开源网络工具Zabbix。跟踪为CVE-2022-23131 ，当使用启用SAML SSO身份验证的非默认设置时，只要攻击者知道管理员的用户名，该工具的前端就容易受到权限提升和管理员会话劫持的影响。</p><p>第四是CVE-2022-24327，这是一个较低级别的错误，其CVSS得分为7.8，但仍被视为严重漏洞。在JetBrains套件中心中发现，与集成到中心的开发人员帐户相关的错误会无意中暴露具有过多权限的API密钥，从而可能导致帐户接管或劫持。</p><p>最后，Wallarm将一类API安全威胁作为当今许多网络攻击的共同特征。Miter将其描述为“CWE-639：通过用户控制的密钥绕过授权”，这些问题围绕着系统授权功能，该功能允许密钥值被篡改，并且用户可以在未经许可的情况下访问其他用户的数据或记录。</p><p>API作为功能之间的关键通信方法，由于它们在现代网络和服务中的关键作用，只要还在使用中，它们就将仍然是网络攻击者的目标。</p><p>在最近的API安全新闻中，开源黑客工具GoTestWAF引入了API安全平台评估能力，模拟OWASP和API漏洞来测试API安全防御。</p><p><br/></p>
+        
+</body>
+</html>

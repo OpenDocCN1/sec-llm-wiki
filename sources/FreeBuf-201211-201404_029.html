@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>论技术宅如何正确的追《权力的游戏》</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>论技术宅如何正确的追《权力的游戏》</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=200127674&amp;idx=2&amp;sn=4bcd749e7ae82319d1f3f7272fffb66a&amp;chksm=28f626311f81af27976b3f7225dffe11d81ba60cddd9dd0003867c8c68e54092e74040c2a550&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=200127674&amp;idx=2&amp;sn=4bcd749e7ae82319d1f3f7272fffb66a&amp;chksm=28f626311f81af27976b3f7225dffe11d81ba60cddd9dd0003867c8c68e54092e74040c2a550&amp;scene=27#wechat_redirect</a></blockquote><p style=""><span style="margin: 0px; padding: 0px;">最近，Game of thrones Season4（权力的游戏）上映了，作为忠实的粉丝，刷了一上午的人人影视啊，我心爱的丹妮丽思。坑爹的HBO一周才更新一次，还尼玛北京时间是周一上午，放在周末让小伙伴们爽一爽不好吗！！！</span><strong style="margin: 0px; padding: 0px;">作为Tyrion的粉丝，决不能忍受周一煎熬一天</strong>，然后下班回来吭哧吭哧下载两小时，而且还不能影响舍友Dota啊魂淡。Tyrion还能给Bran设计个马鞍了，何况我等码农，哼哼~~</p><p style=""><br/></p><p style="">于是乎，Python走起，<strong style="margin: 0px; padding: 0px;">每周一上班前打开它，回来自动等着看啦，而且这时中文字幕也有了吼吼吼</strong>~~~ 废话不多说，代码如下，这里使用百度网盘进行下载，因为他的速度算是最快的。你需要安装一个百度网盘，并且选择自动登陆。最后只需要将season变量改成当前要等的集数就行了。最后，感谢人人影视，造福普天下的屌丝，1024！</p><pre class="prettyprint lang-python prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px;"># coding=gbk
+import urllib2
+import re
+import time
+from selenium import webdriver
+ 
+def http_request_get(url):    
+    h=urllib2.Request(url)
+    ht=urllib2.urlopen(h)
+    html=ht.read(ht)
+return html
+ 
+if __name__ == '__main__':
+    url = "    pattern = r'''&lt;a.*?href="(.*?)".*?d7.gif'''
+    season = r'Game of Thrones S04E02 720p&lt;/a&gt;&lt;/td&gt;'
+    while 1:
+        try:
+            html = http_request_get(url)
+            html = html.decode('GBK','ignore').encode('utf-8')
+            #print html
+            pos = html.find(season)
+            if pos != -1:
+                k = re.search(pattern, html[pos:])
+                url = k.group(1)
+                print url
+                break
+            else:
+                print 'waiting ......'
+                time.sleep(60)
+            except:
+                pass    
+            
+        try:
+            browser = webdriver.Firefox()
+            browser.get(url)
+            time.sleep(2)
+            browser.find_element_by_class_name('icon-download').click()
+            time.sleep(2)
+            #browser.find_element_by_id('_disk_id_10').click()
+            browser.find_element_by_class_name('sbtn').click()
+        except:
+            pass</pre><p style=""><img data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR38bgLiclfibSZRveWphPJjOh4ia98ED8aM1qoT5N7anaOnqIyhTSjBoNBIBITTN61xyF9HUjYK5V0jpg/0" src="../Images/9e6401228cb3359ca85fa979cf242cfc.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR38bgLiclfibSZRveWphPJjOh4ia98ED8aM1qoT5N7anaOnqIyhTSjBoNBIBITTN61xyF9HUjYK5V0jpg/0"/></p>
+        
+</body>
+</html>

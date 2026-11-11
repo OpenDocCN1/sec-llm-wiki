@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>渗透测试前期的信息搜集</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>渗透测试前期的信息搜集</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247484064&amp;idx=1&amp;sn=20d35a1a6f65de5eea4e86a164c6d021&amp;chksm=f9e06dfbce97e4ed4167aeedd004e9276eedff85f568ba7f120b65d0b8f6d725f50dfcf82531&amp;scene=126&amp;sessionid=1681663527#rd">http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247484064&amp;idx=1&amp;sn=20d35a1a6f65de5eea4e86a164c6d021&amp;chksm=f9e06dfbce97e4ed4167aeedd004e9276eedff85f568ba7f120b65d0b8f6d725f50dfcf82531&amp;scene=126&amp;sessionid=1681663527#rd</a></blockquote><p>渗透测试前期的信息搜集</p><p>一切从一个URL开始。</p><p>使用Google Hacking查看目标网站，如site:www.baidu.com, 可以查看到主站信息，site:baidu.com,可以查看到一些分站信息。初步了解一个网站。</p><p>获取网站ip信息：http://tool.chinaz.com/Same/ ，查询网站的ip，同时可以得到同ip的网站信息。</p><p>判断是CDN的ip还是真实ip。如果是真实ip，可以进行端口扫描，查看开放端口。对于CDN，如果是带防护的，需要找到网站的真实ip。</p><p>查看whois信息，http://whois.chinaz.com/ ，获取网站注册邮箱，可用于社工或是登录处的账号。</p><p>获取网站目录信息。Google Hacking查找，如site:baidu.com inurl:admin，使用类似语法，获取网站的敏感信息，后台、上传、下载等信息。如inurl:admin, inurl:upload, inurl:download, inurl:login, intitle:”登录”。如目录遍历，intitle:index.of。其中inurl:login获取网站的登录接口，如果不存在验证码，则存在爆破或是撞库的威胁。</p><p>主动信息收集，1）使用爬虫获取网站目录结构。如wvs爬虫功能获取网站目录结构。2）使用目录猜解工具暴力猜解。</p><p>被动信息收集，使用burp代理，在网站中进行正常的功能的使用，获取网站的目录以及隐藏的接口。</p><p>获取Server信息，查看Response信息的Server头，获取Server信息。如Server:Microsoft-IIS/6.0。</p><p>获取脚本信息，1)查看Response信息头部，如X-Powered-By:ASP.NET, X-Powered-By:<a target="_blank" class="keylink">PHP</a>等。2)查看Cookie信息，如PHPSESSID, JSESSIONID,ASPSESSIONID等。3)查看文件后缀,.<a target="_blank" class="keylink">asp</a>,aspx,.php,.<a target="_blank" class="keylink">jsp</a>,.do,.action等。</p><p>获取框架信息。通过报错信息或是URL结构获取网站使用的框架信息。如ThinkPHP，Struts等。</p><p>获取应用信息。对于使用开源建站<a target="_blank" class="keylink">系统</a>搭建的网站，获取使用的程序以及版本信息</p><p><br/></p><p><br/></p><p>查看更多文章，关注下方二维码</p><p><img class="" data-ratio="1" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/p5qELRDe5ickAiax1Nv77rYNEC3sRgfAkw8hAX4rSjibP0FMnud3ZM4f0Jc7nkoCL2t8STuhTbnuxj6W6T8JumElA/640?wx_fmt=jpeg" data-type="jpeg" data-w="258" style="visibility: visible !important; width: auto !important; height: auto !important;" width="auto" src="../Images/60bd80188885b005ab426369f4086902.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/p5qELRDe5ickAiax1Nv77rYNEC3sRgfAkw8hAX4rSjibP0FMnud3ZM4f0Jc7nkoCL2t8STuhTbnuxj6W6T8JumElA/640?wx_fmt=jpeg"/></p><p><br/></p>
+        
+</body>
+</html>

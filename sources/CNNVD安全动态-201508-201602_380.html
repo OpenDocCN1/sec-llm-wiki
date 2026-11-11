@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>paypal曝严重漏洞盗取用户信息</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>paypal曝严重漏洞盗取用户信息</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxODY1OTM5OQ==&amp;mid=211540966&amp;idx=5&amp;sn=0f2cb64289dc9f93055147efb94a6a9d&amp;chksm=12bd9ace25ca13d8f698d23efd8820cfd2fe482923c87f563984939d4c5b525b18271f028232&amp;scene=126&amp;sessionid=1681378467#rd">http://mp.weixin.qq.com/s?__biz=MzAxODY1OTM5OQ==&amp;mid=211540966&amp;idx=5&amp;sn=0f2cb64289dc9f93055147efb94a6a9d&amp;chksm=12bd9ace25ca13d8f698d23efd8820cfd2fe482923c87f563984939d4c5b525b18271f028232&amp;scene=126&amp;sessionid=1681378467#rd</a></blockquote><p>      著名安全专家Ebrahim Hegazy在Paypal上发现了一个存储型XSS漏洞,该漏洞可以以明文的格式窃取信用卡信息和Paypal用户登录凭证。SecurePayments域经常被Paypal用户用来在任何购物网站购买物品时做安全支付验证。这个安全的支付页面需要Paypal用户来填写某些信息,包括他们的信用卡号码,CVV2,截止日期。如果要使用Paypal来完成支付和购买所选产品,这些信息是必要的。Paypal通过加密通道(HTTPS)处理提交的数据,攻击者不能嗅探/偷取这样的数据。</p><p>      “我发现这个存储型XSS漏洞会直接影响SecurePayment页面,然后允许我改变页面的HTML框架和重写页面内容,攻击者可以让用户使用自己伪造的HTML表单来完成和发送用户数据(以明文的方式发送到攻击者的服务器),然后使用这些信息来购买物品或者甚至可以让被害用户的基金转移到自己的帐户。”专家在一篇博客文章中写道。</p><p>      Ebrahim博士解释说,最严重的攻击场景是:攻击者设置一个购物网站或入侵任何购物网站, 通过Paypal的漏洞修改“CheckOut”按钮,CheckOut用户恶意浏览购物网站,选择一些产品,点击“付款”按钮用Paypal账户来支付,然后用户会被重定向到https://Securepayments.Paypal.com/来填写所需的信用卡信息完成采购订单, 在这个页面上,该产品的价格和支付按钮都将在同一个页面里面,而攻击者在控制这一页。当Paypal用户点击提交按钮时,并不是支付显示的“100美元”,而是你将支付攻击者决定的价格。</p><p>      （转载360安全播报）</p>
+        
+</body>
+</html>

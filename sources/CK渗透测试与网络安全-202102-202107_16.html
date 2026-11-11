@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>centos7安装apache</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>centos7安装apache</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzIwMzE4NjI3Nw==&amp;mid=2247484010&amp;idx=1&amp;sn=12b4d3f7a9dc3082583e876b32d801f6&amp;chksm=96d20b60a1a5827644fa4b5a981280375147f72c2a743b6636bb9260017b7d3a2bc3c99fabf7&amp;scene=126&amp;sessionid=1681659408#rd">http://mp.weixin.qq.com/s?__biz=MzIwMzE4NjI3Nw==&amp;mid=2247484010&amp;idx=1&amp;sn=12b4d3f7a9dc3082583e876b32d801f6&amp;chksm=96d20b60a1a5827644fa4b5a981280375147f72c2a743b6636bb9260017b7d3a2bc3c99fabf7&amp;scene=126&amp;sessionid=1681659408#rd</a></blockquote><p>1、安装Apache</p><p><br/></p><p>[ck@localhost ~]# yum install httpd -y</p><p> </p><p>打开防火墙80端口</p><p> </p><p>firewall-cmd --zone=public --add-port=80/tcp --permanent  </p><p>systemctl restart firewalld.service  </p><p> </p><p>启动Apache并添加到自启动</p><p>[ck@localhost ~]# systemctl start httpd</p><p>[ck@localhost ~]# systemctl enable httpd</p><p> </p><p>验证</p><p>[ck@localhost ~]# httpd -v</p><p>Server version: Apache/2.4.6 (CentOS)</p><p>Server built:   Nov  5 2018 01:47:09</p><p> </p><p>打开http:ip,如果看到test123页面，Apache安装成功</p><p><br/></p><p>2、安装php5</p><p><br/></p><p>[ck@localhost ~]# yum install php php-mysql -y</p><p> </p><p>验证</p><p>[ck@localhost ~]# php -v</p><p>PHP 5.4.16 (cli) (built: Oct 30 2018 19:30:51)</p><p>Copyright (c) 1997-2013 The PHP Group</p><p>Zend Engine v2.4.0, Copyright (c) 1998-2013 Zend Technologies</p><p>php -v正确输出则php安装成功</p><p><br/></p><p> </p><p><br/></p><p>3、配置Apache支持php</p><p><br/></p><p>在/etc/httpd/conf/httpd.conf，找到：</p><p><br/></p><p>AddType  application/x-compress .Z</p><p><br/></p><p>AddType application/x-gzip .gz .tgz</p><p><br/></p><p>添加如下内容</p><p><br/></p><p>AddType application/x-httpd-php-source .phps</p><p><br/></p><p>AddType application/x-httpd-php .php</p><p><br/></p><p>检查LoadModule php5_module modules/libphp5.so 是否已经添加 libphp5.so文件是否存在</p><p><br/></p><p>添加完成后 systemctl restart httpd，重启Apache</p><p><br/></p><p>在/var/www/html添加php测试文件inxde.php</p><p><br/></p><p>&lt;!DOCTYPE html&gt; </p><p>&lt;html&gt; </p><p>&lt;body&gt; </p><p><br/></p><p>&lt;?php </p><p>echo "Hello World!"; </p><p>?&gt; </p><p><br/></p><p>&lt;/body&gt; </p><p>&lt;/html&gt;</p><p>用浏览器访问http://IP/inxde.php,可以查看到Hello World!就表示你成功了。</p><p><br/></p>
+        
+</body>
+</html>

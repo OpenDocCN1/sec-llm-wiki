@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>研究人员因Akamai错误配置漏洞净赚46000美元</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>研究人员因Akamai错误配置漏洞净赚46000美元</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485676&amp;idx=1&amp;sn=2f683ae568e36072008249e4daad8eea&amp;chksm=fa76e912cd01600455470952b39056bd1aaeff8deed794123e3d14f0c598e842d6547d087a4c&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485676&amp;idx=1&amp;sn=2f683ae568e36072008249e4daad8eea&amp;chksm=fa76e912cd01600455470952b39056bd1aaeff8deed794123e3d14f0c598e842d6547d087a4c&amp;scene=27#wechat_redirect</a></blockquote><blockquote><p>两名意大利安全研究人员因发现Akamai错误配置而获得了超过46000美元的奖金，尽管Akamai本身没有收到任何信息。Akamai是世界上使用最广泛的内容交付网络(CDN)之一，被包括Apple、Microsoft、Airbnb和美国国防部在内的一千多家公司使用。研究人员Jacopo Tediosi和Francesco Mariani通过漏洞赏金平台Whitejar在使用Akamai的网站中寻找漏洞时发现了一个错误配置，允许他们使用任意内容毒化缓存。</p></blockquote><p><img class="rich_pages wxw-img" data-ratio="0.5625" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJm20L9ibibLBfD0u4RdKKrKNPmPvjSp0ON1bMJYdP2m0FiarhOvicaicKnkaK9sAsYMia3oa8oNJ6IIg3icQ/640?wx_fmt=jpeg" data-type="jpeg" data-w="1200" height="675" width="1200" src="../Images/d105f7542478b7f07fd04216d3ec9ffb.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJm20L9ibibLBfD0u4RdKKrKNPmPvjSp0ON1bMJYdP2m0FiarhOvicaicKnkaK9sAsYMia3oa8oNJ6IIg3icQ/640?wx_fmt=jpeg"/></p><p>研究人员表示，该漏洞是常见的HTTP走私和逐跳标头滥用技术的结合。</p><p>在将请求转发到下一个代理或目的地之前，从代理中删除名为“逐跳”的特殊标头。</p><p>但是，将Content-Length标头指定为“逐跳”会导致Akamai边缘节点将其删除。这导致与后续节点的不同步，后者将部分HTTP请求解释为单独的第二个新请求。</p><p>第二个响应被排队，随后被发送以响应来自其他客户端或用户的请求，从而导致HTTP走私漏洞。</p><p>“攻击者可能将恶意的任意内容插入到Akamai网络服务的任何域中，影响其主要客户，例如美国国防部、PayPal、Airbnb、万事达卡、PlayStation、微软、苹果等，”Tediosi说.</p><p>“这意味着他们可以随心所欲地改变这些网站的外观和行为。它们还可以让用户的浏览器在原始网站上执行意外操作，就好像用户正在执行这些操作一样。”</p><p>此后，该公司通过阻止在Connection标头值中指定Content-Length关键字来解决此问题，尽管尚未发布公告。</p><p>Tediosi和Mariani于3月24日联系Akamai并安排协调披露，并于4月2日部署了静默修复。不幸的是，他们在流程开始时被告知该公司不提供漏洞赏金或其他奖励。</p><p>然而，在Akamai开发补丁时，两人决定尝试从该公司的一些客户那里获得赏金。</p><p>“这是让我们的工作获得回报的唯一途径，因为Akamai没有漏洞赏金计划。老实说，我不想使用这个解决方案，但它仍然有效，让我们保持道德，”Tediosi说。</p><p>“让我有点担心的是，像这样的困难可能会诱使研究人员不报告他们发现的漏洞，从而在网络上留下安全漏洞，或者更糟糕的是，在黑市上出售它们。”</p><p>两人立即从Whitejar那里获得了5000美元用于最初的研究。尽管包括Bugcrowd、Microsoft和Apple在内的许多漏洞赏金平台和组织无法复制该漏洞，但其他人很乐意支付费用。</p><p>奖金包括来自PayPal的25200美元、来自Airbnb的14875美元、来自凯悦酒店的4000美元、来自Valve的750美元、来自Zomato的450美元和来自高盛的100美元。</p><p>Tediosi表示，他认为使用逐跳标头进行走私可能会影响Akamai以外的其他实施，值得进一步研究。此外，他建议，有可能绕过Akamai的修复。</p><p><br/></p><p style="display: none;"><mp-style-type data-value="3"/></p>
+        
+</body>
+</html>

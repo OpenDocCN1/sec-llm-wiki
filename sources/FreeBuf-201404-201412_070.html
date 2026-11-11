@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>密码分析工具 – Pipal</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>密码分析工具 – Pipal</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=201001132&amp;idx=3&amp;sn=463f731d3ca7badbe556d4f73357339d&amp;chksm=28e09a271f971331df2af10fe2162e7d6c3d3db10a46ec2e7968eb0adba5343d38320482b501&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=201001132&amp;idx=3&amp;sn=463f731d3ca7badbe556d4f73357339d&amp;chksm=28e09a271f971331df2af10fe2162e7d6c3d3db10a46ec2e7968eb0adba5343d38320482b501&amp;scene=27#wechat_redirect</a></blockquote><p style=""><strong style="margin: 0px; padding: 0px;"><span style="margin: 0px; padding: 0px; color: rgb(0, 176, 80);">在很多情况下，我们需要进行各种各样的分析工作，这里为大家介绍一款密码分析工具——Pipal。</span></strong><br style="margin: 0px; padding: 0px;"/></p><p style="">Pipal是一款密码分析工具，功能主要是进行密码合集文件分析。说白了，就是对拿到的裤子中的密码进行特征分析，找出其中的“各种最”，你没看错，这个东西功能就是这么简单。。不过，工具的分析的速度还是很快的，同时也会从各个方面给出相应的分析结果。工具是作者为了满足自己和朋友的需要写的，现在被挂在了Git上面，这里我搬运过来，希望能为大家带来帮助。</p><p style=""><span style="margin: 0px; padding: 0px; color: rgb(38, 38, 38);"><strong style="margin: 0px; padding: 0px;"><span style="margin: 0px; padding: 0px; font-size: 18px;">工具安装</span></strong></span></p><p style="">这个不用多说，git一下就好了：</p><pre class="prettyprint lang-bash prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; background-color: rgb(247, 247, 249);">git clone https://github.com/digininja/pipal.git /opt/pipal</pre><p style=""><span style="margin: 0px; padding: 0px; color: rgb(38, 38, 38);"><strong style="margin: 0px; padding: 0px;"><span style="margin: 0px; padding: 0px; font-size: 18px;">运行环境</span></strong></span></p><p style="">Pipal是运行在ruby下的，需要的<span style="margin: 0px; padding: 0px; color: rgb(255, 0, 0);">ruby版本是1.9.x</span>，其他环境会报错无法运行，这点需要大家注意一下。</p><p style=""><span style="margin: 0px; padding: 0px; color: rgb(38, 38, 38);"><strong style="margin: 0px; padding: 0px;"><span style="margin: 0px; padding: 0px; font-size: 18px;">简要介绍</span></strong></span></p><p style="">工具本身带的参数不多，我们可以使用./pipal.rb -?来查看帮助界面：</p><p style=""><br/></p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR3ic0IzWvSj3Ro8VibcJMOy8ozA5Id2rlxxgEnNhv6LNTELKWuZvOHN0w1Oib8837y2J34SGVibayELJcQ/0" style="" data-ratio="0.38188976377952755" data-w="" src="../Images/862ebeb8c514e85accd8f377eb585d28.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR3ic0IzWvSj3Ro8VibcJMOy8ozA5Id2rlxxgEnNhv6LNTELKWuZvOHN0w1Oib8837y2J34SGVibayELJcQ/0"/></p><p><br/></p><p style="">可用选项不多，也很简洁。只说一下里面的top参数。top参数指定在所分析的密码文件中位于最高频率的前N位，N即为top的参数，比如我们需要待分析的密码文件中的频率前50的密码，我们可以使用:</p><p style=""><br/></p><pre class="prettyprint lang-bash prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; background-color: rgb(247, 247, 249);">./pipal.rb --top 50 exmple.file</pre><p style=""><br/></p><p style="">默认的top值为10.</p><p style=""><br/></p><p style="">使用很简单，直接在命令后面跟上待分析的文件就可以了，比如我这里随便分析一个文件</p><p style=""><br/></p><pre class="prettyprint lang-bash prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; background-color: rgb(247, 247, 249);">./pipal.rb 100W.txt</pre><p style=""><br/></p><p style="">会显示一个进度条</p><p><br/></p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR3ic0IzWvSj3Ro8VibcJMOy8oz9ye5YiaUqHXichNJPGiaiaFM71Iy4LkIk8nawp0NuYBiczbOQXJRZp2JvQQ/0" style="" data-ratio="0.5708661417322834" data-w="" src="../Images/db369689b7eb278d96400092a48342a7.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR3ic0IzWvSj3Ro8VibcJMOy8oz9ye5YiaUqHXichNJPGiaiaFM71Iy4LkIk8nawp0NuYBiczbOQXJRZp2JvQQ/0"/></p><p><br/></p><p style="">分析的速度也是比较快的。我这里找了一个100W左右的文件作为示例（9.4M），大约用了不到5分钟的时间就给出了分析结果。</p><p style=""><br/></p><p style=""><span style="margin: 0px; padding: 0px; color: rgb(38, 38, 38);"><strong style="margin: 0px; padding: 0px;"><span style="margin: 0px; padding: 0px; font-size: 18px;">分析结果</span></strong></span><br style="margin: 0px; padding: 0px;"/></p><p style=""><span style="margin: 0px; padding: 0px; color: rgb(38, 38, 38);"><strong style="margin: 0px; padding: 0px;"><span style="margin: 0px; padding: 0px; font-size: 18px;"><br/></span></strong></span></p><pre class="prettyprint lang-bash prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; background-color: rgb(247, 247, 249);">root@linvex:/opt/pipal# ./pipal.rb 100W.TXT
+Generating stats, hit CTRL-C to finish early and dump stats on words already processed.
+Please wait...
+Processing:    100% |ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo| Time: 00:03:54
+Basic Results
+Total entries = 1000001
+Total unique entries = 999754
+Top 10 passwords
+palaeodendrologi = 4 (0.0%)
+palaeodictyopter = 4 (0.0%)
+microspectroscop = 3 (0.0%)
+hypsibrachycepha = 3 (0.0%)
+hypsidolichoceph = 3 (0.0%)
+hypsistenocephal = 3 (0.0%)
+labyrinthibranch = 3 (0.0%)
+microcinematogra = 3 (0.0%)
+hyperdolichoceph = 3 (0.0%)
+nonrepresentatio = 3 (0.0%)
+Top 10 base words
+ghjkl = 635 (0.06%)
+guest = 379 (0.04%)
+pass = 378 (0.04%)
+love = 378 (0.04%)
+info = 378 (0.04%)
+happy = 378 (0.04%)
+lady = 378 (0.04%)
+moon = 378 (0.04%)
+money = 378 (0.04%)
+lucky = 378 (0.04%)
+Password length (length ordered)
+1 = 1 (0.0%)
+2 = 38 (0.0%)
+3 = 354 (0.04%)
+4 = 1306 (0.13%)
+5 = 30082 (3.01%)
+6 = 49142 (4.91%)
+7 = 54443 (5.44%)
+8 = 206435 (20.64%)
+9 = 286516 (28.65%)
+10 = 325970 (32.6%)
+11 = 19805 (1.98%)
+12 = 14092 (1.41%)
+13 = 4702 (0.47%)
+14 = 3017 (0.3%)
+15 = 1897 (0.19%)
+16 = 2201 (0.22%)
+Password length (count ordered)
+10 = 325970 (32.6%)
+9 = 286516 (28.65%)
+8 = 206435 (20.64%)
+7 = 54443 (5.44%)
+6 = 49142 (4.91%)
+5 = 30082 (3.01%)
+11 = 19805 (1.98%)
+12 = 14092 (1.41%)
+13 = 4702 (0.47%)
+14 = 3017 (0.3%)
+16 = 2201 (0.22%)
+15 = 1897 (0.19%)
+4 = 1306 (0.13%)
+3 = 354 (0.04%)
+2 = 38 (0.0%)
+1 = 1 (0.0%)
+	|                                                             
+	||                                                             
+	||                                                 
+00000000001111111
+01234567890123456
+One to six characters = 80923 (8.09%)
+One to eight characters = 341801 (34.18'%)
+More than eight characters = 658200 (65.82%)
+Only lowercase alpha = 819102 (81.91%)
+Only uppercase alpha = 0 (0.0%)
+Only alpha = 819102 (81.91%)
+Only numeric = 0 (0.0%)
+First capital last symbol = 0 (0.0%)
+First capital last number = 0 (0.0%)
+Single digit on the end = 6178 (0.62%)
+Two digits on the end = 10472 (1.05%)
+Three digits on the end = 45573 (4.56%)
+……SNIP……
+	|                                                             
+	||                                                             
+	||                                                   
+0123456789
+……SNIP……</pre><p style=""><br/></p><p style="">根据上面的回显我们大体就可以看出分析结果中所包含的部分，主要有密码频率TOP N，词语频率TOP N，密码长度频率分析（同时从序列和排名两项给出），更加创新的在terminal中给出了一个图形化的分析（这点可是让作者本人十分自豪的说），等等还有很多，大家可以自行挖掘。</p><p style=""><br/></p><p style="">最后放上git地址，防止有人问我为什么不给下载链接：<strong style="margin: 0px; padding: 0px; color: rgb(0, 176, 80);">https://github.com/digininja/pipal/</strong></p><p style=""><br/></p><p style=""><strong style="margin: 0px; padding: 0px;">[文/FreeBuf小编xia0k 参考来源：</strong><strong style="margin: 0px; padding: 0px;">darknet.org.uk</strong><strong style="margin: 0px; padding: 0px;"> 转载请注明：FreeBuf.COM]</strong></p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR3iczFOC9OUicgFecY03PmddPo4tpm757DBJLWsjskrvq2dzEyawAWdfMW3kRZuZTMgYaNVwvm6JeCbQ/0" data-ratio="0.2106299212598425" data-w="" src="../Images/f1fefd65b7067f0b9df8220890759e2c.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR3iczFOC9OUicgFecY03PmddPo4tpm757DBJLWsjskrvq2dzEyawAWdfMW3kRZuZTMgYaNVwvm6JeCbQ/0"/></p>
+        
+</body>
+</html>

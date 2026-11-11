@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>学习DJB哈希算法</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>学习DJB哈希算法</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyMTUwMzI3Ng==&amp;mid=2247484087&amp;idx=1&amp;sn=9c5ee643da56e16b295f66b57644ff90&amp;chksm=f9db55f4ceacdce242af3b2063ff0c699ec1d2bf9839dc3fbe02a2f23d199d404bf135d924d6&amp;scene=126&amp;sessionid=1681654995#rd">http://mp.weixin.qq.com/s?__biz=MzUyMTUwMzI3Ng==&amp;mid=2247484087&amp;idx=1&amp;sn=9c5ee643da56e16b295f66b57644ff90&amp;chksm=f9db55f4ceacdce242af3b2063ff0c699ec1d2bf9839dc3fbe02a2f23d199d404bf135d924d6&amp;scene=126&amp;sessionid=1681654995#rd</a></blockquote><p><strong>哈希算法的定义</strong><span style="font-family: mp-quote, -apple-system-font, BlinkMacSystemFont, &quot;Helvetica Neue&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei UI&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;font-size: 14px;"/></p><p><span style="font-family: mp-quote, -apple-system-font, BlinkMacSystemFont, &quot;Helvetica Neue&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei UI&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;font-size: 14px;">是把任意长度的输入通过散列算法变换成固定长度的输出，这样就减少了原输入的长度。</span></p><p><br/></p><p><br/></p><p><strong>恶意代码中的应用</strong></p><p><span style="font-size: 14px;">这个比较简单的哈希算法来源于以前在分析Sodinokibi勒索病毒时遇到的，好困，所以整理下笔记，由于为了逃避检测，所以勒索病毒对字符串的大多数操作都是使用对字符串计算得到的DJB哈希值而不是字符串本身来对比并寻找。</span></p><p><span style="font-size: 14px;"><br/></span></p><p><span style="color: rgb(255, 0, 0);font-size: 14px;">通常，大部分的恶意软件寻找调用API时，会使用API名称计算得到的hash进行内部硬编码值对比来判断查找需要的API函数名称，这样就避免了敏感API函数被直接显示。</span></p><p><br/></p><p><br/></p><p><strong>案例代码</strong></p><p><span style="font-size: 14px;">典型的例子代码如下，还是很好理解的。</span></p><p><img data-ratio="0.835258358662614" data-src="https://mmbiz.qpic.cn/mmbiz_png/dib9GLOoSY0jQYbib05fCfuDmAeozY6HnLovA0s81450rVGKGPdxyVtMcNQs4SpUx32ziaJUYDOCvJZ7GWBibMeyFw/640?wx_fmt=png" data-type="png" data-w="1645" src="../Images/8035c5f749a8d63504c37db8bd859470.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/dib9GLOoSY0jQYbib05fCfuDmAeozY6HnLovA0s81450rVGKGPdxyVtMcNQs4SpUx32ziaJUYDOCvJZ7GWBibMeyFw/640?wx_fmt=png"/></p>
+        
+</body>
+</html>

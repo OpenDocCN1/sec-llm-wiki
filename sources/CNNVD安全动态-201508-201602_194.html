@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>联想、戴尔和东芝电脑曝严重OEM漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>联想、戴尔和东芝电脑曝严重OEM漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxODY1OTM5OQ==&amp;mid=401539832&amp;idx=4&amp;sn=52d64188aeb64c0c00d5bbf165109db5&amp;chksm=09c943d03ebecac667e5ff3e5be487e73b286079e634bee0140e3eb35ba22b25c5cba6e253fd&amp;scene=126&amp;sessionid=1681378426#rd">http://mp.weixin.qq.com/s?__biz=MzAxODY1OTM5OQ==&amp;mid=401539832&amp;idx=4&amp;sn=52d64188aeb64c0c00d5bbf165109db5&amp;chksm=09c943d03ebecac667e5ff3e5be487e73b286079e634bee0140e3eb35ba22b25c5cba6e253fd&amp;scene=126&amp;sessionid=1681378426#rd</a></blockquote><p>来源：Freebuf</p><p>     最近，联想的设备又可以被很容易地劫持，同时戴尔和东芝的个人电脑也因为严重漏洞而受到影响。安全研究员slipstream/RoL在线发布了漏洞并演示了如何侵入市场上的机器。</p><p>      美国的CERT已经发布了联想漏洞的警报，中国总部也正在加紧脚步卸载解决方案中心。美国互联网应急中心（CERT）表示：“当一位用户打开联想解决方案中心查看网络文件后，攻击者可以通过系统权限执行任意代码。而且，本地用户也可以这样做到。”联想解决方案中心也在公司网站上发布证实了该安全问题，他们正在以最快的速度修复这个漏洞：“我们正在评估这个漏洞，并会尽快提供更新和适用的补丁给大家。更多信息和更新将会公布在安全公告里。”</p><p><span style="line-height: 25.6px;">        </span>联想：</p><p><span style="line-height: 25.6px;">        </span>1.联想解决方案中心创建了一个名为LSCTaskService的进程能以管理员权限操作运行并弹出55555端口上的一个Web服务器。它也可以通过GET和POSTHTTP请求执行本地用户目录中的代码。</p><p><span style="line-height: 25.6px;">        </span>2.联想解决方案中心一般以完全控制权限执行硬盘上任意位置的程序。把恶意软件放到里面，联想解决方案中心就会执行该恶意软件。</p><p><span style="line-height: 25.6px;">        </span>3.在LSCTaskServic进程中存在一个典型的跨站请求伪造（CSRF）漏洞，允许任何访问的网页将命令传递到本地Web服务器并执行。</p><p><span style="line-height: 25.6px;">        </span>戴尔：戴尔的捆绑工具Dell系统检测，可以直接获得管理员权限安装恶意软件破坏你的计算机。</p><p><span style="line-height: 25.6px;">        </span>东芝：东芝的服务站工具则可以让普通的用户或未经授权的软件直接拥有系统级用户的权限读取操作系统的注册表。</p><p><br/></p>
+        
+</body>
+</html>

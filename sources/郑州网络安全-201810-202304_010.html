@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>BlackLotus UEFI bootkit可以绕过Windows上的安全启动</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>BlackLotus UEFI bootkit可以绕过Windows上的安全启动</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247486226&amp;idx=1&amp;sn=f749add727d69015a17ab861f61c61e4&amp;chksm=dcb9d3e7bcd5b6052bad64aee9058d9e074e6fc54e8f6334c0fc264d000486cc075c1b1bb42c&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247486226&amp;idx=1&amp;sn=f749add727d69015a17ab861f61c61e4&amp;chksm=dcb9d3e7bcd5b6052bad64aee9058d9e074e6fc54e8f6334c0fc264d000486cc075c1b1bb42c&amp;scene=27#wechat_redirect</a></blockquote><blockquote><p>安全公司ESET的网络安全研究人员分享了他们对世界上第一个在野外使用的UEFI bootkit的分析，该UEFI bootkit可以绕过完全更新的UEFI系统上的安全启动。它甚至可以在完全更新的Windows 10和Windows 11版本上绕过它。</p></blockquote><p><img class="rich_pages wxw-img" data-ratio="0.5833333333333334" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJn60gAthrQskHjlrAV3tFiaIkep2A3OZmBfWT6MuNNqokaH1oaXKMhWiaFoYu7h9jhOCom7staDncRg/640?wx_fmt=jpeg" data-type="jpeg" data-w="1200" height="700" width="1200" src="../Images/75afd495594ce44990028b3009de1784.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJn60gAthrQskHjlrAV3tFiaIkep2A3OZmBfWT6MuNNqokaH1oaXKMhWiaFoYu7h9jhOCom7staDncRg/640?wx_fmt=jpeg"/></p><p>据研究人员称，没有迹象表明谁创建了这个bootkit或它的名字，因此他们得出结论认为它对应于BlackLotus bootkit。该bootkit自2022年起在地下网络犯罪论坛上以5000美元的价格进行推广，另外还有200美元用于更新。</p><p>BlackLotus是用汇编和C编程语言编写的，因此开发人员可以将一套强大的功能插入到一个80kb的文件中。它不仅会禁用安全启动，还会禁用许多其他操作系统安全机制，包括受管理程序保护的代码完整性(HVCI)、BitLocker和Windows Defender。</p><p>此Bootkit可以在运行Windows 11并启用UEFI安全启动的完全更新的系统上运行。它针对称为统一可扩展固件接口(UEFI)的固件低级链。这个复杂的链条负责启动现代计算机。UEFI将计算机的固件与操作系统连接起来，同时充当操作系统本身。</p><p>由于UEFI位于计算机主板上的SPI连接闪存芯片中，因此很难对其进行检查或修补。BlackLotus以UEFI为目标的方式与 MoonBounce、CosmicStrand和MosaicRegressor等其他bootkit的不同之处在于，它们以存储在闪存芯片中的UEFI固件为目标，而BlackLotus以EFI系统分区中的软件为目标。</p><p>它是通过利用在所有受支持的Microsoft Windows版本中发现并于2022年1月修补的漏洞实现的。它被跟踪为CVE-2022-21894。这是一个逻辑缺陷，被发现它的研究人员称为“Baton Drop”，可以利用它在PC启动时从启动序列中完全删除安全启动功能。</p><p>威胁行为者可以轻松利用此漏洞获取用于加密硬盘驱动器的BitLocker的密钥。对于BlackLotus的创建者来说，这个缺陷已被证明非常有用，因为尽管已打补丁，但易受攻击的签名二进制文件尚未添加到UEFI吊销列表中，该列表会警告不可信的启动文件。</p><p>据研究人员称，目前正在使用数百个易受攻击的引导加载程序，如果这些签名的二进制文件被撤销，将导致数百万台设备无法使用。这就是完全更新的设备仍然容易受到攻击的原因，因为威胁行为者可以用易受攻击的旧软件替换打过补丁的软件。</p><p>UEFI bootkit是强大的威胁，因为UEFI可以完全控制操作系统的启动过程。这就是它如何禁用各种操作系统安全机制并在早期操作系统启动阶段部署自己的内核模式和用户模式有效负载。这让攻击者可以偷偷操作并获得高权限。</p><p>该bootkit的部署方式尚不清楚，但攻击链涉及一个安装程序组件，该组件将文件写入EFI系统分区并禁用HVCI和BitLocker，然后重新启动主机。</p><p>BlackLotus禁用保护解决方案以部署内核驱动程序，防止bootkit文件被删除，以及HTTP加载程序。相反，引导加载程序与控制服务器建立通信并执行有效负载。</p><p> </p><p><br/></p><p style="display: none;"><mp-style-type data-value="3"/></p>
+        
+</body>
+</html>

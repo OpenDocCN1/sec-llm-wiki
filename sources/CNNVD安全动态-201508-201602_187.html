@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>雅虎邮箱公布修复XSS攻击漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>雅虎邮箱公布修复XSS攻击漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxODY1OTM5OQ==&amp;mid=401681451&amp;idx=3&amp;sn=ac6a1f0a783959acd4c01d10463baf4d&amp;chksm=09d76d033ea0e415c3c4f5015ed4cdcbd86678398afaf73183b9ffa0908c68be2a9609fb5316&amp;scene=126&amp;sessionid=1681378426#rd">http://mp.weixin.qq.com/s?__biz=MzAxODY1OTM5OQ==&amp;mid=401681451&amp;idx=3&amp;sn=ac6a1f0a783959acd4c01d10463baf4d&amp;chksm=09d76d033ea0e415c3c4f5015ed4cdcbd86678398afaf73183b9ffa0908c68be2a9609fb5316&amp;scene=126&amp;sessionid=1681378426#rd</a></blockquote><p>来源：Freebuf</p><p>         近日，就在雅虎还在考虑是否分拆阿里巴巴股份，甚至在考虑出售雅虎的核心业务，包括雅虎邮箱、体育网站和广告技术的时候，雅虎邮箱宣布目前已经修复此前被发现但未公布的一个高危漏洞，该漏洞可导致数亿雅虎邮箱用户遭受恶意邮件的攻击。更为严重的是，利用该漏洞，攻击者发送恶意邮件并不需要用户查阅，恶意邮件只要存在用户收件箱中，恶意代码便会被执行。</p><p><span style="line-height: 25.6px;"> <span style="line-height: 25.6px;"> <span style="line-height: 25.6px;">        </span></span></span>该漏洞被雅虎在11月21号修复。这个时间是该漏洞被渗透测试人员Ibrahim Raafat发现的十天之后。Raafat发现雅虎邮箱的移动终端访问页面出现漏洞，容易遭受XSS攻击。对于XSS跨站脚本攻击而言，可以通过来自于用户提交的文本信息（如博客评论或论坛帖子）来将恶意代码嵌入到可用于其他用户访问的Web网页中，而网站平台本身并没有对提交的文本信息进行过滤或者校验，从而被用户浏览器执行，导致XSS攻击。在此过程中，恶意代码与所有其他代码在页面上以相同级别的权限运行，这意味着攻击者可以通过它来获取用户的敏感信息，或者攻击用户个人的浏览器及计算机。</p><p><span style="line-height: 25.6px;"> <span style="line-height: 25.6px;"> <span style="line-height: 25.6px;">        </span></span></span>最初IbrahimRaafat便是发现雅虎邮件的移动版本，人们用于阅读邮件的网页，并没有对来自邮件的内容进行过滤或者校验，而是直接执行用户接收到的邮件内容，从而可导致XSS攻击。</p><p><span style="line-height: 25.6px;"> <span style="line-height: 25.6px;">        </span></span>他所做的就是用一小段测试代码写了一封邮件，然后发送给一个测试的雅虎邮箱。而在此测试中，当这封邮件出现在雅虎邮箱的收件箱中，Raafat也同时发现收件人的浏览器便会在不知不觉中运行它（恶意邮件内容）。更糟糕的是，从测试中来看，甚至用不着受害者查看邮件-恶意邮件只要出现在收件箱中，便能被运行。</p><p><span style="line-height: 25.6px;"> <span style="line-height: 25.6px;"> <span style="line-height: 25.6px;">        </span></span></span>雅虎邮箱目前拥有数亿的用户，所以影响如此之广泛的漏洞，无论被利用开展何种攻击，结果注定是严重的。</p><p><br/></p>
+        
+</body>
+</html>

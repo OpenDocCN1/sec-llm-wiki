@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Frida在爆破Windows程序中的应用</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Frida在爆破Windows程序中的应用</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=2651071036&amp;idx=3&amp;sn=91ad60993a4d1424e48440e9aae2bd4f&amp;chksm=bd1fb0b78a6839a13e0425e6a44965b2ae777d3b0a59ab87778efda3097dcb0cb09af05a36d1&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=2651071036&amp;idx=3&amp;sn=91ad60993a4d1424e48440e9aae2bd4f&amp;chksm=bd1fb0b78a6839a13e0425e6a44965b2ae777d3b0a59ab87778efda3097dcb0cb09af05a36d1&amp;scene=27#wechat_redirect</a></blockquote><p style="white-space: normal;margin-bottom: 1.2em !important;"><strong><span style="color: rgb(255, 76, 65);">*本文原创作者：geek痕，本文属FreeBuf原创奖励计划，未经许可禁止转载</span></strong></p><p style="white-space: normal;margin-bottom: 1.2em !important;"><span style="color: rgb(61, 167, 66);"><strong>谈到爆破，相信大部分网络安全从业者都并不陌生，爆破爆破，就是暴力破解嘛。通过枚举尝试尽可能多的可能解，再进行验证判断是否正确。在进行web的爆破时，我们通常会使用brupsuite等工具，那么，如果是二进制程序中的爆破呢？</strong></span></p><p style="white-space: normal;margin-bottom: 1.2em !important;">本文将介绍一种方法，通过动态插桩（hook）的方式，实现二进制程序中的爆破。最近在学习逆向，刷一些ctf的题目，遇到了一道拖进ida死活分析不出算法，因为实在是太菜了，目标程序大概长这样：</p><p style="white-space: normal;margin-bottom: 1.2em !important;text-align: center;"><img class="" data-ratio="0.4473684210526316" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibtQGGenfKSyQ1PPxHFZgtux9jiahs0N9UR1Xic7ydVUAhvUkwNYYiahV5AwALg5secwfUQh0Xj6t1mQ/640?wx_fmt=jpeg" data-type="jpeg" data-w="304" src="../Images/80014607c4a33f60a095426f3fc5b867.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibtQGGenfKSyQ1PPxHFZgtux9jiahs0N9UR1Xic7ydVUAhvUkwNYYiahV5AwALg5secwfUQh0Xj6t1mQ/640?wx_fmt=jpeg"/></p><p style="white-space: normal;margin-bottom: 1.2em !important;">有兴趣的可以先试试：地址如下：http://ctf5.shiyanbar.com/re/100w.exe</p><p style="white-space: normal;margin-bottom: 1.2em !important;">输入的口令正确则会弹出flag，输入错误则会弹出错误提示。</p><p style="white-space: normal;margin-bottom: 1.2em !important;text-align: center;"><img class="" data-ratio="1.0804597701149425" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibtQGGenfKSyQ1PPxHFZgtu5YNoibKbbcOQob0RUEbKxm2kz2Da13R0FiaRvNGCuaBPqjhoicebHHicdw/640?wx_fmt=jpeg" data-type="jpeg" data-w="174" src="../Images/d9597d2561aff298d8c083dc5e4b75f6.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibtQGGenfKSyQ1PPxHFZgtu5YNoibKbbcOQob0RUEbKxm2kz2Da13R0FiaRvNGCuaBPqjhoicebHHicdw/640?wx_fmt=jpeg"/></p><p style="white-space: normal;margin-bottom: 1.2em !important;">看到提示说是6位数字，而且在逆向的过程中发现有这样一段文字：</p><p style="white-space: normal;margin-bottom: 1.2em !important;"><img class="" data-ratio="0.09130434782608696" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibtQGGenfKSyQ1PPxHFZgtuwhxfTyPmKdZ9IUtW4UlzK0FBkn77llS3gibf9VGaibszghcV6aDNP7ibQ/640?wx_fmt=jpeg" data-type="jpeg" data-w="690" src="../Images/046af3138baec8c3f536c21b4ba15115.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibtQGGenfKSyQ1PPxHFZgtuwhxfTyPmKdZ9IUtW4UlzK0FBkn77llS3gibf9VGaibszghcV6aDNP7ibQ/640?wx_fmt=jpeg"/></p><p style="white-space: normal;margin-bottom: 1.2em !important;">行吧…那就爆破一个试试。之前就听说过Frida牛逼的不行，跨平台的动态插桩框架，不过之前一直没亲自动手玩过，这次就试试吧。在实践过程中发现Frida的相关资料本身并不多，而且大多是针对Android移动平台的应用，于是决定写一篇文章分享一些桌面端Frida应用的技术。先上一段Frida的介绍：</p><blockquote style="margin-top: 1.2em;margin-bottom: 1.2em;padding-right: 1em;padding-left: 1em;border-left-width: 4px;border-left-color: rgb(221, 221, 221);white-space: normal;color: rgb(119, 119, 119);quotes: none;"><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 1.4em;border-bottom: 1px solid rgb(238, 238, 238);">So what is Frida, exactly?</h2><p style="margin-bottom: 1.2em !important;">It’sGreasemonkey for<br/>native apps, or, put in more technical terms, it’s a dynamic code<br/>instrumentation toolkit. It lets you inject snippets of JavaScript or your own<br/>library into native apps on Windows, macOS, GNU/Linux, iOS, Android, and QNX.<br/>Frida also provides you with some simple tools built on top of the Frida API.<br/>These can be used as-is, tweaked to your needs, or serve as examples of how to<br/>use the API.</p></blockquote><p style="white-space: normal;margin-bottom: 1.2em !important;">Frida是一个动态插桩的工具包。它可以让你将js脚本或那你自己的一些库插入到win、macos、linux、android、ios等平台的应用中。跨平台的实现方案听起来很牛逼有木有，这意味着熟练掌握这一个工具的性价比是很高的。乱扯了那么多，先来看下Frida使用的基本代码框架。以下是python的代码。首先，用pip安装一下：</p><pre style="margin-top: 1.2em;margin-bottom: 1.2em;font-size: 1em;font-family: Consolas, Inconsolata, Courier, monospace;line-height: 1.2em;"><code style="margin-right: 0.15em;margin-left: 0.15em;padding: 0.5em 0.7em;font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);display: block !important;">pip install frida</code></pre><p style="white-space: normal;margin-bottom: 1.2em !important;">然后下面这段代码是frida 的基本框架：</p><pre style="margin-top: 1.2em;margin-bottom: 1.2em;font-size: 1em;font-family: Consolas, Inconsolata, Courier, monospace;line-height: 1.2em;"><code style="margin-right: 0.15em;margin-left: 0.15em;padding: 0.5em 0.7em;font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);display: block !important;">import frida
+def on_message(message, data):
+    print("[%s] =&gt; %s" % (message, data))
+session = frida.attach('100fw.exe')#附加frida到目标进程
+script = session.create_script('some js code here')
+script.on('message', on_message)
+script.load()
+sys.stdin.read()
+session.deatch()</code></pre><p style="white-space: normal;margin-bottom: 1.2em !important;">代码比较简单，不多解释。重点是session.create_script里面的js代码。</p><p style="white-space: normal;margin-bottom: 1.2em !important;">首先，我们要能够模拟调用按钮点击后执行的函数。</p><p style="white-space: normal;margin-bottom: 1.2em !important;">找这个函数地址的思路有两个。一个，由于这个crackme是用易语言写的，所以用e-debug可以找到call的地址：</p><p style="white-space: normal;margin-bottom: 1.2em !important;text-align: center;"><img class="" data-ratio="1.71976401179941" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibtQGGenfKSyQ1PPxHFZgtu8ZmtopXwMWzZ1myrGGQjK7FFQ5ia4XSraPZCLyst8gAfQVEcwE6zQJw/640?wx_fmt=jpeg" data-type="jpeg" data-w="339" src="../Images/c65e9ee424f8a3d3b98dc4d360c10c5e.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibtQGGenfKSyQ1PPxHFZgtu8ZmtopXwMWzZ1myrGGQjK7FFQ5ia4XSraPZCLyst8gAfQVEcwE6zQJw/640?wx_fmt=jpeg"/></p><p style="white-space: normal;margin-bottom: 1.2em !important;">另外一个方法就是拖入od找字符串然后往上找到函数入口，下断点验证。不行再往上翻。</p><p style="white-space: normal;margin-bottom: 1.2em !important;"><img class="" data-ratio="0.3" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibtQGGenfKSyQ1PPxHFZgtukIJNZjofPiaosEQN0xmVb722J4pDbJzlCqsA6PYfzrD61LXqic75Pu0A/640?wx_fmt=jpeg" data-type="jpeg" data-w="690" src="../Images/4fe7914df3d3e4b60194b501b3e5adc7.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibtQGGenfKSyQ1PPxHFZgtukIJNZjofPiaosEQN0xmVb722J4pDbJzlCqsA6PYfzrD61LXqic75Pu0A/640?wx_fmt=jpeg"/></p><p style="white-space: normal;margin-bottom: 1.2em !important;">最后找到函数入口如下：</p><p style="white-space: normal;margin-bottom: 1.2em !important;"><img class="" data-ratio="0.07246376811594203" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibtQGGenfKSyQ1PPxHFZgturZ4Uv7lBw8zanPpGa2HET6GRbJI9rNGOTGQibOy6THfpafQgbEcm7lQ/640?wx_fmt=jpeg" data-type="jpeg" data-w="690" src="../Images/01f9d17637a994d5eaa6229ff072a356.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibtQGGenfKSyQ1PPxHFZgturZ4Uv7lBw8zanPpGa2HET6GRbJI9rNGOTGQibOy6THfpafQgbEcm7lQ/640?wx_fmt=jpeg"/></p><p style="white-space: normal;margin-bottom: 1.2em !important;">然后，我们用frida的js api写一个模拟调用的函数。</p><pre style="margin-top: 1.2em;margin-bottom: 1.2em;font-size: 1em;font-family: Consolas, Inconsolata, Courier, monospace;line-height: 1.2em;"><code style="margin-right: 0.15em;margin-left: 0.15em;padding: 0.5em 0.7em;font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);display: block !important;">var f=new NativeFunction(ptr('0x0040173a'), 'void',[]);
+rpc.exports={
+    once:function(){
+        f();
+    }
+};</code></pre><p style="white-space: normal;margin-bottom: 1.2em !important;">NtiveFunction的后面两个参数中，第一个是返回值类型，第二个是参数列表的类型，这里都为空即可。</p><p style="white-space: normal;margin-bottom: 1.2em !important;">然后定义once模拟调用一次按钮点击事件。</p><p style="white-space: normal;margin-bottom: 1.2em !important;">最后，我们在python代码中调用frida为我们暴露出来的接口：</p><pre style="margin-top: 1.2em;margin-bottom: 1.2em;font-size: 1em;font-family: Consolas, Inconsolata, Courier, monospace;line-height: 1.2em;"><code style="margin-right: 0.15em;margin-left: 0.15em;padding: 0.5em 0.7em;font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);display: block !important;">while(True):
+    script.exports.once()</code></pre><p style="white-space: normal;margin-bottom: 1.2em !important;">以上代码可以不断模拟点击目标程序中按钮的过程。</p><p style="white-space: normal;margin-bottom: 1.2em !important;">再然后，我们需要模拟往输入中填入各个值。那么要做的就是hook获取控件数值的相关函数。找的方法嘛..我用的是先把断点下到按钮事件函数那里，然后单步走起。看哪个函数返回了输入值的指针。</p><p style="white-space: normal;margin-bottom: 1.2em !important;"><img class="" data-ratio="0.39565217391304347" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibtQGGenfKSyQ1PPxHFZgtuZYqb31ARbzvVrz6ZGxQ4f2CsON1JtTFIwcu8JnT45dXH9ouhIJWSTQ/640?wx_fmt=jpeg" data-type="jpeg" data-w="690" src="../Images/63c51728acf0b2cfbdd1d19742c88c96.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibtQGGenfKSyQ1PPxHFZgtuZYqb31ARbzvVrz6ZGxQ4f2CsON1JtTFIwcu8JnT45dXH9ouhIJWSTQ/640?wx_fmt=jpeg"/></p><p style="white-space: normal;margin-bottom: 1.2em !important;">ok，找到函数地址为0X00401CE7（最靠近结果的call）</p><p style="white-space: normal;margin-bottom: 1.2em !important;">接下来我们hook这个函数的返回结果，让它依次遍历每一个可能的值：</p><pre style="margin-top: 1.2em;margin-bottom: 1.2em;font-size: 1em;font-family: Consolas, Inconsolata, Courier, monospace;line-height: 1.2em;"><code style="margin-right: 0.15em;margin-left: 0.15em;padding: 0.5em 0.7em;font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);display: block !important;">var tmp=100000;
+var NeedAdd=true;
+var f3=ptr('0x00401CE7');
+Interceptor.attach(f3,{
+    onLeave:function(result){
+    /*
+        console.log('----------')
+        console.log(result.toInt32());*/
+        Memory.writeAnsiString(ptr(result.toInt32()),tmp.toString())//result为输入值的指针指向
+
+        if(NeedAdd){tmp=tmp+1;NeedAdd=false;}
+        else{NeedAdd=true;}
+        /*
+        console.log(Memory.readAnsiString(ptr(result.toInt32())));*///输出修改后的结果
+    }
+});</code></pre><p style="white-space: normal;margin-bottom: 1.2em !important;">上面的代码有注释，这里解释下为什么用NeedAdd辅助来让tmp值每两次递增一次.因为…我比较菜hook点不是很合适，每一次调用都会有两次被hook到，所以..就出此下策了。</p><p style="white-space: normal;margin-bottom: 1.2em !important;">接下来，我们要hook掉消息框弹窗函数，获取提示内容以判断口令的正确与否。</p><p style="white-space: normal;margin-bottom: 1.2em !important;">眼看着这是最后一步了，但我却在这里踩了很多坑。</p><p style="white-space: normal;margin-bottom: 1.2em !important;">首先，获取信息框内容嘛，好啊，我hook MessageBox不就好了，于是用OD插件给API下断一通乱搞，获取到了弹窗内容美滋滋。跑起来一看，等等！难道要我每一次都点一下确认把消息框弄掉才能进行下一次尝试吗？不行！要把这个信息框干掉。然后想着直接跳过对MessageBox的call，结果程序崩了，调试一番才发现，堆栈不平衡，hook了好几个都不行。</p><p style="white-space: normal;margin-bottom: 1.2em !important;">就在这里卡了好一会，后来觉得沿着api的调用栈一直往上翻，一定能找到用户态最初的call，那个call的调用关系应该相对简单，堆栈平衡问题也比较容易处理，然后就一直找啊找，发现就在搜到的字符串附近有这样一段代码，顿时两眼放光：</p><p style="white-space: normal;margin-bottom: 1.2em !important;"><img class="" data-ratio="0.24057971014492754" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibtQGGenfKSyQ1PPxHFZgtuib9HBMuGXPyebrrWgmFpvSH8HYak72jiby3ysWO1NTNqOPR8ic3INat9g/640?wx_fmt=jpeg" data-type="jpeg" data-w="690" src="../Images/1a19860390307fab31ed8ce360583b4d.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibtQGGenfKSyQ1PPxHFZgtuib9HBMuGXPyebrrWgmFpvSH8HYak72jiby3ysWO1NTNqOPR8ic3INat9g/640?wx_fmt=jpeg"/></p><p style="white-space: normal;margin-bottom: 1.2em !important;">这就好办了，结果跟进去一看，发现这只是一个索引，hook这个会影响很多函数：</p><p style="white-space: normal;margin-bottom: 1.2em !important;"><img class="" data-ratio="0.1072463768115942" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibtQGGenfKSyQ1PPxHFZgtu2u56pKSbhticsr25amq2C1HhMIkZ59kUjztY46lwgG65KnejaAZ0ibnQ/640?wx_fmt=jpeg" data-type="jpeg" data-w="690" src="../Images/e4af9397a1daa27ae4b2fd929cc176a3.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibtQGGenfKSyQ1PPxHFZgtu2u56pKSbhticsr25amq2C1HhMIkZ59kUjztY46lwgG65KnejaAZ0ibnQ/640?wx_fmt=jpeg"/></p><p style="white-space: normal;margin-bottom: 1.2em !important;">那不如..直接把这个call给nop掉吧..把这个嘴给塞住。</p><p style="white-space: normal;margin-bottom: 1.2em !important;">测试之后发现经过add esp，0x28后堆栈刚好平衡，很好，perfect！</p><p style="white-space: normal;margin-bottom: 1.2em !important;">现在，我们可以写出最后一段代码了：</p><pre style="margin-top: 1.2em;margin-bottom: 1.2em;font-size: 1em;font-family: Consolas, Inconsolata, Courier, monospace;line-height: 1.2em;"><code style="margin-right: 0.15em;margin-left: 0.15em;padding: 0.5em 0.7em;font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);display: block !important;">var f4=ptr('0x00401C03');
+Interceptor.attach(f4,{
+    onEnter:function(args){
+        //console.log(args[0]);
+        send(Memory.readAnsiString(ptr(args[0])));//读取相应内容并发送给终端显示
+
+        return;
+    }
+});</code></pre><p style="white-space: normal;margin-bottom: 1.2em !important;">这里解释一下，为什么把0x00401c03 nop掉之后仍然可以hook这里。</p><p style="white-space: normal;margin-bottom: 1.2em !important;">根据我的猜测，frida的hook应该是内存断点，获取的“参数”就是根据堆栈情况的相对位置确定的，所以我们可以“hook”这个地方，获取到前面push的内容，至于那个args[0]，多试几个就好了。</p><p style="white-space: normal;margin-bottom: 1.2em !important;">其实，成功的时候call的地方不在这里，而我们没有处理成功弹窗的相关代码，成功后自然会弹出来，这里的显示有些多余，当作实验就好了吧。</p><p style="white-space: normal;margin-bottom: 1.2em !important;">下面是完整代码：</p><pre style="margin-top: 1.2em;margin-bottom: 1.2em;font-size: 1em;font-family: Consolas, Inconsolata, Courier, monospace;line-height: 1.2em;"><code style="margin-right: 0.15em;margin-left: 0.15em;padding: 0.5em 0.7em;font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);display: block !important;">import frida
+import sys
+
+def on_message(message, data):
+    print("[%s] =&gt; %s" % (message, data))
+
+session = frida.attach('100fw.exe')
+script = session.create_script('''
+    var tmp=700000;
+    var NeedAdd=true;
+    var f1 = ptr('0x00401096');
+    var f2 = ptr('0x0040169d');
+    Interceptor.attach(f1, {
+        onEnter:function(args){
+
+        }
+    });
+    Interceptor.attach(f2, {
+        onEnter:function(args){
+
+        }
+    });
+    var f=new NativeFunction(ptr('0x0040173a'), 'void',[]);
+    rpc.exports={
+        once:function(){
+            f();
+        }
+    };
+    var f3=ptr('0x00401CE7');
+    Interceptor.attach(f3,{
+        onLeave:function(result){
+        /*
+            console.log('----------')
+            console.log(result.toInt32());*/
+            Memory.writeAnsiString(ptr(result.toInt32()),tmp.toString())
+
+            if(NeedAdd){tmp=tmp+1;NeedAdd=false;}
+            else{NeedAdd=true;}
+            //console.log(Memory.readAnsiString(ptr(result.toInt32())));
+            console.log(tmp);
+        }
+    });
+    /*
+    var f4=ptr('0x00401C03');
+    Interceptor.attach(f4,{
+        onEnter:function(args){
+            //console.log(args[0]);
+            send(Memory.readAnsiString(ptr(args[0])));
+
+            return;
+        }
+    });
+    */
+
+''')
+script.on('message', on_message)
+script.load()
+while(True):
+    script.exports.once()
+sys.stdin.read()
+session.deatch()</code></pre><p style="white-space: normal;margin-bottom: 1.2em !important;">最好运行成功之后是酱紫的：</p><p style="white-space: normal;margin-bottom: 1.2em !important;text-align: center;"><img class="" data-ratio="0.5545722713864307" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibtQGGenfKSyQ1PPxHFZgtuSsHtQIUnoSnwJOpRlTvSBFLpxDRWNa68dOT4dZIZiaaal1bHtq657Dw/640?wx_fmt=jpeg" data-type="jpeg" data-w="339" src="../Images/f9a833a6d246ef5f12131648fd73a057.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibtQGGenfKSyQ1PPxHFZgtuSsHtQIUnoSnwJOpRlTvSBFLpxDRWNa68dOT4dZIZiaaal1bHtq657Dw/640?wx_fmt=jpeg"/></p><p style="white-space: normal;margin-bottom: 1.2em !important;">再说几点注意吧，首先是运行的时候要先运行程序，再运行py脚本，不然会出现这个：</p><p style="white-space: normal;margin-bottom: 1.2em !important;"><img class="" data-ratio="0.07313195548489666" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibtQGGenfKSyQ1PPxHFZgtudOSewqtkic2w9OhibCHPcib4XFyIv9S8KpEw9yPjGlNH2yVmfqwib0aEEA/640?wx_fmt=jpeg" data-type="jpeg" data-w="629" src="../Images/3c40a09d535b31b6dd293eb40f629825.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibtQGGenfKSyQ1PPxHFZgtudOSewqtkic2w9OhibCHPcib4XFyIv9S8KpEw9yPjGlNH2yVmfqwib0aEEA/640?wx_fmt=jpeg"/></p><p style="white-space: normal;margin-bottom: 1.2em !important;">然后是我们要先在输入框中输入一个随意的六位数，这样系统才会分配一个储存的空间。不然会出现这样：</p><p style="white-space: normal;margin-bottom: 1.2em !important;"><img class="" data-ratio="0.02753623188405797" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibtQGGenfKSyQ1PPxHFZgtuIpjjRSZPXFVQicQxhr4rKgdV3r3pWsnswQJ2UdKVA1MbtEaweGMfJ6w/640?wx_fmt=jpeg" data-type="jpeg" data-w="690" src="../Images/5618391f45f271dda428aca61ab341dd.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibtQGGenfKSyQ1PPxHFZgtuIpjjRSZPXFVQicQxhr4rKgdV3r3pWsnswQJ2UdKVA1MbtEaweGMfJ6w/640?wx_fmt=jpeg"/></p><p style="white-space: normal;margin-bottom: 1.2em !important;">这个解决方案有个地方不足就是效率还是低了点，完整爆破需要一些时间。</p><p style="white-space: normal;margin-bottom: 1.2em !important;">我尝试过减少调试性的输出来提升效率，还是有一定效果的。然后因为爆破的时候cpu并没有跑满，所以多开几个实例来分段跑估计也能快不少。看了正解算法的确比较复杂，orz。</p><p style="white-space: normal;margin-bottom: 1.2em !important;">最后，本文旨在探讨Frida的使用技巧。总的来说，Frida的可玩性还是很高的，还有很多js api接口没有介绍，有兴趣的可以去官网看看文档。</p><p style="white-space: normal;margin-bottom: 1.2em !important;">写文章的经验不多，还请各位dalao拍砖！</p><p style="white-space: normal;margin-bottom: 1.2em !important;"><strong>*本文原创作者：geek痕，本文属FreeBuf原创奖励计划，未经许可禁止转载</strong></p><p style="text-align: center;"><img class="" data-copyright="0" data-ratio="0.6466666666666666" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/qq5rfBadR3icgd4icqu70ibGz2aGspXLoWicr49J5crdDzDdhkNAWV6T5nehHgV2DRtnhsSdmxIZL089Ws5hDDgwjA/640?wx_fmt=png" data-type="png" data-w="600" style="" src="../Images/b4f1060a72a4ef1c78ba8fa8645e42e8.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/qq5rfBadR3icgd4icqu70ibGz2aGspXLoWicr49J5crdDzDdhkNAWV6T5nehHgV2DRtnhsSdmxIZL089Ws5hDDgwjA/640?wx_fmt=png"/></p>
+        
+</body>
+</html>

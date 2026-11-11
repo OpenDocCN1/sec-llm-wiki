@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>白帽大胜入侵者——一场经典的DDoS攻防战</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>白帽大胜入侵者——一场经典的DDoS攻防战</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/mp/appmsg/show?__biz=MjM5NjA0NjgyMA==&amp;appmsgid=10000096&amp;itemidx=1&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/mp/appmsg/show?__biz=MjM5NjA0NjgyMA==&amp;appmsgid=10000096&amp;itemidx=1&amp;scene=27#wechat_redirect</a></blockquote><p> 攻击者发出的DNS请求数据包为36 bytes，而DNS服务器的响应数据包长为3000 bytes。攻击者伪装来自Spamhaus向DNS系统发起请求，之后依靠返回的响应包对Spamhaus发起攻击，使得合法用户不能访问到Spamhaus的网站系统。</p><p>（上）周二，Spamhaus遭受到严重的DDoS攻击，攻击流量达到75Gbps，导致所有用户均无法访问公司网站。ISP采取了实时黑名单的方式也无法阻止攻击。Spamhaus很快转向寻求专业提供网站防护和抗DDoS服务的CloudFlare公司的支持。</p><p>经典的一幕发生了。一方面是攻击者聚集了超大流量对单一网站进行攻击，另一方面是CloudFlare采用路由技术——Anycast进行攻击化解。</p><p>攻击者的攻击流量为75Gbps，这个流量超过了大多数僵尸网络所能够发起的攻击带宽。为了放大攻击流量，攻击者借助了DNS系统——一种可以将流量方法100倍的手段。DNS放大攻击是借助诸如AT&amp;T、GoDaddy、SoftLayer和巴基斯坦电信这样提供开放式DNS服务器的系统。攻击者借助这些开放的DNS系统发起致命攻击的历史要追溯到若干年前。</p><p>CloudFlare公司CEO Matthew Prince称，攻击者发出的DNS请求数据包为36 bytes，然而，DNS服务器的响应数据包长为3000 bytes。攻击者伪装来自Spamhaus向DNS系统发起请求，之后依靠返回的响应包对Spamhaus发起攻击，使得合法用户不能访问到Spamhaus的网站系统。</p><p>拯救Spamhaus网站的“英雄”是——Anycast，<strong>依托一个路由协议将对某个IP的访问流量分发到全球23个数据中心去</strong>。互联网流量总会选择最短的路径。Anycast依据地理位置将海量的流量分散到几十个彼此独立的数据中心去，之后，每个数据包都将被检查。当发现符合异常行为的特征——例如来自开放DNS系统的3000bytes的响应包，数据包就将被丢弃。只有合法的访问流量才会被转发到Spamhaus所在的数据中心。</p><p>Anycast同时也有效阻止了攻击者对Spamhaus系统的其他类型攻击。当时，攻击者还对Spamhaus的反垃圾邮件系统进行的ACK 反射攻击。“ACK反射攻击，是攻击者伪装Spamhaus系统的IP向一些服务器发出大量的SYN包，”Prince说，“这些服务器会向Spamhaus系统返回ACK数据包。和DNS反射攻击类似，通过伪装为请求的发起一方，使得回应包指向被攻击的目标。”</p><p>相对于DNS反射攻击来说，ACK攻击相对容易防护，因为不存在放大的效应。CloudFlare有效丢弃了所有的非法ACK数据包。</p><p>具有讽刺意味的是，当CloudFlare阻止这些攻击的时候，网络运营商抗议他们的系统遭到了严重DNS/SYN Flood滥用。</p><p> </p>
+        
+</body>
+</html>

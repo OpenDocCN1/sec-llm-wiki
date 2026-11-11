@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>针对 F5 网络管理工具中的 RCE 漏洞发布概念验证CVE-2022-1388</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>针对 F5 网络管理工具中的 RCE 漏洞发布概念验证CVE-2022-1388</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247484683&amp;idx=1&amp;sn=f929ff7171f7ec1337db3f554190f92d&amp;chksm=fa76e4f5cd016de35483813f59bfd962d7ff4d0e9cb8c9414bfc19f6402b7039bfdd84388b64&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247484683&amp;idx=1&amp;sn=f929ff7171f7ec1337db3f554190f92d&amp;chksm=fa76e4f5cd016de35483813f59bfd962d7ff4d0e9cb8c9414bfc19f6402b7039bfdd84388b64&amp;scene=27#wechat_redirect</a></blockquote><blockquote><p>针对 F5 的 BIG-IP 网络软件中的一个严重漏洞开发了概念验证 (PoC)，该漏洞可能使数千名用户面临远程接管。该漏洞被跟踪为 CVE-2022-1388，可能允许攻击者发出未公开的请求以绕过 iControl REST 身份验证。如果被利用，未经身份验证的用户可以在受影响的设备上获得远程代码执行(RCE)。</p></blockquote><p style="margin-bottom: 0em;"><br/></p><p style="margin-bottom: 0em;"><img class="rich_pages wxw-img" data-ratio="0.5625" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJkgicRziaWDJMMHajkHzsQJicoI37MGia9KZjDqaqDWbB6tLiajEUhz7B1j7rcjl0WtQaSmwNNhwVua4lA/640?wx_fmt=jpeg" data-type="jpeg" data-w="1200" height="675" width="1200" src="../Images/9423a8815c13ab18220f530c4af14afd.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJkgicRziaWDJMMHajkHzsQJicoI37MGia9KZjDqaqDWbB6tLiajEUhz7B1j7rcjl0WtQaSmwNNhwVua4lA/640?wx_fmt=jpeg"/></p><p><br/></p><p>上周披露，该漏洞影响了网络管理软件的多个版本，据说有超过 35,000 家公司在使用该软件。</p><p><br/></p><p>安全公告警告说：“此漏洞可能允许未经身份验证的攻击者通过管理端口和/或自身 IP 地址对 BIG-IP 系统进行网络访问，以执行任意系统命令、创建或删除文件或禁用服务。”</p><p><br/></p><p>“没有数据平面暴露；这只是一个控制平面问题。”</p><p><br/></p><p>现在正在针对该漏洞发布 PoC，因为威胁研究团队警告用户立即修补。</p><p><br/></p><p>PT Swarm&gt;和Horizo n3 Attack Team都发布了单独的 PoC。两者都敦促用户尽可能应用修复程序。</p><p><br/></p><p>F5 发布了易受攻击的版本列表，并就如何防范该漏洞分享了建议。</p><p><br/></p><p>建议内容如下：“如果您正在运行已知易受攻击版本列中列出的版本，则可以通过安装列中引入的修复程序中列出的版本来消除此漏洞。</p><p><br/></p><p>“如果列中引入的修复未列出您的分支的版本，则该分支当前不存在更新候选，F5 建议升级到具有修复的版本。</p><p><br/></p><p>“如果列中引入的修复列出了您正在运行的版本之前的版本，在同一个分支中，那么您的版本应该有修复。”</p><p><br/></p><p>Comparitech 的隐私倡导者 Paul Bischoff 评论说：“使用 BIG-IP 服务的应用程序开发人员应立即采取措施缓解漏洞，直到补丁准备好。</p><p><br/></p><p>“这些步骤包括阻止对 BIG-IP 系统的 iControl REST 接口的访问，将访问限制为仅受信任的用户和设备，和/或修改 BIG-IP httpd 配置。</p><p><br/></p><p>“使用 BIG-IP 的应用程序可以使用 Shodan 等搜索引擎轻松发现和定位，因此开发人员应该期待攻击者在不久的将来利用易受攻击的系统。”</p><p> </p><p><br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CVE-2023-24998：Apache Commons FileUpload 和 Tomcat DoS 漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>CVE-2023-24998：Apache Commons FileUpload 和 Tomcat DoS 漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxMjYyMzkwOA==&amp;mid=2247496660&amp;idx=2&amp;sn=a6acc06441fb11fcef0724ce9174632d&amp;chksm=9badba9facda33893e1973438d2c9a93cfc5ada44ee200e1129454572d27619fc1935da161dd&amp;scene=126&amp;sessionid=1681669935#rd">http://mp.weixin.qq.com/s?__biz=MzAxMjYyMzkwOA==&amp;mid=2247496660&amp;idx=2&amp;sn=a6acc06441fb11fcef0724ce9174632d&amp;chksm=9badba9facda33893e1973438d2c9a93cfc5ada44ee200e1129454572d27619fc1935da161dd&amp;scene=126&amp;sessionid=1681669935#rd</a></blockquote><p>由于存在可被拒绝服务 (DoS) 攻击利用的漏洞，Apache Commons 和 Tomcat 开发人员敦促用户更新文件上传库。</p><p>Apache Tomcat 背后的团队 指出，提供 Jakarta Servlet 规范中定义的文件上传功能的 Commons FileUpload 库受到拒绝服务漏洞的影响。</p><p>该缺陷被跟踪为 CVE-2023-24998，由 Jakob Ackermann 于 2022 年 12 月 11 日发现。本月发布的Commons FileUpload 1.5 版对其进行了修补。</p><p>Apache Commons FileUpload 和 Tomcat 容易受到拒绝服务的攻击，这是由于不限制文件上传功能中要处理的请求部分的数量造成的。通过发送带有一系列上传的特制请求，远程攻击者可以利用此漏洞导致拒绝服务条件。</p><p style="text-align: center;"><img class="rich_pages wxw-img js_insertlocalimg" data-ratio="0.7069444444444445" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/rWGOWg48tacuvLnIJr3QTBRJPoALicCkWGwvSfJt3njJhDGIESickv8Evq5micwe3K6A83mulkYtaoME0TYdpFSpA/640?wx_fmt=jpeg" data-type="jpeg" data-w="720" style="" src="../Images/beda2d6adeb1a946471bf78c8fa28554.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/rWGOWg48tacuvLnIJr3QTBRJPoALicCkWGwvSfJt3njJhDGIESickv8Evq5micwe3K6A83mulkYtaoME0TYdpFSpA/640?wx_fmt=jpeg"/></p><p>“1.5 之前的 Apache Commons FileUpload 不限制要处理的请求部分的数量，导致攻击者有可能通过恶意上传或一系列上传触发 DoS，”Apache Commons FileUpload 开发人员写道。</p><p>“Apache Tomcat 使用 Apache Commons FileUpload 的打包重命名副本来提供 Jakarta Servlet 规范中定义的文件上传功能。因此，Apache Tomcat 也容易受到 Apache Commons FileUpload 漏洞 CVE-2023-24998 的影响，因为对处理的请求部分的数量没有限制。这导致攻击者有可能通过恶意上传或一系列上传触发 DoS，” Apache Tomcat 开发人员解释道。</p><p>Tomcat 版本11.0.0-M3、10.1.5、9.0.71和8.5.85已经在使用库的 1.5 版本，但是使用 Tomcat 11.0.0-M1,10.1.0-M1 到 10.1.4, 9.0 的应用程序.0-M1 到 9.0.70，以及 8.5.0 到 8.5.84 需要更新 Apache Commons FileUpload 库。</p><section><mp-common-profile class="js_uneditable custom_select_card mp_profile_iframe" data-pluginname="mpprofile" data-weui-theme="light" data-id="MzAxMjYyMzkwOA==" data-headimg="http://mmbiz.qpic.cn/mmbiz_png/rWGOWg48tacLwpG5ZVp5t2LtvatfLtzey4dnrukATZfZhzNcE1mbicjRXXy6Dk7aLYvALfseeVXnmh7FmsiarVLw/0?wx_fmt=png" data-nickname="Ots安全" data-alias="AnQuan7" data-signature="持续发展共享方向：威胁情报、漏洞情报、恶意分析、渗透技术（工具）等，不会回复任何私信，感谢关注。" data-from="0" data-is_biz_ban="0"/></section><p style="display: none;"><mp-style-type data-value="3"/></p>
+        
+</body>
+</html>

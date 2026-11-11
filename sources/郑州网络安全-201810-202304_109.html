@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Parse Server修复了使敏感用户数据面临风险的暴力破解错误CVE-2022-36079</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Parse Server修复了使敏感用户数据面临风险的暴力破解错误CVE-2022-36079</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485609&amp;idx=1&amp;sn=3309a03191e5ced8d99947a42165a55b&amp;chksm=fa76e957cd016041a9e30631fc90d6bdf7aac870c1226741ddc51ab638f19b369e972955f203&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485609&amp;idx=1&amp;sn=3309a03191e5ced8d99947a42165a55b&amp;chksm=fa76e957cd016041a9e30631fc90d6bdf7aac870c1226741ddc51ab638f19b369e972955f203&amp;scene=27#wechat_redirect</a></blockquote><blockquote><p>Parse Server中的一个安全漏洞已修复，该漏洞可以对Node.js和Express WAF的API服务器模块上的敏感用户数据进行暴力猜测。Parse Server是一个流行的开源项目，它为iOS、macOS、Android和Apple TV操作系统tvOS提供推送通知功能。“内部字段（Parse Server在内部使用的键，前缀为_）和受保护的字段（user defined）可用作查询约束，”9月16日）发布的GitHub公告中对该漏洞的描述中写道。</p></blockquote><p><img class="rich_pages wxw-img" data-ratio="0.5625" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJnLX4SrctmiayK8Mmwaja7K1ITPEzLE2QMabk5vkiaolpKUUBVtVXfibjE06zQsEkmms7Swh1UicBPrDg/640?wx_fmt=jpeg" data-type="jpeg" data-w="1200" height="675" width="1200" src="../Images/37017b3ba695eba69de323fe40e69b56.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJnLX4SrctmiayK8Mmwaja7K1ITPEzLE2QMabk5vkiaolpKUUBVtVXfibjE06zQsEkmms7Swh1UicBPrDg/640?wx_fmt=jpeg"/></p><p>“Parse Server从查询结果中删除了内部和受保护的字段，并且仅使用有效的主密钥将其返回给客户端。但是，使用查询约束，可以通过枚举来猜测这些字段，直到Parse Server返回响应对象。”</p><p>被跟踪为CVE-2022-36079的高严重性问题被GitHub分配为8.6的CVSS评级，但被美国国家标准与技术研究院(NIST)分配为7.5。攻击复杂性被认为是“低的”。</p><p>错误已在parse-server NPM 的4.10.14和5.2.5版本中进行了修补，这些发布行上的所有先前版本都受到影响。该修复要求主密钥使用内部和受保护字段作为查询约束。</p><p>对于无法立即更新系统的开发人员，也可以使用一种解决方法。“在查找之前实施Parse Cloud Trigger并手动删除查询约束，”该咨询解释道。</p><p>今年Parse Server中解决的其他重大安全漏洞包括6月披露的影响Apple Game Center的高严重性身份验证绕过，以及3月披露的原型污染、最大严重性漏洞，“可能会影响Postgres和任何其他数据库后端”。</p><p><br/></p><p style="display: none;"><mp-style-type data-value="3"/></p>
+        
+</body>
+</html>

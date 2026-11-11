@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>OpenStack Mitaka及以后版本VXLAN环境改平台MTU方法</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>OpenStack Mitaka及以后版本VXLAN环境改平台MTU方法</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650744108&amp;idx=1&amp;sn=489b3d0a83929af76c087b3f8f870e06&amp;chksm=8714842cb0630d3a07603ef2250170d6eae4734e262412da9f5706c38e111ce3575de730a95c&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650744108&amp;idx=1&amp;sn=489b3d0a83929af76c087b3f8f870e06&amp;chksm=8714842cb0630d3a07603ef2250170d6eae4734e262412da9f5706c38e111ce3575de730a95c&amp;scene=27#wechat_redirect</a></blockquote><p>本周遇到一个OpenStack VXLAN环境改平台MTU的需求，各种查资料和实验，终于成功，参考了如下链接，</p><p><a>https://docs.openstack.org/mitaka/networking-guide/config-mtu.html</a>，</p><p>OpenStack Mitaka及以后版本的VXLAN环境改平台MTU都可以这么干，</p><p>首先要改/etc/neutron/neutron.conf，</p><p>global_physnet_mtu = 1550，</p><p>然后要改/etc/neutron/plugins/ml2/ml2_conf.ini，</p><p>[ml2]</p><p>path_mtu = 1550，</p><p>为啥全都1550呢，因为我希望虚机的网卡MTU是标准的1500，</p><p>如果不改，虚机的网卡MTU就会是1450，</p><p>经过了上面的修改，重启neutron-server和openvswitch-agent，</p><p>再创建网络就能看到效果了，MTU是网络的属性，</p><p><img data-ratio="0.6457399103139013" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ14JiaGwdREdp1NAt1SI9liaeqfUPowuiaRyHua0YLe4G6nTpm20q5bpySZUaCQgKAaRoMFMr6uBqpEw/0?wx_fmt=png" data-s="300,640" data-w="669" src="../Images/ea60d4ce773b834e6ca89c4808b4b4b5.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ14JiaGwdREdp1NAt1SI9liaeqfUPowuiaRyHua0YLe4G6nTpm20q5bpySZUaCQgKAaRoMFMr6uBqpEw/0?wx_fmt=png"/></p><p>在网络里起虚机，接口MTU自然也就是1500了，</p><p><img data-ratio="0.2927272727272727" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ14JiaGwdREdp1NAt1SI9liae0NC3qAT7H8ZapokDZjhtLG7z80KRWpgFgicnFoM2ia0kky009JsemNGQ/0?wx_fmt=png" data-s="300,640" data-w="550" src="../Images/b841772777107f737bba1dd6f133c75a.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ14JiaGwdREdp1NAt1SI9liae0NC3qAT7H8ZapokDZjhtLG7z80KRWpgFgicnFoM2ia0kky009JsemNGQ/0?wx_fmt=png"/></p><p><br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>VPN用户要小心，Port Fail漏洞会暴露真实IP</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>VPN用户要小心，Port Fail漏洞会暴露真实IP</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxODY1OTM5OQ==&amp;mid=401291230&amp;idx=3&amp;sn=54ae38e6c0b153ceb30122b61f01f8c2&amp;chksm=09cd76f63ebaffe0bd030617c6124baee0de02ad65c49a0d8efdf3016456b7481da74bb9d1b9&amp;scene=126&amp;sessionid=1681378426#rd">http://mp.weixin.qq.com/s?__biz=MzAxODY1OTM5OQ==&amp;mid=401291230&amp;idx=3&amp;sn=54ae38e6c0b153ceb30122b61f01f8c2&amp;chksm=09cd76f63ebaffe0bd030617c6124baee0de02ad65c49a0d8efdf3016456b7481da74bb9d1b9&amp;scene=126&amp;sessionid=1681378426#rd</a></blockquote><p>来源：360安全播报</p><p>      安全专家发现了一个新的漏洞，叫做Port Fail，可被攻击者用于对VPN用户去匿名化，它对所有的VPN(虚拟私人网络)协议和操作系统均有影响。攻击者可以利用Port Fail漏洞披露VPN用户的真实IP地址，当然包括BitTorrent用户。</p><p><span style="line-height: 25.6px;">        </span>安全专家对9家VPN供应商进行了测试，其中有5家被发现受Port fail漏洞影响。在这5家供应商之中,有3家在漏洞公开之前已经给予了修复，它们分别是Private Internet Access (PIA)、Ovpn.to、nVPN。</p><p><span style="line-height: 25.6px;">        </span>专家解释称，该漏洞只是一个简单的端口转发问题，但是却影响了所有使用端口转发功能的服务器，并且还没有采取任何的防护机制。Port Fail漏洞影响所有的VPN协议,包括IPSec、OpenVPN和PPTP。</p><p><span style="line-height: 25.6px;">        </span>Perfect Privacy于周四在其博客中写道:“我们在很多的VPN供应商中发现了一个漏洞，它允许攻击者泄露受害者真实的IP地址。Port Fail对那些拥有端口转发功能并且对这类攻击没有做出任何防御措施的VPN供应商均有影响。”</p><p><span style="line-height: 25.6px;">        </span>通常来说,如果攻击者和受害者使用相同的VPN,那么攻击者只需转发网络流量到某一特定端口就可泄露目标用户的真实IP地址。一个成功的Port Fail攻击还需要知道受害者的VPN出口IP地址，这个信息很容易搜集到，攻击者只需诱骗受害者访问一个受攻击者掌控的网站即可。比较严重的问题是，VPN用户在连接到他个人的VPN服务器时，通常会使用他的默认路径，而且这个默认路径是使用他自己真实的IP地址，因为这是VPN链接的必要条件。这种攻击对BitTorrent用户也同样适用，在这种攻击场景下，攻击者完全不需要重定向受害者到他们控制的页面，只需要适用BitTorrent端口默认激活的端口转发功能就能发现共用同一网络的VPN用户的真实IP地址。</p><p><span style="line-height: 25.6px;">        </span>安全专家已经向那些受该漏洞影响的VPN供应商发出了警告，但是还有很多没有通知到的供应商也在受该漏洞的威胁。</p><p><br/></p>
+        
+</body>
+</html>

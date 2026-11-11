@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>如何在CentOS中创建辅域名服务器</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>如何在CentOS中创建辅域名服务器</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NjQ4MjYwMQ==&amp;mid=200297254&amp;idx=4&amp;sn=e7aeb44cd1e568f7cef07c16d96f0788&amp;chksm=28ec70601f9bf976110aa54511b31d8f9b2ef481784c0fd3e1b6f6a892540679d38c84990797&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NjQ4MjYwMQ==&amp;mid=200297254&amp;idx=4&amp;sn=e7aeb44cd1e568f7cef07c16d96f0788&amp;chksm=28ec70601f9bf976110aa54511b31d8f9b2ef481784c0fd3e1b6f6a892540679d38c84990797&amp;scene=27#wechat_redirect</a></blockquote><p style="word-wrap: break-word; margin-top: 10px; margin-bottom: 10px; padding: 0px; line-height: 2em; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; white-space: normal; background-color: rgb(255, 255, 255);">在上篇教程里，我们为一个测试域exmample.tst创建了一个主域名服务器（ns1）。在本篇中，我们会在CentOS中使用bind包为相同的域创建一个辅域名服务器（ns2）。</p><p style="word-wrap: break-word; margin-top: 10px; margin-bottom: 10px; padding: 0px; line-height: 2em; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; white-space: normal; background-color: rgb(255, 255, 255);"/><p style="word-wrap: break-word; margin-top: 10px; margin-bottom: 10px; padding: 0px; line-height: 2em; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; white-space: normal; background-color: rgb(255, 255, 255);">当创建一个辅DNS服务器的时候，下面的因素需要仔细考虑。</p><ul style="word-wrap: break-word; margin: 1em 2em; padding: 0px; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; line-height: 25.200000762939453px; white-space: normal; background-color: rgb(255, 255, 255);" class=" list-paddingleft-2"><li><p>在辅域名服务器中，你不需要手动创建正向和反向区域文件。这些区域文件会定期从主域名服务器上面同步。</p></li><li><p>当主域名服务器上的任何区域文件被修改的时候，'serial'参数也应当被更新。只有当主服务器上面区域文件的serial被修改之后，辅DNS服务器才会进行同步。</p></li></ul><p style="word-wrap: break-word; margin-top: 10px; margin-bottom: 10px; padding: 0px; line-height: 2em; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; white-space: normal; background-color: rgb(255, 255, 255);">我们假设辅DNS服务器的IP地址是172.16.1.4。让我们来进行安装。</p><p><img data-src="http://img.linux.net.cn/static/image/common/weixin_sign_2.png" style="" src="../Images/d2b47aa2c8915eaced496fcd5cda1613.png" data-original-src="http://img.linux.net.cn/static/image/common/weixin_sign_2.png"/><span style=""> </span></p>
+        
+</body>
+</html>

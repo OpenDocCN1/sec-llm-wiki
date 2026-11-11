@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>ZMap：在一个小时内扫描整个互联网</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>ZMap：在一个小时内扫描整个互联网</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/mp/appmsg/show?__biz=MjM5NjQ4MjYwMQ==&amp;appmsgid=10001045&amp;itemidx=4&amp;sign=0613eeddc8905d871dde56bb034fb016&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/mp/appmsg/show?__biz=MjM5NjQ4MjYwMQ==&amp;appmsgid=10001045&amp;itemidx=4&amp;sign=0613eeddc8905d871dde56bb034fb016&amp;scene=27#wechat_redirect</a></blockquote><p style="margin-top: 10px; margin-bottom: 10px; padding: 0px; word-wrap: break-word; line-height: 2em; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; white-space: normal; background-color: rgb(255, 255, 255);">全球互联网包含数十亿个不重复地址，扫描整个互联网是一项劳动密集型工作，需要耗费几周甚至几个月。<span style="margin: 0px; padding: 0px; word-wrap: break-word;">现在，密歇根大学研究人员发布了一个工具ZMap，用一台普通的服务器耗时44分钟就能扫描全部互联网地址。</span>扫描工具如Nmap使用的方法是发送请求然后监听回应，虽然请求可以同步进行，但为了记录每一个未回应请求需要大量开销，导致速度下降。</p><p style="margin-top: 10px; margin-bottom: 10px; padding: 0px; word-wrap: break-word; line-height: 2em; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; white-space: normal; background-color: rgb(255, 255, 255);"><span style="line-height: 2em; font-family: sans-serif; font-size: 16px;"/></p><p style="margin-top: 10px; margin-bottom: 10px; padding: 0px; word-wrap: break-word; line-height: 2em; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; white-space: normal; background-color: rgb(255, 255, 255);">而ZMap使用了不同的方法，它发生的是无状态请求，发送之后就忽略了，它不需要记录未回应请求的名单，而是在发送的数据包中编码身份信息去识别回应，从而降低开销。</p><p style="margin-top: 10px; margin-bottom: 10px; padding: 0px; word-wrap: break-word; line-height: 2em; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; white-space: normal; background-color: rgb(255, 255, 255);">ZMap发送数据包的速度是Nmap的上千倍。Nmap需要数周时间扫描全部网址，而ZMap只要几十分钟。密歇根研究人员利用ZMap发现，100万最流行网站内HTTPS使用率一年内增加了23%。</p><p style="margin-top: 10px; margin-bottom: 10px; padding: 0px; word-wrap: break-word; line-height: 2em;">访问： http://zmap.io</p><p><span style="font-family: STHeiti; font-size: medium;">--</span><br style="font-family: STHeiti; font-size: medium; white-space: normal;"/></p><table><tbody><tr><td>点击下方的「<span style="color: rgb(96, 127, 166);">阅读原文</span>」查看获得更佳阅读体验并参与讨论。</td></tr><tr><td>来自<span style="color: rgb(255, 255, 255); background-color: rgb(0, 0, 0); margin: 0px 3px; padding: 1px;">Linux中国</span>（微信号：linux-cn）</td></tr></tbody></table><p><br/></p>
+        
+</body>
+</html>

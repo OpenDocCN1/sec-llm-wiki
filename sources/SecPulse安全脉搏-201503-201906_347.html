@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>内网渗透技巧：判断机器真实外网IP的5种方法总结</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>内网渗透技巧：判断机器真实外网IP的5种方法总结</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxNDM3NTM0NQ==&amp;mid=2657031495&amp;idx=3&amp;sn=223fe6c59e02f88151efb2a480fa82a3&amp;chksm=803ff599b7487c8ff07a4f9ada68da418dfd132573a34c45e560704e2bbf3e5c301f9846b710&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzAxNDM3NTM0NQ==&amp;mid=2657031495&amp;idx=3&amp;sn=223fe6c59e02f88151efb2a480fa82a3&amp;chksm=803ff599b7487c8ff07a4f9ada68da418dfd132573a34c45e560704e2bbf3e5c301f9846b710&amp;scene=27#wechat_redirect</a></blockquote><p>去年写的一篇关于内网中找到某台WEB主机外网IP的文章，因为看到网上还没有关于这块的总结，这里斗胆发出来，权当抛砖引玉。</p><p><br/></p><p>场景：在<span style="color: rgb(0, 128, 255);">内网渗透</span>中有时需要在某台WEB服务器中留下后门，该机器可以通过内网IP建立IPC连接，但还需要获知外网IP或域名才能访问Wbshell，在无网关权限的情况下，我总结了有如下方法：</p><p> </p><h2>1、<span style="color: rgb(0, 128, 255);">通过nslookup访问外部地址 回显IP</span></h2><blockquote><pre><code>nslookup myip<span class="class">.opendns</span><span class="class">.com</span> resolver1<span class="class">.opendns</span><span class="class">.com</span></code></pre></blockquote><p>但多数内网都是统一的出口流量</p><p> </p><h2>2、<span style="color: rgb(0, 128, 255);">查看dns缓存 如果某站点频繁被访问 相关记录可能会出现在缓存里</span></h2><blockquote><pre><code><span class="winutils">ipconfig</span> /displaydns 
+</code></pre></blockquote><h2>3、<span style="color: rgb(0, 128, 255);">如果是IIS7 IIS7.5：</span></h2><p>执行如下命令：</p><blockquote><pre><code><span class="tag">%<span class="title">windir</span></span>%\system32\inetsrv\appcmd list site</code></pre></blockquote><p>显示网站列表</p><blockquote><pre><code><span class="tag">%<span class="title">windir</span></span>%\system32\inetsrv\appcmd list site /config /xml</code></pre></blockquote><p>导出指定网站的配置信息</p><p>从中找到绑定的域名及IP</p><p>4、<span style="color: rgb(0, 128, 255);">接上条，大型网络中一般得到结果都为localhost</span></p><p>上述的config文件还记录了一条关键信息，就是Web绝对路径，通过绝对路径，翻看网站源代码，找到title、目录结构、链接及相关的说明信息，再通过google搜索，加上相关域名或关键词缩写范围，尝试从google收录中找到该网站。</p><p><br/></p><footer class="post-footer">5、<span style="color: rgb(0, 128, 255);">如果为IIS6 无法快速确定Web目录，还可以翻看IIS日志：</span></footer><p>c$\inetpub\logs\LogFiles\W3SVC1，日志可能会暴露外网IP、域名；通过访问者IP能判断是否能够外网访问；通过post或get请求的路径，加上相关域名或关键词配合google搜索。<br/>注意：在分析日志时使用正则表达式搜索可以提高效率。</p><p> </p><p><br/></p><p style="max-width: 100%; min-height: 1em; white-space: pre-wrap; color: rgb(62, 62, 62); box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(255, 255, 255);"><span style="max-width: 100%; color: rgb(0, 176, 80); box-sizing: border-box !important; word-wrap: break-word !important;">-------后续精彩文章点击左下角“阅读原文”</span></p><p style="max-width: 100%; min-height: 1em; white-space: pre-wrap; color: rgb(62, 62, 62); box-sizing: border-box ! important; word-wrap: break-word ! important; background-color: rgb(255, 255, 255);"><span style="max-width: 100%; color: rgb(0, 176, 80); box-sizing: border-box !important; word-wrap: break-word !important;">-------安全脉搏SecPulse.com 分享技术 悦享品质</span></p>
+        
+</body>
+</html>

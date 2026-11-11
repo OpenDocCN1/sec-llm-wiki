@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Joomla再曝高危0day漏洞，可进行远程命令执行</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Joomla再曝高危0day漏洞，可进行远程命令执行</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxODY1OTM5OQ==&amp;mid=401729992&amp;idx=5&amp;sn=c625d7a3d2bd8be5f7c17f86639f638c&amp;chksm=09d7a8e03ea021f6b072dc97fa4bd5316786bcaea39092fd9e5f23ba4e723d691e0ea435904b&amp;scene=126&amp;sessionid=1681378426#rd">http://mp.weixin.qq.com/s?__biz=MzAxODY1OTM5OQ==&amp;mid=401729992&amp;idx=5&amp;sn=c625d7a3d2bd8be5f7c17f86639f638c&amp;chksm=09d7a8e03ea021f6b072dc97fa4bd5316786bcaea39092fd9e5f23ba4e723d691e0ea435904b&amp;scene=126&amp;sessionid=1681378426#rd</a></blockquote><p>来源：Freebuf</p><p>     Joomla安全团队紧急发布了3.4.6版本，修复了一个高危0day漏洞。据悉，该漏洞从被发现到安全补丁的发布，已经超过两天，目前也已经通过其他渠道在流传。可以想象，将会有多少Joomla站点遭受入侵。</p><p><span style="line-height: 25.6px;">        </span>继Joomla被发现存在注入漏洞Joomla 3.x Sql注入漏洞分析后，近日又被曝存在远程命令执行0day漏洞。据悉，受影响的Joomla版本包括从1.5版本到3.4版本。目前，Joomla安全团队通过发布的新版本及安全补丁，对旧CMS版本进行修复。</p><p><span style="line-height: 25.6px;">        </span>用户代理字符串是被用来辨别浏览器版本以及向所访问的网站的服务器提供某些系统信息的细节。当浏览一个网页时，浏览器会向访问的网站的服务器发送用户代理字符串。该字符串会表明使用的是哪种浏览器，它的版本号，还有系统的细节，比如是什么操作系统及它的版本。这样浏览器就会利用这些信息提供符合浏览器的特定内容。</p><p><span style="line-height: 25.6px;">        </span>而从漏洞利用原理简单来说，该漏洞允许攻击者植入代码到Joomla的数据库中，然后执行。而该恶意代码的入口点就是用户代理字符串。从该漏洞的利用情况，可获知该字符串其实是存储在Joomla数据库中，但没有进行相应的校验，用以检测恶意代码。所以，利用定制的应用和脚本，攻击者可以很容易地制作自定义用户代理字符串，并在其中植入恶意代码，然后广播伪造的用户代理字符串。当服务器接收到该字符串，将其存储在自身的数据库中，攻击者即实现恶意代码的植入。</p><p><span style="line-height: 25.6px;">        </span>据安全团队所述，第一次监测到该漏洞是在12月12日下午4:49。具体可通过下面日志信息查看：</p><p style="text-align: center;"><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz/g1thw9GoocdY0SmibsueAj3icNHbognSicMT7PdrDn8J7AXYaWm30j2btfB9s0o7eN1Ho9vouicOxFWKnYASohiaaRQ/0?wx_fmt=png" data-ratio="0.18345323741007194" data-w="" src="../Images/dba126312a972e8bceaf2c5774088f46.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/g1thw9GoocdY0SmibsueAj3icNHbognSicMT7PdrDn8J7AXYaWm30j2btfB9s0o7eN1Ho9vouicOxFWKnYASohiaaRQ/0?wx_fmt=png"/></p><p style="text-align: left;"><span style="line-height: 1.6;"><span style="line-height: 25.6px;">       </span>安全团队监测到了入侵攻击，也随之修改了payload，阻断了它的有效执行，但攻击者很快作出反应，他通过HTTP用户代理为突破口，进行对象注入，实现远程命令执行。此时漏洞被发现。</span></p><p><span style="line-height: 25.6px;">       </span>据称，安全团队检测到更多的漏洞利用事件，其中都是来自同一个IP地址“74.3.170.33”。随着，在12月13日发现的近百个该漏洞利用的事件，均有尝试连接“146.0.72.83”以及“194.28.174.106”的行为。</p><p><br/></p>
+        
+</body>
+</html>

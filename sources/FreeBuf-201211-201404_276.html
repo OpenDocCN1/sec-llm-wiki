@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>巴基斯坦遭受诱惑性文档+Office 0day漏洞的APT攻击</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>巴基斯坦遭受诱惑性文档+Office 0day漏洞的APT攻击</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/mp/appmsg/show?__biz=MjM5NjA0NjgyMA==&amp;appmsgid=100007145&amp;itemidx=3&amp;sign=60502a813a95d6626f37967d29af47a3&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/mp/appmsg/show?__biz=MjM5NjA0NjgyMA==&amp;appmsgid=100007145&amp;itemidx=3&amp;sign=60502a813a95d6626f37967d29af47a3&amp;scene=27#wechat_redirect</a></blockquote><p style=""><span style="margin: 0px; padding: 0px; color: rgb(0, 176, 80); ">        前几天，微软发布了一个新的关于Microsoft Office的 安全警告，互联网上已经流传了关于这个漏洞的利用。这个漏洞影响到Office 2003到2007 和 2010版本，而且这个漏洞只能在Windows XP/2003 平台上触发。 </span></p><p style="">        </p><p style="">        这个漏洞是由TIFF图片的解析不当引起的，微软也已经发布了一个简单的补丁，通过阻止TIFF图像的渲染来防止漏洞发生。</p><p style="">        </p><p style="">        通过分析，这次攻击使用了ROP和ActiveX controls进行堆喷射攻击。<span style="margin: 0px; padding: 0px; color: rgb(0, 176, 80); ">（这里对溢出不算很在行ActiveX controls不知道是个干嘛的）</span></p><p style="">        </p><p style="">        如果漏洞利用成功，会使用URLDownloadFileA函数从远程HTTP服务器上下载payload</p><p><img src="../Images/c57cca8c338f851809406cd05c94025d.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR3ibG2Yr0Rzgxd0CI76my8LiarAiad6G6VO5FibsbbkETWDu0sYXiaxRFicMtyq3VLl16UATSTqbXY6brA3A/0"/></p><p style="">        </p><p style="">        被下载下来的payload是一个包含了一段payload和一个诱惑性的Office文档的RAR文件。</p><p style="">我们发现几个不同的payload都不约而同的指向了同一个C&amp;C服务器，而那些诱惑性文档都是与巴基斯坦情报局或巴基斯坦军方有关。</p><p><img src="../Images/d8c64511c89a4b8750d384b699830255.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR3ibG2Yr0Rzgxd0CI76my8LiarDQauzOibib2UBF4QEISlqzJiaibOB2D2WwGakk12GO2gML7QyR00bRQtlw/0"/></p><p><img src="../Images/f0e611cfd223e2bd09f8035a35d56fdf.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR3ibG2Yr0Rzgxd0CI76my8Liar2OpHr5QSDavcs550AUo6P7bZ7xCPs1A89RKht7WsaB2SjSXyfYoM3Q/0"/></p><p style=""><strong style="margin: 0px; padding: 0px; "><br/></strong></p><p style=""><strong style="margin: 0px; padding: 0px; ">payload与C&amp;C服务系互交采用的是HTTP协议</strong><br style="margin: 0px; padding: 0px; "/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; ">GET /logitech/rt.php?cn=XXXXX@Administrator&amp;str=&amp;file=no HTTP/1.1 User-Agent: WinInetGet/0.1</pre><p style="">        当我们分析网络通信的时候我们注意到他们都是相似的协议。事实上他们所使用的payload是Operation Hangover中的一个。我们也可以确定他们使用的下载者基于Deksila downloader的，不单单是因为他们使用了相似的HTTP流量，而且他们在被入侵系统上收集信息的方式和payload中的字符串都是大致相同的。</p><p><img src="../Images/2b24652926fd0a34c9bf20d01be38213.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR3ibG2Yr0Rzgxd0CI76my8LiarrFndktJlOO8Tdu0micAM5Z0gEZnXyK4cOicK935z1JoWicIzLVenSqS1w/0"/></p><p style=""><br/></p><p style="">如果服务器上存在如下文件即可断定被下载者感染</p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; ">C:\Documents and Settings\&lt;username&gt;\Temp\iconfall.log
+C:\Documents and Settings\&lt;username&gt;\HddLink.lnk    
+C:\Documents and Settings\&lt;username&gt;\Updates.exe
+C:\Documents and Settings\&lt;username&gt;\wincert.exe
+C:\Documents and Settings\&lt;username&gt;\kayani.doc    
+C:\Documents and Settings\&lt;username&gt;\Shanti.doc    
+C:\Documents and Settings\&lt;username&gt;\Locations.doc
+C:\Documents and Settings\&lt;username&gt;\ISI.doc    
+C:\Documents and Settings\&lt;username&gt;\GoodLuck.doc    
+C:\cdata.txt</pre><p style=""><br/></p><p style="">        通过我们从C&amp;C服务器上收集的被害者信息我们可以发现，大部分和C&amp;C主机交互的IP地址都来自巴基斯坦。（不明白这个信息是如何收集到的）</p><p style=""><strong style="margin: 0px; padding: 0px; ">如果一个被感染主机登入C&amp;C服务器，C&amp;C服务器上就会创建一个如下的文件</strong><br style="margin: 0px; padding: 0px; "/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; ">User : [USERNAME] 
+IP : [IP_ADDRESS] 
+AV : [NAME_OF_ANTIVIRUS_SOLUTION]</pre><p style=""><br/></p><p style="">        攻击者也可以通过HTTP请求的方式把其他payload送到被感染的主机（第二阶段）。通过C&amp;C主机提供的信息，我们收集一个攻击者在第二阶段使用的payload文件名的列表。</p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; ">alg.exe
+connhost.exe
+lgfxsrc.exe
+lgfxsrv.exe
+lgfxsrvc.exe
+msctcd.exe
+svchost.exe
+taskmgr.exe
+taskngr.exe
+waulct.exe
+wimhost.exe
+winlog.exe
+winlogon.exe
+winnit.exe
+winsoun.exe
+winword.exe
+wmpi.exe
+wsqmocn.exe</pre><p style="">和MD5列表</p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; ">0d51296e5c74a22339ec8b7e318f274a
+101852851d70dfc46c4d022ef077d586
+2ed6a6c349cae3842023d83c6b1ed1c5
+4e878b13459f652a99168aad2dce7c9a
+654f558cf824e98dde09b197dbdfd407
+6a57cda67939806359a03a86fd0eabc2
+8378abb63da7e678c76c09f44b43d02a
+e75ad6c8484f524d93eaf249770be699
+fd51dc5f1683c666a4925af8f1361d5d
+fd75a23d8b3345e550c4a9bbc6dd2a0e</pre><p style=""><br style="margin: 0px; padding: 0px; "/></p><p style="">        我们把从C&amp;C上收集来的payload，提交到Virustotal上面，你可以发现病毒识别率非常低。<br style="margin: 0px; padding: 0px; "/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; ">fd75a23d8b3345e550c4a9bbc6dd2a0e  1 / 47    
+6a57cda67939806359a03a86fd0eabc2  1 / 47    
+4e878b13459f652a99168aad2dce7c9a  1 / 47    
+2ed6a6c349cae3842023d83c6b1ed1c5  0 / 47</pre><p style="">        通过我们对这些payload的分析有益于你建立IOCs(Indicators Of Compromise)或者识别被入侵的主机。</p><p style=""><strong style="margin: 0px; padding: 0px; "><br/></strong></p><p style=""><strong style="margin: 0px; padding: 0px; ">主下载者（Main Downloader）</strong></p><p style="">互联网通信包中HTTP GET请求的几个例子</p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; ">    /logitech/rt.php?cn=xx@&lt;username&gt;&amp;str=&amp;file=no 
+    /green/srt.php?cn=xx@&lt;username&gt;&amp;str=&amp;file=no
+    /funbox/rt.php?cn=&lt;MACHINE_NAME&gt;@&lt;USER&gt;&amp;str=&amp;file=no
+    /joy/rt.php?cn=&lt;MACHINE_NAME&gt;@&lt;USER&gt;&amp;str=&amp;file=no</pre><p style=""><br style="margin: 0px; padding: 0px; "/></p><p style="">你可以在日志中匹配“&amp;str=&amp;file=no”来确定是否被入侵。</p><p style=""><br style="margin: 0px; padding: 0px; "/></p><p style="">Yara规则（这是一套定义恶意软件特征码的规则）</p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; ">rule Hangover2_Downloade {
+  strings:
+    $a = "WinInetGet/0.1" wide ascii
+    $b = "Excep while up" wide ascii
+    $c = "&amp;file=" wide ascii
+    $d = "&amp;str=" wide ascii
+    $e = "?cn=" wide ascii
+  condition:
+    all of them
+}</pre><p style=""><strong style="margin: 0px; padding: 0px; "><br/></strong></p><p style=""><strong style="margin: 0px; padding: 0px; ">文件窃取</strong></p><p style="">他寻找固定后缀名的文件然后偷偷将其上传到C&amp;C服务器<br style="margin: 0px; padding: 0px; "/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; ">xls,xlsx
+doc,docx
+ppt,pptx
+pdf
+txt</pre><p style=""><br/></p><p style="">互联网网通信包</p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; ">POST /crks.php HTTP/1.1 Content-Length: 44 Content-Type: application/x-www-form-urlencoded User-Agent: MyWebClient Host: xxx Connection: Keep-Alive 
+POST /drkl.php HTTP/1.1 Content-Length: 44 Content-Type: application/x-www-form-urlencoded User-Agent: MyWebClient Host: xxx Connection: Keep-Alive 
+POST /max.php HTTP/1.1 Content-Length: 49 Content-Type: application/x-www-form-urlencoded User-Agent: MyWebClient Host: xxx Connection: Keep-Alive</pre><p style=""><br/></p><p style="">Yara规则</p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; ">rule Hangover2_stealer
+{
+  strings:
+    $a = "MyWebClient" wide ascii
+    $b = "Location: {[0-9]+}" wide ascii
+    $c = "[%s]:[C-%s]:[A-%s]:[W-%s]:[S-%d]" wide ascii
+ 
+  condition:
+    all of them
+}</pre><p style=""><strong style="margin: 0px; padding: 0px; "><br/></strong></p><p style=""><strong style="margin: 0px; padding: 0px; ">远程后门</strong><br style="margin: 0px; padding: 0px; "/></p><p style="">互联网网通信包在5858端口使用二进制数据传输</p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; ">T VICTIM:1050 -&gt; C&amp;C:5858 [A]
+  FHEPF                      
+#
+T VICTIM:5858 -&gt; C&amp;C:1050 [AP]
+  Pass                        
+#
+T VICTIM:1050 -&gt; C&amp;C:5858 [AP]
+  Authjanettedoe @ [MACHINE_NAME]\#/[OPERATING_SYSTEM]\#/[IP_ADDRESS]\#/</pre><p style=""><br/></p><p style="">Yara规则</p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; ">rule Hangover2_backdoor_shell
+{
+  strings:
+    $a = "Shell started at: " wide ascii
+    $b = "Shell closed at: " wide ascii
+    $c = "Shell is already closed!" wide ascii
+    $d = "Shell is not Running!" wide ascii
+ 
+  condition:
+    all of them
+}</pre><p style="">你也可以寻找如下注册表信息</p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; ">HKCU\Software\Microsoft\Windows\CurrentVersion\Run /v WinLstart</pre><p style=""><strong style="margin: 0px; padding: 0px; "><br/></strong></p><p style=""><strong style="margin: 0px; padding: 0px; ">键盘记录</strong><br style="margin: 0px; padding: 0px; "/></p><p style="">通过HOOk来进行键盘记录。<br style="margin: 0px; padding: 0px; "/></p><p style="">Yara规则</p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; ">rule Hangover2_Keylogger
+{
+  strings:
+    $a = "iconfall" wide ascii
+    $b = "/c ipconfig /all &gt; "" wide ascii
+    $c = "Global\{CHKAJESKRB9-35NA7-94Y436G37KGT}" wide ascii
+  condition:
+    all of them
+}</pre><p style=""><strong style="margin: 0px; padding: 0px; "><br/></strong></p><p style=""><strong style="margin: 0px; padding: 0px; ">屏幕监控</strong><br style="margin: 0px; padding: 0px; "/></p><p style="">会不断把截屏传送到C&amp;C服务器<strong style="margin: 0px; padding: 0px; "><br style="margin: 0px; padding: 0px; "/></strong></p><p style="">互联网网通信包</p><p><img src="../Images/f338419a33c077740dfec1958d79052e.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR3ibG2Yr0Rzgxd0CI76my8LiarMOtBMFIZ2CnbIdXfQb7RG7j50ibtLfYdQzXuUEmHteRI0tibXfQCXvibw/0"/></p><p style=""><strong style="margin: 0px; padding: 0px; "><br/></strong></p><p style=""><strong style="margin: 0px; padding: 0px; ">最后给出攻击者所使用的IP和域名</strong><br style="margin: 0px; padding: 0px; "/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; ">krickmart.com
+37.0.125.77
+37.0.124.106
+maptonote.com
+myflatnet.com
+lampur.com
+appworldstores.com
+similerwork.net
+intertechsupport.net
+lampur.com
+twikstore.com</pre><p><br/></p>
+        
+</body>
+</html>

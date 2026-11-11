@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Finger服务的危害</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Finger服务的危害</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247485771&amp;idx=2&amp;sn=c9c8b503f1c26ca17f904a7019f55cc5&amp;chksm=f9e06610ce97ef06db29c91c63c9b2d8712f4f85fd01d44596d432f0c7486437b13597c4c527&amp;scene=126&amp;sessionid=1681663457#rd">http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247485771&amp;idx=2&amp;sn=c9c8b503f1c26ca17f904a7019f55cc5&amp;chksm=f9e06610ce97ef06db29c91c63c9b2d8712f4f85fd01d44596d432f0c7486437b13597c4c527&amp;scene=126&amp;sessionid=1681663457#rd</a></blockquote><p><strong>几个关键协议</strong></p><p>进行入侵检测和跟踪，必须对如下的几个协议和命令有深入的了解。这些协议和命令分别是Finger、ping、和Netbios，下面分别进行讲述。</p><p><br/></p><p><strong>  Finger协议</strong></p><p>Finger（端口为79）是互连网上最老的协议之一了，这是用于查找主机及其网络上用户信息的协议，通过Finger服务，你可以查询到某站点上的在线用户清单及其他一些有用的信息。有些网络不允许外部系统执行Finger，有的甚至根本不允许执行 Finger。</p><p><br/></p><p><strong> Finger服务的危害</strong></p><p>出于安全的考虑，大部分站点取消了Finger服务，不过互连网上仍然有相当数量的主机在继续提供finger服务，但Finger服务却给网络安全带来了很大的危害。</p><p>（1）由于Finger服务一般都是提供在线用户的用户名， 因此入侵者通过Finger服务可以轻松地取得有效用户名列表（如果耐心地多试几次，基本上可以得到大部分的用户名），然后黑客可以使用暴力密码破解器，往往能在较短的时间里得到一个有效的用户“身份”（如FTP权限或Telnet权限，甚至得到一个有写权限的账号），那么黑客就将以此作为进一步行动的跳板，所以也可以说，使用Finger就等于是开门揖盗。</p><p>（2）可以取得用户的登陆时间，查看邮件时间等有用的信息，这个也是一般入侵者所关注的重要信息（因为可以了解用户的登录时间和习惯，有利于隐藏行踪）。</p><p>注意！</p><p><br/></p><p>如果没有什么特殊的需要，Finger 这个服务根本就没必要打开，因为几乎没有正常的用户去使用它（目前看来，使用Finger的基本上都是入侵者，或者说，至少是不怀好意的用户）。如果一定要开，也请你不要用系统默认的守护进程，下载一个或自己编写一个会比较安全。</p><p><br/></p>
+        
+</body>
+</html>

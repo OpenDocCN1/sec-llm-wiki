@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Rasp — 新一代WAF利器</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Rasp — 新一代WAF利器</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=Mzg5MjQ1OTkwMg==&amp;mid=2247483707&amp;idx=1&amp;sn=1111e813fa7d0ca740affcc6d3cf05a7&amp;chksm=c03c8f2af74b063c70fed704632735681be2cb1f2071dc30deb243090ca7616bd1f4ddce5200&amp;scene=126&amp;sessionid=1681366133#rd">http://mp.weixin.qq.com/s?__biz=Mzg5MjQ1OTkwMg==&amp;mid=2247483707&amp;idx=1&amp;sn=1111e813fa7d0ca740affcc6d3cf05a7&amp;chksm=c03c8f2af74b063c70fed704632735681be2cb1f2071dc30deb243090ca7616bd1f4ddce5200&amp;scene=126&amp;sessionid=1681366133#rd</a></blockquote><p>新一代WAF利器:Runtime Application Self-Protection ,即Rasp, 有别于IDS、IPS等主流的防护软件，Rasp核心技术点在于安全保护模块由被保护应用加载，因此这个天然的优势注定Rasp对漏洞的理解与识别胜于那些侧信道的防护方案。<br/></p><p><br/></p><p>目前市面上Rasp技术相对成熟的是基于PHP、Java生态的Rasp方案，诸多方案中，开源的以百度的openrasp为主；而商业级方案，各大公司如阿里、腾讯、京东、美团等，各有各的手笔。</p><p><br/></p><p>根据我们的调研与统计看，各家在Rasp的技术实现上并无太大差距，都是基于JVM自带的Javaagent这一套机制，但也并不是说谁都能完整实现这一套技术方案，去安全大规模部署到公司架构中。细节往往决定成败，Rasp的大规模部署、分布式监控、大数据溯源分析、性能影响都是在开发过程中需要考虑并且深入研究的问题，没有经过大规模服务器的量化考验，都是不严谨的。</p><p><br/></p><p>传统Waf时代，Waf这种低侵入式流量检测的方案，经历了上千家企业、数十亿级分布式服务规模的考验，才能稳定安全运行至今日，但即便如此，从每年每个季度各大安全论坛的安全事件统计而言，漏网之鱼仍不在少数，可见如此稳定的Waf并不是漏洞、攻击的杀手锏，本质上Waf始于网关流量检测，止与应用分发，它关注的是事前的防御，而在事中防御上，并未起到作用。而Rasp恰恰是事中防御的杀手锏，在用户运行上下文中，Rasp能够拦截不仅限于参数、原始命令、明文sql语句等信息，不管是从数据分析维度还是从漏洞检查维度来说，都起到了查漏补缺的作用。因此在未来可预见的时间内，Rasp的大规模部署或许会成为未来各大企业的的强制手段。<span style="font-family: mp-quote, -apple-system-font, BlinkMacSystemFont, &quot;Helvetica Neue&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei UI&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;"/><span style="font-family: mp-quote, -apple-system-font, BlinkMacSystemFont, &quot;Helvetica Neue&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei UI&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;"/></p><p><br/></p><p><br/></p>
+        
+</body>
+</html>

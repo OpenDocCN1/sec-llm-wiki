@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>DevOps平台发布对CircleCI最近违规行为的事后分析</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>DevOps平台发布对CircleCI最近违规行为的事后分析</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247486044&amp;idx=1&amp;sn=5361302a8e00dd07a950999de752b94a&amp;chksm=fa76eba2cd0162b4cdd9951418cc357b3cf2334979026803f117612bc8e26fd3d50b9008cd05&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247486044&amp;idx=1&amp;sn=5361302a8e00dd07a950999de752b94a&amp;chksm=fa76eba2cd0162b4cdd9951418cc357b3cf2334979026803f117612bc8e26fd3d50b9008cd05&amp;scene=27#wechat_redirect</a></blockquote><blockquote><p>流行的DevOps平台CircleCI将最近的安全漏洞归咎于成功在内部工程师的笔记本电脑上植入恶意软件的攻击。该攻击于1月4日得到确认，促使CircleCI建议依赖其平台的软件开发人员轮换秘密和API令牌。在1月13日发布的违规事后分析中，这家总部位于旧金山的公司详细描述了问题所在。</p></blockquote><p><br/><img class="rich_pages wxw-img" data-ratio="0.5625" data-src="https://mmbiz.qpic.cn/mmbiz_png/3RdEEWyTHJlNrveYV0m7sPq3Yt8jeWUZUkQsBpQ3HNdFCuaqEIOplNVhosOEM4HvsiagFyhibNft55Kl7VUpFr4A/640?wx_fmt=png" data-type="png" data-w="1200" height="675" width="1200" src="../Images/1e8b3c067267cf48bd0ce225fde5eae5.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/3RdEEWyTHJlNrveYV0m7sPq3Yt8jeWUZUkQsBpQ3HNdFCuaqEIOplNVhosOEM4HvsiagFyhibNft55Kl7VUpFr4A/640?wx_fmt=png"/></p><p>CircleCI表示，在12月29日，当其一位客户报告“可疑的GitHub OAuth活动”时，它首次得知出现问题，促使CircleCI的安全团队和GitHub展开调查。</p><p>持续集成和持续交付(CI/CD)供应商的安全团队随后发现，“未经授权的第三方利用部署到CircleCI工程师笔记本电脑上的恶意软件来窃取有效的、支持2FA的SSO[单点登录]会话”12月16日左右。</p><p>该恶意软件使未具名的攻击者能够在冒充目标员工之前窃取会话cookie数据，以便使用伪造的访问令牌访问“CircleCI生产系统的子集”。</p><p>“由于目标员工有权生成生产访问令牌作为员工日常职责的一部分，因此未经授权的第三方能够从数据库和商店的子集访问和泄露数据，包括客户环境变量、令牌和密钥，” CircleCI的报告解释道。</p><p>不法分子随后能够在12月22日左右“从正在运行的进程中提取加密密钥，使他们有可能访问加密数据”。</p><p>作为对攻击的响应，CircleCI在使用干净的主机重建其生产环境并撤销项目API令牌之前，限制员工访问其生产系统作为临时措施。</p><p>Bitbucket和GitHub OAuth令牌在攻击发生后的几天内轮换，因为客户被要求刷新和更改他们的秘密和API令牌。此外，CircleCI还与AWS合作，通知客户可能受影响的AWS代币。</p><p>攻击发生后，CircleCI与外部事件响应专家合作，同时推出了一套旨在加强其平台安全性并帮助其客户更好地保护任何秘密的措施。</p><p>CircleCI的文章继续勾勒出攻击者的策略和技术，同时发布了妥协迹象(IOC)，这些数据将帮助其他公司的安全防御者识别和阻止类似攻击。</p><p>尽管安全社区中的一些人指责CircleCI未能遵循最佳实践，特别是未能对生产系统应用足够的访问控制，但其他人称赞其“透明和详细的事件披露”以及信息安全推特对事后分析的总体反应呈阳性。</p><p><br/></p><p style="display: none;"><mp-style-type data-value="3"/></p>
+        
+</body>
+</html>

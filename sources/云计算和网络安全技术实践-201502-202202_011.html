@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Sysdig Inspect的安装</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Sysdig Inspect的安装</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650746637&amp;idx=1&amp;sn=9c6d8ec63675747bf714e93024f1cba9&amp;chksm=87148e0db063071b2cf09fb9414609a0706794e9ad1c1909d460c12e4417c3763079cbb27675&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650746637&amp;idx=1&amp;sn=9c6d8ec63675747bf714e93024f1cba9&amp;chksm=87148e0db063071b2cf09fb9414609a0706794e9ad1c1909d460c12e4417c3763079cbb27675&amp;scene=27#wechat_redirect</a></blockquote><p>本周发现了一个开源的容器安全神兵利器，尽管年久失修，依然十分震撼，那就是Sysdig Inspect，</p><p>项目地址，https://github.com/draios/sysdig-inspect，</p><p>最简单的安装方法，直接起现成的docker容器，</p><p>docker run -d -v /local/path/to/captures:/captures -p8080:3000 sysdig/sysdig-inspect:latest，</p><p>然后就可以访问管理界面了，</p><p style="text-align: center;"><img class="rich_pages wxw-img js_insertlocalimg" data-ratio="0.51484375" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ0kTibAyHEj4Tq7koCX1gP54Iq23aKfsDFx9nKtc8r1u2xBXMdACgfJ8HKibEzhCzYJK6YtibZCQyO5g/640?wx_fmt=png" data-type="png" data-w="1280" style="" src="../Images/f53b367d5c9dfc760036a069c71534b8.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ0kTibAyHEj4Tq7koCX1gP54Iq23aKfsDFx9nKtc8r1u2xBXMdACgfJ8HKibEzhCzYJK6YtibZCQyO5g/640?wx_fmt=png"/></p><p>都不用上网搜怎么用，管理界面上就直接给出了使用方法，</p><p>首先得先安装sysdig，然后监控数据并保存成文件，最后再把文件路径输入给管理界面，</p><p>那就先安装sysdig，安装官方的指导来，</p><p>https://github.com/draios/sysdig/wiki/How-to-Install-Sysdig-for-Linux，</p><p>curl -s https://s3.amazonaws.com/download.draios.com/stable/install-sysdig | sudo bash，</p><p>然后就是监控数据并保存成文件，sudo sysdig -w file.scap，</p><p>注意这个动作要去sysdig-inspect容器映射到主机的文件夹下做，</p><p>也就是cd /local/path/to/captures/，</p><p>等sudo sysdig -w file.scap命令执行一段时间，就停掉，</p><p>最后再把文件路径输入给管理界面，也就是/captures/file.scap，</p><p>Sysdig Inspect界面就开始导入数据，就能得到下面的效果，</p><p style="text-align: center;"><img class="rich_pages wxw-img js_insertlocalimg" data-ratio="0.440625" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ0kTibAyHEj4Tq7koCX1gP54DaqcasqkdyYbib5n2TdVNhibH2brOsdcoW1kC39WIGBsERKXOq88Gf8w/640?wx_fmt=png" data-type="png" data-w="1280" style="" src="../Images/4bad451579b6c95e6836daf77a59051c.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ0kTibAyHEj4Tq7koCX1gP54DaqcasqkdyYbib5n2TdVNhibH2brOsdcoW1kC39WIGBsERKXOq88Gf8w/640?wx_fmt=png"/></p><p>怎么样，是不是很震撼，满屏的各种数据监控啊，这么好的开源项目也不知道为啥年久失修，感兴趣的可以关注一下。</p>
+        
+</body>
+</html>

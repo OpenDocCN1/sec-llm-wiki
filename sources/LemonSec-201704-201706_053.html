@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Android 内存泄露总结（附内存检测工具）</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Android 内存泄露总结（附内存检测工具）</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247483932&amp;idx=2&amp;sn=b30ba75f45de376bee8fb9a48d5eb0ce&amp;chksm=f9e06d47ce97e451879679ecec9b4d8871e0a13433309edeccfa9e42343fecda566390b91107&amp;scene=126&amp;sessionid=1681663532#rd">http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247483932&amp;idx=2&amp;sn=b30ba75f45de376bee8fb9a48d5eb0ce&amp;chksm=f9e06d47ce97e451879679ecec9b4d8871e0a13433309edeccfa9e42343fecda566390b91107&amp;scene=126&amp;sessionid=1681663532#rd</a></blockquote><h2>Android中常见的内存泄露及解决方案</h2><p><strong>集合类泄露</strong></p><p>如果某个集合是全局性的变量（比如 static 修饰），集合内直接存放一些占用大量内存的对象（而不是通过弱引用存放），那么随着集合 
+size 的增大，会导致内存占用不断上升，而在 Activity 等销毁时，集合中的这些对象无法被回收，导致内存泄露。比如我们喜欢通过静态 
+HashMap 做一些缓存之类的事，这种情况要小心，集合内对象建议采用弱引用的方式存取，并考虑在不需要的时候手动释放。</p><p><strong>单例造成的内存泄露</strong></p><p>单例的静态特性导致其生命周期同应用一样长。</p><p>有时创建单例时如果我们需要Context对象，如果传入的是Application的Context那么不会有问题。如果传入的是Activity的Context对象，那么当Activity生命周期结束时，该Activity的引用依然被单例持有，所以不会被回收，而单例的生命周期又是跟应用一样长，所以这就造成了内存泄露。</p><p>解决办法一：在创建单例的构造中不直接用传进来的context，而是通过这个context获取Application的Context。代码如下：</p><pre class="hljs cs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">AppManager</span> {    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> AppManager instance;    <span class="hljs-keyword">private</span> Context context;    <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-title">AppManager</span><span class="hljs-params">(Context context)</span> </span>{        <span class="hljs-keyword">this</span>.context = context.getApplicationContext();<span class="hljs-comment">// 使用Application 的context</span>
+    }    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> AppManager <span class="hljs-title">getInstance</span><span class="hljs-params">(Context context)</span> </span>{        <span class="hljs-keyword">if</span> (instance != <span class="hljs-keyword">null</span>) {
+            instance = <span class="hljs-keyword">new</span> AppManager(context);
+        }        <span class="hljs-keyword">return</span> instance;
+    }
+}</code></pre><p>第二种解决方案：在构造单例时不需要传入 context，直接在我们的 Application 中写一个静态方法，方法内通过 getApplicationContext 返回 context，然后在单例中直接调用这个静态方法获取 context。</p><p><strong>非静态内部类造成的内存泄露</strong></p><p>在 Java 中，非静态内部类（包括匿名内部类，比如 Handler, Runnable匿名内部类最容易导致内存泄露）会持有外部类对象的强引用（如 Activity），而静态的内部类则不会引用外部类对象。</p><p>非静态内部类或匿名类因为持有外部类的引用，所以可以访问外部类的资源属性成员变量等；静态内部类不行。</p><p>因为普通内部类或匿名类依赖外部类，所以必须先创建外部类，再创建普通内部类或匿名类；而静态内部类随时都可以在其他外部类中创建。</p><p>Handler内存泄露可以关注我的另一篇专门针对Handler内存泄露的文章：链接</p><p><strong>WebView 的泄漏</strong></p><p>Android 中的 WebView 存在很大的兼容性问题，有些 WebView 甚至存在内存泄露的问题。所以通常根治这个问题的办法是为 
+WebView 开启另外一个进程，通过 AIDL 与主进程进行通信， WebView 
+所在的进程可以根据业务的需要选择合适的时机进行销毁，从而达到内存的完整释放。</p><p><strong>AlertDialog 造成的内存泄露</strong></p><pre class="hljs java"><code><span class="hljs-keyword">new</span> AlertDialog.Builder(<span class="hljs-keyword">this</span>)
+        .setPositiveButton(<span class="hljs-string">"Baguette"</span>, <span class="hljs-keyword">new</span> DialogInterface.OnClickListener() {            <span class="hljs-annotation">@Override</span>
+            <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">onClick</span><span class="hljs-params">(DialogInterface dialog, <span class="hljs-keyword">int</span> which)</span> </span>{
+                MainActivity.<span class="hljs-keyword">this</span>.makeBread();
+            }
+        }).show();</code></pre><p>DialogInterface.OnClickListener 的匿名实现类持有了 MainActivity 的引用；</p><p>而在 AlertDialog 的实现中，OnClickListener 类将被包装在一个 Message 对象中（具体可以看 
+AlertController 类的 setButton 方法），而且这个 Message 会在其内部被复制一份（AlertController
+ 类的 mButtonHandler 中可以看到），两份 Message 中只有一个被 recycle，另一个（OnClickListener 
+的成员变量引用的 Message 对象）将会泄露！</p><p>解决办法：</p><ul class=" list-paddingleft-2"><li><p>Android 5.0 以上不存在此问题；</p></li><li><p>Message 对象的泄漏无法避免，但是如果仅仅是一个空的 Message 对象，将被放入对象池作为后用，是没有问题的；</p></li><li><p>让 DialogInterface.OnClickListener 对象不持有外部类的强引用，如用 static 类实现；</p></li><li><p>在 Activity 退出前 dismiss dialog</p></li></ul><p><strong>Drawable 引起的内存泄露</strong></p><p>Android 在 4.0 以后已经解决了这个问题。这里可以跳过。</p><p>当我们屏幕旋转时，默认会销毁掉当前的 Activity，然后创建一个新的 Activity 并保持之前的状态。在这个过程中，Android
+ 系统会重新加载程序的UI视图和资源。假设我们有一个程序用到了一个很大的 Bitmap 图像，我们不想每次屏幕旋转时都重新加载这个 Bitmap
+ 对象，最简单的办法就是将这个 Bitmap 对象使用 static 修饰。</p><pre class="hljs java"><code><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> Drawable sBackground;<span class="hljs-annotation">@Override</span><span class="hljs-function"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">void</span> <span class="hljs-title">onCreate</span><span class="hljs-params">(Bundle state)</span> </span>{    <span class="hljs-keyword">super</span>.onCreate(state);
+    TextView label = <span class="hljs-keyword">new</span> TextView(<span class="hljs-keyword">this</span>);
+    label.setText(<span class="hljs-string">"Leaks are bad"</span>);    <span class="hljs-keyword">if</span> (sBackground == <span class="hljs-keyword">null</span>) {
+        sBackground = getDrawable(R.drawable.large_bitmap);
+    }
+    label.setBackgroundDrawable(sBackground);
+
+    setContentView(label);
+}</code></pre><p>但是上面的方法在屏幕旋转时有可能引起内存泄露，因为，当一个 Drawable 绑定到了 View 上，实际上这个 View 
+对象就会成为这个 Drawable 的一个 callback 成员变量，上面的例子中静态的 sBackground 持有 TextView 
+对象的引用，而 TextView 持有 Activity 的引用。当屏幕旋转时，Activity 无法被销毁，这样就产生了内存泄露问题。</p><p>该问题主要产生在 4.0 以前，因为在 2.3.7 及以下版本 Drawable 的 setCallback 方法的实现是直接赋值，而从 4.0.1 开始，setCallback 采用了弱引用处理这个问题，避免了内存泄露问题。</p><p><strong>资源未关闭造成的内存泄露</strong></p><ul class=" list-paddingleft-2"><li><p>BroadcastReceiver，ContentObserver 之类的没有解除注册</p></li><li><p>Cursor，Stream 之类的没有 close</p></li><li><p>无限循环的动画在 Activity 退出前没有停止</p></li><li><p>一些其他的该 release 的没有 release，该 recycle 的没有 recycle… 等等。</p></li></ul><h2>总结</h2><p>我们不难发现，大多数问题都是 static 造成的！</p><ul class=" list-paddingleft-2"><li><p>在使用 static 时一定要小心，关注该 static 变量持有的引用情况。在必要情况下使用弱引用的方式来持有一些引用</p></li><li><p>在使用非静态内部类时也要注意，毕竟它们持有外部类的引用。（使用 RxJava 的同学在 subscribe 时也要注意 unSubscribe）</p></li><li><p>注意在生命周期结束时释放资源</p></li><li><p>使用属性动画时，不用的时候请停止(尤其是循环播放的动画)，不然会产生内存泄露（Activity 无法释放）（View 动画不会）</p></li></ul><h2>几种内存检测工具的介绍</h2><ul class=" list-paddingleft-2"><li><p>Memory Monitor</p></li><li><p>Allocation Tracker</p></li><li><p>Heap Viewer</p></li><li><p>LeakCanary</p></li></ul><p><strong>Memory Monitor</strong></p><p>位于 Android Monitor 中，该工具可以：</p><ul class=" list-paddingleft-2"><li><p>方便的显示内存使用和 GC 情况</p></li><li><p>快速定位卡顿是否和 GC 有关</p></li><li><p>快速定位 Crash 是否和内存占用过高有关</p></li><li><p>快速定位潜在的内存泄露问题（内存占用一直在增长）</p></li><li><p>但是不能准确的定位问题</p></li></ul><p><strong>Allocation Tracker</strong></p><p>该工具用途：</p><ul class=" list-paddingleft-2"><li><p>可以定位代码中分配的对象类型、大小、时间、线程、堆栈等信息</p></li><li><p>可以定位内存抖动问题</p></li><li><p>配合 Heap Viewer 定位内存泄露问题（可以找出来泄露的对象是在哪创建的等等）</p></li></ul><p>使用方法：在 Memory Monitor 中有个 Start Allocation Tracking 按钮即可开始跟踪 在点击停止跟踪后会显示统计结果。</p><p><strong>Heap Viewer</strong></p><p>该工具用于：</p><ul class=" list-paddingleft-2"><li><p>显示内存快照信息</p></li><li><p>每次 GC 后收集一次信息</p></li><li><p>查找内存泄露的利器</p></li></ul><p>使用方法： 在 Memory Monitor 中有个 Dump Java Heap 按钮，点击即可，在统计报告左上角选按 package 分类。配合 Memory Monitor 的 initiate GC（执行 GC）按钮，可检测内存泄露等情况。</p><p><strong>LeakCanary</strong></p><p>重要的事情说三遍：</p><pre class="hljs cs"><code>        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">3</span>; i++) {
+            Log.e(TAG, <span class="hljs-string">"检测内存泄露的神器!"</span>);
+        }</code></pre><p>LeakCanary 具体使用不再赘述，自行 Google。</p><p><br/></p><p><br/></p><p>查看更多文章，关注下方二维码</p><p><img class="" data-ratio="1" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/p5qELRDe5ickAiax1Nv77rYNEC3sRgfAkw8hAX4rSjibP0FMnud3ZM4f0Jc7nkoCL2t8STuhTbnuxj6W6T8JumElA/640?wx_fmt=jpeg" data-type="jpeg" data-w="258" style="visibility: visible ! important; width: auto ! important; height: auto ! important;" width="auto" src="../Images/60bd80188885b005ab426369f4086902.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/p5qELRDe5ickAiax1Nv77rYNEC3sRgfAkw8hAX4rSjibP0FMnud3ZM4f0Jc7nkoCL2t8STuhTbnuxj6W6T8JumElA/640?wx_fmt=jpeg"/></p><p><br/></p>
+        
+</body>
+</html>

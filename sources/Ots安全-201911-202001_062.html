@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Log4j反序列化远程代码执行漏洞CVE-2019-17571</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Log4j反序列化远程代码执行漏洞CVE-2019-17571</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxMjYyMzkwOA==&amp;mid=2247484397&amp;idx=2&amp;sn=920480ac531b0fa92ea04aff9b5dcbe6&amp;chksm=9bae4aa6acd9c3b0ed33226a95aef39a6a106cb05461de45e9601825fefa644efd3de4b6873a&amp;scene=126&amp;sessionid=1681670238#rd">http://mp.weixin.qq.com/s?__biz=MzAxMjYyMzkwOA==&amp;mid=2247484397&amp;idx=2&amp;sn=920480ac531b0fa92ea04aff9b5dcbe6&amp;chksm=9bae4aa6acd9c3b0ed33226a95aef39a6a106cb05461de45e9601825fefa644efd3de4b6873a&amp;scene=126&amp;sessionid=1681670238#rd</a></blockquote><p><strong>Log4j组件介绍</strong></p><p>Log4j是Apache的一个开源项目，通过使用Log4j，可以控制日志信息输送的目的地是控制台、文件、GUI组件，甚至是套接口服务器、NT的事件记录器、UNIX Syslog守护进程等；也可以控制每一条日志的输出格式；通过定义每一条日志信息的级别，能够更加细致地控制日志的生成过程。</p><p><br/></p><p><strong>漏洞描述</strong></p><p>Log4j存在远程代码执行漏洞，该漏洞产生的原因是SocketServer类对于监听获取到的数据并没有进行有效的安全验证，直接进行反序列化处理。攻击者可以传入恶意的序列化数据对漏洞进行利用，向服务器发起远程代码执行攻击。</p><p><br/></p><p><strong>漏洞复现</strong></p><p>搭建Log4j 1.2.17环境，使用nc向Log4j开放端口发送恶意序列化数据，效果如下：</p><p style="text-align: center;"><img class="rich_pages js_insertlocalimg" data-ratio="0.6537313432835821" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/rWGOWg48taehtwKHEo2YK4loLhzcsNwhMc9icXzjaPfs4REVl2LIHqhibgNcB7QbLSia3ZOVwkmK4gVJaovhul9JQ/640?wx_fmt=jpeg" data-type="jpeg" data-w="670" style="" src="../Images/fc861a49caf3e8ad197a3d30d1ed7504.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/rWGOWg48taehtwKHEo2YK4loLhzcsNwhMc9icXzjaPfs4REVl2LIHqhibgNcB7QbLSia3ZOVwkmK4gVJaovhul9JQ/640?wx_fmt=jpeg"/></p><p><strong>影响范围</strong></p><p>目前受影响的Log4j版本：</p><p>Apache Log4j 1.2.4 - 1.2.17</p>
+        
+</body>
+</html>

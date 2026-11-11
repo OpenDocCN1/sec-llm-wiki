@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>查看apk签名</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>查看apk签名</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247485506&amp;idx=1&amp;sn=74b2b629d7d8e4652ca43dfb73c798fc&amp;chksm=f9e06719ce97ee0f43b085c01d18111554794889cbc6a63b4d701bafb2f035d7cef34e83c489&amp;scene=126&amp;sessionid=1681663462#rd">http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247485506&amp;idx=1&amp;sn=74b2b629d7d8e4652ca43dfb73c798fc&amp;chksm=f9e06719ce97ee0f43b085c01d18111554794889cbc6a63b4d701bafb2f035d7cef34e83c489&amp;scene=126&amp;sessionid=1681663462#rd</a></blockquote><p>查看三方应用或是系统应用签名</p><p>用winrar打开待查看的apk，将其中META-INF文件夹解压出来，得到其中的CERT.RSA文件，通过keytool -printcert -file META-INF/CERT.RSA命令打印证书信息，信息如下图：</p><p>keytool 配置好java后，java的Bin目录下自带keytool</p><p><br/></p><p>keytool.exe -printcert -file C:\Users\ipaynow0520\Desktop\MYDEMO_K.RSA</p><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/p5qELRDe5iclJd36OXcwlGKHGWzw7XZUDpwqnWoC5UoJmRJRF6Cadl0j13C95QdMjX6z7cicSyEPBsP8xPpT5YHA/0?wx_fmt=png" class="" data-ratio="0.3917727717923604" data-w="1021" src="../Images/ccd72b6f4ed14ae6d8defc54861aa7d4.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/p5qELRDe5iclJd36OXcwlGKHGWzw7XZUDpwqnWoC5UoJmRJRF6Cadl0j13C95QdMjX6z7cicSyEPBsP8xPpT5YHA/0?wx_fmt=png"/></p><p><br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>趋势OfficeScan系列产品漏洞分析</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>趋势OfficeScan系列产品漏洞分析</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=200412833&amp;idx=1&amp;sn=1c2bc198cff39cbea01dade968212071&amp;chksm=28e99c2a1f9e153cec1cdda2e48ee80df067913934e32cfe6c3f4b4adb29de7fb5b0a0ed0b70&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=200412833&amp;idx=1&amp;sn=1c2bc198cff39cbea01dade968212071&amp;chksm=28e99c2a1f9e153cec1cdda2e48ee80df067913934e32cfe6c3f4b4adb29de7fb5b0a0ed0b70&amp;scene=27#wechat_redirect</a></blockquote><p>作者 Shadowkeeper</p><p><br/></p><p style=""><strong style="margin: 0px; padding: 0px;"><span style="margin: 0px; padding: 0px; color: rgb(12, 12, 12);">O</span></strong><span style="margin: 0px; padding: 0px; color: rgb(12, 12, 12);"><strong style="margin: 0px; padding: 0px;">ff</strong><strong style="margin: 0px; padding: 0px;">ice</strong></span><span style="margin: 0px; padding: 0px; color: rgb(38, 38, 38);"><strong style="margin: 0px; padding: 0px;">Scan是趋势科技开发的一套专为网路环境的桌上型电脑和行动用户端所提供的即时、全面的防毒解决方案。安全公司Silent Signal一位研究人员年初通过分析OSCE 10.6 sp1，发现可以通过一系列低危漏洞达到远程执行代码的目的</strong></span>，以下为翻译原文：</p><p style=""><br/></p><p style="">分析安防软件的安全性是我最喜欢的研究领域之一：安防软件原本是为了保护你的系统，但经常可以讽刺的看到,它为攻击者打开一扇敞开的大门。今年早些时候，我偶然发现趋势科技的OfficeScan安全套件(一种可能不多见的主机防护解决方案),仍然在一些有意思的网络内使用。由于这个软件看上去较为复杂（提供了宽广的攻击面），我决定深入研究一下。安装了10.6 sp1试用版本之后，我可以明确的告诉大家，这个软件值得研究：</p><p style=""><br/></p><p style="">- 服务组件（为实际提供主机防护功能的客户端实现集中管理）大多数通过二进制可执行文件方式实现（.EXE 和. DLL文件）</p><p style="">- 服务端通过HTTP自我更新</p><p style="">- 客户端在IE浏览器中安装ActiveX插件</p><p style=""><br/></p><p style="">可能还存在其他脆弱性。现在我想分享发现的一系列漏洞，组合起来可以实现远程代码执行，这些漏洞是逻辑（和/与之类）加密缺陷，不是标准的内存破坏之类。这样看来，修补甚至探讨他们是否算漏洞都显得无关紧要[i]。经过与厂商的数月讨论之后，依照“HP ODay倡议”的披露政策，我发布了这份报告。</p><p style=""><br/></p><p style=""><span style="margin: 0px; padding: 0px; color: rgb(12, 12, 12); font-size: 16px;"><strong style="margin: 0px; padding: 0px;">一、信息泄露漏洞</strong></span></p><p style=""><br/></p><p style="">由于客户端在网络中普遍部署，我将研究重点放在了它上面。首先假设在服务端和客户端之间存在必然某种通信机制，便于客户端接收更新和配置参数。我开始监听客户端网络连接，发现了一些有意思的内容，如下所示：</p><p style=""><br/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; background-color: rgb(247, 247, 249);">OST /officescan/cgi/isapiClient.dll HTTP/1.1
+User-Agent: 11111111111111111111111111111111
+Accept: */*
+Host: 192.168.124.134:8080
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 96
+Proxy-Connection: Keep-Alive
+Cache-Control: no-cache
+Pragma: no-cache
+Connection: close
+RequestID=123&amp;FunctionType=0&amp;UID=11111111-2222-3333-4444-555555555555&amp;RELEASE=10.6&amp;chkDatabase=1</pre><p style=""><br/></p><p style="">其中字段RequestID数值是相同的，我马上用Burp Intruder载入并修改请求，尝试枚举猜解其他可用的数值。ID 201似乎特别有意思，下面是服务端的应答： <br style="margin: 0px; padding: 0px;"/></p><p style=""><br/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; background-color: rgb(247, 247, 249);">HTTP/1.1 200 OK
+Date: Wed, 18 Dec 2013 18:26:44 GMT
+Server: Apache
+Content-Length: 2296
+Connection: close
+Content-Type: application/octet-stream
+
+[INI_CRITICAL_SECTION]
+Master_DomainName=192.168.124.134
+Master_DomainPort=8080
+UseProxy=0
+Proxy_IP=
+Proxy_Port=
+Proxy_Login=
+Proxy_Pwd=
+Intranet_Proxy_Socks=0
+Intranet_NoProxyCache=0
+HTTP_Expired_Day=30
+ServicePack_Version=0
+Licensed_UserName=
+
+Uninstall_Pwd=!CRYPT!5231C05389DD886C99EA4646653498C2DB98EFD6EF61BD4907B2BD97E4ACDAED73AEE46B44AACBC450915317269
+
+ Unload_Pwd=!CRYPT!5231C05389DD886C99EA4646653498C2DB98EFD6EF61BD4907B2BD97E4ACDAED73AEE46B44AACBC450915317269
+
+(...)</pre><p style=""><br/></p><p style="">多次尝试应答相同，与UID字段内容无关。大家可以看到，有两个参数Uninstall_Pwd 和 Unload_Pwd内容是加密的，里面肯定有猫腻。实际上，仅在提供了正确的特定密码后——就是我们看到的加密内容——客户端可以被停止或卸载（客户端为SYSTEM权限服务可以保护程序避免被杀掉或调试）。那我们拿这个加密的内容怎么办？OfficeScan程序安装目录包含了一个pwd.dll的文件，我怀疑这里面可能有关于加密的一些东西，干它！果然有所发现，这个动态连接库里面包含了一个PWDDecrypt()导出函数，但可惜的是，深入搞下去发现这不是我们要找的。。。</p><p style=""><br/></p><p style="">那就来点简单暴力的吧，命令行下使用： <br style="margin: 0px; padding: 0px;"/></p><p style=""><br/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; background-color: rgb(247, 247, 249);">find . -name '*.dll' -exec strings -f {} \; |  xargs grep '!CRYPT!'</pre><p style=""><br/></p><p style="">我发现TmSock.dll才是我们的菜。反汇编这个DLL之后发现一个名为TmDecrypt()的导出函数，这个函数检查它的字符串参数是否以“<span style="margin: 0px; padding: 0px; color: rgb(192, 0, 0);"><strong style="margin: 0px; padding: 0px;">!CRYPT!</strong></span>”开头，如果不是它就调用pwd.dll的导出函数,如果是它就转向一个内部例程，我称之为hardcoded_pass：</p><p style=""><br/></p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39uYCMdf0DZ8aAzagTDTko2dKw8g5fsWMLeC7LgqiaB5yHric68H7b5ELe7I2qm67huhPQibEiaHtRfdA/0" style="float:none;" data-ratio="0.7866666666666666" data-w="300" src="../Images/f0e53b94b62a4b429bf86ce1f41394be.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39uYCMdf0DZ8aAzagTDTko2dKw8g5fsWMLeC7LgqiaB5yHric68H7b5ELe7I2qm67huhPQibEiaHtRfdA/0"/></p><p><br/></p><p><br/></p><p style="">这个名字绝对是名副其实的，这个子例程里面包含两个字符串，看上去像是硬编码密码：</p><p style=""><br/></p><p style=""><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39uYCMdf0DZ8aAzagTDTko2vz5nfBUPYFh50CbndLnn0lFhpI5NiadibWTbxbB1fE04icNy9LkY8ZdJQ/0" style="white-space: normal; float: none;" data-ratio="0.6033333333333334" data-w="300" src="../Images/e5a35092cc7e607a0257e13709bd7319.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39uYCMdf0DZ8aAzagTDTko2vz5nfBUPYFh50CbndLnn0lFhpI5NiadibWTbxbB1fE04icNy9LkY8ZdJQ/0"/></p><p style=""><br/></p><p style="">马上使用Google搜索这两个特殊字符串（专业提示：合理利用google，会省掉大量时间避免重复劳动），发现Luigi Auriemma发表过一个帖子，指出这个函数是用于加密上面的配置参数，在这个例子中它返回卸载/停止密码的MD5散列值.MD5是能被有效猜解的，这个设定太烂了，更别提代理密码可被明文获取（译注：可能指“Proxy_Pwd=”后内容是明文的）。</p><p style=""><br/></p><p style="">但这个影响有限，我再往下挖。</p><p style=""><span style="margin: 0px; padding: 0px; color: rgb(38, 38, 38); font-size: 16px;"><strong style="margin: 0px; padding: 0px;"><br/></strong></span></p><p style=""><strong style="color: rgb(38, 38, 38); font-size: 16px; margin: 0px; padding: 0px;">二、更多发现</strong><br/></p><p style=""><br/></p><p style="">经过多次监视客户端-服务端通信，我发现服务端每发生一个配置变更后，服务端都会向客户端的TCP 61832端口发送一个特定的HTTP请求。这是一个简单的GET请求，形式如下:</p><p style=""><br/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; background-color: rgb(247, 247, 249);"> &gt; pwdenc A
+00
+&gt; pwdenc AA
+006C
+&gt; pwdenc AB
+006F
+&gt; pwdenc BA
+036C
+&gt; pwdenc BB
+036F
+&gt; pwdenc ABC
+006F00</pre><p style=""><br/></p><p style="">很明显，这个加密算法基本上就是个简单的多表替代算法（类似Vigenere 密码），很容易从原来的DLL里还原实现算法过程：循环加密1KB所有可打印字符串后（1024遍‘A’，1024遍‘B’等等。），形成了一个可用来加解密的数据库，以后我可以用这个数据库构建我的exploit，不需要什么原始二进制文件或者大量的反向工程。</p><p style=""><br/></p><p style="">回到原来的话题，解密那串十六进制字符串吧：<br/></p><p style=""><br/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; background-color: rgb(247, 247, 249);">[jdkNotify] error=-1471291287,clinet=472bc675-3862-4e9d-9890-e3b14d4ddc3e,server=SEQ=80&amp;DELAY=0&amp;USEPROXY=0&amp;PROXY=&amp;PROXYPORT=0&amp;PROXYLOGIN=&amp;PROXYPWD=&amp;SERVER=192.168.124.134&amp;SERVERPORT=8080ccNT_Version=10.6&amp;Pcc95_Version=10.6&amp;EngineNT_Version=9.700.1001&amp;Engine95_Version=&amp;ptchHotfixDate=20131228153813&amp;PTNFILE=1050100&amp;ROLLBACK=1050100&amp;MESSAGE=20&amp;TIME=201312281648170406&amp;DIRECT_UPDATE=1, return -1293342568</pre><p style=""><br/></p><p style="">绝大部分字段都跟以前的很相似吧，唯一看上去不太顺眼的就剩下clinet（看清楚了不是client）这个字段了，字段内容就是客户端安装时生成的GUID。从漏洞利用的角度出发这不是个好消息，因为你没法猜出这个数值，但如果我们稍微加强攻击模式就能发现一些可用的东西：</p><p style=""><br/></p><p style="">- 客户端GUID在网络中以明文方式周期性发送</p><p style="">- 本地攻击者默认可以获得这个值，通过读取OfficeScan配置和日志文件</p><p style=""><br/></p><p style="">为了这篇文章先假定我们已经获取了这个GUID，能利用这个通知消息做些什么呢？</p><p style=""><br/></p><p style="">很明显，我们可以通过在初始通知消息中设置相应字段内容，将我们自己冒充成服务端或者代理服务器，如果我们在通知中设置更高的版本信息内容，就能触发软件更新进程，就可以成功的将自己的主机伪装成服务器或代理服务器从而实现中间人攻击。</p><p style=""><br/></p><p style="">从这点来看，获取控制的最明显途径就是劫持更新进程，从而使客户端下载执行作为更新内容的恶意软件，我弄了个小脚本MitMproxy来执行这个任务：</p><p style=""><br/></p><p style=""><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39uYCMdf0DZ8aAzagTDTko2wQhAnquVHM6zamUvpEKnUiaicpOVexNTzicSF6Sz8enG0P94GaiaWQytGQ/0" style="white-space: normal; float: none;" data-ratio="0.2" data-w="300" src="../Images/d0475f26fc59b4fb8764fba22448fed1.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39uYCMdf0DZ8aAzagTDTko2wQhAnquVHM6zamUvpEKnUiaicpOVexNTzicSF6Sz8enG0P94GaiaWQytGQ/0"/></p><p style=""><br/></p><p style="">看来OSCE只接受签名的二进制文件，在通过非可信通道中进行更新时，这是一个好方法（企业环境中处理TLS证书是非常棘手的。。。）。为了解决这个问题，我使用 Didier Stevens的脚本disitool，来寻找在OCSE安装期间未签名的PE文件：</p><p style=""><br/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; background-color: rgb(247, 247, 249);">$ find . -iname '*.exe' -exec echo {} \; -exec python ~/tools/disitool.py extract {} /tmp/sig \; 2&gt;&amp;1 | grep Error -B1
+
+  ./7z.exe
+  Error: source file not signed
+  --
+  ./bzip2.exe
+  Error: source file not signed
+  --
+  ./bspatch.exe
+  Error: source file not signed
+  $ find . -iname '*.dll' -exec echo {} \; -exec python ~/tools/disitool.py extract {} /tmp/sig \; 2&gt;&amp;1 | grep Error -B1
+  ./libeay32.dll
+  Error: source file not signed
+  --
+  ./libcurl.dll
+  Error: source file not signed
+  --
+  ./7z.dll
+  Error: source file not signed
+  (...)</pre><p style=""><br/></p><p style="">在我尝试弄明白这些文件能否被远程替换之前，Dnet建议我先植入一个使用非趋势公司签名的二进制文件，经过快速测试，我决定使用TotalCommander安装程序，它由一个默认被WinVerifyTrust（微软数字签名认证API）接受的第三方签名。测试很成功，看来OSCE只关心更新程序是否有数字签名而不关心谁签的名。记住：数字签名只能告诉你消息的创建者，没法告诉你创建者的意图。</p><p style=""><br/></p><p style=""><span style="margin: 0px; padding: 0px; color: rgb(38, 38, 38); font-size: 16px;"><strong style="margin: 0px; padding: 0px;">三、小结</strong></span></p><p style=""><span style="margin: 0px; padding: 0px; color: rgb(38, 38, 38); font-size: 16px;"><strong style="margin: 0px; padding: 0px;"><br/></strong></span></p><p style="">目前发现的几个缺陷：</p><p style=""><br/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; background-color: rgb(247, 247, 249);"> - OfficeScan使用弱加密
+ - OfficeScan使用硬编码密码
+ - OfficeScan不严格验证系统端点（服务端和客户端）
+ - OfficeScan不验证可执行程序的签名来自厂商或其他可信第三方</pre><p style=""><br/></p><p style="">这些缺陷看上去构不成严重威胁，但组合起来就可以在任何客户端上实现远程执行代码：</p><p style=""><br/></p><p style="">- 获取目标客户端GUID</p><p style="">- 构造一个通知消息，伪造攻击者地址为代理服务器，伪造版本信息指示客户端请求更新</p><p style="">- 替换更新中的任意一个可执行文件为恶意程序，这个恶意程序需要被微软证书仓库提供的默认CA签名（这个需要几百美刀）</p><p style=""><br/></p><p style="">点击这里查看攻击演示视频</p><p style=""><br/></p><p style="">当攻击者能从网络中获取客户端GUID或想提升本地权限的时候，这个攻击是非常实用的，结合另一个信息泄漏漏洞，可能提高攻击达到CVSS 10.0的水平。基于其他发现的漏洞可能还有不少，这个软件太大了，看到的只是冰山一角而已。</p><p style=""><span style="margin: 0px; padding: 0px; color: rgb(38, 38, 38); font-size: 16px;"><strong style="margin: 0px; padding: 0px;"><br/></strong></span></p><p style=""><span style="margin: 0px; padding: 0px; color: rgb(38, 38, 38); font-size: 16px;"><strong style="margin: 0px; padding: 0px;">四、厂商反应及对策</strong></span></p><p style=""><br/></p><p style="">2014年1月3日我告知厂商第一个信息泄漏漏洞，趋势科技很快给出了回应，然后我分享了发现的其他问题和可能攻击方向（详细时间节点见后面）。虽然趋势科技是我个人见过响应最积极的厂商，但看上去他们在处理安全漏洞方面不够老道：经过数月的讨论，他们还是没搞清楚，报告的问题该算漏洞还是“特征”，最新发布的OSCE 11是否解决了这些问题，是否有配置步骤能降低被攻击的风险。没有这些信息，我甚至无法撰写一篇正式的建议，因此大家就看到了这篇博客。</p><p style=""><br/></p><p style="">由于我没见到厂商在解决产品安全问题上有令人满意的进展，我决定发表我的研究结果，这样大家都能认识到这些风险，可能会促使厂商实施一些缓解措施，比如：</p><p style=""><br/></p><p style="">- 在服务端和客户端实施防火墙策略，限制合法节点才能访问OfficeScan端口（强烈建议所有集中管理式防病毒软件这样做）</p><p style="">- 使用高强度停止/卸载密码</p><p style="">- 限制本地用户对OfficeScan配置文件和日志文件的访问权限</p><p style="">- 使用安全网络协议（如TLS、IPSec）封装OfficeScan通讯数据</p><p style=""><br/></p><p style="">瞄了一眼OSCE 11之后，发现通知消息现在用上数字签名了，上面提的远程获取办法可能失效了（我没有时间进行深入分析），但是由于基础架构和加密组件仍保持不变，本地权限提升应该还可实现。</p><p style=""><span style="margin: 0px; padding: 0px; color: rgb(38, 38, 38); font-size: 16px;"><strong style="margin: 0px; padding: 0px;"><br/></strong></span></p><p style=""><span style="margin: 0px; padding: 0px; color: rgb(38, 38, 38); font-size: 16px;"><strong style="margin: 0px; padding: 0px;">五、时间表</strong></span></p><p style=""><br/></p><p style="">l  2014-01-03: 发送联系要求给info@trendmicro.com和security@trendmicro.com</p><p style="">l  2014-01-03: 收到厂商回应</p><p style="">l  2014-01-04: 发送漏洞细节给厂商</p><p style="">l  2014-01-07: 厂商回应：问题在调查</p><p style="">l  2014-01-08: 厂商要求提供更多信息</p><p style="">l  2014-01-08: 发送更多信息给厂商</p><p style="">l  2014-01-14: 厂商要求提供更多信息</p><p style="">l  2014-01-15: 提供演示视频给厂商</p><p style="">l  2014-01-28: 厂商承认漏洞</p><p style="">l  2014-01-28: 询问预期修复时间</p><p style="">l  2014-02-03: 厂商回应：年中将发布修复版本</p><p style="">l  2014-02-05: 发送二进制文件植入攻击模式细节</p><p style="">l  2014-02-18: 确认02-05发送的漏洞是否收到并处理</p><p style="">l  2014-02-24: 厂商确认收到并处理02-05发送漏洞</p><p style="">l  2014-02-27: 厂商回应：特别配置可以实施更严格的二进制文件签名检查</p><p style="">l  2014-02-28: 询问修补计划和可能的配置加强信息</p><p style="">l  2014-03-05: 厂商回应部分信息</p><p style="">l  2014-03-05: 询问更多可能对策和修补计划细节说明</p><p style="">l  2014-03-17: 厂商回应部分信息</p><p style="">l  2014-05-05: 通知厂商准备发布漏洞信息，询问修补状态和可能的配置加强信息</p><p style="">l  2014-05-07: 厂商通告OSCE 11发布，修补状态不明</p><p style="">l  2014-06-06: 公开披露</p><p style=""><br/></p><p style="">原文：As such, they are not trivial to fix or even decide if they are in fact vulnerabilities.可能笔误多了个not。</p><p style="">原文：</p><p>http://server:61832/?[hex_string]，联系上下文应为笔误。</p><p><br/></p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39uYCMdf0DZ8aAzagTDTko2ayDD51jibicqKOmYpeJPVIkwqNicls9ZuxBIibRBYyP525qWS35Oiaha9HA/0" data-ratio="0.21223709369024857" data-w="" src="../Images/524e373114f0ec80b2ff88acf56f07bb.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39uYCMdf0DZ8aAzagTDTko2ayDD51jibicqKOmYpeJPVIkwqNicls9ZuxBIibRBYyP525qWS35Oiaha9HA/0"/></p>
+        
+</body>
+</html>

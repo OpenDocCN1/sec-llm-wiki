@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Docker使用的一些技巧（一）</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Docker使用的一些技巧（一）</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650744760&amp;idx=1&amp;sn=614f230834e7bd7db94901fa1e47910b&amp;chksm=871486b8b0630fae742cbaad934ac607cdbcf2067fe3ace39316767bb3484845d1ec9ec5c88c&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650744760&amp;idx=1&amp;sn=614f230834e7bd7db94901fa1e47910b&amp;chksm=871486b8b0630fae742cbaad934ac607cdbcf2067fe3ace39316767bb3484845d1ec9ec5c88c&amp;scene=27#wechat_redirect</a></blockquote><p>本周没做啥有意思的实践，把之前攒的几个Docker使用技巧总结一下吧，</p><p><br/></p><p>1、创建多网卡的容器实例</p><p><br/></p><p>先要创建网络，docker network create network-1，</p><p>查看网络，docker network list，</p><p>创建容器实例，直接指定连接的网络，docker run -d -P --name sshd-server --network network-1 rastasheep/ubuntu-sshd:14.04，</p><p>后给容器实例增加网卡，docker network connect network-2 e008d3dd9758，</p><p>查看容器实例，docker inspect sshd-server，</p><p><br/></p><p>2、在容器实例里不让执行命令怎么办</p><p><br/></p><p>例如修改网卡的mtu，</p><p>先找到容器实例的Pid，docker inspect --format '{{.State.Pid}}' 191fea28ad4c，</p><p>在外面执行，nsenter -t 14801 -n ifconfig eth0 mtu 1450，</p><p>再进容器查看，docker exec -it 191fea28ad4c /bin/bash，就改过来了，</p><p><br/></p><p>3、创建容器实例，先不启动，配好多网卡再启动</p><p><br/></p><p>docker create --name sshd-server -it rastasheep/ubuntu-sshd:14.04，</p><p>docker network connect service-network e008d3dd9758，</p><p>docker start sshd-server，</p><p>还有另一种进容器的方法，docker attach sshd-server，</p><p>但是一退出，容器实例就跟着停了，<br/></p><p><br/></p><p>都比较简单，就不贴效果图了，以后攒到其它技巧再继续总结。<br/></p><p><br/></p><p>字数不够，扯两句闲篇，想监控容器的网络流量，怎么办，很简单，在宿主机上装个类似tcpdump的软件或者容器实例就可以了，能看到这个宿主机内的所有容器的流量。<br/></p>
+        
+</body>
+</html>

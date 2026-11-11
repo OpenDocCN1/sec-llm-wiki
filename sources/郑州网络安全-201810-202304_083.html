@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Passport-SAML身份验证绕过触发修复关键的上游XMLDOM错误CVE-2022-39353</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Passport-SAML身份验证绕过触发修复关键的上游XMLDOM错误CVE-2022-39353</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485751&amp;idx=1&amp;sn=7e826a34f7a33435e33d430d800f3e30&amp;chksm=fa76e8c9cd0161dfc8dbb37836ee0dbf51097e5e01eee80341d25edb84503a23f86ab0097ed3&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485751&amp;idx=1&amp;sn=7e826a34f7a33435e33d430d800f3e30&amp;chksm=fa76e8c9cd0161dfc8dbb37836ee0dbf51097e5e01eee80341d25edb84503a23f86ab0097ed3&amp;scene=27#wechat_redirect</a></blockquote><blockquote><p>因输入验证不当而导致的严重漏洞已在XMLDOM（适用于Node.js、Rhino和浏览器的W3C DOM的JavaScript实现）中得到解决。这种有缺陷的行为似乎在2016年首次被标记为可能需要补救。但只有在最近发现Passport-SAML（Node.js库Passport的SAML 2.0身份验证提供程序）中的身份验证绕过后，XMLDOM维护人员才解决了这个问题。问题的根本原因。“Xmldom解析格式不正确的XML，因为它包含多个顶级元素，并将所有根节点添加到Document的childNodes集合中，而不报告任何错误或抛出，”11月1日发布的XMLDOM咨询解释说。</p></blockquote><p><img data-ratio="0.5625" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJnQsA816Vq9B6EGOyjL2qVEYMToEOYjHqmKK0cFOcTRRia3wzhOkISUN1GbUQ1QGm7Niay06NuIbxCw/640?wx_fmt=jpeg" data-type="jpeg" data-w="1200" height="675" width="1200" src="../Images/53cdf8bcd0bac07871f07ee96609ebb9.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJnQsA816Vq9B6EGOyjL2qVEYMToEOYjHqmKK0cFOcTRRia3wzhOkISUN1GbUQ1QGm7Niay06NuIbxCw/640?wx_fmt=jpeg"/></p><p>“这打破了树中只有一个根节点的假设，”它继续说，并给“家属带来了潜在的问题”。</p><p>该漏洞被GitHub CVE编号机构指定为CVE-2022-39353，严重等级为CVSS 9.4，后来NIST国家漏洞数据库将严重等级提升至CVSS 9.8。</p><p>XMLDOM被广泛使用，NPM检测到每周280万次下载（尽管需要注意下载计数的准确性）。</p><p>该项目的维护者Kurt Boberg说：“任何接受XML上的部分签名并读取子节点的安全关键工作流都可能受到此问题的影响。</p><p>“核心问题是你可以为一个请求提供两个XML文档（一个有效，一个伪造），只要验证器接受合法的，通过xmldom读取的属性就有可能从伪造的文档中读取节点值。 ”</p><p>Passport-SAML每周有167000次NPM下载，但由于XMLDOM缺陷而对加密签名验证处理不当。CVE描述称，被跟踪为CVE-2022-39299的高严重性Passport-SAML问题可能使攻击者能够“在使用passport-saml的网站上绕过SAML身份验证”。</p><p>“成功的攻击要求攻击者拥有任意IDP签名的XML元素。根据所使用的IDP，如果可以触发签名消息的生成，完全未经身份验证的攻击（例如，无法访问有效用户）也可能是可行的。”</p><p>该漏洞的严重性评分为CVSS 8.1，已于10月11日修复。</p><p>当被问及攻击者可能对XMLDOM漏洞下游造成的其他损害时，Boberg表示，这“实际上取决于对XML解析的期望。前面提到的SAML问题几乎是最糟糕的结果。</p><p>“这真的取决于解析应用程序根据用户期望签名的XML输入做出安全决策。这就像在经过公证的文件上装订额外的一页，然后通过仅检查第一页是否经过公证的验证过程。”</p><p>他补充说：“下游影响完全取决于合法文件会让你做什么。”</p><p>相关的GitHub错误线程始于2016年，当时一位XMLDOM维护人员表示该问题“在我看来违反了W3C DOM Level 2核心规范”。</p><p>推测该缺陷“可能是一个'误报'错误”，他建议“如果API可以稍微改造一下，那么在一个流中解析多个文档是有一些实用性的”。他还将这样做“默默地”描述为“奇怪”，甚至没有向消费者发出警告。</p><p>然后该线程一直处于休眠状态，直到Passport-SAML漏洞的出现及其根本原因迅速显现，促使在@xmldom/xmldom NPM版本0.7.7、0.8.4和0.9.0-beta中快速部署补丁。 4，连同缓解措施、修复细节和建议开发人员与规范保持一致以避免代码损坏。</p><p><br/></p><p style="display: none;"><mp-style-type data-value="3"/></p>
+        
+</body>
+</html>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>WinRar 4.20 – 文件扩展名欺骗(0Day)</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>WinRar 4.20 – 文件扩展名欺骗(0Day)</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=200106030&amp;idx=1&amp;sn=05e9706248a5177fcf2ee12ce23b0d9d&amp;chksm=28f6f2a51f817bb3e6b829da2364ee380b8821b189f8d98b7070cb718d44d6c508ad35f32fd1&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=200106030&amp;idx=1&amp;sn=05e9706248a5177fcf2ee12ce23b0d9d&amp;chksm=28f6f2a51f817bb3e6b829da2364ee380b8821b189f8d98b7070cb718d44d6c508ad35f32fd1&amp;scene=27#wechat_redirect</a></blockquote><p style="">WinRar 是常用的压缩与解压缩软件工具。它能将数据压缩成.rar或则.zip格式的包。这篇文章就是给大家呈现Winrar 4.20的一个最新漏洞（0 day）,下面是关于zip文件的相关简要介绍。</p><p style=""><br/></p><pre class="prettyprint lang-cpp prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px;">Offset
+
+Bytes
+Description[25]
+
+00 4 Local file header signature = 0x04034b50 (read as a little-endian number)
+04 2 Version needed to extract (minimum)
+06 2 General purpose bit flag
+08 2 Compression method
+10 2 File last modification time
+12 2 File last modification date
+14 4 CRC-32
+18 4 Compressed size
+22 4 Uncompressed size
+26 2 File name length (n)
+28 2 Extra field length (m)
+30 n File name
+30+n m Extra field
+
+(the information taken from wiki - http://en.wikipedia.org/wiki/Zip_(file_format) )
+-------------------------------------</pre><p style=""><span class="short_text" lang="zh-CN" style="margin: 0px; padding: 0px;"><span class="" style="margin: 0px; padding: 0px;"><br/></span></span></p><p style=""><span id="result_box" class="short_text" lang="zh-CN" style="margin: 0px; padding: 0px;"><span class="" style="margin: 0px; padding: 0px;">通过</span>文件格式的描述符中，我们可以看到，偏移<span class="" style="margin: 0px; padding: 0px;">30</span><span class="" style="margin: 0px; padding: 0px;">的地址指向压缩文件的名字。当我们尝试用WinRar 4.20将文件压缩为"zip 格式"文件时，文件结构看起来没变，但是WinRar添加了一些其独有的文件属性参数。</span></span></p><p style=""><span class="short_text" lang="zh-CN" style="margin: 0px; padding: 0px;"><span class="" style="margin: 0px; padding: 0px;"><br/></span></span></p><p style=""><span id="result_box" class="short_text" lang="zh-CN" style="margin: 0px; padding: 0px;"><span class="" style="margin: 0px; padding: 0px;">WINRAR</span>添加额外的<span class="atn" style="margin: 0px; padding: 0px; color: teal;">“</span>文件名<span class="atn" style="margin: 0px; padding: 0px; color: teal;">”</span><span class="" style="margin: 0px; padding: 0px;">到压缩文件</span><span class="atn" style="margin: 0px; padding: 0px; color: teal;">的“文件名”中</span><span class="" style="margin: 0px; padding: 0px;"/><span class="" style="margin: 0px; padding: 0px;">。<span id="result_box" class="" lang="zh-CN" style="margin: 0px; padding: 0px;"><span class="" style="margin: 0px; padding: 0px;">进一步的分析</span><span class="" style="margin: 0px; padding: 0px;">表明，</span><span class="" style="margin: 0px; padding: 0px;">第二个</span><span id="result_box" class="short_text" lang="zh-CN" style="margin: 0px; padding: 0px;"><span class="" style="margin: 0px; padding: 0px;"><span id="result_box" class="short_text" lang="zh-CN" style="margin: 0px; padding: 0px;"><span class="" style="margin: 0px; padding: 0px;"><span id="result_box" class="" lang="zh-CN" style="margin: 0px; padding: 0px;"><span class="atn" style="margin: 0px; padding: 0px; color: teal;">“</span>文件名<span class="atn" style="margin: 0px; padding: 0px; color: teal;">”</span></span></span></span></span></span><span class="atn" style="margin: 0px; padding: 0px; color: teal;">是</span><span class="atn" style="margin: 0px; padding: 0px; color: teal;"/>文件的真实文件名，当第一个“文件名”出现在WinRar的 GUI窗口时，WinRar会把第一个“文件名”分配给解压后的文件作为文件名<span class="" style="margin: 0px; padding: 0px;">。</span></span></span></span></p><p style=""><span id="result_box" class="short_text" lang="zh-CN" style="margin: 0px; padding: 0px;"><span class="" style="margin: 0px; padding: 0px;"/></span></p><p style=""><span class="short_text" lang="zh-CN" style="margin: 0px; padding: 0px;"><span class="" style="margin: 0px; padding: 0px;"><br/></span></span></p><p style=""><span id="result_box" class="short_text" lang="zh-CN" style="margin: 0px; padding: 0px;"><span class="" style="margin: 0px; padding: 0px;">这种行为</span><span class="" style="margin: 0px; padding: 0px;">可以很容易地</span><span class="" style="margin: 0px; padding: 0px;">变成</span><span class="" style="margin: 0px; padding: 0px;">一个非常危险的</span><span class="" style="margin: 0px; padding: 0px;">安全漏洞。</span></span></p><p style=""><span class="short_text" lang="zh-CN" style="margin: 0px; padding: 0px;"><span class="" style="margin: 0px; padding: 0px;"><br/></span></span></p><p style=""><span id="result_box" class="short_text" lang="zh-CN" style="margin: 0px; padding: 0px;"><span class="" style="margin: 0px; padding: 0px;">假如恶意人员</span>发布一些<span class="atn" style="margin: 0px; padding: 0px; color: teal;"/>所谓的txt文本文件，例如“README.TXT”或者PDF格式<span class="atn" style="margin: 0px; padding: 0px; color: teal;">文件，如“</span><span class="" style="margin: 0px; padding: 0px;">VirusTotal_ScanResults.pdf</span>”，或者更诱人的文件<span class="atn" style="margin: 0px; padding: 0px; color: teal;">，如“</span>海天盛宴高清图片.jpg<span class="atn" style="margin: 0px; padding: 0px; color: teal;">”</span>黑客。受害者会因为放松警惕，而运行恶意程序。</span></p><p style=""><span class="short_text" lang="zh-CN" style="margin: 0px; padding: 0px;"><br/></span></p><p style=""><span id="result_box" class="short_text" lang="zh-CN" style="margin: 0px; padding: 0px;">相关POC可以参考如下链接:</span></p><p style=""><span id="result_box" class="short_text" lang="zh-CN" style="margin: 0px; padding: 0px;"><span id="result_box" class="" lang="zh-CN" style="margin: 0px; padding: 0px;"/></span></p><pre style="margin-top: 0px; margin-bottom: 0px; padding: 0px; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; background-color: rgb(255, 255, 255);">http://an7isec.blogspot.co.il/2014/03/winrar-file-extension-spoofing-0day.html</pre><p style=""><span id="result_box" class="short_text" lang="zh-CN" style="margin: 0px; padding: 0px;">From：http://www.exploit-db.com/papers/32480/</span><br style="margin: 0px; padding: 0px;"/></p><p><span class="short_text" lang="zh-CN" style="margin: 0px; padding: 0px;"><br/></span></p><p><img src="../Images/0b0d484e5ee1a4bed829fe184caa98db.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39dgUicKuoqNP8MWPS8stNyINnElHDCAb63xVdYticfAo39Osplo8EGTEao0ETs9MRgaWib5tibPVhnibQ/0"/></p>
+        
+</body>
+</html>

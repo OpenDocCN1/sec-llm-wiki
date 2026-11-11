@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CVE-2020-3452-思科ASA扫描器</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>CVE-2020-3452-思科ASA扫描器</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxMjYyMzkwOA==&amp;mid=2247487285&amp;idx=2&amp;sn=272d07a0e73ef983e0a2b48192111977&amp;chksm=9bae467eacd9cf688e6d33cdb832c9730db03d950be3ef7c4000f7078b17726e36980a0f8f82&amp;scene=126&amp;sessionid=1681670167#rd">http://mp.weixin.qq.com/s?__biz=MzAxMjYyMzkwOA==&amp;mid=2247487285&amp;idx=2&amp;sn=272d07a0e73ef983e0a2b48192111977&amp;chksm=9bae467eacd9cf688e6d33cdb832c9730db03d950be3ef7c4000f7078b17726e36980a0f8f82&amp;scene=126&amp;sessionid=1681670167#rd</a></blockquote><p>扫描CVE-2020-3452-影响运行AnyConnect的Cisco ASA防火墙的未认证路径遍历</p><p>https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-3452</p><p><br/></p><p><strong>证明文件：</strong></p><p>https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-asaftd-ro-path-KJuQhB86</p><p><br/></p><p>https://twitter.com/aboul3la/status/1286012324722155525</p><p><br/></p><p>免责声明：对于此工具的使用或任何损坏，我概不负责。请勿将其用于非法用途。该工具旨在扫描授权资产，以自动检查多个Cisco实例上的此漏洞。</p><p><br/></p><p><strong>介绍：</strong></p><p>思科自适应安全设备（ASA）软件和思科Firepower威胁防御（FTD）软件的Web服务界面中的漏洞可能允许未经身份验证的远程攻击者进行目录遍历攻击并读取目标系统上的敏感文件。该漏洞是由于受影响的设备处理的HTTP请求中的URL缺乏正确的输入验证所致。攻击者可以通过将包含目录遍历字符序列的特制HTTP请求发送到受影响的设备来利用此漏洞。成功的利用可能使攻击者可以在目标设备上查看Web服务文件系统内的任意文件。当受影响的设备配置了WebVPN或AnyConnect功能时，将启用Web服务文件系统</p><p><br/></p><p>我创建了此脚本，以允许工程师解析URL文件进行测试。</p><p><br/></p><p>安装：</p><section class="code-snippet__fix code-snippet__js"><ul class="code-snippet__line-index code-snippet__js"><li/></ul><pre class="code-snippet__js" data-lang="php"><code><span class="code-snippet_outer">git <span class="code-snippet__keyword">clone</span> https:<span class="code-snippet__comment">//github.com/PR3R00T/CVE-2020-3452-Cisco-Scanner.git</span></span></code></pre></section><p><br/></p><p>chmod + x扫描仪.py</p><p>使用网址https：//XX.XX修改urls.txt文件。</p><p>python3 ./scanner.py</p><p><br/></p><p>项目地址：https://github.com/PR3R00T/CVE-2020-3452-Cisco-Scanner</p><p style="text-align: center;"><img class="rich_pages" data-ratio="0.6" data-src="https://mmbiz.qpic.cn/mmbiz_gif/rWGOWg48tafvLeILuF3odXiciahDLt4uuALbNBs8KKAuUvn5kaViaupgkt4YlIg4zGuF0gX1tN2UbFnMicDgPn3Hpg/640?wx_fmt=gif" data-type="gif" data-w="640" style="" src="../Images/c1db0b918e10f7eb63442cd1a66da60b.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_gif/rWGOWg48tafvLeILuF3odXiciahDLt4uuALbNBs8KKAuUvn5kaViaupgkt4YlIg4zGuF0gX1tN2UbFnMicDgPn3Hpg/640?wx_fmt=gif"/></p>
+        
+</body>
+</html>

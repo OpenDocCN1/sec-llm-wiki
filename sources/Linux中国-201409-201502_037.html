@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>即将到来的 100Gb 网络对 Linux 内核是一大挑战</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>即将到来的 100Gb 网络对 Linux 内核是一大挑战</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NjQ4MjYwMQ==&amp;mid=202735634&amp;idx=2&amp;sn=a78eb65213b0602e3710aa9946976841&amp;chksm=2f09bb54187e32428bfd21a8c4820ed77562e86fbd8b39d4f186afb92d510ba0eb7eac2504dd&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NjQ4MjYwMQ==&amp;mid=202735634&amp;idx=2&amp;sn=a78eb65213b0602e3710aa9946976841&amp;chksm=2f09bb54187e32428bfd21a8c4820ed77562e86fbd8b39d4f186afb92d510ba0eb7eac2504dd&amp;scene=27#wechat_redirect</a></blockquote><p style="word-wrap: break-word; margin-top: 10px; margin-bottom: 10px; padding: 0px; line-height: 2em; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; white-space: normal; background-color: rgb(255, 255, 255);">RedHat的Jesper Brouer在LCA 2015会议上说，<span style="word-wrap: break-word;text-decoration:underline;">100Gb网络适配器即将到来</span>。适配器的全线速运行对Linux内核是一大挑战。</p><p style="word-wrap: break-word; margin-top: 10px; margin-bottom: 10px; padding: 0px; line-height: 2em; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; white-space: normal; background-color: rgb(255, 255, 255);"> </p><p style="word-wrap: break-word; margin-top: 10px; margin-bottom: 10px; padding: 0px; line-height: 2em; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; white-space: normal; background-color: rgb(255, 255, 255);">Brouer解释说，随着网络适配器越来越快，内核处理每个数据包的时间越来越短。以10Gb适配器为例，两个1538字节的数据包之间的时间间隔为 1230ns， 40Gb网络则将时间间隔进一步缩短到307ns，100Gb则再次减少到120ns，也就是说内核每秒需要处理高达815万个数据包，它没有多少时间弄清楚如何处理每个数据包。</p><p style="word-wrap: break-word; margin-top: 10px; margin-bottom: 10px; padding: 0px; line-height: 2em; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; white-space: normal; background-color: rgb(255, 255, 255);">能发送的最小容量以太网帧是84字节，对10Gb网络而言，最小数据包的时间间隔是 67.2ns。Brouer称，对一个3GHz CPU，每个数据包处理只可用200 CPU周期，并不多。内核在处理这种网络密集工作负荷上做的并不好。</p><p class="copyright" style="word-wrap: break-word; margin-top: 10px; margin-bottom: 10px; padding: 5px 10px; color: rgb(153, 153, 153); line-height: 2em; font-size: 12px; border: 1px solid rgb(238, 238, 238); border-radius: 8px; font-family: Tahoma, Helvetica, SimSun, sans-serif; white-space: normal; background-color: rgba(24, 241, 24, 0.0980392);"><span class="z" style="word-wrap: break-word; float: left;">原文：http://www.solidot.org/story?sid=42833</span></p><p><img data-src="http://mmbiz.qpic.cn/mmbiz/W9DqKgFsc68jZwVzTRwgVDHhqzXHV2epmzNZR6fXrvRQYorAmdutnOk9jYuKnAwYxspKJc0o6ibPGJ9EY72Z6dw/0" style="" class="" id="c1422450871596" data-type="png" data-ratio="0.5" data-w="480" src="../Images/d702babf96ed16a37721d1902ffbb379.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/W9DqKgFsc68jZwVzTRwgVDHhqzXHV2epmzNZR6fXrvRQYorAmdutnOk9jYuKnAwYxspKJc0o6ibPGJ9EY72Z6dw/0"/><span style=""> </span></p>
+        
+</body>
+</html>

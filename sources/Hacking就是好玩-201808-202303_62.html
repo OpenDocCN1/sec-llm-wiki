@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>fofa语法的cms识别脚本</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>fofa语法的cms识别脚本</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzU2NzcwNTY3Mg==&amp;mid=2247483770&amp;idx=1&amp;sn=594102ecbea59b511b3fe88715c14b3e&amp;chksm=fc98685dcbefe14bb38ea9ee8c28ead25d4413d24f9d99c47c7253170913ac26c4aa158172d4&amp;scene=126&amp;sessionid=1681663022#rd">http://mp.weixin.qq.com/s?__biz=MzU2NzcwNTY3Mg==&amp;mid=2247483770&amp;idx=1&amp;sn=594102ecbea59b511b3fe88715c14b3e&amp;chksm=fc98685dcbefe14bb38ea9ee8c28ead25d4413d24f9d99c47c7253170913ac26c4aa158172d4&amp;scene=126&amp;sessionid=1681663022#rd</a></blockquote><p>基于 https://github.com/TideSec/TideFinger/blob/master/cms_finger.db cms指纹库中的fofa指纹。</p><p style="text-align: center;"><img class="rich_pages js_insertlocalimg" data-ratio="0.61640625" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/eLgL5R4W3FjaeFaZO7IibdI23XqhiaGO4cOrN8Zg1I0AZbucRmh3E13FzGd5EInbzRSrhm3lorZMiaicm62XyT21NA/640?wx_fmt=png" data-type="png" data-w="1280" style="" src="../Images/0ccfbbf83b90c0e8d4f85af341940831.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/eLgL5R4W3FjaeFaZO7IibdI23XqhiaGO4cOrN8Zg1I0AZbucRmh3E13FzGd5EInbzRSrhm3lorZMiaicm62XyT21NA/640?wx_fmt=png"/></p><p>可以看到识别规则会包含一些逻辑运算符，原作者只使用了正则来粗略的处理，感觉误报会很多，于是我用“后缀表达式”的方法来识别这些运算符，感觉算是可以完美处理这些规则了。</p><p><br/></p><p>支持 body="" titile="" 这些语法，支持 &amp;&amp; || ( ) 等的运算符。同时也把sqlite数据导出为json格式，然后自己也加了一些识别规则。</p><p><br/></p><p>p s: 用类似表达式的方式来作指纹识别，只访问一次首页就能得出结果，用各种运算符来保证准确性，感觉挺不错的。</p><p style="text-align: center;"><img class="rich_pages js_insertlocalimg" data-ratio="0.84140625" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/eLgL5R4W3FjaeFaZO7IibdI23XqhiaGO4coq07tQTsAbpoIYib60eB8vEwhWrLjAp9K890ZQGwMTbNv59CVE3kBlA/640?wx_fmt=png" data-type="png" data-w="1280" style="" src="../Images/a09a5ba41d494f2bd8995bdd3e1a771b.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/eLgL5R4W3FjaeFaZO7IibdI23XqhiaGO4coq07tQTsAbpoIYib60eB8vEwhWrLjAp9K890ZQGwMTbNv59CVE3kBlA/640?wx_fmt=png"/></p><p>最终运行脚本结果</p><p style="text-align: center;"><img class="rich_pages js_insertlocalimg" data-ratio="0.34710743801652894" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/eLgL5R4W3FjaeFaZO7IibdI23XqhiaGO4cCkib6Cj0LSWX1tyXpJMr9YeS177dwxeQRck5bUibea5KMCewWqLMHbQg/640?wx_fmt=png" data-type="png" data-w="726" style="" src="../Images/9b05cbee953c0a4838c0e12cd98bdd76.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/eLgL5R4W3FjaeFaZO7IibdI23XqhiaGO4cCkib6Cj0LSWX1tyXpJMr9YeS177dwxeQRck5bUibea5KMCewWqLMHbQg/640?wx_fmt=png"/></p><p><br/></p><p>因为指纹库比较大，微信公众号贴出来有点卡，大家在公众号回复 fofa脚本 即可获取</p>
+        
+</body>
+</html>

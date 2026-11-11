@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>搭建自己的docker镜像仓库（一）</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>搭建自己的docker镜像仓库（一）</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650746187&amp;idx=1&amp;sn=df869e67bd7cebca0c92db690c345a55&amp;chksm=87148c4bb063055dc18a5377474772478c820da4e8aef985daa01cf01bec59162798bf3be85b&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650746187&amp;idx=1&amp;sn=df869e67bd7cebca0c92db690c345a55&amp;chksm=87148c4bb063055dc18a5377474772478c820da4e8aef985daa01cf01bec59162798bf3be85b&amp;scene=27#wechat_redirect</a></blockquote><p>之前不是研究kubernetes without docker么，感兴趣的往前边翻两个blog，那时说到这不用docker了，本地镜像不能用，很麻烦，就想着如果自己搭建一个本地私有的docker镜像仓库是不是就能方便很多，</p><p>解这个问题得分两步，第一步是搭建个本地私有的docker镜像仓库，这个拿docker环境做测试就可以；第二步是让containerd能够使用这个本地私有的docker镜像仓库，</p><p>本周咱们先来说第一步......中的第一种情况（哈哈，为了能多发几期blog），</p><p>1、http不带用户名密码认证的情况</p><p>这个最简单，docker run -d -p 5000:5000 --restart=always --privileged=true -v /root/docker/registry:/var/lib/registry registry，</p><p>测试也很简单，先从docker hub上下载个镜像，</p><p>docker pull rastasheep/ubuntu-sshd:14.04，</p><p>然后给这个镜像改个标签，</p><p>docker tag rastasheep/ubuntu-sshd:14.04 192.168.137.25:5000/rastasheep/ubuntu-sshd:14.04，</p><p>本地再修改docker的配置，指示可以不安全的访问这个本地仓库，</p><p>sudo vim /etc/docker/daemon.json，<br/>{ "insecure-registries":["192.168.137.25:5000"] }</p><p>重启服务，sudo service docker restart，</p><p>这就可以向仓库传镜像了，docker push 192.168.137.25:5000/rastasheep/ubuntu-sshd:14.04，</p><p>查看镜像，curl http://192.168.137.25:5000/v2/_catalog，<br/></p><p>把本地的镜像删掉，再从这个本地仓库把镜像下载回来，</p><p>docker pull 192.168.137.25:5000/rastasheep/ubuntu-sshd:14.04，</p><p>如果是kubernetes环境的话，创建个deployment，</p><p>sudo vim sshd-deployment.yaml，<br/>apiVersion: apps/v1<br/>kind: Deployment<br/>metadata:<br/>  name: sshd<br/>  labels:<br/>    app: sshd<br/>spec:<br/>  selector:<br/>    matchLabels:<br/>      app: sshd<br/>  template:<br/>    metadata:<br/>      labels:<br/>        app: sshd<br/>    spec:<br/>      containers:<br/>      - name: sshd<br/>        image: 192.168.137.25:5000/rastasheep/ubuntu-sshd:14.04<br/>        imagePullPolicy: IfNotPresent<br/>        ports:<br/>        - containerPort: 22</p><p>kubectl apply -f sshd-deployment.yaml，<br/>kubectl get pod -o wide，就能看到使用本地镜像仓库创建的pod了，</p><p>下期咱们继续看https不带用户名密码认证的情况。</p>
+        
+</body>
+</html>

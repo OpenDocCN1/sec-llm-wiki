@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Apache OFBiz 序列化远程代码执行漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Apache OFBiz 序列化远程代码执行漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxMjYyMzkwOA==&amp;mid=2247490238&amp;idx=1&amp;sn=0df4415f5459524146f53af404b3c7de&amp;chksm=9bae53f5acd9dae3138a19ae428d4c1d29f8cd6ce44b7386d99e88512a3173f2ba7c0d85865c&amp;scene=126&amp;sessionid=1681670087#rd">http://mp.weixin.qq.com/s?__biz=MzAxMjYyMzkwOA==&amp;mid=2247490238&amp;idx=1&amp;sn=0df4415f5459524146f53af404b3c7de&amp;chksm=9bae53f5acd9dae3138a19ae428d4c1d29f8cd6ce44b7386d99e88512a3173f2ba7c0d85865c&amp;scene=126&amp;sessionid=1681670087#rd</a></blockquote><p style="text-align: center;"><img class="rich_pages js_insertlocalimg" data-ratio="0.521978021978022" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/rWGOWg48tacXFq19BUIp12alEX4Dg5ia3wMY1glwFf3dmWLiasptgd5pDRVHdm87Q3JSWMiaWZ2Qh38iafgmNbNLeA/640?wx_fmt=jpeg" data-type="jpeg" data-w="728" style="" src="../Images/c6bb163f2b87faac791d53750c56fb56.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/rWGOWg48tacXFq19BUIp12alEX4Dg5ia3wMY1glwFf3dmWLiasptgd5pDRVHdm87Q3JSWMiaWZ2Qh38iafgmNbNLeA/640?wx_fmt=jpeg"/></p><p>周五，Apache软件基金会（Apache Software Foundation）解决了Apache OFBiz中的一个严重漏洞，该漏洞可能允许未经身份验证的对手远程夺取对开源企业资源计划（ERP）系统的控制权。</p><p><br/></p><p>跟踪为CVE-2021-26295，这个安全漏洞影响之前，该软件的所有版本的06年12月17日，并采用了“不安全反序列化”作为攻击向量允许未经授权的远程攻击者在服务器上直接执行任意代码。</p><p><br/></p><p>OFBiz是用于自动化企业流程的基于Java的Web框架，并提供广泛的功能，包括会计，客户关系管理，制造运营管理，订单管理，供应链履行和仓库管理系统等。</p><p><br/></p><p>具体来说，通过利用此漏洞，恶意方可以篡改序列化的数据以插入任意代码，这些代码在反序列化时可能会导致远程执行代码。</p><p><br/></p><p>OFBiz开发人员Jacques Le Roux指出：“未经身份验证的攻击者可以利用此漏洞成功接管Apache OFBiz 。”</p><p><br/></p><p>不安全的反序列化已成为数据完整性和其他安全问题的根源，开放Web应用程序安全项目（OWASP）指出“不可信的数据不能被信任以形成良好的格式，并且[格式不正确的数据或意外的数据可能是不正确的。用于反序列化时滥用应用程序逻辑，拒绝服务或执行任意代码。”</p><p><br/></p><p>云漏洞穿透箭头实验室的r00t4dm，奇安信集团的Legendsec SGLAB的MagicZero和Knownsec 404团队的Longofo在报告漏洞方面功不可没。</p><p><br/></p><p>建议将Apache OFBiz升级到最新版本（17.12.06），以减轻与该漏洞相关的风险。</p><p><br/></p><p><strong>参考：</strong></p><p>https://cwiki.apache.org/confluence/display/OFBIZ/The+infamous+Java+serialization+vulnerability</p><p><br/></p><p>https://issues.apache.org/jira/browse/OFBIZ-12167</p><p style="text-align: center;"><img class="rich_pages" data-ratio="0.6" data-src="https://mmbiz.qpic.cn/mmbiz_gif/rWGOWg48tad4ibbaQIgGf92uiaVSbhLoYGFIouV6Z2F5uldtlcn9MtEd4djgzCsl4aWPjjBCP9djOVz5SgTGVh4A/640?wx_fmt=gif" data-type="gif" data-w="1000" style="" src="../Images/0c0a48aeb9daeb5a54ecc10eb8417b97.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_gif/rWGOWg48tad4ibbaQIgGf92uiaVSbhLoYGFIouV6Z2F5uldtlcn9MtEd4djgzCsl4aWPjjBCP9djOVz5SgTGVh4A/640?wx_fmt=gif"/></p><p><br/></p>
+        
+</body>
+</html>

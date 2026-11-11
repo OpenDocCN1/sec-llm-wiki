@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>使用FPM快速生成RPM包</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>使用FPM快速生成RPM包</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NjQ4MjYwMQ==&amp;mid=200349098&amp;idx=3&amp;sn=19d4c572dd10bb4cb6827fa3ed2e1829&amp;chksm=28ed2eec1f9aa7fa9108e66b8f4c764ebc50507f4b0cd22d7aa8dc7c5fd7a56cfcc5a9cc2b91&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NjQ4MjYwMQ==&amp;mid=200349098&amp;idx=3&amp;sn=19d4c572dd10bb4cb6827fa3ed2e1829&amp;chksm=28ed2eec1f9aa7fa9108e66b8f4c764ebc50507f4b0cd22d7aa8dc7c5fd7a56cfcc5a9cc2b91&amp;scene=27#wechat_redirect</a></blockquote><p style="word-wrap: break-word; margin-top: 10px; margin-bottom: 10px; padding: 0px; line-height: 2em; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; white-space: normal; background-color: rgb(255, 255, 255);">许多朋友始终觉得RPM难做，主要是因为SPEC规则比较多，需要花精力去了解和熟悉。之前试用一个叫checkinstall的工具，可以自动打RPM包。很久没有维护了，在CentOS6上编译有问题。虽然也有网友给打了Patch，最终能用起来，可惜使用过程中还是会遇到诸多错误。</p><p style="word-wrap: break-word; margin-top: 10px; margin-bottom: 10px; padding: 0px; line-height: 2em; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; white-space: normal; background-color: rgb(255, 255, 255);">如今巧遇FPM，一行命令就搞定RPM包！</p><p style="word-wrap: break-word; margin-top: 10px; margin-bottom: 10px; padding: 0px; line-height: 2em; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; white-space: normal; background-color: rgb(255, 255, 255);"/><p style="word-wrap: break-word; margin-top: 10px; margin-bottom: 10px; padding: 0px; line-height: 2em; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; white-space: normal; background-color: rgb(255, 255, 255);">一、我们来先安装FPM：</p><pre class="prettyprint linenums prettyprinted" style="word-wrap: break-word; width: 646.390625px; margin: 10px 15px; padding: 1em 2em; white-space: pre-wrap; border: 2px solid rgb(0, 170, 255); color: rgb(238, 238, 238); font-size: 14px; line-height: 25.200000762939453px; background-color: rgb(51, 51, 51);"># FPM是Ruby模块
+yum -y install ruby rubygems ruby-devel
+# 添加淘宝的Ruby仓库
+gem sources -a 
+# 移除原生的Ruby仓库
+gem sources --remove 
+# 安装fpm
+gem install fpm</pre><p style="word-wrap: break-word; margin-top: 10px; margin-bottom: 10px; padding: 0px; line-height: 2em; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; white-space: normal; background-color: rgb(255, 255, 255);">二、官网介绍了用FPM打deb包，我来翻译成rpm版：</p><pre class="prettyprint linenums prettyprinted" style="word-wrap: break-word; width: 646.390625px; margin: 10px 15px; padding: 1em 2em; white-space: pre-wrap; border: 2px solid rgb(0, 170, 255); color: rgb(238, 238, 238); font-size: 14px; line-height: 25.200000762939453px; background-color: rgb(51, 51, 51);"># 去nodejs官网下载最新源码包
+wget 
+ # 解压
+ tar zxvf node-v0.10.12.tar.gz -C /dev/shm/
+ # 进入源码目录
+ cd /dev/shm/node-v0.10.12/
+ # 指定配置参数
+ ./configure --prefix=/usr --dest-cpu=x64 --dest-os=linux
+ # 使用多核编译
+ make -j24mkdir /dev/shm/node-root
+ # 指定安装路径
+ make -j24 install DESTDIR=/dev/shm/node-root
+ # 生成RPM
+ fpm -f -s dir -t rpm -n nodejs --epoch 0 -v 0.10.12 --iteration 1.el6 -C /dev/shm/node-root -p ~/rpmbuild/RPMS/x86_64/ -d 'openssl &gt;= 0.9.8'  -d 'libstdc++ &gt;= 4.4.3' --verbose --category 'Development/Languages' --description 'Node.js real-time applications' --url 'nodejs.org' --license 'BSD' -m 'higkoo' --no-rpm-sign --workdir /dev/shm usr/bin usr/lib usr/share
+ # 查看RPM包信息
+ rpm -qpi ~/rpmbuild/RPMS/x86_64/nodejs-0.10.12-1.el6.x86_64.rpm</pre><p style="word-wrap: break-word; margin-top: 10px; margin-bottom: 10px; padding: 0px; line-height: 2em; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; white-space: normal; background-color: rgb(255, 255, 255);">三、查看安装包信息：</p><p style="word-wrap: break-word; margin-top: 10px; margin-bottom: 10px; padding: 0px; line-height: 2em; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; white-space: normal; background-color: rgb(255, 255, 255);"><img data-src="http://img.linux.net.cn/data/attachment/album/201406/11/223716bxna4z4z1ohdk14k.jpg" width="758" height="733" style="word-wrap: break-word; max-width: 700px; margin: 10px 15px;" src="../Images/513a13d291d648055573fbf88ff5f5d8.png" data-original-src="http://img.linux.net.cn/data/attachment/album/201406/11/223716bxna4z4z1ohdk14k.jpg"/></p><p style="word-wrap: break-word; margin-top: 10px; margin-bottom: 10px; padding: 0px; line-height: 2em; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; white-space: normal; background-color: rgb(255, 255, 255);"> 小技巧：'-e' 参数支持打包之前手动修改FPM自动生成的SPEC文件，然后再打包。不过注意CentOS5和CentOS6之间的rpm包不能混用，因为他们之间的glibc版本不同，动态库链接不上。</p><p style="word-wrap: break-word; margin-top: 10px; margin-bottom: 10px; padding: 0px; line-height: 2em; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; white-space: normal; background-color: rgb(255, 255, 255);"> OK，没玩过就赶紧动手吧！</p><p style="word-wrap: break-word; margin-top: 10px; margin-bottom: 10px; padding: 0px; line-height: 2em; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; white-space: normal; background-color: rgb(255, 255, 255);">via : http://hi.baidu.com/higkoo/item/204c61c0d450ca3098b4980c </p><p style="word-wrap: break-word; margin-top: 10px; margin-bottom: 10px; padding: 0px; line-height: 2em; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; white-space: normal; background-color: rgb(255, 255, 255);">本文地址：http://linux.cn/article-3184-1.html</p><p><img data-src="http://img.linux.net.cn/static/image/common/weixin_sign_1.png" style="" src="../Images/25a3067db826ab8f919f5769d91856e4.png" data-original-src="http://img.linux.net.cn/static/image/common/weixin_sign_1.png"/><span style=""> </span></p>
+        
+</body>
+</html>

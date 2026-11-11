@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>SIGRed：一个可疑的远程代码执行漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>SIGRed：一个可疑的远程代码执行漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxMjYyMzkwOA==&amp;mid=2247487135&amp;idx=1&amp;sn=4558ec883e62a26ade8e8c0fdde5b774&amp;chksm=9bae47d4acd9cec2dbb633c1ef1e7730e7156b5694e7b2f8a7ddd6ab90837d70ec3f5e40abe9&amp;scene=126&amp;sessionid=1681670167#rd">http://mp.weixin.qq.com/s?__biz=MzAxMjYyMzkwOA==&amp;mid=2247487135&amp;idx=1&amp;sn=4558ec883e62a26ade8e8c0fdde5b774&amp;chksm=9bae47d4acd9cec2dbb633c1ef1e7730e7156b5694e7b2f8a7ddd6ab90837d70ec3f5e40abe9&amp;scene=126&amp;sessionid=1681670167#rd</a></blockquote><p>攻击者经常滥用Windows DNS服务器来访问目标网络。SIGRed的最新发现是Windows DNS服务器中的关键，可蠕虫远程执行代码（RCE）漏洞，很可能证明是威胁行为者的头疼事件。</p><p><br/></p><p><strong>这不仅仅是另一个漏洞</strong></p><p>Check Point安全研究员Sagi Tzaik发现了该漏洞（CVE-2020-1350），该漏洞已存在于操作系统代码中长达17年。成功利用此漏洞可能会产生严重影响。</p><ul class="list-paddingleft-2" style="list-style-type: disc;"><li><p>微软警告说，该漏洞（CVSS基本得分为10.0）可能使攻击者能够对Windows DNS服务器（从2003年到2019年的版本）进行恶意DNS查询，并实现任意代码执行，从而可能导致组织整体受到破坏。基础设施。</p></li><li><p>当由恶意DNS查询触发时，该漏洞导致基于堆的缓冲区溢出，从而使攻击者可以控制服务器，并使他们有可能阻塞和操纵用户的电子邮件和网络流量，使服务无法访问，以及窃取用户的敏感数据。</p></li><li><p>如果遭到破坏，攻击者还将被授予域管理员权限。在有限的情况下，可以通过Internet Explorer和Microsoft Edge（基于非Chromium）中的浏览器会话远程触发该漏洞。</p><p><br/></p></li></ul><p><br/></p><p><strong>DNS服务器威胁</strong></p><ul class="list-paddingleft-2" style="list-style-type: disc;"><li><p>对于使用基于DNS的技术渗透到最终用户和公司网络的网络犯罪分子而言，DNS已成为越来越有吸引力的攻击媒介。</p></li><li><p>2020年6月，发现了一个被称为Alina的Windows销售点（POS）恶意软件，它使用DNS协议将被盗的信用卡走私到攻击者控制下的远程服务器。</p></li><li><p>2020年4月，黑客获得了Linksys Smart Wi-Fi帐户的访问权限，此后，他们更改了家用路由器的DNS服务器设置，并将用户重定向到以COVID19为主题的恶意应用程序。</p></li></ul><p><br/></p><p><strong>漏洞修复</strong></p><p>Microsoft已发布Windows DNS服务器中CVE-2020-1350漏洞的修补程序。Microsoft还提供了另一种基于注册表的解决方法。</p><p style="text-align: center;"><img class="rich_pages" data-ratio="0.6" data-src="https://mmbiz.qpic.cn/mmbiz_gif/rWGOWg48tafvLeILuF3odXiciahDLt4uuALbNBs8KKAuUvn5kaViaupgkt4YlIg4zGuF0gX1tN2UbFnMicDgPn3Hpg/640?wx_fmt=gif" data-type="gif" data-w="640" style="" src="../Images/c1db0b918e10f7eb63442cd1a66da60b.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_gif/rWGOWg48tafvLeILuF3odXiciahDLt4uuALbNBs8KKAuUvn5kaViaupgkt4YlIg4zGuF0gX1tN2UbFnMicDgPn3Hpg/640?wx_fmt=gif"/></p>
+        
+</body>
+</html>

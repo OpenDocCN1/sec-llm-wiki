@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>基于HTTP头部的注入</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>基于HTTP头部的注入</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247484281&amp;idx=2&amp;sn=5af02f238108b1f5029931fbd2c182d0&amp;chksm=f9e06c22ce97e534718566a4d3e87c71e276f8d555f0a527b4c6aac750a0e6ccd8edbb5830bd&amp;scene=126&amp;sessionid=1681663517#rd">http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247484281&amp;idx=2&amp;sn=5af02f238108b1f5029931fbd2c182d0&amp;chksm=f9e06c22ce97e534718566a4d3e87c71e276f8d555f0a527b4c6aac750a0e6ccd8edbb5830bd&amp;scene=126&amp;sessionid=1681663517#rd</a></blockquote><p>常见的sql注入一般都是通过表单或请求参数进行注入，但这里给出的例子是通过HTTP协议头部进行注入。</p><p><br/></p><p>例如一个的请求如下：</p><p><br/></p><p>GET / HTTP/1.1</p><p>Host: www.example.com</p><p>Connection: keep-alive</p><p>Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8</p><p>Upgrade-Insecure-Requests: 1</p><p>User-Agent: Mozilla/5.0'(select*from(select(sleep(20)))a) #</p><p>Accept-Encoding: gzip, deflate, sdch</p><p>Accept-Language: en-US,en;q=0.8,fr;q=0.6</p><p><br/></p><p>这里看起来都很正常，但仔细看HTTP协议的User-Agent头部为“Mozilla/5.0’(select*from(select(sleep(20)))a) #”。其中“select * from (select(sleep(20)))”是不正常的，可能是攻击者正在注入攻击。</p><p><br/></p><p>这里的攻击主要是让数据库什么也不干而睡眠20秒，从而浪费数据库处理线程。这是一个简单的注入，除此之外还能进行更多复杂的攻击。</p><p><br/></p><p>一般获取头部的信息用于数据分析，例如这里获取User-Agent就可以知道客户都是通过什么浏览器访问系统的。jsp中直接通过request.getHeader("User-Agent")就可以获取到该值，接着可能就直接保存到数据库了，Mozilla/5.0’(select*from(select(sleep(20)))a) #中的#号在数据库中作为注释符号，它产生的sql可能如下：</p><p><br/></p><p>INSERT INTO visits (useragent, datetime) VALUES ('Mozilla/5.0', (select*from(select(sleep(20)))a)) #', '2016-06-13 13:00:06')</p><p><br/></p><p>这时#号后面都被注释掉了，于是数据库睡眠了20秒。</p><p><br/></p><p><br/></p><p><br/></p><p>查看更多文章，关注下方二维码</p><p><img class="" data-ratio="1" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/p5qELRDe5ickAiax1Nv77rYNEC3sRgfAkw8hAX4rSjibP0FMnud3ZM4f0Jc7nkoCL2t8STuhTbnuxj6W6T8JumElA/640?wx_fmt=jpeg" data-type="jpeg" data-w="258" style="visibility: visible !important; width: auto !important; height: auto !important;" width="auto" src="../Images/60bd80188885b005ab426369f4086902.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/p5qELRDe5ickAiax1Nv77rYNEC3sRgfAkw8hAX4rSjibP0FMnud3ZM4f0Jc7nkoCL2t8STuhTbnuxj6W6T8JumElA/640?wx_fmt=jpeg"/></p><p><br/></p>
+        
+</body>
+</html>

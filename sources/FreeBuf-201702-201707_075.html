@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>企业安全建设之路：端口扫描（下）</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>企业安全建设之路：端口扫描（下）</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=2651064109&amp;idx=1&amp;sn=9ee8517a356d3bc3e94afad99006bf27&amp;chksm=bd1f95a68a681cb0f9f66e1a2c220e08cb72be009e7e22459abd97d534d3a559740507984caf&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=2651064109&amp;idx=1&amp;sn=9ee8517a356d3bc3e94afad99006bf27&amp;chksm=bd1f95a68a681cb0f9f66e1a2c220e08cb72be009e7e22459abd97d534d3a559740507984caf&amp;scene=27#wechat_redirect</a></blockquote><p style="text-align: center; margin-top: 5px; margin-bottom: 15px;"><span style="font-size: 15px; color: rgb(178, 178, 178);">*本文原创作者：bt0sea，本文属FreeBuf原创奖励计划，未经许可禁止转载</span></p><h2 style="margin-top: 15px; margin-bottom: 15px;"><strong><span style="font-size: 18px;">0x00、前言</span></strong><span style="font-size: 15px;"><br/></span></h2><p style="margin-top: 15px; margin-bottom: 15px;"><strong><span style="color: rgb(61, 167, 66); font-size: 15px;">在企业安全建设过程当中，我们也不断在思考，做一个什么样的端口扫描才能企业业务需求。同时，伴随着企业私有云、混合云以及公有云业务部署环境的不断变化，我们适当也要对扫描策略做调整。前期的端口扫描设计在http://www.freebuf.com/articles/rookie/128526.html</span></strong></p><p style="margin-top: 15px; margin-bottom: 15px;"><strong><span style="color: rgb(61, 167, 66); font-size: 15px;">在本文各个部分有所变动。</span></strong></p><h2 style="margin-top: 15px; margin-bottom: 15px;"><strong><span style="font-size: 18px;">0x01、详细设计</span></strong></h2><p style="margin-top: 15px; margin-bottom: 15px;"><img width="690" height="534" class="selected" style="border: 0px; text-align: center; color: rgb(51, 51, 51); font-family: arial,sans-serif; font-size: 16px; margin-right: 5px; margin-left: 5px; vertical-align: middle; white-space: normal; cursor: pointer; max-height: 100%; box-shadow: 0px 0px 0px 4px rgb(204,204,204);" data-ratio="0.7739130434782608" data-type="jpeg" data-w="690" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR39n81bOfEO6vJ4Rbcvicub7GbxkF7R4fkrBOth4Zxfordyk5KfnpiccMcwNgFtTOjia1fFAex5iaJVPqQ/0?wx_fmt=jpeg" src="../Images/448fb050776d3e3e843b63ea61079d4b.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR39n81bOfEO6vJ4Rbcvicub7GbxkF7R4fkrBOth4Zxfordyk5KfnpiccMcwNgFtTOjia1fFAex5iaJVPqQ/0?wx_fmt=jpeg"/><br/></p><h3 style="margin-top: 15px; margin-bottom: 15px;"><strong><span style="font-size: 15px; color: rgb(0, 82, 255);">@1、各个模块之间的交互：</span></strong></h3><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">一开始都是把产品想的特别完美，</span></p><blockquote><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">（1）  Web控制端</span></p><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">（2）  worker工作节点</span></p><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">（3）  存储扫描结果（maybe： HDFS）</span></p></blockquote><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">这样实现起来比较麻烦，当时说使用celery做调度，后来发现，celery对django有版本要求，超过1.10版本不成。等等现实问题。其实celery也是redis做调度数据同步。有时间可以自己做。</span></p><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">其实Web控制端和worker可以使用数据库做交互。用户通过Web控制端设置扫描策略和查看报表。Worker读取数据库中的配置信息，执行扫描任务，把扫描结果存储到数据库。</span></p><h3 style="margin-top: 15px; margin-bottom: 15px;"><strong><span style="font-size: 15px; color: rgb(0, 82, 255);">@2、功能需求</span></strong></h3><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">在对端口扫描功能的选型上，为啥选择nmap，</span></p><blockquote><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">（1）  很多商用扫描器也是集成nmap扫描结果，例如：rapid7 Vulnerability Management。</span></p><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">（2）  nmap扫描速度，肯定没有masscan、Zmap快，但是扫描结果有对服务banner和版本的探测，更重要的是有操作系统的探测。在云平台部署zmap等无状态扫描，会瞬间发出大量数据包，公有云EIP带宽QoS超过会立刻丢弃，对扫描结果有很大影响。</span></p><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">（3）  libnmap 对扫描结果解析的相对完美，方便的提取我想要的数据到数据库中。</span></p></blockquote><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">端口扫描后，我们还能做什么？</span></p><blockquote><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">（1）  个人认为第一需求就是对新暴发的漏洞做企业内部评估。前几天的WannaCry就是445端口对外开发又可能触发MS-17-010的RCE。这里我集成了巡风漏洞扫描组件。</span></p><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">（2）  评估高危端口变化趋势，也是衡量企业安全管理人员工作成果的一个手段。</span></p><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">（3）  对企业内部部门漏洞分布有清晰的了解</span></p></blockquote><h2 style="margin-top: 15px; margin-bottom: 15px;"><strong><span style="font-size: 18px;">0x02、交互设计</span></strong></h2><h2 style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">与用户交互部分，因为是安全管理员用，所以简单做。Axure是一个好的交互工具，可以帮助你梳理业务逻辑。</span></h2><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">按照模块分：</span></p><h3 style="margin-top: 15px; margin-bottom: 15px;"><strong><span style="font-size: 15px;">（1）扫描配置</span></strong></h3><p style="margin-top: 15px; margin-bottom: 15px;"><img width="690" height="280" style="border: 0px; margin-right: 5px; margin-left: 5px; vertical-align: middle; cursor: pointer; max-height: 100%;" data-ratio="0.4057971014492754" data-type="jpeg" data-w="690" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR39n81bOfEO6vJ4Rbcvicub7GOuSLAj85nFfn1ibTtLxX8Kg5qwJuGblSLicBpsuoiaKgnkdnHT6ljiaaXQ/0?wx_fmt=jpeg" src="../Images/14a7130a07dc0dbf59467ef50a1eace6.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR39n81bOfEO6vJ4Rbcvicub7GOuSLAj85nFfn1ibTtLxX8Kg5qwJuGblSLicBpsuoiaKgnkdnHT6ljiaaXQ/0?wx_fmt=jpeg"/><br/></p><p style="margin-top: 15px; margin-bottom: 15px;"><strong><span style="font-size: 15px;">（2）扫描报表</span></strong></p><p style="margin-top: 15px; margin-bottom: 15px;"><img width="690" height="372" style="border: 0px; margin-right: 5px; margin-left: 5px; vertical-align: middle; cursor: pointer; max-height: 100%;" data-ratio="0.5391304347826087" data-type="jpeg" data-w="690" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR39n81bOfEO6vJ4Rbcvicub7GV0g8uX69oDLICneUfQibV0wmt1ZUricv66DzeT49wibF1HgcNverXBibug/0?wx_fmt=jpeg" src="../Images/df04d5cb4546b2160cc77dbf09dcdd97.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR39n81bOfEO6vJ4Rbcvicub7GV0g8uX69oDLICneUfQibV0wmt1ZUricv66DzeT49wibF1HgcNverXBibug/0?wx_fmt=jpeg"/><br/></p><h2 style="margin-top: 15px; margin-bottom: 15px;"><strong><span style="font-size: 18px;">0x03、前端实现</span></strong></h2><p style="margin-top: 15px; margin-bottom: 15px;"><img width="690" height="442" style="border: 0px; margin-right: 5px; margin-left: 5px; vertical-align: middle; cursor: pointer; max-height: 100%;" data-ratio="0.6405797101449275" data-type="jpeg" data-w="690" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR39n81bOfEO6vJ4Rbcvicub7G8L9jyibFOvX73x0ku5QoZXaq0M2CK8hBtC5JsfRuPrV9CYibYDDpG5ow/0?wx_fmt=jpeg" src="../Images/608f46e57b171aa2cab7fd50d2877006.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR39n81bOfEO6vJ4Rbcvicub7G8L9jyibFOvX73x0ku5QoZXaq0M2CK8hBtC5JsfRuPrV9CYibYDDpG5ow/0?wx_fmt=jpeg"/><br/></p><p style="margin-top: 15px; margin-bottom: 15px;"><img width="690" height="365" style="border: 0px; margin-right: 5px; margin-left: 5px; vertical-align: middle; cursor: pointer; max-height: 100%;" data-ratio="0.5289855072463768" data-type="jpeg" data-w="690" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR39n81bOfEO6vJ4Rbcvicub7GehLFV5qAh2nG930amElbibwC4jicEoUf3y2Ym9QEwe7A5BB7yibPhalVg/0?wx_fmt=jpeg" src="../Images/f50b27468f10123acb43252dd6ef12b5.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR39n81bOfEO6vJ4Rbcvicub7GehLFV5qAh2nG930amElbibwC4jicEoUf3y2Ym9QEwe7A5BB7yibPhalVg/0?wx_fmt=jpeg"/><br/></p><p style="margin-top: 15px; margin-bottom: 15px;"><img width="690" height="377" style="border: 0px; margin-right: 5px; margin-left: 5px; vertical-align: middle; cursor: pointer; max-height: 100%;" data-ratio="0.5463768115942029" data-type="jpeg" data-w="690" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR39n81bOfEO6vJ4Rbcvicub7Gge3iaSyNlyDfxsqczhvF78PWt5mcNwYQfIPPiaF3dQhRtHdOJibbWPFQw/0?wx_fmt=jpeg" src="../Images/44727700a2ee086a45b5e2d84bca8bbe.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR39n81bOfEO6vJ4Rbcvicub7Gge3iaSyNlyDfxsqczhvF78PWt5mcNwYQfIPPiaF3dQhRtHdOJibbWPFQw/0?wx_fmt=jpeg"/><br/></p><h3 style="margin-top: 15px; margin-bottom: 15px;"><strong><span style="font-size: 15px;">（1）开发环境建立：</span></strong><br/></h3><blockquote><pre><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">brew install nodejs
+npm install webpack –g
+npm install --global vue-cli
+vue init webpack CloudPScan
+cd CloudPScan
+npm install
+npm install vue-resource
+npm install element-ui
+
+设置代理 config/dev.index.js</span><br/></p></pre></blockquote><blockquote><pre><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">module.exports = {
+  //...
+ dev: {
+    proxyTable: {
+     // proxy all requests starting with /api to http://127.0.0.1:8000
+     '/api': {
+       target: 'http://127.0.0.1:8000',
+       changeOrigin: true,
+     }
+}
+}</span><br/></p></pre></blockquote><h3 style="margin-top: 15px; margin-bottom: 15px;"><strong><span style="font-size: 15px;">（2）创建页面路由</span></strong><br/></h3><blockquote><pre><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">import Vue from 'vue'
+import Routerfrom 'vue-router'
+
+import LoginViewfrom '@/components/LoginView'
+import MainViewfrom '@/components/MainView'
+import ScanSettingViewfrom '@/components/ScanSettingView'
+import ScanReportViewfrom '@/components/ScanReportView'
+
+import ElementUIfrom 'element-ui'
+import 'element-ui/lib/theme-default/index.css'
+
+import VueResourcefrom 'vue-resource'
+
+Vue.use(ElementUI)
+Vue.use(Router)
+Vue.use(VueResource)
+
+export default new Router({
+  routes: [
+    {
+      path: '/',
+      name: 'LoginView',
+      component: LoginView
+    }
+    , {
+      path: '/MainView',
+      name: 'MainView',
+      component: MainView,
+      children: [{
+        name: 'ScanSettingView',
+        path: '/ScanSettingView',
+        component: ScanSettingView
+      }, {
+        name: 'ScanReportView',
+        path: '/ScanReportView',
+        component: ScanReportView
+      }]
+    }
+  ]
+})<br/></span><br/></p></pre></blockquote><h3 style="margin-top: 15px; margin-bottom: 15px;"><strong><span style="font-size: 15px;">（3）登陆页面</span></strong></h3><blockquote><pre><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">&lt;template&gt;
+  &lt;div class="logincontainer" align="center"&gt;
+    &lt;div class="form-signin" &gt;
+      &lt;img  alt="云平台扫描系统"&gt;
+    &lt;/div&gt;
+    &lt;div class="form-signin--form" align="center"&gt;
+      &lt;el-tabs&gt;
+        &lt;el-form label-position="center" @submit.native.prevent="doLogin" auto-complete="on" label-width="80px"&gt;
+          &lt;el-form-item label="用户" :required ='true'&gt;
+            &lt;el-input v-model="params.username" auto-complete="on"&gt;&lt;/el-input&gt;
+          &lt;/el-form-item&gt;
+          &lt;el-form-item label="密码" :required ='true'&gt;
+            &lt;el-input type="password" v-model="params.password" auto-complete="on"&gt;&lt;/el-input&gt;
+          &lt;/el-form-item&gt;
+          &lt;el-form-item&gt;
+            &lt;el-button type="primary" native-type="submit" style="width:180px;text-align:center;"&gt;登录&lt;/el-button&gt;
+            &lt;p v-if="fail" class="alert alert-danger"&gt;
+              {{ msg }}
+            &lt;/p&gt;
+          &lt;/el-form-item&gt;
+        &lt;/el-form&gt;
+      &lt;/el-tabs&gt;
+      &lt;div class="sl-login_copyright"&gt;
+        GSGSoft Research &lt;br/&gt;© 2017 GSGSoft Tech.
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/template&gt;<br/></span></p></pre></blockquote><blockquote><pre><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">&lt;script&gt;
+export default {
+  name: 'LoginView'
+  , data: function () {
+    return {
+      fail: true
+      , msg: ''
+      , params: {
+        username: ''
+        , password: ''
+      }
+    }
+  }
+  , methods: {
+    doLogin () {  //这个地方的处理就忽略了，其实就是请求查询数据库是否匹配提交的账号和密码，如果匹配然后跳转
+      this.$router.replace({
+        path: '/MainView'
+      })
+    }
+  }
+  , created () {
+  }
+}
+&lt;/script&gt;<br/></span></p></pre></blockquote><h3 style="margin-top: 15px; margin-bottom: 15px;"><strong><span style="font-size: 15px;">【详细内容可以点击原文查看】</span></strong></h3><h2 style="margin-top: 15px; margin-bottom: 15px;"><strong><span style="font-size: 18px;">0x04、后端实现</span></strong></h2><h3 style="margin-top: 15px; margin-bottom: 15px;"><strong><span style="font-size: 15px;">（1）数据库设计</span></strong></h3><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">配置保存表：主要是保存用户输入的扫描配置记录，包括任务名称、扫描开始IP、扫描结束IP、扫描周期、扫描进度。</span><br/></p><blockquote><pre><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">CREATE TABLE scanconf
+(
+   id INTEGER DEFAULT nextval('table_name_id_seq'::regclass) PRIMARY KEYNOT NULL,
+   ipconf_startip TEXT,
+   ipconf_endip TEXT,
+   looptime INTEGER,
+   task_id TEXT,
+   scanstate TEXT
+);
+CREATE UNIQUE INDEX table_name_id_uindex ONscanconf (id);</span><br/></p></pre></blockquote><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">数据保存表：包含任务名称、创建时间、IP地址、端口、服务、产品、产品版本、产品额外信息、操作系统、对应用户名称、对应的用户部门。</span><br/></p><blockquote><pre><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">CREATE TABLE scanresult_20170609
+(
+   task_id TEXT,
+   ctime TEXT,
+   address TEXT,
+   port TEXT,
+   service TEXT,
+   product TEXT,
+   product_version TEXT,
+    product_extrainfo TEXT,
+   os TEXT,
+   eip TEXT,
+   business TEXT
+);</span><br/></p></pre></blockquote><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">漏洞类型描述：主要是把漏洞信息记录到数据库中。例如：</span></p><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">st2_eval     Struts2</span></p><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">远程代码执行    </span></p><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">可直接执行任意代码，</span></p><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">进而直接导致服务器被入侵控制。     </span></p><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">紧急 </span></p><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">代码执行   </span></p><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">wolf@YSRC        </span></p><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">http://www.shack2.org/article/1374154000.html  </span></p><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">tag:tomcat</span><br/></p><blockquote><pre><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">CREATE TABLE vultype
+(
+   id INTEGER DEFAULT nextval('vultype_id_seq'::regclass) PRIMARY KEY NOTNULL,
+   add_time TEXT,
+   filename TEXT,
+   name TEXT,
+   info TEXT,
+   level TEXT,
+   type TEXT,
+   author TEXT,
+   url TEXT,
+   keyword TEXT
+);
+CREATE UNIQUE INDEX vultype_id_uindex ONvultype (id);</span></p></pre></blockquote><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">扫描结果保存表：例如：</span></p><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">x.x.21.116  </span></p><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">heartbleed_poc </span></p><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">存在心脏出血漏洞     </span></p><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">2017-05-27 11:26:56</span><br/></p><blockquote><pre><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">CREATE TABLE vulresult
+(
+   id INTEGER DEFAULT nextval('vulresult_id_seq'::regclass) PRIMARY KEY NOTNULL,
+   address TEXT,
+   vulname TEXT,
+   result TEXT,
+   ctime TEXT
+);
+CREATE UNIQUE INDEX vulresult_id_uindex ONvulresult (id);</span><br/></p></pre></blockquote><h3 style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">（2）代码实现-端口扫描代码</span></h3><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">OpenAPI部分：</span></p><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">Urls.py</span></p><blockquote><pre><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">urlpatterns = [
+
+    url(r'^api/config/newtask/$', ConfigAPI.as_view()),
+    url(r'^api/action/doscan/$', ScanAPI.as_view()),
+    url(r'^api/config/tasklist/id$', ScanconfListAPI.as_view()),
+    url(r'^api/config/deltask/$', ConfigDelAPI.as_view()),
+]<br/></span></p></pre></blockquote><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">创建扫描任务</span><br/></p><blockquote><pre><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">class ConfigAPI(APIView):
+    def post(self, request, format=None):
+        m_task_id = request.POST.get('task_id')
+        db_tasks = scanconf.objects.filter(task_id=m_task_id)
+        if db_tasks.exists():
+            return error(err="exists", msg="task name exists")
+        else:
+            ser = ScanconfSerializer(data=request.data)
+            print request.data
+            if ser.is_valid():
+                ser.save()
+                return Response(ser.data)
+            return Response(ser.errors)</span></p></pre></blockquote><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">删除扫描任务</span></p><blockquote><pre><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">class ConfigDelAPI(APIView):
+    def post(self, request, format=None):
+        data = request.data
+        m_task_id = data['task_id']
+        db_tasks = scanconf.objects.filter(task_id=m_task_id).delete()
+        return success("success") </span></p></pre></blockquote><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">启动扫描任务 </span></p><blockquote><pre><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">class ScanAPI(APIView):
+    def post(self, request, format =None):
+        data = request.data
+        m_task_id = data['task_id']
+        print m_task_id
+        db_tasks = scanconf.objects.filter(task_id=m_task_id)
+        if db_tasks.exists():
+            try:
+                threading.Thread(target=ScanExtIP.doscan, args=(m_task_id,)).start()
+            except:
+                print traceback.print_exc()
+            return Response("success")
+        return Response("doscan failure no task in db") </span></p></pre></blockquote><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">列举扫描任务 </span></p><blockquote><pre><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">class ScanconfListAPI(APIView):
+    def get(self, request, format=None):
+        print request.GET.get("count")
+        cursor = scanconf.objects.all()
+        return Response(paginate_data(request, cursor, ScanconfSerializer)) </span></p></pre></blockquote><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">扫描执行 </span></p><blockquote><pre><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">def Scan():
+    try:
+        global g_queue
+        global g_task_id
+        tableName = "%s_%s" % ("scanresult", time.strftime("%Y%m%d"))
+        num = '0.0'
+        curS = connS.cursor()
+        curS.execute("update scanconf SET scanstate = %s where task_id = %s", (num, g_task_id))
+        connS.commit()
+        cur1 = conn1.cursor()
+        while not g_queue.empty():
+            item = g_queue.get()
+            nm = NmapProcess(item, "-sV -O --min-rate 2000 --max-rtt-timeout 100ms")
+            nm.sudo_run()
+            ctime = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+            nmap_report = NmapParser.parse(nm.stdout)
+            for scanned_hosts in nmap_report.hosts:
+                print scanned_hosts.address
+                if len(scanned_hosts.os.osmatch()) &gt; 0:
+                    print scanned_hosts.os.osmatch()[0]
+                for serv in scanned_hosts.services:
+                    if serv.state == 'open':
+                        if len(scanned_hosts.os.osmatch()) &gt; 0:
+                            sql = "INSERT INTO %s (task_id,ctime, address,port,service,product,product_version,product_extrainfo,os) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s')"
+                            sqlCmd = sql%(tableName,g_task_id,ctime,scanned_hosts.address,str(serv.port),serv.service,serv.service_dict.get("product", ""),serv.service_dict.get("version", ""),serv.service_dict.get("extrainfo", ""),scanned_hosts.os.osmatch()[0])
+                        else:
+                            sql = "INSERT INTO %s (task_id,ctime, address,port,service,product,product_version,product_extrainfo,os) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s')"
+                            sqlCmd = sql%(tableName,g_task_id,ctime,scanned_hosts.address,str(serv.port),serv.service,serv.service_dict.get("product", ""),serv.service_dict.get("version", ""),serv.service_dict.get("extrainfo", ""),'NULL')
+                        cur1.execute(sqlCmd)
+                        conn1.commit()
+            print "size = ", g_queue.qsize()
+            g_size = g_queue.qsize()
+            num = 100 - round(float(g_size) / float(g_totalsize) * 100, 0)
+            print num, g_size, g_totalsize
+            curS = connS.cursor()
+            curS.execute("update scanconf SET scanstate = %s where task_id = %s", (num, g_task_id))
+            connS.commit()
+        return "ok"
+    except Exception,e:
+        print e
+        return e
+
+def CreateTable():
+    curC = connC.cursor()
+    sqlCreate = "create table if not exists %s ( \
+                 task_id TEXT,\
+                 ctime TEXT,\
+                 address TEXT,\
+                 port TEXT,\
+                 service TEXT,\
+                 product TEXT ,\
+                 product_version TEXT,\
+                 product_extrainfo TEXT,\
+                 os TEXT,\
+                 eip TEXT,\
+                 business TEXT\
+                 )"
+    tableName = "%s_%s"%("scanresult", time.strftime("%Y%m%d"))
+    sqlCmd = sqlCreate%tableName
+    curC.execute(sqlCmd)
+
+def doscan(task_id):
+    global g_queue
+    global g_task_id
+    listThread = []
+    cur = conn.cursor()
+    querySQL = "select id,ipconf_startip,ipconf_endip,looptime from scanconf WHERE task_id = '{}'".format(task_id)
+    cur.execute(querySQL)
+    rows = cur.fetchall()
+    for row in rows:
+        iplist(row[1],row[2])
+    g_task_id =task_id
+    conn.commit()
+    conn.close()
+
+    CreateTable()
+    for i in xrange(g_threadNum):
+        thread = ScanThread(Scan)
+        thread.start()
+        listThread.append(thread)
+
+    for thread in listThread:
+        thread.join()
+        print thread
+
+    return "ok" </span></p></pre></blockquote><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">漏洞扫描部分：主要是集成巡风漏洞系统的VulScan.py 只是把mongodb数据库换成了postgresql，就不在这里累述。高危端口变化趋势：这部分说一下逻辑，因为代码实在太长了。就是从数据库中查询最近7天的高危端口数据。组合成json的形式返回给全端。        </span></p><blockquote><pre><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">b = json.dumps([{"name": "mysql", "data": list1},                        
+{"name": "ms-ql-s", "data": list2},                        
+{"name": "ibm-db2", "data": list3},                        
+{"name": "oracle", "data": list4},                        
+{"name": "redis", "data": list5},                        
+{"name": "mongodb", "data": list6},                        
+{"name": "day", "data": list7}])        
+return HttpResponse(b) </span></p></pre></blockquote><h2 style="margin-top: 15px; margin-bottom: 15px;"><strong><span style="font-size: 18px;">0x05、部署云主机的选择</span></strong></h2><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">由于使用了多线程，对CPU内存要求都比较高，经过综合对比选择金山云大米主机。2 core，4G内存，100G SSD，1元用7天，买4个月赠送3个月。</span></p><p style="margin-top: 15px; margin-bottom: 15px;"><img width="690" height="378" style="border: 0px; margin-right: 5px; margin-left: 5px; vertical-align: middle; cursor: pointer; max-height: 100%;" data-ratio="0.5478260869565217" data-type="jpeg" data-w="690" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR39n81bOfEO6vJ4Rbcvicub7GxDIKibpyE6qDVsGTrCTURBAnibsOEC2V1lZ42PcSBGqTHJnRyqia1CliaA/0?wx_fmt=jpeg" src="../Images/51976d056484ed1052a11e1a7e210f1d.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR39n81bOfEO6vJ4Rbcvicub7GxDIKibpyE6qDVsGTrCTURBAnibsOEC2V1lZ42PcSBGqTHJnRyqia1CliaA/0?wx_fmt=jpeg"/></p><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">大致的部署架构：</span></p><p style="margin-top: 15px; margin-bottom: 15px;"><img width="690" height="228" style="border: 0px; margin-right: 5px; margin-left: 5px; vertical-align: middle; cursor: pointer; max-height: 100%;" data-ratio="0.33043478260869563" data-type="jpeg" data-w="690" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR39n81bOfEO6vJ4Rbcvicub7GYl4EXribfemLrQdFWtoMMQTUdkP7jmT3vO0iaQU0NrE6RH6AlktvVfRw/0?wx_fmt=jpeg" src="../Images/8fc01c4c9c93faf1140168f3af941502.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR39n81bOfEO6vJ4Rbcvicub7GYl4EXribfemLrQdFWtoMMQTUdkP7jmT3vO0iaQU0NrE6RH6AlktvVfRw/0?wx_fmt=jpeg"/></p><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">nginx.conf</span></p><blockquote><pre><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">server 
+{   
+  listen      80;   
+  server_name x.x.10x.1x2;    
+  charset     utf-8;   
+  client_max_body_size 75M;    
+  location /api {       
+    proxy_pass http://127.0.0.1:9001;    
+  }   
+  location / {        
+    root /var/CloudPScan/dist;        
+    try_files $uri $uri/ /index.html;    
+  }
+}</span></p></pre></blockquote><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">uwsgi.ini （uwsgi使用ini文件启动）</span></p><blockquote><pre><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">[uwsgi]
+http=127.0.0.1:9001
+chdir=/var/CloudPScan/
+master=True
+pidfile=CloudPScan-master.pid
+vacuum=True
+max-requests=5000
+daemonize=CloudPScan.log
+env = LANG=en_US.UTF-8
+wsgi-file = CloudPScan/wsgi.py </span></p></pre></blockquote><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">服务器安装：</span></p><blockquote><pre><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">yum install epel-releaseyum 
+install python-pip python-devel nginx gcc
+pip install --upgrade pip
+pip install uwsgi
+systemctl start uwsgi
+cd /etc/nginx/sites-enabled
+vim CloudPScan.conf
+sudo nginx -t
+systemctl start nginxsystemctl enable nginxyum 
+install postgresql-serverpostgresql-devel postgresql-contrib
+postgresql-setup initdbsystemctl start postgresql
+pip install -U django==1.10.0
+pip install djangorestframework==3.3.2
+pip install requests
+pip install python-libnmap
+yum install nmap
+systemctl stop firewalld.service </span></p></pre></blockquote><h2 style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 18px;"><strong>0x06、总结</strong></span></h2><p style="margin-top: 15px; margin-bottom: 15px;"><span style="font-size: 15px;">整个coding的过程比较匆忙，代码中也有很多地方不完善，还请各位大牛口下留情。本文从详细设计、交互设计、前端代码实现、后端代码实现、部署等环节，完整的描述了一个产品的产生过程。最后一点想说，产品经理和程序员需要相互体谅，都不容易。</span></p><h2 style="text-align: center; margin-top: 15px; margin-bottom: 15px;"><span style="color: rgb(178, 178, 178); font-size: 15px;">*本文原创作者：bt0sea，本文属FreeBuf原创奖励计划，未经许可禁止转载</span><span style="color: rgb(178, 178, 178); font-size: 15px;"><br/></span></h2><p style="margin-top: 15px; margin-bottom: 15px;"><img data-ratio="0.6466666666666666" data-type="jpeg" data-w="600" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR3ic8CiaI3jDNE1pjxMWoM1hibUOrQypt6TwLx2iaicDUk4fCkEVKrkPJ5ia00nc363FCB6SW6Gian7F80ibMQ/0?wx_fmt=jpeg" src="../Images/99671ea719a1e5462c61c2ca12ceda78.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR3ic8CiaI3jDNE1pjxMWoM1hibUOrQypt6TwLx2iaicDUk4fCkEVKrkPJ5ia00nc363FCB6SW6Gian7F80ibMQ/0?wx_fmt=jpeg"/><br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>一道简单ctf题目php代码审计</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>一道简单ctf题目php代码审计</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzU4MTc5NjU4Ng==&amp;mid=2247483845&amp;idx=2&amp;sn=e5030da4bc746b9ebc6d13d686b1cea4&amp;chksm=fd435640ca34df56418917150e17d2359d1fb1c61db616ee6e9f6afd812dc0f117f43adbe1a8&amp;scene=126&amp;sessionid=1681656877#rd">http://mp.weixin.qq.com/s?__biz=MzU4MTc5NjU4Ng==&amp;mid=2247483845&amp;idx=2&amp;sn=e5030da4bc746b9ebc6d13d686b1cea4&amp;chksm=fd435640ca34df56418917150e17d2359d1fb1c61db616ee6e9f6afd812dc0f117f43adbe1a8&amp;scene=126&amp;sessionid=1681656877#rd</a></blockquote><p>打开题目地址，直接是源代码，考察代码审计一个题目，具体源码如,小伙伴们可以具体测试</p><pre><code> &lt;?php<br/>error_reporting(0);<br/>highlight_file(__FILE__);<br/>function check($input){<br/>    if(preg_match("/'| |_|php|;|~|\\^|\\+|eval|cat|tac|rev|nl|head|tail|sort|{|}/i",$input)){<br/>        <span spellcheck="true">// if(preg_match("/'| |_|=|php/",$input)){</span><br/>        die('hacker!!!');<br/>    }else{<br/>        return $input;<br/>    }<br/>}<br/><br/>function waf($input){<br/>  if(is_array($input)){<br/>      foreach($input as $key=&gt;$output){<br/>          $input[$key] = waf($output);<br/>      }<br/>  }else{<br/>      $input = check($input);<br/>  }<br/>}<br/><br/>$dir = 'sb/' . md5($_SERVER['REMOTE_ADDR']) . '/';<br/>if(!file_exists($dir)){<br/>    mkdir($dir);<br/>}<br/>switch($_GET["action"] ?? "") {<br/>    case 'pwd':<br/>        echo $dir;<br/>        break;<br/>    case 'upload':<br/>        $data = $_GET["data"] ?? "";<br/>        waf($data);<br/>        file_put_contents("$dir" . "index.php", $data);<br/>}<br/>?&gt;</code></pre><p><br/></p><p>阅读代码，发现生成一个文件夹，当action参数为pwd时候，打印该路径。当action为upload，且存在data参数，对data参数进行过滤后写入生成文件夹下的index.php文件。</p><p>首先是过滤部分，过滤了较多参数，包括空格，分号，php等，无法直接写入php一句话或者其他木马。<br/>本人较菜，尝试了好多都是失败。最终想到了&lt;?=<code>code</code>?&gt; 形式。<br/>接下来就是考虑如何绕过check函数的检查内容了。</p><p>查看check函数过滤的内容，基本常见展示文件内容的指令都被过滤了。<br/>关于显示文件内容可以使用的指令</p><h1>方案1#</h1><p>因为参数可以是数据，因此可以通过将关键字拆分的形式，绕过单个参数的过滤<br/>具体payload可以为data[0]=&lt;?=<code>ca&amp;data[1]=t</code>?&gt;绕过check部分关键字的过滤。</p><h1>方案2#</h1><p>其他的未在过滤部分的指令 举例如 more等</p><p>空格的绕过</p><h1>方案1#</h1><p>$IFS$9 因为要在php文件显示此处需要进行转义，\$IFS\$9</p><h1>方案2#</h1><p>使用%09来代替空格</p><p>综上知识点，<br/>首先使用ls指令,data=&lt;?=<code>ls%09/</code>?&gt;寻找flag文件，然后利用显示文件内容的方法获取具体内容。</p><p><br/></p>
+        
+</body>
+</html>

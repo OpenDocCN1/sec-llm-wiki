@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>0day交易网站ExploitHub被入侵过程解析</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>0day交易网站ExploitHub被入侵过程解析</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/mp/appmsg/show?__biz=MjM5NjA0NjgyMA%3D%3D&amp;appmsgid=44&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/mp/appmsg/show?__biz=MjM5NjA0NjgyMA%3D%3D&amp;appmsgid=44&amp;scene=27#wechat_redirect</a></blockquote><p>昨日消息，Inj3ct0r团队称已经成功黑进了ExploitHub.com网站，盗取了价值$242333的私有漏洞利用代码。Inj3ct0r团队（www.1337day.com）相信各位看官都不陌生了，提供0day漏洞的集散地。</p><p>ExploitHub（www.exploithub.com）NSS Labs建立的漏洞中心。NSS Labs是全球最知名的独立安全研究和评测机构，各安全产品厂商往往都以通过NSS Labs的测试为荣。</p><p>一家是民间团体，一家是正规军，两家都是手持零日漏洞利器的团队，如今似乎就打起来了。</p><p>1：扫描Exploithub.com网站</p><p>2：发现CMS Magento eCommerce Software的安装接口 https://www.exploithub.com/install/ --》重新安装了该CMS</p><p>3：上传shell级的phpinfo</p><p>4：备份所有文件和数据库，并且进行下载操作</p><p>5：提权</p><p>Inj3ct0r还提供了一个PHPinfo证明他们的入侵：<br/></p><p><img src="../Images/e2e959b47ffa443f93946d13326a3a29.png" data-original-src="http://mmsns.qpic.cn/mmsns/qq5rfBadR3icjv5v8RVI379F0nCNiaoOwqNqnT8d1Eic1QVSPadvl66icg/0"/><br/></p><p>Inj3ct0r在公告中给出了部分数据库内容，包括漏洞名称，价格，创建日期，作者id，作者用户名。粗略看上去很都都是Mario的作品。</p><p>事后，ExploitHub发表了声明，承认受到入侵，被入侵的服务器确实在安装程序后遗漏了“安装脚本”没有删除，以至于可被访问。同时表示该数据库只用于网站程序本身，只提供了一些漏洞名称，价格，作者等信息，没有包含实际的漏洞利用代码。 PS：不管怎样，显然安装完网站程序后没有删除安装文件显然是一个大忌。而其实部分安装脚本安装完毕后会重命名脚本本身或者自动删除，未知为何Magento竟然没有这样的功能。</p>
+        
+</body>
+</html>

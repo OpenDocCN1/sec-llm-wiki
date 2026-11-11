@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>WordPress修复了严重的Shortcode核心引擎漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>WordPress修复了严重的Shortcode核心引擎漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxODY1OTM5OQ==&amp;mid=211941436&amp;idx=3&amp;sn=d654d08245ee2d2168e2aca7e536fe11&amp;chksm=1287b91425f03002b4bf9d2efef419e6451107654f74f4e4170a48601392720ac5bcf818a767&amp;scene=126&amp;sessionid=1681378456#rd">http://mp.weixin.qq.com/s?__biz=MzAxODY1OTM5OQ==&amp;mid=211941436&amp;idx=3&amp;sn=d654d08245ee2d2168e2aca7e536fe11&amp;chksm=1287b91425f03002b4bf9d2efef419e6451107654f74f4e4170a48601392720ac5bcf818a767&amp;scene=126&amp;sessionid=1681378456#rd</a></blockquote><p>       WordPress核心引擎中的存在安全漏洞并不是什么稀罕的事情，但是也并不常见。在这个当前非常热门的内容管理系统中所存在的大多数安全问题，基本上都是由其他的第三方插件所引起的，而这些问题往往会影响整个网站的正常运行。除此之外，这些安全问题还有可能会导致这些网站受到网络黑客的攻击。</p><p>       今天，WordPress更新至了4.3.1版本，该版本修复了三个重要的安全漏洞，其中有两个漏洞是由Check Point软件科技公司的安全研究人员所发现的。该公司的安全研究人员在对这个内容管理平台进行了一个多月的分析和研究之后，发现了这些漏洞，并将漏洞信息报告给了WordPress。</p><p>       其中，此次所修复的最严重的一个漏洞涉及到了WordPress的一个特殊功能－Shortcode（简码）。Shortcode实际上是一种HTML标签，该功能是在Wordpress 2.5版本中引入的，用户通过简码可以非常方便和快速地在编辑文章或页面的时候插入动态内容，简码的常见应用有插入最新文章、插入广告、插入音频视频、插入下载按钮等。简单来说，简码指的是一些使用“[]”标签所包含的短代码，WordPress默认是支持简码功能的，而且WordPress会自动识别这些短代码，并根据短代码的定义来输出特定的内容。</p><p>       安全主管Shahar Tal表示：“在几个月之前就已经将漏洞的详细信息报告给了WordPress的安全工程师了，但他们还需要一定的时间才能修复这些漏洞，主要是因为WordPress与一些第三方插件有可能会出现兼容性方面的问题，这些问题将会导致修复补丁失效。”</p><p>       如果此次更新没有修复这个Shortcode漏洞，那么攻击者就可以利用WordPress的简码功能向WordPress平台中注入任意的JavaScript代码了。对于基于Web的应用程序而言，这样的跨站脚本攻击也并不是什么新鲜的事情了，而且这样的攻击方式也是大多数攻击者所常用的攻击方式，包括那些犯罪分子以及由国家资助的黑客组织在内。</p><p>       Tal说到：“这可以算得上是一个名副其实的水坑攻击了。各个APT组织以及国家级的黑客都会采用这样的攻击方式。”Tal以及他的同事Netanel Rubin已经对WordPress平台进行了好几个月的漏洞研究，除了跨站脚本漏洞之外，他们还发现了另一个漏洞，这个漏洞可以允许没有相应权限的用户发布文章，并且还可以常驻于网站之内。在这几个月的时间里，Rubin还找到了一些其他的漏洞，这些漏洞只会影响WordPress网站中的订阅用户，攻击者可以利用这些存在于核心引擎中的漏洞来进行远程SQL注入以及跨站脚本攻击。</p><p>       Tal解释称：“现在大多数的第三方插件通常是由一些小公司的几名程序员或者开发人员编写完成的。他们并不会在这些插件的安全性方面花费太多的时间，而且也不会对插件代码的质量进行审计，但是WordPress的核心引擎代码是经过了非常严格的安全审计之后才发布出来的。Netanel也已经非常明确地表示了，WordPress的代码块是至今为止他所见过的安全性最高的代码块之一，但其核心引擎之中仍然存在有可以被攻击者利用的安全漏洞。所以，我们希望这些插件的开发者们能够吃一堑长一智，并且花费一些时间去了解一下相关的安全技术，以及哪些操作会引起不必要的麻烦。”</p><p>       Tal表示：“我们可以打开一个HTML标签，然后向标签中的简码属性注入一些代码。很明显，WordPress在增加这个功能的时候并没有考虑周全。这也就是我们常说的，系统的功能越丰富，出出现系统错误的几率也就越大。”除此之外，Tal还说到：“目前，WordPress的工程师们正在检查系统所有的基础功能代码。”</p><p>       （转载360安全播报）<br/></p>
+        
+</body>
+</html>

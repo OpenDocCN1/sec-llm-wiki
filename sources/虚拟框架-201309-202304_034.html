@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>两仪：可以听歌了！</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>两仪：可以听歌了！</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5Njg5ODU2NA==&amp;mid=2257499651&amp;idx=1&amp;sn=0a547f3afdccb428afc9e6c27513081d&amp;chksm=a598246892efad7edebaf935e0e3659f420f22538909ba270b37cc9cb6320a333595d9b6602d&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5Njg5ODU2NA==&amp;mid=2257499651&amp;idx=1&amp;sn=0a547f3afdccb428afc9e6c27513081d&amp;chksm=a598246892efad7edebaf935e0e3659f420f22538909ba270b37cc9cb6320a333595d9b6602d&amp;scene=27#wechat_redirect</a></blockquote><p><span style="font-size: 15px;">哈喽，好久不见！</span></p><p><br/></p><p><span style="font-size: 15px;">距离上一次两仪更新已经过去挺久了，本来打算把 GPU 的问题解决了再发布新版的，不过，我已经被这玩意整得头皮发麻；本着换一个领域换一种心情的想法，我把方向转向了两仪的 HAL 层。<br/></span></p><p><br/></p><p><span style="font-size: 15px;">起初我以为这玩意也挺麻烦的，不过仔细研究了一番之后才发现，与 GPU 相比，HAL 层实在是容易了太多太多；受益于 Android 8.0 以上 Treble 的支持，HAL 层被完全抽象出来了，实现两仪的 HAL 由此事半功倍。今天一天，我就实现了三个 HAL！<br/></span></p><p><br/></p><ol class="list-paddingleft-1" style="list-style-type: decimal;"><li style="font-size: 15px;"><p><span style="font-size: 15px;"> audio HAL；有了这个以后，两仪就不再是哑巴；内部应用可以使用音频和视频，两仪内听歌看视频已经成为了可能；不过，由于存在其他稳定性问题，不是所有的音视频应用都能正常运行 :)<br/></span></p></li><li style="font-size: 15px;"><p><span style="font-size: 15px;">vibrator HAL；这个是震动相关的，有了它，两仪便有了触感。</span></p></li><li style="font-size: 15px;"><p><span style="font-size: 15px;">lights HAL；这个与屏幕亮度有关，现在，你可以在两仪内部调整屏幕亮度了~</span></p></li></ol><p><br/></p><p><span style="font-size: 15px;">这里给个视频看看效果：<br/></span></p><section class="channels_iframe_wrp"><mpvideosnap class="js_uneditable custom_select_card channels_iframe" data-pluginname="videosnap" data-id="export/UzFfAgtgekIEAQAAAAAAu4AgpoiWigAAAAstQy6ubaLX4KHWvLEZgBPE3oJYDjYTCJD8zNPgMIt1YxUhTBEhAW8PecuOO11-" data-url="https://findermp.video.qq.com/251/20350/stodownload?encfilekey=oibeqyX228riaCwo9STVsGLIBn9G5YG8ZnAHdH9srTZ07NVfmTffOa9mG532Tm8bGezcer5nNsDiafJjtVIbYyczRjEnwLukyMic7a7uKRRXFHeREYc5XXQO5zcypI9fU3YaWzCpC0icBUvg&amp;adaptivelytrans=0&amp;bizid=1023&amp;dotrans=0&amp;hy=SZ&amp;idx=1&amp;m=bb31a096a1935738ca2284b1ef2eaf6f&amp;token=AxricY7RBHdUSp57WbzwiaNtvlbC4NL9IwIySwce1y10AEjFibROLyFhjia5aUaU8eqicmMewE6LzVX8" data-headimgurl="http://wx.qlogo.cn/finderhead/PiajxSqBRaEK9XMzibCVbt9cicyZibTacaHfJTRDV3aJbkDicU8O4tg8GwQ/0" data-username="v2_060000231003b20faec8c4e18010c2d5c807eb36b0779a160b2237ed45d0e20635f7df4ec945@finder" data-nickname="虚拟框架" data-desc="#两仪 可以听歌了！" data-nonceid="2538449853805337008" data-type="video"/></section><p><br/></p><p><span style="font-size: 15px;">这版本刚弄出来，可能存在挺多 BUG 的，谨慎更新！需要体验的话，后台回复：<strong>两仪</strong> 即可。<br/></span></p><p><br/></p><p><span style="font-size: 15px;">最后，大家晚安！</span></p>
+        
+</body>
+</html>

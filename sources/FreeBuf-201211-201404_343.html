@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>GNU/Linux内核新特性引发提权漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>GNU/Linux内核新特性引发提权漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/mp/appmsg/show?__biz=MjM5NjA0NjgyMA==&amp;appmsgid=10000077&amp;itemidx=1&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/mp/appmsg/show?__biz=MjM5NjA0NjgyMA==&amp;appmsgid=10000077&amp;itemidx=1&amp;scene=27#wechat_redirect</a></blockquote><p>SUSE安全研究成员Sebastian Krahmer公布了GNU/Linux内核提权漏洞，最近的GNU/Linux kernel(3.8+)引进了一个为了方便container实现的新特性：user-namespaces(user-ns, CLONE_NEWUSER flag)，这个特性可以让你拥有你自己为0的UID，作为container对于进程的隔离这样方便了实现，但也带来了相关的安全隐患。</p><p>具体的讲，如果你把这个特性和CLONE_FS混合的使用就会让不同的container(即进程)间共享文件系统的状态，攻击者会通过这样的组合得到root权限：</p><p><img src="../Images/94025a5a4db876c952cfb2304de8984f.png" data-original-src="http://mmsns.qpic.cn/mmsns/qq5rfBadR399icQSt8F5S2CMNicBOrEbwV1SMTibzBF41ibpgjyhUtlH1g/0"/></p><p>只有当子进程得到自己的user-ns(用户命名空间)时父进程和子进程共享了文件系统的信息（这个例子中的chroot就是如此），在自己的user-ns里使用chroot()系统调用并且和在clone()时加入CLONE_FS就会直接影响父进程，而父进程是在user-ns的初始化阶段时就已经拥有root权限了，exploit已经公布到这里。</p><p>tw: 这个exploit已经在openSUSE 12.1 + kernel 3.8.2上测试通过。</p>
+        
+</body>
+</html>

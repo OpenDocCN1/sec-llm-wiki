@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>记一次实战渗透非法网站思路</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>记一次实战渗透非法网站思路</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI4MDQ1MzQ0NA==&amp;mid=2247484050&amp;idx=1&amp;sn=f07b9836a3f2e56e6d6cf57ee5f64f2d&amp;chksm=ebb90ab9dcce83af355c6631e382835df65b45d4e4f472aaa5cedf2ec7d40f1b589ed0e9679f&amp;scene=126&amp;sessionid=1681311146#rd">http://mp.weixin.qq.com/s?__biz=MzI4MDQ1MzQ0NA==&amp;mid=2247484050&amp;idx=1&amp;sn=f07b9836a3f2e56e6d6cf57ee5f64f2d&amp;chksm=ebb90ab9dcce83af355c6631e382835df65b45d4e4f472aaa5cedf2ec7d40f1b589ed0e9679f&amp;scene=126&amp;sessionid=1681311146#rd</a></blockquote><div><p style="text-align:left;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:1px;color:#000000;">本人比较渣渣还请大佬勿喷哈！</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:1px;color:#000000;">昨晚一梦，惊醒梦中人的我，做了一个拿到某通用的梦，醒来之后打开电脑上好QQ发现朋友给我来好几条信息，然后聊了起来，</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:1px;color:#000000;">朋友说给我一个非法站群【你懂得】让我看看，然后发现当中某个站点是asp的就看了下发现存在注入之后看到数据库是SQLsever的，然后看了下权限发现是高权限的，之后直接进行了提权服务器，然后进入服务器后折腾了会，下载了几个服务器内部的源码发现有一款PHP的也就是这款源码，然后看了下载了下来，这是一套卡密系统，原本以为不是什么正规的CMS而是非法网站人员自己写的 后来一看是正规站点的CMS，然后发现的确存在通用，然后搞了大概有10个左右的这种和非法站有接触的这种cms ，好了废话到这里吧下面进入挖掘正题，本人不才还请各位海涵！</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:1px;color:#fd4f4c;">发现存在程序当中的tqm变量没有进行过滤导致存在SQL注入漏洞在程序当中的getkm.php页面内的第:13、14、16、行代码中的tqm变量的问题过滤不严，存在SQL注入漏洞。</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"/>
+<span style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:1px;color:#000000;">该页面在根目录下的查询当中注入时POST注入联合查询的注入法！</span></span>
+<p><img class="item item-image" data-ratio="0.545833" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/3t2VrA0kan5kibRicMTQfMKBvboZBZuVEFXFojjNc4UxicOuVLRXOxbZdvYdubWmmJmjwW5rqqtcPvq9EibdVJQR4g/640?wx_fmt=jpeg" data-type="2" style="width:1920.000000px;" src="../Images/e35922978da05375c9d41428273efa7b.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/3t2VrA0kan5kibRicMTQfMKBvboZBZuVEFXFojjNc4UxicOuVLRXOxbZdvYdubWmmJmjwW5rqqtcPvq9EibdVJQR4g/640?wx_fmt=jpeg"/></p><p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:1px;color:#fd4f4c;">该参数没有进行过滤导致存在SQL注入，当中的第13、14、16行代码出现问题，其中第16行代码中的“tqm”这个变量直接引用到了数据库当中进行查询，并且没有进行过滤，存在POST注入，该代码在根目录下的getkm.php页面当中！</span></p>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"/>
+<span style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:1px;color:#000000;">下面本人说下个人的这次渗透过程简单的画了张图【笔者毕竟渣渣所以呢凑乎看吧渣渣思维导图】：</span></span>
+<p><img class="item item-image" data-ratio="0.433647" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/3t2VrA0kan5kibRicMTQfMKBvboZBZuVEFuLpTpbFVNqoicPs7dOichS7ejA7kH2GG0TM9NRnY0gaRbK2ufUwEzAWw/640?wx_fmt=jpeg" data-type="2" style="width:1914.000000px;" src="../Images/503708a691a128c52f8b4d7da2e35ee9.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/3t2VrA0kan5kibRicMTQfMKBvboZBZuVEFuLpTpbFVNqoicPs7dOichS7ejA7kH2GG0TM9NRnY0gaRbK2ufUwEzAWw/640?wx_fmt=jpeg"/></p><p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"/>
+<span style="text-align:justify;font-family:'PingFang SC';font-size:16px;"><span style="letter-spacing:1px;color:#000000;">以下是本人进行的内网模拟渗透过程！</span></span>
+<p><img class="item item-image" data-ratio="0.563091" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/3t2VrA0kan5kibRicMTQfMKBvboZBZuVEFJicvgEDS4wNrcY0McIaKuheZZpibnnfjwJmAgDRIEXmODJc7IZjnDFGQ/640?wx_fmt=jpeg" data-type="2" style="width:1268.000000px;" src="../Images/a50f730efd7cd08e6edaa29158ffef41.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/3t2VrA0kan5kibRicMTQfMKBvboZBZuVEFJicvgEDS4wNrcY0McIaKuheZZpibnnfjwJmAgDRIEXmODJc7IZjnDFGQ/640?wx_fmt=jpeg"/></p><p><img class="item item-image" data-ratio="0.563091" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/3t2VrA0kan5kibRicMTQfMKBvboZBZuVEFlicKExkg0HFFvTyJqj82MnqbmleU4QLhQwNrwLiclKxe2TT4yColhqhQ/640?wx_fmt=jpeg" data-type="2" style="width:1268.000000px;" src="../Images/b04026930a08840cafe5503775ea28d3.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/3t2VrA0kan5kibRicMTQfMKBvboZBZuVEFlicKExkg0HFFvTyJqj82MnqbmleU4QLhQwNrwLiclKxe2TT4yColhqhQ/640?wx_fmt=jpeg"/></p><p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"/>
+<p style="text-align:justify;font-family:'PingFang SC';font-size:16px;"/>
+</div>
+        
+</body>
+</html>

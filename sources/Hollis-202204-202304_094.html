@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Nacos 2.2 正式发布，新特性真香啊！</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Nacos 2.2 正式发布，新特性真香啊！</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI3NzE0NjcwMg==&amp;mid=2650191313&amp;idx=1&amp;sn=7f33ceeaedfd5f6545f2fa967050d4c9&amp;chksm=f368a8f0c41f21e617d6aeaf287e8f0e9190a2beef00b5930d07d840b537c570931c5b224e62&amp;scene=126&amp;sessionid=1681657209#rd">http://mp.weixin.qq.com/s?__biz=MzI3NzE0NjcwMg==&amp;mid=2650191313&amp;idx=1&amp;sn=7f33ceeaedfd5f6545f2fa967050d4c9&amp;chksm=f368a8f0c41f21e617d6aeaf287e8f0e9190a2beef00b5930d07d840b537c570931c5b224e62&amp;scene=126&amp;sessionid=1681657209#rd</a></blockquote><p style="margin-bottom: 0px;">
+	Nacos是一个动态服务发现、配置管理和服务管理平台。最近，Nocos 2.2已经正式发布了。	</p><p style="margin-bottom: 0px;"><span style="color: rgb(36, 41, 46);font-family: -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;;font-size: 16px;text-align: start;"><br/></span></p><p style="margin-bottom: 0px;"><span style="color: rgb(36, 41, 46);font-family: -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;;font-size: 16px;text-align: start;">Nacos社区于10月份发布了2.2.0-BETA版本，根据近1个多月的社区反馈，2.2.0-BETA没有发现严重的核心功能问题，主要的反馈集中在数据库插件的优化修复以及一些小bug修复。		
+	</span></p><p style="margin-bottom: 0px;">
+	<span style="color: rgb(36, 41, 46);font-family: -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;;font-size: 16px;text-align: start;">
+		<br/>
+	</span></p><p data-spm-anchor-id="0.0.0.i2.60c078d5xxkHMc" style="margin-bottom: 16px;box-sizing: border-box;color: rgb(36, 41, 46);font-family: -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;;font-size: 16px;text-align: start;white-space: normal;">
+	因此不再进行BETA2版本的发布，而直接发布了2.2.0的GA正式版。	</p><p style="text-align: center;margin-bottom: 0px;">
+	<img class="rich_pages wxw-img js_insertlocalimg" data-ratio="0.49375" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/6fuT3emWI5JiaMAfQCAibSAqLcPPDK5O4GjfGnNx8bEr9iasmgEhmKiaVRenHTA1cW7WZEtNmW6c4W9TnaPNDern0A/640?wx_fmt=png" data-type="png" data-w="1280" style="" src="../Images/26323d91d9bc7b52356a5eaae7322042.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/6fuT3emWI5JiaMAfQCAibSAqLcPPDK5O4GjfGnNx8bEr9iasmgEhmKiaVRenHTA1cW7WZEtNmW6c4W9TnaPNDern0A/640?wx_fmt=png"/></p><p style="margin-bottom: 0px;">
+	<br/></p><p style="margin-bottom: 0px;">
+	本次版本更新有很多新的特性，给大家简单解读一下：	
+	<br/></p><p style="margin-bottom: 0px;">
+	<br/></p><p style="margin-bottom: 0px;">
+	<strong>
+		1、删除冗余代码		
+	</strong>
+	<br/></p><p style="margin-bottom: 0px;">
+	<strong>
+		<br/>
+	</strong></p><p style="margin-bottom: 0px;">
+	<span style="color: rgb(36, 41, 46);font-family: -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;;font-size: 16px;text-align: start;">
+		Nacos 2.2.0将会删除旧的冗余代码，即1.X模式服务发现和双写相关代码。		
+		删除后，		<span style="color: rgb(36, 41, 46);font-family: -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;;font-size: 16px;text-align: start;">
+			Na		</span>
+		<span style="color: rgb(36, 41, 46);font-family: -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;;font-size: 16px;text-align: start;">
+			cos 		</span>
+		2.2.0版本将无法从Nacos 1.X服务器升级，只能从至少2.0.0版本升级。		
+		此更改不会影响对1.X客户端请求的适配，用户仍然可以使用1.X客户端链接2.2.0版本服务端。		
+	</span></p><p style="margin-bottom: 0px;">
+	<span style="color: rgb(36, 41, 46);font-family: -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;;font-size: 16px;text-align: start;">
+		<br/>
+	</span></p><p style="margin-bottom: 0px;">
+	<strong>
+		<span style="color: rgb(36, 41, 46);font-family: -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;;font-size: 16px;text-align: start;">
+			2、新增插件支持			
+		</span>
+	</strong>
+	<span style="color: rgb(36, 41, 46);font-family: -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;;font-size: 16px;text-align: start;">
+		<br/>
+	</span></p><p style="margin-bottom: 0px;">
+	<br/></p><p style="margin-bottom: 0px;">
+	<span style="color: rgb(36, 41, 46);font-family: -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;;font-size: 16px;text-align: start;">
+		Nacos 	</span>
+	2.2.0添加了数个新的插件支持，例如 数据源插件、自定义环境变量插件和限流管控插件等。<span style="font-family: mp-quote, -apple-system-font, BlinkMacSystemFont, &quot;Helvetica Neue&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei UI&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;"/></p><p style="margin-bottom: 0px;"><br/></p><ul class="list-paddingleft-1" style="list-style-type: disc;"><li><p><strong style="font-family: mp-quote, -apple-system-font, BlinkMacSystemFont, &quot;Helvetica Neue&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei UI&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;">限流管控插件			</strong><span style="font-family: mp-quote, -apple-system-font, BlinkMacSystemFont, &quot;Helvetica Neue&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei UI&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;">
+			是将早期开源之夏项目中的连接限流模块进行插件化改造后的插件，可提供用户以扩展的方式编写限流管控能力，以保护Nacos服务端在高压下运行的稳定性。</span><br/></p><p><span style="font-family: mp-quote, -apple-system-font, BlinkMacSystemFont, &quot;Helvetica Neue&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei UI&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;"/></p></li><li><p><strong style="font-family: mp-quote, -apple-system-font, BlinkMacSystemFont, &quot;Helvetica Neue&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei UI&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;">自定义环境变量插件			</strong><span style="font-family: mp-quote, -apple-system-font, BlinkMacSystemFont, &quot;Helvetica Neue&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei UI&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;">
+			</span><span style="color: rgb(36, 41, 46);font-family: -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;;font-size: 16px;text-align: start;">
+				是社区需求配置加密数据库密码的需求的升级抽象插件，允许通过插件的方式对Nacos服务端启动时的配置进行特殊处理，比如可以配置数据库密码为密文，在插件中进行解密，以此来支持配置加密数据库密码以及后续可能有的其他关于配置特殊处理的需求。</span><br/></p><p><span style="font-family: mp-quote, -apple-system-font, BlinkMacSystemFont, &quot;Helvetica Neue&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei UI&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;"/></p></li><li><p><strong style="font-family: mp-quote, -apple-system-font, BlinkMacSystemFont, &quot;Helvetica Neue&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei UI&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;"><span style="color: rgb(36, 41, 46);font-family: -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;;font-size: 16px;text-align: start;">数据源插件，				</span>
+			</strong><span style="font-family: mp-quote, -apple-system-font, BlinkMacSystemFont, &quot;Helvetica Neue&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei UI&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;">
+			Nacos从2.2.0版本开始，可通过SPI机制注入多数据源实现插件，并在引入对应数据源实现后，便可在Nacos启动时通过读取配置文件选择加载对应多数据源插件，			</span><strong style="font-family: mp-quote, -apple-system-font, BlinkMacSystemFont, &quot;Helvetica Neue&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei UI&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;">
+				让 Nacos 可以支持其他数据库</strong><br/></p><p><span style="color: rgb(36, 41, 46);font-family: -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;;font-size: 16px;text-align: start;"><br/></span></p></li></ul><p style="margin-bottom: 0px;">
+	此外，2.2.0增强了在2.1.1版本被列为beta功能的	<strong>
+		轨迹追踪插件	</strong>
+	和	<strong>
+		批量注册	</strong>
+	，这使它们更易于使用。	</p><p style="margin-bottom: 0px;">
+	<br/></p><p style="margin-bottom: 0px;"><strong>3、变化列表</strong></p><p style="margin-bottom: 0px;"><strong><br/></strong></p><h4 data-id="hce1b53f-ru3vKXnG"/><h4 data-id="hce1b53f-ru3vKXnG">特性</h4><ul data-id="u738a58b-SnOpPvt8" class="list-paddingleft-1"><li><p>支持批量注册和批量注销服务</p></li><li><p>为 nacos 2.0 增加 v2 openAPI</p></li><li><p>增加数据源插件</p></li><li><p>增加数据跟踪插件</p></li><li><p>增加 prometheus 服务发现prometheus http sd</p></li><li><p>增加 ldap 认证插件案例</p></li><li><p>增加 ldap 身份认证</p></li></ul><h4 data-id="hce1b53f-E5nZ2hCb">重构</h4><ul data-id="u738a58b-3oF5gnD9" class="list-paddingleft-1"><li><p>删除 1.x 命名和冗余代码</p></li><li><p>优化选择器</p></li><li><p>使服务器在启动错误时自动停止</p></li><li><p>优化模糊查询</p></li><li><p>增强数据源插件</p></li><li><p>外部数据源增加 isEmpty 来检查和支撑外部配置</p></li><li><p>NacosApplicationListener 方法修饰符改成默认值</p></li><li><p>在返回列表配置页面后保留查询条件</p></li><li><p>在返回列表服务页面后保留查询条件</p></li><li><p>重构限流模块为插件</p></li></ul><h4 data-id="hce1b53f-Dfn7Z3Co">缺陷修复</h4><ul data-id="u738a58b-T0U747Lw" class="list-paddingleft-1"><li><p>修复 group_id 在不通表中不通的长度</p></li><li><p>修复无法创建 bean ldapAuthenticationProvider</p></li><li><p>修复 prometheus 指标实例创建错误</p></li><li><p>修复验证插件中 token.secret.key base64 解码错误</p></li><li><p>修复命名空间列表问题</p></li><li><p>修复客户端工作线程空指针判断顺序</p></li><li><p>修复某些实例修改成 http 后健康检查不正确问题</p></li><li><p>修复所有实例权重为零时,选择错误问题</p></li><li><p>修复控制台配置查询按钮不自动适配浏览器宽度问题</p></li><li><p>修复服务元数据清理逻辑导致的反注册失败问题</p></li></ul><h4 data-id="hce1b53f-wqEbfwSB">依赖升级</h4><ul data-id="u738a58b-soOtQaCD" class="list-paddingleft-1"><li><p>升级 UI 依赖来修复对应的依赖漏洞</p><p><br/></p><p><br/></p></li></ul><section style="margin-bottom: 0px;"><mp-common-profile class="js_uneditable custom_select_card mp_profile_iframe" data-pluginname="mpprofile" data-weui-theme="light" data-id="MzI3NzE0NjcwMg==" data-headimg="http://mmbiz.qpic.cn/mmbiz_png/6fuT3emWI5KU8vzAGgoticlZQYYr83tyq52NzLwJlXeqgG1jxbGVwLJXbh0pggrTuKWZ1chvX2hv39NUII0mSQw/0?wx_fmt=png" data-nickname="Hollis" data-alias="hollischuang" data-signature="Hollis，一个对Coding有着独特追求的人。《Java工程师成神之路》系列作者、《程序员的三门课》联合作者，本公众号专注分享Java相关技术干货！" data-from="0" data-is_biz_ban="0"/></section><p style="display: none;"><mp-style-type data-value="3"/></p>
+        
+</body>
+</html>

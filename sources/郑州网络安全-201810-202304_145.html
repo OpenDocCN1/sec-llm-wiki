@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Google Cloud中的XSS漏洞，Google Play可能导致帐户劫持</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Google Cloud中的XSS漏洞，Google Play可能导致帐户劫持</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485412&amp;idx=1&amp;sn=f5f6af38243460117eec03706a18bfe9&amp;chksm=fa76e61acd016f0cb9bd2b826d1ad00e439c5518ecd64a5609b27f23900d2a52cc1be69614e2&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485412&amp;idx=1&amp;sn=f5f6af38243460117eec03706a18bfe9&amp;chksm=fa76e61acd016f0cb9bd2b826d1ad00e439c5518ecd64a5609b27f23900d2a52cc1be69614e2&amp;scene=27#wechat_redirect</a></blockquote><blockquote><p>Google Cloud、DevSite和Google Play中的一对漏洞可能允许攻击者实现跨站点脚本(XSS)攻击，从而为帐户劫持打开了大门。第一个漏洞是Google DevSite中反映的XSS漏洞。攻击者控制的链接可以在源http://cloud.google.com和 http://developers.google.com上运行JavaScript，这意味着恶意行为者可以绕过同源策略读取和修改其内容。发现这两个漏洞的研究人员'NDevTK'写道：“由于&lt;devsite-language-selector&gt;的服务器端实现中存在漏洞， URL的一部分被反映为html，因此可以使用404页面中的那个组件。”</p></blockquote><p style="margin-bottom: 0em;"><img class="rich_pages wxw-img" data-ratio="0.5625" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJnbBHm2gcNk1gLqL0eF4dvC94Q210pSJcuCMLPvbCg02q2GpAyzeQ3Ywibicnegb5EsZJwMed0nqL9A/640?wx_fmt=jpeg" data-type="jpeg" data-w="1200" height="675" width="1200" src="../Images/03850d1377e49b5c846c85a6640e1265.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJnbBHm2gcNk1gLqL0eF4dvC94Q210pSJcuCMLPvbCg02q2GpAyzeQ3Ywibicnegb5EsZJwMed0nqL9A/640?wx_fmt=jpeg"/></p><p><br/></p><p>第二个漏洞是Google Play上基于DOM的XSS 。基于DOM的XSS漏洞通常出现在JavaScript从攻击者可控制的源（例如 URL）获取数据并将其传递到支持动态代码执行的接收器（例如eval()或innerHTML）时。</p><p><br/></p><p>这使攻击者能够执行恶意JavaScript，这通常允许他们劫持其他用户的帐户。</p><p>研究人员说，他们“认为不会在不使用攻击者提供的URL的情况下将相同的服务器响应”发送给其他用户。</p><p><br/></p><p>他们写道：“当搜索导致错误时，在[the]Google Play控制台的搜索页面上运行易受攻击的代码。</p><p><br/></p><p>“得到一个错误就像做/?search=&amp;一样简单，因为window.location包含从不编码的哈希'，所以可以转义href上下文并设置其他html属性。与DevSite XSS不同，这被CSP阻止，但小组仍然给予更多奖励。”</p><p><br/></p><p>研究人员从DevSite问题中获得了3133.70美元，从Google Play中的漏洞中获得了5000美元。</p><p><br/></p>
+        
+</body>
+</html>

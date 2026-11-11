@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>跨站脚本攻击XSS的安全防御</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>跨站脚本攻击XSS的安全防御</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247483852&amp;idx=2&amp;sn=58000eba716e3aaad1bbeb04f6174d31&amp;chksm=f9e06e97ce97e781a77be4442cb4dfdddba9b093fcae880d4bb6bfd2afa037eb2677fd6fb0a3&amp;scene=126&amp;sessionid=1681663543#rd">http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247483852&amp;idx=2&amp;sn=58000eba716e3aaad1bbeb04f6174d31&amp;chksm=f9e06e97ce97e781a77be4442cb4dfdddba9b093fcae880d4bb6bfd2afa037eb2677fd6fb0a3&amp;scene=126&amp;sessionid=1681663543#rd</a></blockquote><p>XSS攻击作为Web业务的最大威胁，危害的不仅仅是Web业务本身，对访问Web业务的用户也会带来直接的影响，如何防范和阻止XSS攻击，保障Web站点的业务安全呢？</p><p>首先我们就要了解什么是XSS攻击。</p><p>第 1 页 面对跨站脚本攻击XSS的安全防御建议</p><p>XSS攻击作为Web业务的最大威胁之一，不仅危害Web业务本身，对访问Web业务的用户也会带来直接的影响，如何防范和阻止XSS攻击，保障Web站点的业务安全呢？首先我们就要了解什么是XSS攻击。</p><p>一 什么是XSS攻击：</p><p>XSS的全称是Cross Site 
+Scripting，意思是跨站脚本。这第一个单词是Cross，为什么缩写成X呢？因为CSS是层叠样式表的缩写(Cascading Style 
+Sheets)的缩写，同时Cross发音和X相似，为了避免混淆用X来代替,缩写成XSS。它指的是恶意攻击者往Web页面里插入恶意html代码，当用户浏览该页之时，嵌入其中Web里面的html代码会被执行，从而达到恶意用户的特殊目的。XSS属于被动式的攻击，因为其被动且不好利用，所以许多人常呼略其危害性。</p><p>二 XSS的攻击方式：</p><p>跨站攻击有多种方式，由HTML语言允许使用脚本进行简单交互，入侵者便通过技术手段在某个页面里插入一个恶意HTML代码--例如记录论坛保存的用户信息(Cookie)，由于Cookie保存了完整的用户名和密码资料，用户就会遭受安全损失。当然，攻击者有时也会在网页中加入一些以.JS或.VBS为后尾名的代码时，在我们浏览时，同样我们也会被攻击到。</p><p>三 XSS攻击的危害：</p><p>1、盗取各类用户帐号，如机器登录帐号、用户网银帐号、各类管理员帐号</p><p>2、控制企业数据，包括读取、篡改、添加、删除企业敏感数据的能力</p><p>3、盗窃企业重要的具有商业价值的资料</p><p>4、非法转账</p><p>5、强制发送电子邮件</p><p>6、网站挂马</p><p>7、控制受害者机器向其它网站发起攻击</p><p>四 XSS攻击漏洞：</p><p>XSS攻击分成两类，一类是来自内部的攻击，主要指的是利用程序自身的漏洞，构造跨站语句，如:dvbbs的showerror.asp存在的跨站漏洞。另一类则是来来自外部的攻击，主要指的自己构造跨站脚本攻击XSS跨站漏洞网页或者寻找非目标机以外的有跨站漏洞的网页。如当我们要渗透一个站点，我们自己构造一个有跨站漏洞的网页，然后构造跨站语句，通过结合其它技术，如社会工程学等，欺骗目标服务器的管理员打开。</p><p>五 XSS的基本防御技术：</p><p>1、基于特征的防御：XSS漏洞和著名的SQL注入漏洞一样，都是利用了Web页面的编写不完善，所以每一个漏洞所利用和针对的弱点都不尽相同。这就给XSS漏洞防御带来了困难：不可能以单一特征来概括所有XSS攻击。传统XSS防御多采用特征匹配方式，在所有提交的信息中都进行匹配检查。对于这种类型的XSS攻击，采用的模式匹配方法一般会需要对"javascript"这个关键字进行检索，一旦发现提交信息中包含"javascript"，就认定为XSS攻击。这种检测方法的缺陷显而易见：骇客可以通过插入字符或完全编码的方式躲避检测：</p><p>躲避方法1)在javascript中加入多个tab键，得到</p><p>&lt; IMG SRC="jav ascript:alert('XSS');" &gt;;</p><p>躲避方法2) 在javascript中加入&amp;#x09编码字符，得到</p><p>&lt; IMG SRC="javascript:alert('XSS');" &gt;;</p><p>躲避方法3) 在javascript中加入</p><p>字符，得到</p><p>&lt; IMG SRC="jav</p><p>ascript:alert('XSS');" &gt;;</p><p>上述的相关内容就是对面对跨站脚本攻击XSS的安全防御建议的描述，希望会给你带来一些帮助在此方面。</p><p><br/></p><p><br/></p><p>查看更多文章，关注下方二维码</p><p><img data-ratio="1" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/p5qELRDe5ickAiax1Nv77rYNEC3sRgfAkw8hAX4rSjibP0FMnud3ZM4f0Jc7nkoCL2t8STuhTbnuxj6W6T8JumElA/640?wx_fmt=jpeg" data-type="jpeg" data-w="258" style="visibility: visible ! important; width: auto ! important; height: auto ! important;" width="auto" src="../Images/60bd80188885b005ab426369f4086902.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/p5qELRDe5ickAiax1Nv77rYNEC3sRgfAkw8hAX4rSjibP0FMnud3ZM4f0Jc7nkoCL2t8STuhTbnuxj6W6T8JumElA/640?wx_fmt=jpeg"/></p><p><br/></p>
+        
+</body>
+</html>

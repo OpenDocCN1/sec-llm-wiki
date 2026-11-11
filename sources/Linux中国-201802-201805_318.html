@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>在 LEMP 环境下搭建 WordPress 站点</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>在 LEMP 环境下搭建 WordPress 站点</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NjQ4MjYwMQ==&amp;mid=2664610683&amp;idx=4&amp;sn=88403ad44dc443aab7a98a2afe6d3c30&amp;chksm=bdce803d8ab9092ba17770ba0a1ca5f85d535806e2c0ed5089cc3ffd970ac89ff99152d6ef92&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NjQ4MjYwMQ==&amp;mid=2664610683&amp;idx=4&amp;sn=88403ad44dc443aab7a98a2afe6d3c30&amp;chksm=bdce803d8ab9092ba17770ba0a1ca5f85d535806e2c0ed5089cc3ffd970ac89ff99152d6ef92&amp;scene=27#wechat_redirect</a></blockquote><section class="header bm" style="word-wrap: break-word;margin: 4px;border-width: 1px;border-style: solid;border-color: rgb(205, 205, 205);background: rgb(255, 255, 255);border-radius: 4px;box-shadow: none;font-size: 12px;font-family: Optima-Regular, PingFangTC-light;letter-spacing: 2px;white-space: normal;color: rgb(153, 153, 153);"><p><img class="" data-copyright="0" data-ratio="0.5555555555555556" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/W9DqKgFsc6ibbZr66Q9iboDtrdhE7BTMq5QuBsjJwLpou4MDlCPTN1Ubr3ovOD1ib7tBtW8Qib2d40QP8sqeOAnYYw/640?wx_fmt=png" data-type="png" data-w="900" style="" src="../Images/fdbf0b31f455ad2fc4f2db62d96d9bb2.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/W9DqKgFsc6ibbZr66Q9iboDtrdhE7BTMq5QuBsjJwLpou4MDlCPTN1Ubr3ovOD1ib7tBtW8Qib2d40QP8sqeOAnYYw/640?wx_fmt=png"/></p><section class="summary bm_c" style="word-wrap: break-word;padding: 10px;">使用 Nginx 作为 WordPress 的网络服务器，尽管遇到了各种各样的问题，但是取得了不错的效果。由于 Nginx 的配置比较复杂，于是有很多需要注意的地方。<br/></section><section class="y bm_c" style="word-wrap: break-word;float: right;padding: 10px;">-- Nickhopps</section><br class="clear" style="word-wrap: break-word;clear: both;"/></section><p><br/></p><nav class="bm" style="word-wrap: break-word;margin: 4px;border-width: 1px;border-style: solid;border-color: rgb(205, 205, 205);background: rgb(255, 255, 255);border-radius: 4px;box-shadow: none;font-size: 12px;font-family: Optima-Regular, PingFangTC-light;letter-spacing: 2px;white-space: normal;color: rgb(153, 153, 153);"><section class="bm_h" style="word-wrap: break-word;padding-right: 10px;padding-left: 10px;height: 31px;border-top: 1px solid rgb(255, 255, 255);border-bottom: 1px solid rgb(194, 213, 227);background: rgb(242, 242, 242);line-height: 31px;white-space: nowrap;overflow: hidden;border-radius: 5px 5px 0px 0px;">有用的原文链接</section><section class="bm_c" style="word-wrap: break-word;padding: 10px;">请访问文末的“<span style="word-wrap: break-word;color: rgb(96, 127, 171);">原文链接</span>”获得可点击的文内链接、全尺寸原图和相关文章。</section></nav><p><br/></p><section class="bm" style="word-wrap: break-word;margin: 4px;border-width: 1px;border-style: solid;border-color: rgb(205, 205, 205);background: rgb(255, 255, 255);border-radius: 4px;box-shadow: none;font-size: 12px;font-family: Optima-Regular, PingFangTC-light;letter-spacing: 2px;white-space: normal;color: rgb(153, 153, 153);"><section class="bm_h" style="word-wrap: break-word;padding-right: 10px;padding-left: 10px;height: 31px;border-top: 1px solid rgb(255, 255, 255);border-bottom: 1px solid rgb(194, 213, 227);background: rgb(242, 242, 242);line-height: 31px;white-space: nowrap;overflow: hidden;border-radius: 5px 5px 0px 0px;">致谢</section><section class="bm_c" style="word-wrap: break-word;padding: 10px;"><span style="word-wrap: break-word;">转载自　|　https://www.infiniture.cn/articles/1194.html</span>	<br style="word-wrap: break-word;"/><span style="word-wrap: break-word;">　作者　|　Nickhopps</span></section></section><section style="word-wrap: break-word;font-family: Optima-Regular, PingFangTC-light;font-size: 14px;letter-spacing: 2px;white-space: normal;background-color: rgb(255, 255, 255);"><p style="word-wrap: break-word;margin-top: 1.5em;margin-bottom: 1.5em;line-height: 2em;">LEMP 代表的是（L：Linux OS，E：Nginx，M：MySQL/MariaDB， P：PHP)，与之对应的是 LAMP（唯一不同的是 A，代表 Apache 网络服务器），由于Nginx轻量、高效的特性，LEMP 在近来的 Web 服务中的出镜率越来越高。</p><p style="word-wrap: break-word;margin-top: 1.5em;margin-bottom: 1.5em;line-height: 2em;">为了追随潮流，在之前 <span style="word-wrap: break-word;color: rgb(77, 138, 216);">LAMP 搭建 WordPress</span><span class="sup" style="word-wrap: break-word;font-size: 9px;vertical-align: super;background-color: rgb(102, 102, 102);color: rgb(255, 255, 255);transform: scale(0.75);display: inline-block;padding: 1px;line-height: 1em;">[1]</span> 的基础上，我又尝试了使用 Nginx 作为 WordPress 的网络服务器，尽管遇到了各种各样的问题，但是取得了不错的效果。由于 Nginx 的配置比较复杂，于是有很多需要注意的地方。</p><p class="h3" style="word-wrap: break-word;margin-top: 10px;margin-right: 10px;margin-bottom: 10px;padding: 8px 15px;line-height: 1.8em;background-image: linear-gradient(to right bottom, rgb(0, 188, 212), rgb(63, 81, 181));background-color: rgb(63, 81, 181);color: rgb(255, 255, 255);font-size: 1.4em;letter-spacing: 3px;border-left: 10px solid rgb(51, 51, 51);text-shadow: rgb(102, 102, 102) 1px 1px 1px;box-shadow: rgb(102, 102, 102) 1px 1px 2px;">常见网络服务器的优缺点</p><p class="h4" style="word-wrap: break-word;margin-top: 8px;margin-right: 10px;margin-bottom: 8px;padding: 6px 15px;line-height: 1.6em;background-image: linear-gradient(to right bottom, rgb(0, 188, 212), rgb(63, 81, 181));background-color: rgb(63, 81, 181);color: rgb(255, 255, 255);font-size: 1.2em;border-left: 5px solid rgb(51, 51, 51);text-shadow: rgb(102, 102, 102) 1px 1px 1px;box-shadow: rgb(102, 102, 102) 1px 1px 2px;">1. Nginx</p><p style="word-wrap: break-word;margin-top: 1.5em;margin-bottom: 1.5em;line-height: 2em;">Nginx 是十分轻量级的 HTTP 服务器，是一个高性能的 HTTP 和反向代理服务器，Nginx 以事件驱动的方式编写，所以有非常好的性能，同时也是一个非常高效的反向代理、负载平衡。其拥有匹敌 Lighttpd 的性能，同时还没有 Lighttpd 的内存泄漏问题。</p><section class="ul" style="word-wrap: break-word;margin-left: 40px;text-indent: -20px;"><section class="ulli" style="word-wrap: break-word;">◈ 优点：轻量级，处理请求异步非阻塞，抗并发，高度模块化，有着 Lighttpd 的性能，且更稳定。</section><section class="ulli" style="word-wrap: break-word;">◈ 缺点：Nginx 在处理动态请求方面不如 Apache。</section></section><p class="h4" style="word-wrap: break-word;margin-top: 8px;margin-right: 10px;margin-bottom: 8px;padding: 6px 15px;line-height: 1.6em;background-image: linear-gradient(to right bottom, rgb(0, 188, 212), rgb(63, 81, 181));background-color: rgb(63, 81, 181);color: rgb(255, 255, 255);font-size: 1.2em;border-left: 5px solid rgb(51, 51, 51);text-shadow: rgb(102, 102, 102) 1px 1px 1px;box-shadow: rgb(102, 102, 102) 1px 1px 2px;">2. Apache</p><p style="word-wrap: break-word;margin-top: 1.5em;margin-bottom: 1.5em;line-height: 2em;">Apache 是世界使用排名第一的 Web 服务器软件。它可以运行在几乎所有广泛使用的计算机平台上，由于其跨平台和安全性被广泛使用，是最流行的 Web 服务器端软件之一。但是对于那些需要更强大的 Web 应用服务器（比如大小、可定制、响应速度、可扩展性等方面）的人而言，Apache 明显不符合他们的要求。</p><section class="ul" style="word-wrap: break-word;margin-left: 40px;text-indent: -20px;"><section class="ulli" style="word-wrap: break-word;">◈ 优点：兼容性和稳定性强，处理动态请求能力好。</section><section class="ulli" style="word-wrap: break-word;">◈ 缺点：体量大，在速度、性能不及其他轻量级 Web 服务器，并且消费内存较高。</section></section><p class="h4" style="word-wrap: break-word;margin-top: 8px;margin-right: 10px;margin-bottom: 8px;padding: 6px 15px;line-height: 1.6em;background-image: linear-gradient(to right bottom, rgb(0, 188, 212), rgb(63, 81, 181));background-color: rgb(63, 81, 181);color: rgb(255, 255, 255);font-size: 1.2em;border-left: 5px solid rgb(51, 51, 51);text-shadow: rgb(102, 102, 102) 1px 1px 1px;box-shadow: rgb(102, 102, 102) 1px 1px 2px;">3. Lighttpd</p><p style="word-wrap: break-word;margin-top: 1.5em;margin-bottom: 1.5em;line-height: 2em;">Lighttpd 是一个具有非常低的内存开销，CPU 占用率低，效能好，以及丰富的模块等特点。Lighttpd 是众多 开源的轻量级的网络服务器中较为优秀的一个。支持 FastCGI、 CGI、 Auth、 输出压缩、URL 重写、Alias 等重要功能。</p><section class="ul" style="word-wrap: break-word;margin-left: 40px;text-indent: -20px;"><section class="ulli" style="word-wrap: break-word;">◈ 优点：轻量级，CPU 占用低，效能好，模块丰富，对FastCGI 支持非常好，比 Apache 性能更高。</section><section class="ulli" style="word-wrap: break-word;">◈ 缺点：稳定性没有 Apache 和 Nginx 好。</section></section><p style="word-wrap: break-word;margin-top: 1.5em;margin-bottom: 1.5em;line-height: 2em;">如果考虑网站的综合状况的话，比较理想的做法是用 Nginx 做高并发、缓存、代理前端内容，而使用 Apache 处理后台动态内容。不过如果只是驱动 Wordpress，单独使用 Nginx 就够了。</p><p class="h3" style="word-wrap: break-word;margin-top: 10px;margin-right: 10px;margin-bottom: 10px;padding: 8px 15px;line-height: 1.8em;background-image: linear-gradient(to right bottom, rgb(0, 188, 212), rgb(63, 81, 181));background-color: rgb(63, 81, 181);color: rgb(255, 255, 255);font-size: 1.4em;letter-spacing: 3px;border-left: 10px solid rgb(51, 51, 51);text-shadow: rgb(102, 102, 102) 1px 1px 1px;box-shadow: rgb(102, 102, 102) 1px 1px 2px;">安装 LEMP</p><p style="word-wrap: break-word;margin-top: 1.5em;margin-bottom: 1.5em;line-height: 2em;">安装过程和 LAMP 差不多，只是几个地方稍微不同。</p><p class="h4" style="word-wrap: break-word;margin-top: 8px;margin-right: 10px;margin-bottom: 8px;padding: 6px 15px;line-height: 1.6em;background-image: linear-gradient(to right bottom, rgb(0, 188, 212), rgb(63, 81, 181));background-color: rgb(63, 81, 181);color: rgb(255, 255, 255);font-size: 1.2em;border-left: 5px solid rgb(51, 51, 51);text-shadow: rgb(102, 102, 102) 1px 1px 1px;box-shadow: rgb(102, 102, 102) 1px 1px 2px;">安装 Nginx</p><pre class="prettyprint linenums prettyprinted" style="word-wrap: break-word;background-color: rgb(22, 27, 32);background-image: none;box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 5px;text-shadow: rgb(0, 0, 0) 0px 1px 1px;border-radius: 6px;color: rgb(184, 255, 184);margin: 10px;padding: 1em 1em 1em 0px;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(0, 0, 0);line-height: 1.2em;letter-spacing: 0px !important;"><ol class="linenums list-paddingleft-2" style="margin-left: 2em;margin-right: 2em;"><li><p><code style="word-wrap: break-word;background: none;color: rgb(33, 150, 243);line-height: 1.2em;padding-left: 10px !important;border-radius: 0px !important;margin-top: 1em !important;margin-bottom: 1em !important;border-width: initial !important;border-style: none !important;border-color: initial !important;"><span class="com" style="word-wrap: break-word;color: rgb(174, 174, 174);font-style: italic;">#</span><span class="pln" style="word-wrap: break-word;color: rgb(184, 255, 184);"> </span><span class="pun" style="word-wrap: break-word;color: rgb(184, 255, 184);">安装</span><span class="typ" style="word-wrap: break-word;color: rgb(137, 189, 255);">Nginx</span></code></p></li><li><p><code style="word-wrap: break-word;background: none;color: rgb(33, 150, 243);line-height: 1.2em;padding-left: 10px !important;border-radius: 0px !important;margin-top: 1em !important;margin-bottom: 1em !important;border-width: initial !important;border-style: none !important;border-color: initial !important;"><span class="kwd" style="word-wrap: break-word;color: rgb(226, 137, 100);">sudo</span><span class="pln" style="word-wrap: break-word;color: rgb(184, 255, 184);"> apt install nginx</span></code></p></li><li><p><code style="word-wrap: break-word;background: none;color: rgb(33, 150, 243);line-height: 1.2em;padding-left: 10px !important;border-radius: 0px !important;margin-top: 1em !important;margin-bottom: 1em !important;border-width: initial !important;border-style: none !important;border-color: initial !important;"/></p></li><li><p><code style="word-wrap: break-word;background: none;color: rgb(33, 150, 243);line-height: 1.2em;padding-left: 10px !important;border-radius: 0px !important;margin-top: 1em !important;margin-bottom: 1em !important;border-width: initial !important;border-style: none !important;border-color: initial !important;"><span class="com" style="word-wrap: break-word;color: rgb(174, 174, 174);font-style: italic;">#</span><span class="pln" style="word-wrap: break-word;color: rgb(184, 255, 184);"> </span><span class="pun" style="word-wrap: break-word;color: rgb(184, 255, 184);">检查</span><span class="typ" style="word-wrap: break-word;color: rgb(137, 189, 255);">Nginx</span><span class="pun" style="word-wrap: break-word;color: rgb(184, 255, 184);">运行状况</span></code></p></li><li><p><code style="word-wrap: break-word;background: none;color: rgb(33, 150, 243);line-height: 1.2em;padding-left: 10px !important;border-radius: 0px !important;margin-top: 1em !important;margin-bottom: 1em !important;border-width: initial !important;border-style: none !important;border-color: initial !important;"><span class="kwd" style="word-wrap: break-word;color: rgb(226, 137, 100);">sudo</span><span class="pln" style="word-wrap: break-word;color: rgb(184, 255, 184);"> </span><span class="kwd" style="word-wrap: break-word;color: rgb(226, 137, 100);">systemctl</span><span class="pln" style="word-wrap: break-word;color: rgb(184, 255, 184);"> status nginx</span><span class="pun" style="word-wrap: break-word;color: rgb(184, 255, 184);">.</span><span class="pln" style="word-wrap: break-word;color: rgb(184, 255, 184);">service</span></code></p></li></ol></pre><p class="h4" style="word-wrap: break-word;margin-top: 8px;margin-right: 10px;margin-bottom: 8px;padding: 6px 15px;line-height: 1.6em;background-image: linear-gradient(to right bottom, rgb(0, 188, 212), rgb(63, 81, 181));background-color: rgb(63, 81, 181);color: rgb(255, 255, 255);font-size: 1.2em;border-left: 5px solid rgb(51, 51, 51);text-shadow: rgb(102, 102, 102) 1px 1px 1px;box-shadow: rgb(102, 102, 102) 1px 1px 2px;">安装 PHP7</p><pre data-start="1" style="word-wrap: break-word;background-color: rgb(22, 27, 32);background-image: none;box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 5px;text-shadow: rgb(0, 0, 0) 0px 1px 1px;border-radius: 6px;color: rgb(184, 255, 184);margin: 10px;padding: 0px 0px 0px 1em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(0, 0, 0);line-height: 1.2em;letter-spacing: 0px !important;"># 安装PHP7和PHPFastCGI管理器PHP-FPM<br style="word-wrap: break-word;"/>sudo apt install php7.0 php7.0-fpm 
+</pre><p class="h4" style="word-wrap: break-word;margin-top: 8px;margin-right: 10px;margin-bottom: 8px;padding: 6px 15px;line-height: 1.6em;background-image: linear-gradient(to right bottom, rgb(0, 188, 212), rgb(63, 81, 181));background-color: rgb(63, 81, 181);color: rgb(255, 255, 255);font-size: 1.2em;border-left: 5px solid rgb(51, 51, 51);text-shadow: rgb(102, 102, 102) 1px 1px 1px;box-shadow: rgb(102, 102, 102) 1px 1px 2px;">安装 MariaDB 数据库</p><pre data-start="1" style="word-wrap: break-word;background-color: rgb(22, 27, 32);background-image: none;box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 5px;text-shadow: rgb(0, 0, 0) 0px 1px 1px;border-radius: 6px;color: rgb(184, 255, 184);margin: 10px;padding: 0px 0px 0px 1em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(0, 0, 0);line-height: 1.2em;letter-spacing: 0px !important;"># 安装MariaDB
+sudo apt install mariadb-server mariadb-client php7.0-mysql
+
+# 重启PHP-FPM服务以便使用MySQL模块与数据库通信
+sudo systemctl restart php7.0-fpm.service</pre><p style="word-wrap: break-word;margin-top: 1.5em;margin-bottom: 1.5em;line-height: 2em;">为了安全加固 MariaDB，运行来自 Ubuntu 软件仓库中的二进制包提供的安全脚本，这会询问你设置一个 root 密码，移除匿名用户，禁用 root 用户远程登录，移除测试数据库等。</p><pre data-start="1" style="word-wrap: break-word;background-color: rgb(22, 27, 32);background-image: none;box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 5px;text-shadow: rgb(0, 0, 0) 0px 1px 1px;border-radius: 6px;color: rgb(184, 255, 184);margin: 10px;padding: 0px 0px 0px 1em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(0, 0, 0);line-height: 1.2em;letter-spacing: 0px !important;"># 使用安全脚本
+sudo mysql_secure_installation
+
+# 配置MariaDB以便普通用户能够不使用root权限来访问数据库
+sudo mysql
+MariaDB&gt; use mysql;
+MariaDB&gt; update user set plugin='' where User='root';
+MariaDB&gt; flush privileges;
+MariaDB&gt; exit
+
+# 然后使用如下命令执行数据库命令
+mysql -u root -p -e 'show databases'</pre><p class="h4" style="word-wrap: break-word;margin-top: 8px;margin-right: 10px;margin-bottom: 8px;padding: 6px 15px;line-height: 1.6em;background-image: linear-gradient(to right bottom, rgb(0, 188, 212), rgb(63, 81, 181));background-color: rgb(63, 81, 181);color: rgb(255, 255, 255);font-size: 1.2em;border-left: 5px solid rgb(51, 51, 51);text-shadow: rgb(102, 102, 102) 1px 1px 1px;box-shadow: rgb(102, 102, 102) 1px 1px 2px;">安装其他模块</p><p style="word-wrap: break-word;margin-top: 1.5em;margin-bottom: 1.5em;line-height: 2em;">还有一些 WordPress 会用到的模块，比如 mcrypt、mbstring，安装完后需要重启 PHP-FPM。</p><pre data-start="1" style="word-wrap: break-word;background-color: rgb(22, 27, 32);background-image: none;box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 5px;text-shadow: rgb(0, 0, 0) 0px 1px 1px;border-radius: 6px;color: rgb(184, 255, 184);margin: 10px;padding: 0px 0px 0px 1em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(0, 0, 0);line-height: 1.2em;letter-spacing: 0px !important;"># 其他模块
+sudo apt install php7.0-mcrypt php7.0-mbstring</pre><p style="word-wrap: break-word;margin-top: 1.5em;margin-bottom: 1.5em;line-height: 2em;">到这里 LEMP 的安装工作就已经基本搞定了，接下来是最重要的配置环节。</p><p class="h3" style="word-wrap: break-word;margin-top: 10px;margin-right: 10px;margin-bottom: 10px;padding: 8px 15px;line-height: 1.8em;background-image: linear-gradient(to right bottom, rgb(0, 188, 212), rgb(63, 81, 181));background-color: rgb(63, 81, 181);color: rgb(255, 255, 255);font-size: 1.4em;letter-spacing: 3px;border-left: 10px solid rgb(51, 51, 51);text-shadow: rgb(102, 102, 102) 1px 1px 1px;box-shadow: rgb(102, 102, 102) 1px 1px 2px;">配置 Nginx</p><p class="h4" style="word-wrap: break-word;margin-top: 8px;margin-right: 10px;margin-bottom: 8px;padding: 6px 15px;line-height: 1.6em;background-image: linear-gradient(to right bottom, rgb(0, 188, 212), rgb(63, 81, 181));background-color: rgb(63, 81, 181);color: rgb(255, 255, 255);font-size: 1.2em;border-left: 5px solid rgb(51, 51, 51);text-shadow: rgb(102, 102, 102) 1px 1px 1px;box-shadow: rgb(102, 102, 102) 1px 1px 2px;">主配置</p><p style="word-wrap: break-word;margin-top: 1.5em;margin-bottom: 1.5em;line-height: 2em;">首先是主配置文件 <code style="word-wrap: break-word;background: none rgb(238, 238, 238);padding: 2px 4px;border-radius: 4px;margin-right: 4px;margin-left: 4px;color: rgb(33, 150, 243);line-height: 1.2em;">/etc/nginx/nginx.conf</code>：</p><pre data-start="1" style="word-wrap: break-word;background-color: rgb(22, 27, 32);background-image: none;box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 5px;text-shadow: rgb(0, 0, 0) 0px 1px 1px;border-radius: 6px;color: rgb(184, 255, 184);margin: 10px;padding: 0px 0px 0px 1em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(0, 0, 0);line-height: 1.2em;letter-spacing: 0px !important;"># Set user and group.
+user www-data www-data;
+
+# Usually equal to number of CPUs you have.
+worker_processes 1;
+
+# Global error log [ debug | info | notice | warn | error | crit ].
+error_log /var/log/nginx/error.log warn;
+
+# Pid file
+pid /run/nginx.pid;
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    ### Basic Settings ###
+
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 60;
+    client_max_body_size 15m; # Limit the max size of plugin in WordPress.
+
+    ### SSL Settings ###
+
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2; # Dropping SSLv3, ref: POODLE
+    ssl_prefer_server_ciphers on;
+
+    ### Logging Settings ###
+
+    access_log /var/log/nginx/access.log;
+    error_log /var/log/nginx/error.log;
+
+    ### Gzip Settings ###
+
+    gzip on;
+    gzip_disable "msie6";
+    gzip_vary on;
+    gzip_proxied any;
+    gzip_comp_level 6;
+    gzip_buffers 16 8k;
+    gzip_http_version 1.1;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+
+    ### FastCGI Settings ###
+
+    fastcgi_cache_path /tmp/wpcache levels=1:2 keys_zone=WORDPRESS:250m inactive=1d max_size=1G;
+    fastcgi_temp_path /tmp/wpcache/temp;
+    fastcgi_cache_key "$scheme$request_method$host$request_uri";
+    fastcgi_cache_use_stale error timeout invalid_header http_500;
+    fastcgi_ignore_headers Cache-Control Expires Set-Cookie;
+
+    ### Virtual Host Configs ###
+
+    include /etc/nginx/conf.d/*.conf;
+    include /etc/nginx/sites-enabled/*;
+}</pre><p class="h4" style="word-wrap: break-word;margin-top: 8px;margin-right: 10px;margin-bottom: 8px;padding: 6px 15px;line-height: 1.6em;background-image: linear-gradient(to right bottom, rgb(0, 188, 212), rgb(63, 81, 181));background-color: rgb(63, 81, 181);color: rgb(255, 255, 255);font-size: 1.2em;border-left: 5px solid rgb(51, 51, 51);text-shadow: rgb(102, 102, 102) 1px 1px 1px;box-shadow: rgb(102, 102, 102) 1px 1px 2px;">子配置</p><p style="word-wrap: break-word;margin-top: 1.5em;margin-bottom: 1.5em;line-height: 2em;">然后是 WordPress 的配置文件 <code style="word-wrap: break-word;background: none rgb(238, 238, 238);padding: 2px 4px;border-radius: 4px;margin-right: 4px;margin-left: 4px;color: rgb(33, 150, 243);line-height: 1.2em;">/etc/site-enabled/wordpress.conf</code>：</p><pre data-start="1" style="word-wrap: break-word;background-color: rgb(22, 27, 32);background-image: none;box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 5px;text-shadow: rgb(0, 0, 0) 0px 1px 1px;border-radius: 6px;color: rgb(184, 255, 184);margin: 10px;padding: 0px 0px 0px 1em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(0, 0, 0);line-height: 1.2em;letter-spacing: 0px !important;">server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    root /home/ubuntu/wordpress;
+
+    index index.html index.php;
+
+    server_name www.infiniture.cn;
+
+    access_log /var/log/nginx/infiniture.com.access.log;
+    error_log /var/log/nginx/infiniture.com.error.log;
+
+    # Managed by Certbot
+    listen 443 ssl; 
+    ssl_certificate /etc/letsencrypt/live/www.infiniture.cn/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/www.infiniture.cn/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    if ($scheme != "https") {
+        return 301 https://$host$request_uri;
+    }
+
+    # Add rewrite support for wordpress
+    location / {
+        try_files $uri $uri/ /index.php?$args;
+        rewrite /wp-admin$ $scheme://$host$uri/ permanent;
+    }
+
+    # Cache strategy
+    set $no_cache 0;
+
+    # POST requests and urls with a query string should always go to PHP
+    if ($request_method = POST) {
+        set $no_cache 1;
+    }
+    if ($query_string != "") {
+        set $no_cache 1;
+    }
+
+    # Don't cache uris containing the following segments
+    if ($request_uri ~* "(/wp-admin/|/xmlrpc.php|/wp-(app|cron|login|register|mail).php|wp-.*.php|/feed/|index.php|wp-comments-popup.php|wp-links-opml.php|wp-locations.php|sitemap(_index)?.xml|[a-z0-9_-]+-sitemap([0-9]+)?.xml)") {
+        set $no_cache 1;
+    } 
+
+    # Don't use the cache for logged in users or recent commenters
+    if ($http_cookie ~* "comment_author|wordpress_[a-f0-9]+|wp-postpass|wordpress_no_cache|wordpress_logged_in") {
+        set $no_cache 1;
+    }
+
+    location ~ /wp-admin {
+        location ~ \.php$ {
+            include snippets/fastcgi-php.conf;
+            fastcgi_pass unix:/run/php/php7.0-fpm.sock;
+            # Making the updates in WordPress real time.
+            fastcgi_buffering off;
+            add_header X-Accel-Buffering "no";
+        }
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/run/php/php7.0-fpm.sock;
+        fastcgi_connect_timeout 600;
+        fastcgi_send_timeout 600;
+        fastcgi_read_timeout 600;
+        fastcgi_buffer_size 64k;
+        fastcgi_buffers 4 64k; 
+        fastcgi_busy_buffers_size 128k;
+        fastcgi_temp_file_write_size 128k;
+        fastcgi_cache_bypass $no_cache;
+        fastcgi_no_cache $no_cache;
+        fastcgi_cache WORDPRESS;
+        fastcgi_cache_valid 200 301 302 1d;
+        add_header X-Cache "$upstream_cache_status From $host";
+    }
+
+    # Purge cache(Nginx Helper Purge Method: Using a Get)
+    location ~ /purge(/.*) {
+        allow 127.0.0.1;
+        allow 182.254.246.42;
+        deny all;
+        fastcgi_cache_purge WORDPRESS "$scheme$request_method$host$1";
+    }
+
+    # Deny all attempts to access hidden files such as .htaccess, .htpasswd, .DS_Store (Mac).
+    # Keep logging the requests to parse later (or to pass to firewall utilities such as fail2ban)
+    location ~ /\. {
+        deny all;
+    }
+
+    # Deny access to any files with a .php extension in the uploads directory
+    # Works in sub-directory installs and also in multisite network
+    # Keep logging the requests to parse later (or to pass to firewall utilities such as fail2ban)
+    location ~* /(?:uploads|files)/.*\.php$ {
+        deny all;
+    }
+
+    location = /favicon.ico {
+        log_not_found off;
+        access_log off;
+    }
+
+    location = /robots.txt {
+        allow all;
+        log_not_found off;
+        access_log off;
+    }
+
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
+        expires max;
+        log_not_found off;
+        access_log off;
+    }
+}</pre><p class="h4" style="word-wrap: break-word;margin-top: 8px;margin-right: 10px;margin-bottom: 8px;padding: 6px 15px;line-height: 1.6em;background-image: linear-gradient(to right bottom, rgb(0, 188, 212), rgb(63, 81, 181));background-color: rgb(63, 81, 181);color: rgb(255, 255, 255);font-size: 1.2em;border-left: 5px solid rgb(51, 51, 51);text-shadow: rgb(102, 102, 102) 1px 1px 1px;box-shadow: rgb(102, 102, 102) 1px 1px 2px;">配置说明</p><p style="word-wrap: break-word;margin-top: 1.5em;margin-bottom: 1.5em;line-height: 2em;">以上配置中，需要说明的几个：</p><section class="ul" style="word-wrap: break-word;margin-left: 40px;text-indent: -20px;"><section class="ulli" style="word-wrap: break-word;">◈ <code style="text-indent: 0px;word-wrap: break-word;background: none rgb(238, 238, 238);padding: 2px 4px;border-radius: 4px;margin-right: 4px;margin-left: 4px;color: rgb(33, 150, 243);line-height: 1.2em;">client_max_body_size 15m;</code><span style="text-indent: 0px;"> 因为 WordPress 里很多插件的体积比较大，如果不设置这个值的大小，会导致插件或者主题安装失败。</span></section><section class="ulli" style="word-wrap: break-word;">◈ <code style="text-indent: 0px;word-wrap: break-word;background: none rgb(238, 238, 238);padding: 2px 4px;border-radius: 4px;margin-right: 4px;margin-left: 4px;color: rgb(33, 150, 243);line-height: 1.2em;">fastcgi_cache_path /tmp/wpcache levels=1:2 keys_zone=WORDPRESS:250m inactive=1d max_size=1G;</code><span style="text-indent: 0px;"> 这个包括下面的所有内容都是为了使 Nginx 缓存动态文件，参数对应的是缓存位置，缓存级别，缓存标识及大小，有效期，最大容量。</span></section><section class="ulli" style="word-wrap: break-word;">◈ <span style="text-indent: 0px;">由于 Nginx 不支持 Apache 的 </span><code style="text-indent: 0px;word-wrap: break-word;background: none rgb(238, 238, 238);padding: 2px 4px;border-radius: 4px;margin-right: 4px;margin-left: 4px;color: rgb(33, 150, 243);line-height: 1.2em;">.htaccess</code><span style="text-indent: 0px;"> 文件，因此无法使用 WordPress 自带的地址重写功能，需要自己添加相应的功能。</span></section></section><pre data-start="1" style="word-wrap: break-word;background-color: rgb(22, 27, 32);background-image: none;box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 5px;text-shadow: rgb(0, 0, 0) 0px 1px 1px;border-radius: 6px;color: rgb(184, 255, 184);margin: 10px;padding: 0px 0px 0px 1em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(0, 0, 0);line-height: 1.2em;letter-spacing: 0px !important;"># Add rewrite support for wordpress
+location / {
+    try_files $uri $uri/ /index.php?$args;
+    rewrite /wp-admin$ $scheme://$host$uri/ permanent;
+}</pre><section class="ul" style="word-wrap: break-word;margin-left: 40px;text-indent: -20px;"><section class="ulli" style="word-wrap: break-word;">◈ <code style="text-indent: 0px;word-wrap: break-word;background: none rgb(238, 238, 238);padding: 2px 4px;border-radius: 4px;margin-right: 4px;margin-left: 4px;color: rgb(33, 150, 243);line-height: 1.2em;">fastcgi_buffering off;</code><span style="text-indent: 0px;"> 这个选项默认是开启的，它会把 FastCGI 返回的内容缓存起来，直到缓存空间满了之后一并输出，这会导致 WordPress 下更新时不会实时显示，而是更新完成后全部一起显示。关掉这个选项即可解决这个问题。</span></section><section class="ulli" style="word-wrap: break-word;">◈ <span style="text-indent: 0px;">由于在线安装插件、主题需要等待的时间有时候会很长，因此如果不设置  FastCGI 的读写等待时长，很容易导致安装或者更新失败，因此需要设置如下内容。</span></section></section><pre data-start="1" style="word-wrap: break-word;background-color: rgb(22, 27, 32);background-image: none;box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 5px;text-shadow: rgb(0, 0, 0) 0px 1px 1px;border-radius: 6px;color: rgb(184, 255, 184);margin: 10px;padding: 0px 0px 0px 1em;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(0, 0, 0);line-height: 1.2em;letter-spacing: 0px !important;">fastcgi_connect_timeout 600;
+fastcgi_send_timeout 600;
+fastcgi_read_timeout 600;</pre><section class="ul" style="word-wrap: break-word;margin-left: 40px;text-indent: -20px;"><section class="ulli" style="word-wrap: break-word;">◈ 为了更好管理动态文件缓存，我用了一个名为 “Nginx hleper” 的插件，为此增加了如下配置。</section></section><pre class="prettyprint linenums prettyprinted" style="word-wrap: break-word;background-color: rgb(22, 27, 32);background-image: none;box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 5px;text-shadow: rgb(0, 0, 0) 0px 1px 1px;border-radius: 6px;color: rgb(184, 255, 184);margin: 10px;padding: 1em 1em 1em 0px;white-space: pre-wrap;border-width: 1px;border-style: solid;border-color: rgb(0, 0, 0);line-height: 1.2em;letter-spacing: 0px !important;"><ol class="linenums list-paddingleft-2" style="margin-left: 2em;margin-right: 2em;"><li><p><code style="word-wrap: break-word;background: none;color: rgb(33, 150, 243);line-height: 1.2em;padding-left: 10px !important;border-radius: 0px !important;margin-top: 1em !important;margin-bottom: 1em !important;border-width: initial !important;border-style: none !important;border-color: initial !important;"><span class="com" style="word-wrap: break-word;color: rgb(174, 174, 174);font-style: italic;">#</span><span class="pln" style="word-wrap: break-word;color: rgb(184, 255, 184);"> </span><span class="typ" style="word-wrap: break-word;color: rgb(137, 189, 255);">Purge</span><span class="pln" style="word-wrap: break-word;color: rgb(184, 255, 184);"> cache</span><span class="pun" style="word-wrap: break-word;color: rgb(184, 255, 184);">(</span><span class="typ" style="word-wrap: break-word;color: rgb(137, 189, 255);">Nginx</span><span class="pln" style="word-wrap: break-word;color: rgb(184, 255, 184);"> </span><span class="typ" style="word-wrap: break-word;color: rgb(137, 189, 255);">Helper</span><span class="pln" style="word-wrap: break-word;color: rgb(184, 255, 184);"> </span><span class="typ" style="word-wrap: break-word;color: rgb(137, 189, 255);">Purge</span><span class="pln" style="word-wrap: break-word;color: rgb(184, 255, 184);"> </span><span class="typ" style="word-wrap: break-word;color: rgb(137, 189, 255);">Method</span><span class="pun" style="word-wrap: break-word;color: rgb(184, 255, 184);">:</span><span class="pln" style="word-wrap: break-word;color: rgb(184, 255, 184);"> </span><span class="typ" style="word-wrap: break-word;color: rgb(137, 189, 255);">Using</span><span class="pln" style="word-wrap: break-word;color: rgb(184, 255, 184);"> a </span><span class="typ" style="word-wrap: break-word;color: rgb(137, 189, 255);">Get</span><span class="pun" style="word-wrap: break-word;color: rgb(184, 255, 184);">)</span></code></p></li><li><p><code style="word-wrap: break-word;background: none;color: rgb(33, 150, 243);line-height: 1.2em;padding-left: 10px !important;border-radius: 0px !important;margin-top: 1em !important;margin-bottom: 1em !important;border-width: initial !important;border-style: none !important;border-color: initial !important;"><span class="pln" style="word-wrap: break-word;color: rgb(184, 255, 184);">location </span><span class="pun" style="word-wrap: break-word;color: rgb(184, 255, 184);">~</span><span class="pln" style="word-wrap: break-word;color: rgb(184, 255, 184);"> </span><span class="str" style="word-wrap: break-word;color: rgb(101, 176, 66);">/purge(/</span><span class="pun" style="word-wrap: break-word;color: rgb(184, 255, 184);">.*)</span><span class="pln" style="word-wrap: break-word;color: rgb(184, 255, 184);"> </span><span class="pun" style="word-wrap: break-word;color: rgb(184, 255, 184);">{</span></code></p></li><li><p><code style="word-wrap: break-word;background: none;color: rgb(33, 150, 243);line-height: 1.2em;padding-left: 10px !important;border-radius: 0px !important;margin-top: 1em !important;margin-bottom: 1em !important;border-width: initial !important;border-style: none !important;border-color: initial !important;"><span class="pln" style="word-wrap: break-word;color: rgb(184, 255, 184);">    allow </span><span class="lit" style="word-wrap: break-word;color: rgb(51, 135, 204);">127.0</span><span class="pun" style="word-wrap: break-word;color: rgb(184, 255, 184);">.</span><span class="lit" style="word-wrap: break-word;color: rgb(51, 135, 204);">0.1</span><span class="pun" style="word-wrap: break-word;color: rgb(184, 255, 184);">;</span></code></p></li><li><p><code style="word-wrap: break-word;background: none;color: rgb(33, 150, 243);line-height: 1.2em;padding-left: 10px !important;border-radius: 0px !important;margin-top: 1em !important;margin-bottom: 1em !important;border-width: initial !important;border-style: none !important;border-color: initial !important;"><span class="pln" style="word-wrap: break-word;color: rgb(184, 255, 184);">    allow xxx</span><span class="pun" style="word-wrap: break-word;color: rgb(184, 255, 184);">.</span><span class="pln" style="word-wrap: break-word;color: rgb(184, 255, 184);">xxx</span><span class="pun" style="word-wrap: break-word;color: rgb(184, 255, 184);">.</span><span class="pln" style="word-wrap: break-word;color: rgb(184, 255, 184);">xxx</span><span class="pun" style="word-wrap: break-word;color: rgb(184, 255, 184);">.</span><span class="pln" style="word-wrap: break-word;color: rgb(184, 255, 184);">xxx</span><span class="pun" style="word-wrap: break-word;color: rgb(184, 255, 184);">;</span><span class="pln" style="word-wrap: break-word;color: rgb(184, 255, 184);"> </span><span class="com" style="word-wrap: break-word;color: rgb(174, 174, 174);font-style: italic;">#</span><span class="pln" style="word-wrap: break-word;color: rgb(184, 255, 184);"> </span><span class="pun" style="word-wrap: break-word;color: rgb(184, 255, 184);">你的服务器地址</span></code></p></li><li><p><code style="word-wrap: break-word;background: none;color: rgb(33, 150, 243);line-height: 1.2em;padding-left: 10px !important;border-radius: 0px !important;margin-top: 1em !important;margin-bottom: 1em !important;border-width: initial !important;border-style: none !important;border-color: initial !important;"><span class="pln" style="word-wrap: break-word;color: rgb(184, 255, 184);">    deny all</span><span class="pun" style="word-wrap: break-word;color: rgb(184, 255, 184);">;</span></code></p></li><li><p><code style="word-wrap: break-word;background: none;color: rgb(33, 150, 243);line-height: 1.2em;padding-left: 10px !important;border-radius: 0px !important;margin-top: 1em !important;margin-bottom: 1em !important;border-width: initial !important;border-style: none !important;border-color: initial !important;"><span class="pln" style="word-wrap: break-word;color: rgb(184, 255, 184);">    fastcgi_cache_purge WORDPRESS </span><span class="str" style="word-wrap: break-word;color: rgb(101, 176, 66);">"$scheme$request_method$host$1"</span><span class="pun" style="word-wrap: break-word;color: rgb(184, 255, 184);">;</span></code></p></li><li><p><code style="word-wrap: break-word;background: none;color: rgb(33, 150, 243);line-height: 1.2em;padding-left: 10px !important;border-radius: 0px !important;margin-top: 1em !important;margin-bottom: 1em !important;border-width: initial !important;border-style: none !important;border-color: initial !important;"><span class="pun" style="word-wrap: break-word;color: rgb(184, 255, 184);">}</span></code></p></li></ol></pre><p class="h3" style="word-wrap: break-word;margin-top: 10px;margin-right: 10px;margin-bottom: 10px;padding: 8px 15px;line-height: 1.8em;background-image: linear-gradient(to right bottom, rgb(0, 188, 212), rgb(63, 81, 181));background-color: rgb(63, 81, 181);color: rgb(255, 255, 255);font-size: 1.4em;letter-spacing: 3px;border-left: 10px solid rgb(51, 51, 51);text-shadow: rgb(102, 102, 102) 1px 1px 1px;box-shadow: rgb(102, 102, 102) 1px 1px 2px;">总结</p><p style="word-wrap: break-word;margin-top: 1.5em;margin-bottom: 1.5em;line-height: 2em;">这样就在 LEMP 平台上搭建好了 WordPress 站点。</p></section><p><br/></p>
+        
+</body>
+</html>

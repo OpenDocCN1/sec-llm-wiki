@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>linux基线检查之清楚多余账号</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>linux基线检查之清楚多余账号</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247487634&amp;idx=3&amp;sn=7f849bccb474f51cbcfba836910215e4&amp;chksm=f9e07fc9ce97f6df5d907710cddd0277a7d9580e7179c2edcdb11d9a73726aa64e11168b6381&amp;scene=126&amp;sessionid=1681663421#rd">http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247487634&amp;idx=3&amp;sn=7f849bccb474f51cbcfba836910215e4&amp;chksm=f9e07fc9ce97f6df5d907710cddd0277a7d9580e7179c2edcdb11d9a73726aa64e11168b6381&amp;scene=126&amp;sessionid=1681663421#rd</a></blockquote><h1>Linux centos7清除多余的系统虚拟账号</h1><div><p><br/></p></div><p>系统中默认的虚拟用户都是可以删掉的。如：bin、adm、lp、halt、mail、uucp、operator、games、gopher、ftp、dbus、vcsa、abrt、ntp、saslauth、postfix、tcpdump等。这些用户本身也是无法登录的，所以此项优化不是必须的。</p><p><br/></p><p>#     vi /etc/passwd</p><p>可以用#注释不用的账号。</p><p style="text-align: center;"><img class="rich_pages" data-ratio="0.4720394736842105" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/p5qELRDe5ickPbKYb1U8icKLQeYSUSZE0s49fQicVmFdpsjaBlryic1h6B6WNMvmFmajEcwgJ3vx7mH7RZLE55eqXw/640?wx_fmt=png" data-type="png" data-w="608" style="" src="../Images/4887a91e1a233d4cd61d054c9e257a2b.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/p5qELRDe5ickPbKYb1U8icKLQeYSUSZE0s49fQicVmFdpsjaBlryic1h6B6WNMvmFmajEcwgJ3vx7mH7RZLE55eqXw/640?wx_fmt=png"/></p><h2><br/></h2><h2><br/></h2><h2>密码段格式</h2><h2><span style="font-size: 14px;">说说shadow文件中第二列的格式，它是加密后的密码，它有些玄机，不同的特殊字符表示特殊的意义：<br/>①.该列留空，即"::"，表示该用户没有密码。<br/>②.该列为"!"，即":!:"，表示该用户被锁，被锁将无法登陆，但是可能其他的登录方式是不受限制的，如ssh公钥认证的方式，su的方式。<br/>③.该列为"<em>"，即":</em>:"，也表示该用户被锁，和"!“效果是一样的。<br/>④.该列以”!“或”!!“开头，则也表示该用户被锁。<br/>⑤.该列为”!!"，即":!!:"，表示该用户从来没设置过密码。<br/>⑥.如果格式为"$id$salt$hashed"，则表示该用户密码正常。其中$id$的id表示密码的加密算法，$1$表示使用MD5算法，$2a$表示使用Blowfish算法，"$2y$“是另一算法长度的Blowfish,”$5$“表示SHA-256算法，而”$6$"表示SHA-512算法，<br/>目前基本上都使用sha-512算法的，但无论是md5还是sha-256都仍然支持。$salt$是加密时使用的salt，hashed才是真正的密码部分。</span><br/></h2><p><br/></p><p><br/></p><p><br/></p><p><br/></p><p><br/></p><p><br/></p>
+        
+</body>
+</html>

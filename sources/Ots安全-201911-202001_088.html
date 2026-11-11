@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>思科Talos在流行的OpenCV库中发现了2个关键缺陷</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>思科Talos在流行的OpenCV库中发现了2个关键缺陷</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxMjYyMzkwOA==&amp;mid=2247484293&amp;idx=3&amp;sn=83502b38aac7af24d730e01f2bce3b54&amp;chksm=9bae4aceacd9c3d87c04a345859adc711bc3c03d7fa233ad2d57cbff31660ce13872524713da&amp;scene=126&amp;sessionid=1681670243#rd">http://mp.weixin.qq.com/s?__biz=MzAxMjYyMzkwOA==&amp;mid=2247484293&amp;idx=3&amp;sn=83502b38aac7af24d730e01f2bce3b54&amp;chksm=9bae4aceacd9c3d87c04a345859adc711bc3c03d7fa233ad2d57cbff31660ce13872524713da&amp;scene=126&amp;sessionid=1681670243#rd</a></blockquote><ul class=" list-paddingleft-2" style="list-style-type: disc;"><li><p>OpenCV库的维护人员解决了两个缓冲区溢出漏洞，这些漏洞可能导致任意代码执行。</p></li><li><p>OpenCV库的维护人员解决了两个高严重性的缓冲区溢出漏洞，攻击者可能会利用这些漏洞执行任意代码。</p></li><li><p>OpenCV（开源计算机视觉库）是一个主要针对实时计算机视觉的编程功能的开源库。</p></li></ul><p><br/></p><p>包括Google，Microsoft，Intel，IBM，Yahoo，Sony，Honda，Toyota和其他公司在内的主要科技公司都使用该库来开发面部识别技术，机器人技术，运动跟踪和其他解决方案。OpenCV可在主要操作系统上使用，包括Windows，Linux，Android和Mac OS。</p><p><br/></p><p>Cisco Talos的研究人员发现了OpenCV 4.1.0版中的两个缓冲区溢出漏洞，分别为CVE-2019-5063（CVSS评分8.8）和CVE-2019-5064（CVSS评分8.8）。</p><p><br/></p><p>这两个漏洞已于2019年7月报告给供应商。</p><p style="text-align: center;"><img class="rich_pages js_insertlocalimg" data-ratio="0.4357142857142857" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/rWGOWg48taeZmPT50fdnUymGMryf8EVZ6sWmMVY6iclRwoQd7bAZ8urpZc6cSPkDWHojKibkhicRhDm0OWHtUIX0Q/640?wx_fmt=png" data-type="png" data-w="560" style="" src="../Images/70d055ad0b8564e37ca703efc02ae76e.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/rWGOWg48taeZmPT50fdnUymGMryf8EVZ6sWmMVY6iclRwoQd7bAZ8urpZc6cSPkDWHojKibkhicRhDm0OWHtUIX0Q/640?wx_fmt=png"/></p><p>CVE-2019-5063是一个堆缓冲区溢出漏洞，存在于OpenCV 4.1.0的数据结构持久性功能中。该功能允许开发人员在磁盘上的文件中写入OpenCV数据结构以及从磁盘上的文件中检索OpenCV数据结构，攻击者可以通过使用经特殊设计的XML文件来利用此缺陷，该XML文件包含 “潜在的字符实体引用，当遇到＆符号时，API将继续消化字母数字字符，直到遇到分号为止。如果字符串与switch语句中的字符串之一不匹配，则数据而是被复制 保持原样。”</p><p><br/></p><p>“思科Talos最近在OpenCV库中发现了两个缓冲区溢出漏洞。攻击者可能利用这些错误来导致堆损坏并潜在地代码执行。英特尔研究院最初开发的OpenCV于1999年，但它目前由非营利组织OpenCV.org维持。”读取咨询思科塔洛斯出版。</p><p><br/></p><p>“根据我们的协调披露政策，Cisco Talos与OpenCV合作，确保解决了这些问题，并为受影响的客户提供了更新。”</p><p>CVE-2019-5064漏洞位于同一库的数据结构持久性功能中，可由攻击者使用特制JSON文件触发。</p><p><br/></p><p>专家解释说，该缺陷是在解析包含空字节的JSON文件时触发的，并将其复制到缓冲区中。该库无法检查JSON值是否会溢出目标缓冲区。</p><p><br/></p><p>“ OpenCV版本4.1.0的数据结构持久性功能中存在一个可利用的堆缓冲区溢出漏洞。特制的JSON文件可能会导致缓冲区溢出，从而导致多个堆损坏并可能执行代码。“攻击者可以提供特制文件来触发此漏洞。”</p><p><br/></p><p>2019年12月底发布的OpenCV 4.2.0 版本解决了两个缓冲区溢出漏洞。</p>
+        
+</body>
+</html>

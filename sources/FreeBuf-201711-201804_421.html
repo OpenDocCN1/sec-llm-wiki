@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Invoke-PSImage：将PS脚本隐藏进PNG像素中并用一行指令去执行它</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Invoke-PSImage：将PS脚本隐藏进PNG像素中并用一行指令去执行它</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=2651066862&amp;idx=3&amp;sn=ffb298caff6f85fe66eb328fea223851&amp;chksm=bd1f83658a680a73f0fdaa83f140fb4aec2134b5497f36635fcd7d385f024494152c0817be37&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=2651066862&amp;idx=3&amp;sn=ffb298caff6f85fe66eb328fea223851&amp;chksm=bd1f83658a680a73f0fdaa83f140fb4aec2134b5497f36635fcd7d385f024494152c0817be37&amp;scene=27#wechat_redirect</a></blockquote><p style=""><span style="color: rgb(61, 167, 66);"><strong>今天给大家介绍的是一个名叫Invoke-PSImage的Power Shell脚本，而这个脚本可以将目标PS脚本嵌入到一个PNG图片文件的像素点中，并允许我们使用一行指令来执行该脚本。</strong></span></p><p style=""><img data-src="http://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibiaWsZmUbUeopL5XDhG90kULSETnKpuSbMaVySl4HbtbsiacZ9M2tkAicsxrIXv0L8VnfT6C3lIuib0A/0?wx_fmt=jpeg" class="" data-ratio="0.4681159420289855" data-w="690" data-type="jpeg" src="../Images/39afab27fa7d89e99d2cb4cdeac97dec.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibiaWsZmUbUeopL5XDhG90kULSETnKpuSbMaVySl4HbtbsiacZ9M2tkAicsxrIXv0L8VnfT6C3lIuib0A/0?wx_fmt=jpeg"/></p><h2 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 18px;border-bottom: 1px solid rgb(238, 238, 238);color: black;">Invoke-PSImage</h2><p style="">Invoke-PSImage可以将一个PowerShell脚本中的字节嵌入到PNG图像文件的像素之中，并生成一行执行命令来帮助我们从文件或Web（传递-Web标记）执行它们。</p><p style="">它会利用图片中每个像素点最后4位有效位的2个颜色值来存储Payload数据，虽然图片质量会受到影响，但是一般来说是看不出来有多大区别的。图片需要存储为PNG格式，由于Payload数据存储在颜色值中，因此这种格式可以进行无损压缩并且不会影响到Payload的执行。它可以接受目前绝大多数的图片类型作为输入，但输出必须为PNG格式，因为输出的图片数据需要是无损的。</p><p style="">图片的每一个像素都需要存储脚本的一个字节，所以你需要根据脚本中的字节数据大小来选择图片（尽可能多的像素点）。例如，Invoke-Mimikatz需要一张1920x1200的图片来存储。</p><h2 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 18px;border-bottom: 1px solid rgb(238, 238, 238);color: black;">参数</h2><blockquote style="border-left: 4px solid rgb(221, 221, 221);margin: 0px 1em;padding: 0px 1em;quotes: none;"><p style="">-Script[filepath] 需要嵌入在图片中的脚本路径。</p><p style="">-Image[filepath] 需要嵌入的图片文件路径。</p><p style="">-Out[filepath] 输出文件路径。</p><p style="">-Web 输出一条用于读取图片文件的命令，你需要在主机中托管该图片，然后向命令中插入一条URL地址。</p></blockquote><h2 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 18px;border-bottom: 1px solid rgb(238, 238, 238);color: black;">例子</h2><p style="">创建一张图片，并在其中嵌入脚本”Invoke-Mimikatz.ps1”，然后输出一条执行命令，并从磁盘中执行Payload：</p><pre style="line-height: 1.2em;margin: 1.2em 0em;"><code style="font-size: 0.9em;border-radius: 2px;white-space: pre;overflow: auto;padding: 0.5em 0.7em;display: block !important;">PS&gt;Import-Module.\Invoke-PSImage.ps1
+
+PS&gt;Invoke-PSImage-Script .\Invoke-Mimikatz.ps1 -Image .\kiwi.jpg -Out .\evil-kiwi.png
+
+   [Oneliner to execute from a file]</code></pre><p style="">创建一张图片，并在其中嵌入脚本”Invoke-Mimikatz.ps1”，然后输出一条执行命令，并从Web端执行Payload（你还需要Web主机托管改图片，并编辑URL地址）：</p><pre style="line-height: 1.2em;margin: 1.2em 0em;"><code style="font-size: 0.9em;border-radius: 2px;white-space: pre;overflow: auto;padding: 0.5em 0.7em;display: block !important;">PS&gt;Import-Module.\Invoke-PSImage.ps1
+
+PS&gt;Invoke-PSImage-Script .\Invoke-Mimikatz.ps1 -Image .\kiwi.jpg -Out .\evil-kiwi.png -Web
+
+   [Oneliner to execute from the web]</code></pre><p style="">执行一张托管在Web端的图片Payload：</p><p style=""><img data-src="http://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibiaWsZmUbUeopL5XDhG90kUnM73AgDGHvRvjRUvplSjPZKP8AgUibibCU4wD9AbjCyruFvCqwgwvqoQ/0?wx_fmt=jpeg" class="" data-ratio="0.7405797101449275" data-w="690" data-type="jpeg" src="../Images/3e83d157782a69988ac7e8cfe101bc8e.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibiaWsZmUbUeopL5XDhG90kUnM73AgDGHvRvjRUvplSjPZKP8AgUibibCU4wD9AbjCyruFvCqwgwvqoQ/0?wx_fmt=jpeg"/> </p><p style=""><strong>* 参考来源：Invoke-PSImage，FB小编Alpha_h4ck编译，转载请注明来自FreeBuf.COM</strong></p><p><img data-s="300,640" data-type="jpeg" data-src="https://mmbiz.qpic.cn/mmbiz/qq5rfBadR3ic8CiaI3jDNE1pjxMWoM1hibUOrQypt6TwLx2iaicDUk4fCkEVKrkPJ5ia00nc363FCB6SW6Gian7F80ibMQ/0?wx_fmt=jpeg" data-copyright="0" style="" class="" data-ratio="0.6466666666666666" data-w="600" src="../Images/402394fafbdaf09572b7ad2c881e910a.png" data-original-src="https://mmbiz.qpic.cn/mmbiz/qq5rfBadR3ic8CiaI3jDNE1pjxMWoM1hibUOrQypt6TwLx2iaicDUk4fCkEVKrkPJ5ia00nc363FCB6SW6Gian7F80ibMQ/0?wx_fmt=jpeg"/></p>
+        
+</body>
+</html>

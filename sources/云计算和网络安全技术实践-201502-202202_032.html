@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Sysmon+Splunk(ThreatHunting)的实践（二）</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Sysmon+Splunk(ThreatHunting)的实践（二）</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650746424&amp;idx=1&amp;sn=8939741011881c17b660aabe40cd1012&amp;chksm=87148f38b063062e16c066d41eefd5c42872fd8674785d6d8eafe01c02769d7d16d487c8062d&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650746424&amp;idx=1&amp;sn=8939741011881c17b660aabe40cd1012&amp;chksm=87148f38b063062e16c066d41eefd5c42872fd8674785d6d8eafe01c02769d7d16d487c8062d&amp;scene=27#wechat_redirect</a></blockquote><p>本来上期说ThreatHunting效果一般，实践一次不再搞了，</p><p>这周找到一个别人完美安装的metasploitable3-win2k8.box，</p><p>就顺手也又试了一下ThreatHunting，虽然也还是没达到预期，</p><p>但毕竟还是比之前有进步，就记录一下，</p><p>首先是win2k8里安装Sysmon，是不让装的，在网上搜，说是缺两个补丁，</p><p>官方都不给提供下载了，还好找到有人存在云盘里的，</p><p>Windows6.1-KB2533623-x64.msu，</p><p>Windows6.1-KB3033929-x64.msu，</p><p>安装完补丁，Sysmon就可以正常安装了，</p><p>这里更新一下Sysmon配置文件的手动生成方法，</p><p>把https://github.com/olafhartong/sysmon-modular项目下载到本地，</p><p>进入sysmon-modular目录，在powershell下执行命令，</p><p>. .\Merge-SysmonXml.ps1，</p><p>Merge-AllSysmonXml -Path ( Get-ChildItem '[0-9]*\*.xml') -AsString | Out-File sysmonconfig.xml，</p><p>新的配置文件比直接下载的大不少，应该能多不少配置，</p><p>Sysmon的安装和SplunkUniversalForwarder的安装都跟上期一样，</p><p>让我眼前一亮的是，很快ThreatHunting这边效果就出来了，</p><p style="text-align: center;"><img class="rich_pages js_insertlocalimg" data-ratio="0.42578125" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ1mu9e9g8jwNezBJDarAZKiajLfXDQYgph4BQiaC13OpV0YLQsUzmDhhKUsBerbUFpPBL6JhM0ibyiayQ/640?wx_fmt=png" data-type="png" data-w="1280" style="" src="../Images/e53103ce7d56f1f0b4ad29ac221feaa1.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ1mu9e9g8jwNezBJDarAZKiajLfXDQYgph4BQiaC13OpV0YLQsUzmDhhKUsBerbUFpPBL6JhM0ibyiayQ/640?wx_fmt=png"/></p><p>这回着实好看了许多，但问题是我这还没做任何攻击呢，</p><p>做个真正的攻击吧，既然是metasploitable3-win2k8，那就不用再手动造powershell反弹shell了，直接上ms17_010_eternalblue，反弹shell是过来了，但是ThreatHunting这边也还是没反应，那就算了，还是收手吧。</p><p>本来答应一个朋友本周末实践零信任单包授权的，为了把ThreatHunting做个了结，只能下周再搞了。</p><p>顺便更新一下，之前说metasploitable3不容易build成功，本周还真都build成功了，不过win2k8的base安装iso是从官方下载不到了，也是还好找到其它下载的源，metasploitable3-win2k8的自己build出来跟rapid7两年前build出来的差不多，都不完美，服务不正常，倒是metasploitable3-ub1404新build出来的版本号比rapid7两年前build出来的高了不说，之前不正常的服务也都正常了，也算我没白折腾。<br/></p>
+        
+</body>
+</html>

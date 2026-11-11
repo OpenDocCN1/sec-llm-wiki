@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>iOS漏洞可导致Apple ID被盗</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>iOS漏洞可导致Apple ID被盗</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxODY1OTM5OQ==&amp;mid=211985298&amp;idx=2&amp;sn=35ba060beba0c041bb63e927318b07ab&amp;chksm=1284e2ba25f36bac4a6e0b0c08a698184b064c53a4f4a085a20b4d797f676c049407e297f238&amp;scene=126&amp;sessionid=1681378456#rd">http://mp.weixin.qq.com/s?__biz=MzAxODY1OTM5OQ==&amp;mid=211985298&amp;idx=2&amp;sn=35ba060beba0c041bb63e927318b07ab&amp;chksm=1284e2ba25f36bac4a6e0b0c08a698184b064c53a4f4a085a20b4d797f676c049407e297f238&amp;scene=126&amp;sessionid=1681378456#rd</a></blockquote><p>       在昨天发布的iOS 9的升级中，Apple修复了阿里巴巴移动安全团队所发现的三处安全漏洞：CVE-2015-5838, CVE-2015-5834, CVE-2015-5868。其中CVE-2015-5838这个漏洞可以让黑客在非越狱的iPhone 6上进行钓鱼攻击 并盗取Apple ID的密码。</p><p>       虽然是在iOS 8.1.3上进行的，但直到iOS 9苹果才进行了修复。在这个例子中，App Store是货真价实的系统app，但是弹出来的登录框却不是App Store的，而是另一个在后台运行的app伪造的。但因为伪造的登录框和Apple Store本身的登录框是一模一样的，所以用户很难会有察觉，并习惯性的输入了Apple ID的密码，最终导致帐号被盗。</p><p>       我们知道在iOS系统的沙盒策略中，一个app只能运行在自己的沙盒空间中，理论上说是无法影响其他app的，但iOS系统如果在设计上的缺陷就有可能导致沙盒逃逸（比如CVE-2015-5838），随后会对系统的其他应用或文件产生影响。</p><p>       CVE-2015-5834和CVE-2015-5868是kernel层的信息泄露和代码执行的漏洞，通过这两个漏洞的组合，黑客可以获取内核信息，并执行任意代码。</p><p>       给用户的建议：最好的防御方法当然是升级iOS到9.0。但因为有些iOS的老机型(比如iPhone 4等)已经无法支持最新版的iOS，所以在不升级的情况下用户要时刻警惕可疑的后台应用，在输入密码的时候尽量保证后台没有其他应用在运行。另外，千万不要安装任何企业应用，因为这些应用没有App Store的审核，所以安全性并不能得到保证。</p><p>（转载Freebuf）</p>
+        
+</body>
+</html>

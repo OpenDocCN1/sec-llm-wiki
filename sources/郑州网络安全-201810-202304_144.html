@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>GitHub Actions工作流缺陷提供了对包括Logstash在内的项目的写入权限</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>GitHub Actions工作流缺陷提供了对包括Logstash在内的项目的写入权限</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485418&amp;idx=1&amp;sn=77964fc50b5a9614190b72d473a98480&amp;chksm=fa76e614cd016f02c6598fae81616cfa2f30d3270215996735bfda4067a315af3bf5755aac24&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485418&amp;idx=1&amp;sn=77964fc50b5a9614190b72d473a98480&amp;chksm=fa76e614cd016f02c6598fae81616cfa2f30d3270215996735bfda4067a315af3bf5755aac24&amp;scene=27#wechat_redirect</a></blockquote><blockquote><p>安全研究人员在流行的持续集成和开发(CI/CD)服务GitHub Actions中发现了多个工作流，这些工作流容易受到命令执行的影响。约会平台Tinder的一个研究团队制作了一个自动化脚本，该脚本发现了一些漏洞，这些漏洞可以泄露秘密，这些秘密提供对各种开源GitHub存储库的写入访问权限，包括Elastic的Logstash。记录调查结果的博客文章由Rojan Rijal、Johnny Nipper和Tanner Emek撰写，他们分别是Tinder的红队成员、高级产品安全经理和工程经理。</p></blockquote><p style="margin-bottom: 0em;"><img class="rich_pages wxw-img" data-ratio="0.5625" data-src="https://mmbiz.qpic.cn/mmbiz_png/3RdEEWyTHJlHbj8LAM8Ys372EzdAafPH5e6YyrS6XkCicia8rqYC50MKxjFhpGAomrU8F1DYm7q1tt639biaG6Bdg/640?wx_fmt=png" data-type="png" data-w="1200" height="675" width="1200" src="../Images/ec745bdf6eb449db3a5927aa77a8e0ad.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/3RdEEWyTHJlHbj8LAM8Ys372EzdAafPH5e6YyrS6XkCicia8rqYC50MKxjFhpGAomrU8F1DYm7q1tt639biaG6Bdg/640?wx_fmt=png"/></p><p><br/></p><p>三人说，“在最坏的情况下，您可以利用易受攻击的工作流程来检索GITHUB_TOKEN值”，默认情况下该值具有对存储库的读/写访问权限。“这可用于向用户推送恶意构建并执行与供应链相关的攻击。”</p><p><br/></p><p>他们补充说，如果工作流程中更敏感的访问机密（例如AWS凭证、API密钥或服务凭证）被泄露，“这可能会导致公司基础设施遭到破坏”。</p><p><br/></p><p>漏洞的最常见原因是运行脚本中不安全的用户输入。研究人员还发现了许多pull_request_target被滥用的例子，其中包括绕过2019年针对与在分叉存储库中使用事件处理程序相关的问题的修复。</p><p><br/></p><p>该研究侧重于具有漏洞披露政策的项目，并负责任地向项目报告经过验证的漏洞。研究人员表示，Elastic的安全团队迅速停用了易受攻击的工作流程，并确认没有发生滥用行为。</p><p><br/></p><p>Tinder Security Labs已经开源了用于研究的工具。GitHub Workflow Auditor检查工作流中是否存在不安全的用户输入、恶意提交和机密。</p><p><br/></p><p>鉴于可比较的现有工具的局限性，作者说，他们“专注于覆盖GitHub Actions中的大多数漏洞案例以及效率。因此，我们允许组织通过提供GitHub API密钥一次扫描所有存储库。这减少了安全团队的时间和精力”。</p><p><br/></p><p>该工具还解决了从旧GitHub帐户运行操作的工作流所带来的供应链风险。研究人员解释说：“在这种情况下，攻击者可以认领该帐户并推送恶意操作，使他们能够访问存储库及其工作流程。” “我们测试的工具没有涵盖这个具体案例。”</p><p><br/></p><p>他们补充说：“我们在Tinder Labs的目标是识别具有全球影响的各种技术中的高影响漏洞。随着我们研究其他技术，您可以期待在未来看到我们的更多发现和工具。”</p><p><br/></p><p>研究人员敦促开发人员正确清理GitHub Actions中的用户输入，并通过限制GitHub令牌的访问范围来减轻攻击。</p><p><br/></p><p>与此同时，GitHub安全实验室之前建议仅在开发人员在其工作流程中“需要目标repo的特权上下文”时才使用pull_request_target。</p><p><br/></p><p>Tinder Security Labs的调查结果是在3月份披露的错误配置的GitHub Actions工作流程导致数十个存储库中出现严重缺陷，以及1月份的GitHub Actions补丁程序用于绕过代码审查保护措施。</p><p><br/></p>
+        
+</body>
+</html>

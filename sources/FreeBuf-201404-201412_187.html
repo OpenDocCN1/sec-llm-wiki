@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>走近科学：Android系统ROOT后有多脆弱？</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>走近科学：Android系统ROOT后有多脆弱？</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=200565828&amp;idx=1&amp;sn=1427fe703361182e263c545798cfb28e&amp;chksm=28eff6cf1f987fd9e2fcc998663e03b759b9d08f732b936069f3f807a66a60172fd50b03e952&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=200565828&amp;idx=1&amp;sn=1427fe703361182e263c545798cfb28e&amp;chksm=28eff6cf1f987fd9e2fcc998663e03b759b9d08f732b936069f3f807a66a60172fd50b03e952&amp;scene=27#wechat_redirect</a></blockquote><p style=""><strong style="margin: 0px; padding: 0px;">不知道现在有多大比例的安卓（Android）手机进行了ROOT，粗略估计不少于20%，但或许我们只感受到了ROOT后的便利，却忽视了ROOT所带来的极大风险。</strong>最近国外的明星裸照事件炒的沸沸扬扬，有人说这是iphone手机缺乏安全防护软件造成的（IOS系统木马较少，大部分用户的确没有安装防护软件的习惯），<strong style="margin: 0px; padding: 0px;">但安装了防护软件就真的意味着你安全了吗？难道仿冒的应用仅仅只有Flappy Bird一个吗？</strong></p><p style=""><strong style="margin: 0px; padding: 0px;"><br/></strong></p><p style="">系统ROOT以后，病毒等恶意程序也同样有机会获得ROOT权限，这就让系统原有的安全机制几乎失去了作用，防护软件也会变得更加容易遭受攻击。笔者最近调研了市面上一些主流的防护软件，在ROOT过的手机中，有着更多的攻击方法让防护软件无法查杀、无法报警、无法拦截，甚至都来不及惨叫一声就挂掉了。</p><p style=""><br/></p><p style=""><span style="margin: 0px; padding: 0px; font-size: 18px;"><strong style="margin: 0px; padding: 0px;">FreeBuf科普：什么是手机ROOT？</strong></span></p><p style=""><span style="margin: 0px; padding: 0px; font-size: 18px;"><strong style="margin: 0px; padding: 0px;"><br/></strong></span></p><p style="">root权限是指Unix类操作系统（包括Linux）的系统管理员权限，类似于Windows系统中的Administrator。安卓root权限可以访问和修改你手机中几乎所有的文件（Android系统文件及用户文件，不包括ROM），这些东西可能是制作手机的公司不愿意你修改和触碰的东西，因为用户可以通过root权限删除手机中厂商或运营商预装的应用。</p><p style=""><br/></p><p style=""><span style="margin: 0px; padding: 0px; font-size: 18px;"><strong style="margin: 0px; padding: 0px;">动画</strong></span></p><p style=""><span style="margin: 0px; padding: 0px; font-size: 18px;"><strong style="margin: 0px; padding: 0px;"><br/></strong></span></p><p style="">笔者做了一个动画，来演示恶意程序伪装为正常的应用，运行后在后台直接破坏掉防护软件的功能，动画中为了演示效果，没有对系统报错进行处理，真实的病毒一定会先想办法停掉杀软，隐藏报错避免惊扰用户，然后开始恶意行为，恶意行为得逞后会恢复杀软的功能，这个过程完全可以做到用户无感知，杀软无感知。也就是说一个普通的用户的手机受到了攻击、隐私信息被窃取，很有可能是在他毫不知情的情况下进行的。</p><p style=""><br/></p><p style="">动画中演示了同时kill掉3款主流防护软件，但其实就算安装8款、10款也一样，一瞬间就会被秒杀，而且杀软还会在这个过程中提示“无风险”,动画传到youku上了，很模糊，凑合看个过程吧。（也没找到哪能传高清的，大伙给个建议吧）</p><p style=""><br/></p><p style=""><strong style="margin: 0px; padding: 0px;">操作过程</strong></p><p style=""><strong style="margin: 0px; padding: 0px;"><br/></strong></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; background-color: rgb(247, 247, 249);">1、安装最新版3款杀软，全盘杀毒
+2、上传仿冒应用，杀软扫描后提示应用“无风险”
+3、安装应用并启动，发现3款杀软同时被KILL</pre><p style=""><span style="margin: 0px; padding: 0px; color: rgb(247, 150, 70);"><strong style="margin: 0px; padding: 0px;"><br/></strong></span></p><p style=""><span style="margin: 0px; padding: 0px; color: rgb(247, 150, 70);"><strong style="margin: 0px; padding: 0px;">视频请点击下方阅读原文</strong></span></p><p><br/></p>
+        
+</body>
+</html>

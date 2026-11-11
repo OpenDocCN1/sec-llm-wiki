@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Samba 4.x.x全版本存在命令执行漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Samba 4.x.x全版本存在命令执行漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=200376225&amp;idx=2&amp;sn=6e1bc84600ae8c91a25398e7f16b33e1&amp;chksm=28eaed2a1f9d643c12e5c1f8f85a9e6191f8e4b2b820c3a91eea2c2d1695101cd4efd1cc057a&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=200376225&amp;idx=2&amp;sn=6e1bc84600ae8c91a25398e7f16b33e1&amp;chksm=28eaed2a1f9d643c12e5c1f8f85a9e6191f8e4b2b820c3a91eea2c2d1695101cd4efd1cc057a&amp;scene=27#wechat_redirect</a></blockquote><p style=""><strong style="margin: 0px; padding: 0px;">Samba</strong><strong style="margin: 0px; padding: 0px;"> 4.0.0到4.1.10版本的nmbd(the <span style="margin: 0px; padding: 0px; line-height: 1.428571em;">NetBIOS name services daemon)被发现存在<span style="margin: 0px; padding: 0px; line-height: 1.428571em; color: rgb(192, 80, 77);">远程命令执行漏洞</span>。CVE编号为CVE-2014-3560。目前官方已经发布</span><span style="margin: 0px; padding: 0px; line-height: 1.428571em;">最新的补丁。</span></strong><br style="margin: 0px; padding: 0px;"/></p><p style=""><strong style="margin: 0px; padding: 0px;"><span style="margin: 0px; padding: 0px; line-height: 1.428571em;"><br/></span></strong></p><p style=""><span style="margin: 0px; padding: 0px; line-height: 1.428571em;">下面是官方</span>公布的漏洞<span style="margin: 0px; padding: 0px; text-decoration: underline;">概要</span><span style="margin: 0px; padding: 0px; line-height: 1.428571em;">：</span><br style="margin: 0px; padding: 0px;"/></p><pre class="prettyprint lang-delphi prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; background-color: rgb(247, 247, 249);">===========================================================
+==Subject:     Remote code execution in nmbd
+==
+== CVE ID#:     CVE-2014-3560
+==
+== Versions:    Samba 4.0.0 to 4.1.10
+==
+== Summary:     Samba 4.0.0 to 4.1.10 are affected by a
+==              remote code execution attack on
+==unauthenticated nmbd NetBIOS name services.
+=============================================================
+===========
+Description
+===========
+All current versions of Samba 4.x.x are vulnerable to a remote code
+execution vulnerability in the nmbd NetBIOS name services daemon.A malicious browser can send packets that may overwrite the heap of
+the target nmbd NetBIOS name services daemon. It may be possible touse this to generate a remote code execution vulnerability as the
+superuser (root).</pre><p style=""><span style="margin: 0px; padding: 0px; color: rgb(0, 176, 80);"><strong style="margin: 0px; padding: 0px;"><br/></strong></span></p><p style=""><span style="margin: 0px; padding: 0px; color: rgb(0, 176, 80);"><strong style="margin: 0px; padding: 0px;">FreeBuf科普</strong></span></p><p style=""><br/></p><p style="">Samba，是种用来让UNIX系列的操作系统与微软Windows操作系统的SMB/CIFS（Server Message Block/Common Internet File System）网络协议做链接的自由软件。第三版不仅可访问及分享SMB的文件夹及打印机，本身还可以集成入Windows Server的域名，扮演为域名控制站（Domain Controller）以及加入Active Directory成员。简而言之，此软件在Windows与UNIX系列OS之间搭起一座桥梁，让两者的资源可互通有无。</p><p><br/></p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR38jU5r5a9blRarBCEH1cBMJkxIT0cH1qouGzqdAibkqDSg8KmdaMLkom4KQn95zKTIT4Qic3h4zhHeg/0" data-ratio="0.21223709369024857" data-w="" src="../Images/dfaed0829ec33b0e83330a76cbd612b8.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR38jU5r5a9blRarBCEH1cBMJkxIT0cH1qouGzqdAibkqDSg8KmdaMLkom4KQn95zKTIT4Qic3h4zhHeg/0"/></p>
+        
+</body>
+</html>

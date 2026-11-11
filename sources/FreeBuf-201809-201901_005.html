@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>iOS取证技巧：在无损的情况下完整导出SQLite数据库</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>iOS取证技巧：在无损的情况下完整导出SQLite数据库</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=2651073273&amp;idx=3&amp;sn=510898fa589dea1839421e192a9b1aaa&amp;chksm=bd1fb8728a6831649883a5dbedb6d2d5fc0e75994638837c2d33cd3f1b1cd6ae4fff5628380c&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=2651073273&amp;idx=3&amp;sn=510898fa589dea1839421e192a9b1aaa&amp;chksm=bd1fb8728a6831649883a5dbedb6d2d5fc0e75994638837c2d33cd3f1b1cd6ae4fff5628380c&amp;scene=27#wechat_redirect</a></blockquote><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;"><strong>在上一篇文章中，我向大家介绍了有关利用iOS DeveloperImage中一些特性的方法，其中包括在已越狱设备上启动带有自定义环境变量的App。说实话，我的最初动机是为了寻找沙箱逻辑问题，但失败了。值得庆幸的是我发现了另一个非常实用的技巧，即通过利用其中的一些特性来提取SQLite数据库。该方案需要屏幕解锁和可信USB连接。</strong></p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;">为了运行完整的实验，你需要安装以下工具：</p><blockquote style="margin-right: 1em;margin-left: 1em;padding-right: 1em;padding-left: 1em;border-left-width: 4px;border-left-color: rgb(221, 221, 221);white-space: normal;quotes: none;"><p style="margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;color: rgb(119, 117, 117) !important;">https://github.com/libimobiledevice/libimobiledevice</p><p style="margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;color: rgb(119, 117, 117) !important;">https://github.com/libimobiledevice/ideviceinstaller</p><p style="margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;color: rgb(119, 117, 117) !important;">https://github.com/emonti/afcclient（可选。如果你不想自己编写libimobiledevice的代码，就用这个）</p></blockquote><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 18px;white-space: normal;border-bottom: 1px solid rgb(238, 238, 238);color: black;">SQLite日志记录</h2><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;">iOS上当前内置的SQLite支持调试选项：如果设置了SQLITE_SQLLOG_DIR环境，则每个数据库在给定目录中都会有一个副本，且sql查询为纯文本形式。</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;">sqlite文档：https://www.sqlite.org/src/doc/trunk/src/test_sqllog.c</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;">我们的实验从一个越狱设备开始。只需启动带有SQLITE_SQLLOG_DIR的Gmail应用程序，指向它有权写入的位置：</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;"><img class="" data-ratio="0.7942028985507247" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR38hJnKw6Mpn0N0oUOKSCfrHWUazO4zqnEXphDPLFRYWlrHjRr6GqQiaOx3dhzIxbVZkDOiap7oOqd3A/640?wx_fmt=jpeg" data-type="jpeg" data-w="690" src="../Images/c797ad49920c1d029b47278a8f2a9f7c.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR38hJnKw6Mpn0N0oUOKSCfrHWUazO4zqnEXphDPLFRYWlrHjRr6GqQiaOx3dhzIxbVZkDOiap7oOqd3A/640?wx_fmt=jpeg"/></p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;">修改上一篇文章中的脚本，向环境添加一个新密钥：</p><pre style="margin: 1.2em 0em;font-size: 1em;font-family: Consolas, Inconsolata, Courier, monospace;line-height: 1.2em;"><code style="margin-right: 0.15em;margin-left: 0.15em;padding: 0.5em 0.7em;font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;background-color: rgb(247, 247, 247);overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);display: block !important;">const env = ObjC.classes.NSMutableDictionary.alloc().init();
+env.setObject_forKey_(
+  ObjC.classes.NSString.stringWithString_('/private/var/mobile/Containers/Data/Application/{THE_ACTUAL_UUID_ON_YOUR_DEVICE}/tmp'),
+  ObjC.classes.NSString.stringWithString_('SQLITE_SQLLOG_DIR'));</code></pre><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;">以下是为目录生成的内容：</p><pre style="margin: 1.2em 0em;font-size: 1em;font-family: Consolas, Inconsolata, Courier, monospace;line-height: 1.2em;"><code style="margin-right: 0.15em;margin-left: 0.15em;padding: 0.5em 0.7em;font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;background-color: rgb(247, 247, 247);overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);display: block !important;">hello:/private/var/mobile/Containers/Data/Application/.../tmp root# ls
+WebKit      sqllog_05860_00000.sql  sqllog_05860_00003.sql  sqllog_05860_01.db
+sqllog_05860.idx    sqllog_05860_00001.sql  sqllog_05860_00004.sql  sqllog_05860_02.db
+sqllog_05860_00.db  sqllog_05860_00002.sql  sqllog_05860_00005.sql  sqllog_05860_03.db</code></pre><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;">文件名中的05860是pid，格式化为固定的5位数。idx文件是原始数据库的映射索引。</p><pre style="margin: 1.2em 0em;font-size: 1em;font-family: Consolas, Inconsolata, Courier, monospace;line-height: 1.2em;"><code style="margin-right: 0.15em;margin-left: 0.15em;padding: 0.5em 0.7em;font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;background-color: rgb(247, 247, 247);overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);display: block !important;">root# cat sqllog_05860.idx
+0 /private/var/mobile/Containers/Shared/AppGroup/21805C48-3DD1-4973-BDB8-F26441BE74B3/GIPPhenotype/phenotype.db
+1 /var/mobile/Containers/Data/Application/E89CEF28-30BA-41F8-BDB3-BD05E0598D32/Library/Application Support/data/johnsmith@outlook.com/sqlitedb
+2 /var/mobile/Containers/Data/Application/E89CEF28-30BA-41F8-BDB3-BD05E0598D32/Library/Application Support/data/johnsmith@outlook.com/imapsqlitedb
+3 /private/var/mobile/Containers/Data/Application/E89CEF28-30BA-41F8-BDB3-BD05E0598D32/Library/Caches/com.google.Gmail/Cache.d</code></pre><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;">例如，所有 /var/mobile/Containers/Data/Application/E89CEF28–30BA-41F8-BDB3-BD05E0598D32/Library/Application Support/data/johnsmith@outlook.com/sqlitedb 的查询被记录在了sqllog_05860_00000.sql文件中。</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;"><img class="" data-ratio="0.7942028985507247" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR38hJnKw6Mpn0N0oUOKSCfrHy0ZIGvRYt3ckbvAiaSenwSTp5kXjEZiacWr73x8H2uJFwNpAaHHZJKxQ/640?wx_fmt=jpeg" data-type="jpeg" data-w="690" src="../Images/655a283685cc467fbc95efc16c670430.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR38hJnKw6Mpn0N0oUOKSCfrHy0ZIGvRYt3ckbvAiaSenwSTp5kXjEZiacWr73x8H2uJFwNpAaHHZJKxQ/640?wx_fmt=jpeg"/></p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;">sqllog_05860_00.db是其副本。</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;"><img class="" data-ratio="0.7942028985507247" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR38hJnKw6Mpn0N0oUOKSCfrHepUMbjTfdGOSWrIGnHzQvjIBG4J2t1vY4OFJsHg0MDJ9Wic8EehDLgw/640?wx_fmt=jpeg" data-type="jpeg" data-w="690" src="../Images/f224ccada99bb9db3aa5a506724ac7e0.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR38hJnKw6Mpn0N0oUOKSCfrHepUMbjTfdGOSWrIGnHzQvjIBG4J2t1vY4OFJsHg0MDJ9Wic8EehDLgw/640?wx_fmt=jpeg"/></p><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 18px;white-space: normal;border-bottom: 1px solid rgb(238, 238, 238);color: black;">未越狱设备</h2><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;">现在问题是，iOS上的应用程序被“监禁”在容器中，如果没有完整备份将仍然无法访问这些容器。每个规则都有一个例外，沙箱配置文件也不例外。</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;">某些内置应用程序有写入权限到 /var/mobile/Media/iTunes_Control/iTunes 目录。</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;"><img class="" data-ratio="0.17971014492753623" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR38hJnKw6Mpn0N0oUOKSCfrHLDicvgIQia0M2kLHN2nz2q85sG817IB285CqJK8UIrvZyODGjNPztELA/640?wx_fmt=jpeg" data-type="jpeg" data-w="690" src="../Images/cbe2b44f6867b2deac99894443399269.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR38hJnKw6Mpn0N0oUOKSCfrHLDicvgIQia0M2kLHN2nz2q85sG817IB285CqJK8UIrvZyODGjNPztELA/640?wx_fmt=jpeg"/></p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;">以及一些应用程序还拥有 com.apple.security.exception.files.absolute-path.read-write 或 com.apple.security.exception.files.home-relative-path.read-write 权限。</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;">你可以通过以下命令读取这些权限。</p><pre style="margin: 1.2em 0em;font-size: 1em;font-family: Consolas, Inconsolata, Courier, monospace;line-height: 1.2em;"><code style="margin-right: 0.15em;margin-left: 0.15em;padding: 0.5em 0.7em;font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;background-color: rgb(247, 247, 247);overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);display: block !important;">ideviceinstaller -l -o list_system -o xml</code></pre><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;">VioceMemo：</p><pre style="margin: 1.2em 0em;font-size: 1em;font-family: Consolas, Inconsolata, Courier, monospace;line-height: 1.2em;"><code style="margin-right: 0.15em;margin-left: 0.15em;padding: 0.5em 0.7em;font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;background-color: rgb(247, 247, 247);overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);display: block !important;">&lt;key&gt;com.apple.security.exception.files.absolute-path.read-write&lt;/key&gt;
+&lt;array&gt;
+    &lt;string&gt;/private/var/mobile/Media/Recordings/&lt;/string&gt;
+&lt;/array&gt;
+&lt;key&gt;platform-application&lt;/key&gt;
+&lt;true/&gt;</code></pre><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;">MobileSafari：</p><pre style="margin: 1.2em 0em;font-size: 1em;font-family: Consolas, Inconsolata, Courier, monospace;line-height: 1.2em;"><code style="margin-right: 0.15em;margin-left: 0.15em;padding: 0.5em 0.7em;font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;background-color: rgb(247, 247, 247);overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);display: block !important;">&lt;key&gt;com.apple.security.exception.files.home-relative-path.read-write&lt;/key&gt;
+   &lt;array&gt;
+    &lt;string&gt;/Library/com.apple.itunesstored/&lt;/string&gt;
+    &lt;string&gt;/Library/com.apple.iTunesCloud/&lt;/string&gt;
+    &lt;string&gt;/Library/Caches/com.apple.Music/&lt;/string&gt;
+    &lt;string&gt;/Library/Cookies/&lt;/string&gt;
+    &lt;string&gt;/Media/&lt;/string&gt;
+    &lt;string&gt;/Library/Caches/com.apple.Radio/&lt;/string&gt;
+    &lt;string&gt;/Library/Caches/com.apple.iTunesStore/&lt;/string&gt;
+    &lt;string&gt;/Library/Caches/sharedCaches/com.apple.Radio.RadioImageCache/&lt;/string&gt;
+    &lt;string&gt;/Library/Caches/sharedCaches/com.apple.Radio.RadioRequestURLCache/&lt;/string&gt;
+    &lt;string&gt;/Library/com.apple.MediaSocial/&lt;/string&gt;
+    &lt;string&gt;/Library/DeviceRegistry/&lt;/string&gt;
+    &lt;string&gt;/Library/Logs/MediaServices/&lt;/string&gt;
+   &lt;/array&gt;</code></pre><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;">iOS允许在 /var/mobile/Media 中进行沙箱文件访问。许多第三方iPhone管理工具允许你直接操作此位置，甚至还会提供一个GUI界面。</p><pre style="margin: 1.2em 0em;font-size: 1em;font-family: Consolas, Inconsolata, Courier, monospace;line-height: 1.2em;"><code style="margin-right: 0.15em;margin-left: 0.15em;padding: 0.5em 0.7em;font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;background-color: rgb(247, 247, 247);overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);display: block !important;">➜  afcclient git:(master) ✗ ./afcclient mkdir Downloads/SQLite</code></pre><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;">另一个可读的位置是CrashReporter。你可以使用idevicecrashreport获取文件。</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;"><img class="" data-ratio="0.13333333333333333" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR38hJnKw6Mpn0N0oUOKSCfrHQluvzKvGuicXWoBeCf6xiaTmS8a6DGt5kaPPl8ahsScO4dBiax1ia5UrXQ/640?wx_fmt=jpeg" data-type="jpeg" data-w="690" src="../Images/e5d8b300bf034a4916bae928c8ee6861.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR38hJnKw6Mpn0N0oUOKSCfrHQluvzKvGuicXWoBeCf6xiaTmS8a6DGt5kaPPl8ahsScO4dBiax1ia5UrXQ/640?wx_fmt=jpeg"/></p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;">但需要提醒大家的是，并非所有内置的应用程序都有这些例外，更别说是那些第三方应用了。</p><h2 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;font-size: 18px;white-space: normal;border-bottom: 1px solid rgb(238, 238, 238);color: black;">Demo</h2><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;">在测试期间启动Instruments，并使用上一篇文章中的frida脚本将bundle ID更改为目标。</p><pre style="margin: 1.2em 0em;font-size: 1em;font-family: Consolas, Inconsolata, Courier, monospace;line-height: 1.2em;"><code style="margin-right: 0.15em;margin-left: 0.15em;padding: 0.5em 0.7em;font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;background-color: rgb(247, 247, 247);overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);display: block !important;">/*
+run Instruments.app, then
+frida Instruments -l msg.js
+*/
+function getDevice() {
+  const devices = ObjC.classes.XRDeviceDiscovery.availableDevices();
+  const count = devices.count().valueOf();
+  for (var i = 0; i &lt; count; i++) {
+    var device = devices.objectAtIndex_(i);
+    if (device.platformName().toString() === 'iPhoneOS' &amp;&amp; device.connection()) {
+      return device;
+    }
+  }
+  throw new Error('unable to find device');
+}
+
+const newMsgFunc = ObjC.classes.DTXMessage['+ messageWithSelector:objectArguments:'].implementation;
+const newMsg = new NativeFunction(newMsgFunc, 'pointer',
+  ['pointer', 'pointer', 'pointer', '...', 'pointer', 'pointer', 'pointer', 'pointer', 'pointer', 'pointer']);
+
+const opt = ObjC.classes.NSMutableDictionary.alloc().init();
+opt.setObject_forKey_(0, ObjC.classes.NSString.stringWithString_('StartSuspendedKey')); // required
+
+const args = ObjC.classes.NSMutableArray.alloc().init();
+args.addObject_(ObjC.classes.NSString.stringWithString_('--if-you-need-some-thing')); // argv
+
+const env = ObjC.classes.NSMutableDictionary.alloc().init();
+env.setObject_forKey_(
+  ObjC.classes.NSString.stringWithString_('3'),
+  ObjC.classes.NSString.stringWithString_('CFNETWORK_DIAGNOSTICS')); // environment variables
+
+const msg = new ObjC.Object(newMsg(
+  ObjC.classes.DTXMessage,
+  ObjC.selector('+ messageWithSelector:objectArguments:'),
+  ObjC.selector('launchSuspendedProcessWithDevicePath:bundleIdentifier:environment:arguments:options:'),
+
+  ObjC.classes.NSString.stringWithString_('this makes no sense'), // path, SpringBoard simply ignores it
+  ObjC.classes.NSString.stringWithString_('com.apple.calculator'), // bundle id, must be already installed
+  ObjC.classes.NSDictionary.dictionaryWithDictionary_(env),
+  args.copy(),
+  ObjC.classes.NSDictionary.dictionaryWithDictionary_(opt),
+  NULL
+))
+
+const channel = getDevice().connection().makeChannelWithIdentifier_(
+  'com.apple.instruments.server.services.processcontrol.feature.deviceio') // channel id
+
+channel.sendControlSync_replyHandler_(msg, new ObjC.Block({
+  retType: 'void',
+  argTypes: ['object', 'pointer'],
+  implementation: function(reply, len) {
+    console.log('reply', reply.payloadObject())
+  }
+}))</code></pre><h3 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;white-space: normal;color: blue;">com.apple.mobilesafari</h3><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;">这里有Safari浏览器状态，书签，历史记录，每个站点首选项，HTML5本地存储甚至缓存。请注意，通常Cache.db不会包含在备份中，并且它是以纯文本格式存储http请求的。</p><pre style="margin: 1.2em 0em;font-size: 1em;font-family: Consolas, Inconsolata, Courier, monospace;line-height: 1.2em;"><code style="margin-right: 0.15em;margin-left: 0.15em;padding: 0.5em 0.7em;font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;background-color: rgb(247, 247, 247);overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);display: block !important;">➜  afcclient git:(master) ✗ ./afcclient mkdir iTunes_Control/iTunes/safari
+Created directory: iTunes_Control/iTunes/safari
+➜  afcclient git:(master) ✗ ./afcclient cat iTunes_Control/iTunes/safari/sqllog_02343.idx
+0 /private/var/mobile/Containers/Data/Application/9210B36C-89E2-4728-9831-40CAA961C15E/Library/Image Cache/Favicons/Favicons.db
+1 /var/mobile/Containers/Data/Application/9210B36C-89E2-4728-9831-40CAA961C15E/Library/Safari/BrowserState.db
+2 /private/var/mobile/Containers/Data/Application/9210B36C-89E2-4728-9831-40CAA961C15E/Library/Image Cache/Touch Icons/TouchIconCacheSettings.db
+3 /private/var/mobile/Containers/Data/Application/9210B36C-89E2-4728-9831-40CAA961C15E/Library/Image Cache/Password Icons/TouchIconCacheSettings.db
+4 /var/mobile/Library/Safari/Bookmarks.db
+5 /private/var/mobile/Containers/Data/Application/9210B36C-89E2-4728-9831-40CAA961C15E/Library/Safari/History.db
+6 /var/mobile/Containers/Data/Application/9210B36C-89E2-4728-9831-40CAA961C15E/Library/WebKit/WebsiteData/LocalStorage/https_mobile.twitter.com_0.localstorage
+7 /private/var/mobile/Containers/Data/Application/9210B36C-89E2-4728-9831-40CAA961C15E/Library/Safari/PerSitePreferences.db
+8 /private/var/mobile/Containers/Data/Application/9210B36C-89E2-4728-9831-40CAA961C15E/Library/Caches/com.apple.mobilesafari/Cache.db</code></pre><h3 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;white-space: normal;color: blue;">com.apple.mobilemail</h3><pre style="margin: 1.2em 0em;font-size: 1em;font-family: Consolas, Inconsolata, Courier, monospace;line-height: 1.2em;"><code style="margin-right: 0.15em;margin-left: 0.15em;padding: 0.5em 0.7em;font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;background-color: rgb(247, 247, 247);overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);display: block !important;">➜  afcclient git:(master) ✗ ./afcclient cat Mail/sqllog_04465.idx
+0 /var/mobile/Library/Mail/Envelope Index
+1 /var/mobile/Library/Mail/Protected Index
+2 /var/mobile/Library/DeviceRegistry/5CFB9E7E-C465-4A92-B3ED-C744367AB766/NanoMail/registry.sqlite
+3 /var/mobile/Library/AddressBook/AddressBook.sqlitedb</code></pre><h3 style="margin-top: 1.3em;margin-bottom: 1em;font-weight: bold;white-space: normal;color: blue;">com.apple.mobilephone</h3><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;">地址簿和通话记录：</p><pre style="margin: 1.2em 0em;font-size: 1em;font-family: Consolas, Inconsolata, Courier, monospace;line-height: 1.2em;"><code style="margin-right: 0.15em;margin-left: 0.15em;padding: 0.5em 0.7em;font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;background-color: rgb(247, 247, 247);overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);display: block !important;">hello:~ root# procexp all fds | grep -i sms.db
+IMDPersistenceA    812 FD  4u  /private/var/mobile/Library/SMS/sms.db @0x0
+IMDPersistenceA    812 FD  5u  /private/var/mobile/Library/SMS/sms.db-wal @0x0
+IMDPersistenceA    812 FD  6u  /private/var/mobile/Library/SMS/sms.db-shm @0x0
+hello:~ root# ps aux | grep 812
+mobile           812   0.0  0.0  1664672   1296   ??  Ss   22Oct18   0:01.77 /System/Library/PrivateFrameworks/IMDPersistence.framework/XPCServices/IMDPersistenceAgent.xpc/IMDPersistenceAgent
+root            6008   0.0  0.1  1593504   1536 s000  S+    2:50PM   0:00.01 grep 812
+hello:~ root#
+➜  afcclient git:(master) ✗ ./afcclient mkdir iTunes_Control/iTunes/Phone
+Created directory: iTunes_Control/iTunes/Phone
+➜  afcclient git:(master) ✗./afcclient cat iTunes_Control/iTunes/Phone/sqllog_04322.idx
+0 /var/mobile///Library/CallHistoryDB/CallHistory.storedata
+1 /var/mobile///Library/CallHistoryDB/CallHistoryTemp.storedata
+2 /var/mobile/Library/AddressBook/AddressBook.sqlitedb</code></pre><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;">但你无法提取sms.db，因为它属于xpc服务IMDPersistenceAgent。消息应用com.apple.MobileSMS通过XPC与其通信，而不是打开数据库。</p><p style="white-space: normal;margin: 1em !important;font-family: Avenir, SimSun !important;font-size: 15px !important;line-height: 1.8em !important;letter-spacing: 0.1em !important;"><span style="color: rgb(178, 178, 178);font-size: 14px;">*参考来源：medium，FB小编secist编译，转载请注明来自FreeBuf.COM</span></p><p style="white-space: normal;text-align: center;"><img class="" data-copyright="0" data-ratio="0.6466666666666666" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/qq5rfBadR3icgd4icqu70ibGz2aGspXLoWicr49J5crdDzDdhkNAWV6T5nehHgV2DRtnhsSdmxIZL089Ws5hDDgwjA/640?wx_fmt=png" data-type="png" data-w="600" src="../Images/b4f1060a72a4ef1c78ba8fa8645e42e8.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/qq5rfBadR3icgd4icqu70ibGz2aGspXLoWicr49J5crdDzDdhkNAWV6T5nehHgV2DRtnhsSdmxIZL089Ws5hDDgwjA/640?wx_fmt=png"/></p>
+        
+</body>
+</html>

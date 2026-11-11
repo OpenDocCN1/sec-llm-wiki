@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>IT监控软件Icinga网络漏洞CVE-2022-24716,CVE-2022-24715</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>IT监控软件Icinga网络漏洞CVE-2022-24716,CVE-2022-24715</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247484743&amp;idx=1&amp;sn=20ef9cf9dabf96dc3928a5c076c9d4ad&amp;chksm=fa76e4b9cd016daf0ffee4c0d3d2b9bdd05366330af9ea19e562f3b178cf3f384abacd6852bf&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247484743&amp;idx=1&amp;sn=20ef9cf9dabf96dc3928a5c076c9d4ad&amp;chksm=fa76e4b9cd016daf0ffee4c0d3d2b9bdd05366330af9ea19e562f3b178cf3f384abacd6852bf&amp;scene=27#wechat_redirect</a></blockquote><blockquote><p>IT 监控系统 Icinga 的 Web 控制面板中的一对漏洞为未经身份验证的攻击者提供了运行任意PHP代码和劫持系统的途径。开源的Icinga监控系统已打补丁。</p></blockquote><p style="margin-bottom: 0em;"><img data-ratio="0.5625" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJkHXN9URNIherbCf1wJC0hWtyw87iaCnmSJ5k4XVM7QAYkiblFOvOCF3PbMFjc7pl7HNzUD1yTicqib3g/640?wx_fmt=jpeg" data-type="jpeg" data-w="1200" height="675" width="1200" src="../Images/9fc464713e4f5a548d329a8c8dce1a90.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJkHXN9URNIherbCf1wJC0hWtyw87iaCnmSJ5k4XVM7QAYkiblFOvOCF3PbMFjc7pl7HNzUD1yTicqib3g/640?wx_fmt=jpeg"/></p><p>Icinga 提供了一个开源IT 监控系统，该系统带有各种插件，可用于监控网络流量、磁盘空间或在受监控主机上运行的服务。</p><p>这些漏洞源于该技术的 Web 控制面板中的编码缺陷，该技术被称为 Icinga Web 2。<br/>最近解决的与 Web 相关的漏洞（均由 SonarSource 的安全研究人员发现）涉及两个路径遍历漏洞和一个可以从管理员界面执行任意 PHP 代码的漏洞。</p><p>CVE-2022-24716是 Icinga Web 2 中的路径遍历错误，CVE-2022-24715是单独的路径遍历错误，它还利用 PHP 通过使用NULL 字节验证 SSH 密钥的行为。PHP 漏洞位于 OpenSSL 核心扩展中。</p><p>SonarSource 警告说，这些不同的漏洞可以很容易地链接在一起以危及服务器。</p><p>补丁已发布，建议对 Icinga Web 版本 2.8.6、2.9.6 和 2.10 进行更新。建议用户更新他们的安装以及轮换凭据作为额外的预防措施。</p><p>路径遍历漏洞意味着攻击者可能会访问 Web 服务器用户可访问的内容和本地系统文件，包括具有数据库凭据的icingaweb2配置文件。</p><p>CVE-2022-24715 漏洞可导致从管理界面执行任意 PHP 代码</p><p>正如SonarSource 本周在一篇技术博客文章中所解释的那样，如果攻击者可以通过首先公开配置文件并修改管理员密码来访问数据库，这两个漏洞可以“很容易 [被] 链接 [在一起] 以从未经身份验证的位置破坏服务器”。</p><p>Daily Swig 向 SonarSource 询问这些漏洞是否可能在野外被滥用，以及它的发现为其他软件开发人员提供了哪些经验教训。</p><p>目前还没有回复，但我们会在获得更多信息时更新。</p><p><br/></p>
+        
+</body>
+</html>

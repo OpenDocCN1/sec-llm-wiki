@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>2013年KDE大灾难：损毁文件被完美镜像</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>2013年KDE大灾难：损毁文件被完美镜像</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/mp/appmsg/show?__biz=MjM5NjQ4MjYwMQ==&amp;appmsgid=10000154&amp;itemidx=4&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/mp/appmsg/show?__biz=MjM5NjQ4MjYwMQ==&amp;appmsgid=10000154&amp;itemidx=4&amp;scene=27#wechat_redirect</a></blockquote><p style="margin:10px;padding:0px;word-wrap:break-word;color:#444444;font-family:tahoma, helvetica, simsun, sans-serif;font-size:14px;line-height:28px;background-color:#ffffff;">　　KDE开发者Jeff Mitchell在博客中记录了<span style=" margin:0px;padding:0px;word-wrap:break-word;color:#336699;background-image:url(#);background-position:100% 0%;background-repeat:no-repeat no-repeat; ">2013年KDE最大灾难</span>（http://jefferai.org/2013/03/24/too-perfect-a-mirror/）：2013 年3月22日，root git服务器（git.kde.org）因安全原因下线，在应用了安全更新之后服务器重新上线，然而当git.kde.org虚拟机重新启动后，虚拟机检 查到 ext4文件系统损毁，但不清楚损毁是服务器更新导致还是发生在之前。接着开发者检查了1500个KDE镜像Git库，发现每个镜像都自动同步了root git服务器的损毁文件，删除了实际上正确的KDE库。损毁被完美镜像了。</p><p style="margin:10px;padding:0px;word-wrap:break-word;color:#444444;font-family:tahoma, helvetica, simsun, sans-serif;font-size:14px;line-height:28px;background-color:#ffffff;">　　幸运的是projects.kde.org服务器正在更新硬件，成为极少数没有 同步损毁文件的KDE库镜像。Mitchell进一步解释说，<span style="margin:0px;padding:0px;word-wrap:break-word;">他们有备份机制</span>，但由于服务器多是志愿者捐赠的，他们没有多少空间可以随时随地备份900 GB的存档。</p><p style="margin:10px;padding:0px;word-wrap:break-word;color:#444444;font-family:tahoma, helvetica, simsun, sans-serif;font-size:14px;line-height:28px;background-color:#ffffff;">来自：http://www.solidot.org/story?sid=33990 </p><p><span style="font-family:stheiti;font-size:medium;">--</span><br style="font-family:stheiti;font-size:medium;"/></p><table style="font-family:stheiti;border:1px solid #004918;"><tbody><tr><td style="font-size:14px;color:#333333;background-color:#ffffff;margin:0px;padding:8px 2px;">谢谢关注<span style="color:#ffffff;background-color:#000000;margin:0px 2px;padding:1px;">Linux中国</span>的微信认证公众号（微信号：linux-cn），点击下方的「<span style="color:#607fa6;">阅读原文</span>」查看获得更佳阅读体验并参与讨论。</td></tr></tbody></table><p><br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Linux 3.10完全无滴嗒特性详解</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Linux 3.10完全无滴嗒特性详解</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/mp/appmsg/show?__biz=MjM5NjQ4MjYwMQ==&amp;appmsgid=10000581&amp;itemidx=3&amp;sign=2c44973495ce221a278238d7c1275c78&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/mp/appmsg/show?__biz=MjM5NjQ4MjYwMQ==&amp;appmsgid=10000581&amp;itemidx=3&amp;sign=2c44973495ce221a278238d7c1275c78&amp;scene=27#wechat_redirect</a></blockquote><p style="margin:10px;padding:0px;word-wrap:break-word;color:#444444;font-family:tahoma, helvetica, simsun, sans-serif;font-size:14px;line-height:28px;background-color:#ffffff;">在一个典型的<span class="wp_keywordlink" style="margin:0px;padding:0px;word-wrap:break-word;">Linux</span>系统中，运行中的CPU通常每秒会被时钟打断100到1000次。时钟中断是为了重新考虑应该运行哪个进程、响应读写更新 （RCU）调用，以及处理其它必要的事务。这种周期性的时钟中断或滴嗒比臭名昭著的全局内核锁（BKL）要合理得多，但它的缺点是影响性能，也称不上节 能。</p><p style="margin:10px;padding:0px;word-wrap:break-word;color:#444444;font-family:tahoma, helvetica, simsun, sans-serif;font-size:14px;line-height:28px;background-color:#ffffff;">几年前，Linux社区开发出了可选的无滴答（tickless）模式，当CPU处于空闲状态，默认关闭时钟中断。它允许空闲CPU长时间处于深度睡 眠状态，减少电力消耗。它对于笔记本手机之类电池供电系统具有重要意义。然而这种无滴答模式也存在缺陷，不利于高延迟敏感环境，因为唤醒睡眠中的CPU有 时间开销。</p><p style="margin:10px;padding:0px;word-wrap:break-word;color:#444444;font-family:tahoma, helvetica, simsun, sans-serif;font-size:14px;line-height:28px;background-color:#ffffff;">Linux 3.10内核引入了一个近似完全无滴嗒（full tickless）模式， 该模式默认关闭。根据内核开发者的测试，它能节省1%的CPU时间。在启用完全无滴答模式后，运行中的CPU如果只有一个可运行进程，它将关闭时钟中断。 如果出现第二个进程，滴嗒会再次出现以供调度器根据时间段分配资源。</p><p style="margin:10px;padding:0px;word-wrap:break-word;color:#444444;font-family:tahoma, helvetica, simsun, sans-serif;font-size:14px;line-height:28px;background-color:#ffffff;">从技术角度说，这并不是完全无滴嗒，只能说近似。高性能和实时计算将会受益于这个新模 式，因为在这两种环境下，一个CPU执行一个任务是一种常见的策略。</p><p style="margin:10px;padding:0px;word-wrap:break-word;color:#444444;font-family:tahoma, helvetica, simsun, sans-serif;font-size:14px;line-height:28px;background-color:#ffffff;">via http://www.linuxde.net/2013/06/13709.html</p><p><span style="font-family:stheiti;font-size:medium;">--</span><br style="font-family:stheiti;font-size:medium;"/></p><table style="font-family:stheiti;border:1px solid #004918;font-size:14px;color:#333333;background-color:#ffffff;margin:2px;padding:8px 2px;"><tbody><tr><td>点击下方的「<span style="color:#607fa6;">阅读原文</span>」查看获得更佳阅读体验并参与讨论。</td></tr><tr><td>来自<span style="color:#ffffff;background-color:#000000;margin:0px 3px;padding:1px;">Linux中国</span>（微信号：linux-cn）</td></tr></tbody></table><p><br/></p>
+        
+</body>
+</html>

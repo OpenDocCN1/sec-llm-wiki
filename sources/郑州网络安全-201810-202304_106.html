@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>AttachMe Oracle云漏洞将卷暴露给数据盗窃、劫持</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>AttachMe Oracle云漏洞将卷暴露给数据盗窃、劫持</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485625&amp;idx=1&amp;sn=e67a5a020d7427dcda34c759de34f0d1&amp;chksm=fa76e947cd0160518ac3b45c8361a93716091880b6ab88bab6305a5866308eba5ee611500794&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485625&amp;idx=1&amp;sn=e67a5a020d7427dcda34c759de34f0d1&amp;chksm=fa76e947cd0160518ac3b45c8361a93716091880b6ab88bab6305a5866308eba5ee611500794&amp;scene=27#wechat_redirect</a></blockquote><blockquote><p>Oracle已修补其云基础设施中的一个严重漏洞，该漏洞可能允许攻击者窃取数据或篡改客户端文件。9月20日，Wiz安全研究员Elad Gabay公开披露了该安全漏洞，该漏洞是在检查Oracle云基础设施(OCI)后于6月发现的。被称为#AttachMe 的“主要”错误集中在一个问题上：将卷附加到OCI时缺乏权限保护。</p></blockquote><p><img class="rich_pages wxw-img" data-ratio="0.5625" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJns8rTKEWm8381myN2z6ibuaEUNy5vXuxAicNv3UmqmCNI5d0l5OJFzZSWhnkned9c0vpNDt71gW3CQ/640?wx_fmt=jpeg" data-type="jpeg" data-w="1200" height="675" width="1200" src="../Images/46957636cd15ed0d2e05509bd552fe6c.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJns8rTKEWm8381myN2z6ibuaEUNy5vXuxAicNv3UmqmCNI5d0l5OJFzZSWhnkned9c0vpNDt71gW3CQ/640?wx_fmt=jpeg"/></p><p>攻击将从使用目标的唯一标识符开始，即他们的云环境ID(OCID)，可以通过公开信息或低权限帐户找到。</p><p>然后，威胁行为者将在攻击者控制的租户中启动一个实例 - 与目标卷位于同一可用性域(AD)中 - 然后将受害者的卷附加到实例。</p><p>根据设计，OCI支持将单个卷同时附加到多个实例。</p><p>缺乏授权检查将确保攻击者对目标卷具有读/写权限，无论他们是否有足够的权限。</p><p>因此，攻击者可能利用此途径窃取或修改信息、搜索明文秘密或横向移动卷。</p><p>在最坏的情况下，攻击者可能通过操纵二进制文件来实现代码执行来劫持环境。</p><p>“在修补之前，#AttachMe可能允许攻击者未经授权访问和修改任何其他用户的OCI存储卷，从而违反云隔离，”Gabay说。</p><p>Wiz补充说，该漏洞可能已经影响了所有OCI客户，或者可能已被用于针对单个客户服务的基础设施。</p><p>在发现三天后，Wiz安全团队于6月9日向甲骨文披露了调查结果。</p><p>甲骨文在6月10日承认了安全报告，并在同一天确认并修复了该漏洞。无需OCI客户操作。</p><p>Wiz研究员Sagi Tzadik表示，如果不是Oracle如此迅速地修补，该漏洞在现实世界中的影响可能会非常严重。</p><p>“这可能会导致潜在所有OCI客户的严重敏感数据泄漏，在某些情况下甚至可能被利用以在他们的环境中远程执行代码，为受害者的云环境中的进一步移动提供初始入口点，”他评论道。</p><p>“虽然OCID通常是私有的，但它们不被视为秘密。从快速的GitHub或Google搜索中获取这些ID是相对可行的。”</p><p>甲骨文拒绝置评，但在公司2022年7月的重要补丁更新说明中感谢Gabay。</p><p>“用户权限验证不足是云服务提供商中常见的错误类别，”Wiz补充道。</p><p>“识别此类问题的最佳方法是在开发阶段对每个敏感 API 执行严格的代码审查和全面测试。我们还建议执行特定于服务的渗透测试并参与漏洞赏金计划，因为这些已被证明对这些类型的问题有效。”</p><p><br/></p><p style="display: none;"><mp-style-type data-value="3"/></p>
+        
+</body>
+</html>

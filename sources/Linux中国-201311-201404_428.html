@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Redis 2.8.0 正式版发布</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Redis 2.8.0 正式版发布</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/mp/appmsg/show?__biz=MjM5NjQ4MjYwMQ==&amp;appmsgid=10001592&amp;itemidx=3&amp;sign=9270484373895585ece466a9d7810c90&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/mp/appmsg/show?__biz=MjM5NjQ4MjYwMQ==&amp;appmsgid=10001592&amp;itemidx=3&amp;sign=9270484373895585ece466a9d7810c90&amp;scene=27#wechat_redirect</a></blockquote><p style="margin-top: 10px; margin-bottom: 10px; padding: 0px; word-wrap: break-word; line-height: 2em; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; white-space: normal; background-color: rgb(255, 255, 255);">NoSQL Redis 2.8.0正式版发布！新的产品线。2013-11-22 高性能KV数据库。经过6个RC.上个版本是2013-08-29的2.6.16.</p><p style="margin-top: 10px; margin-bottom: 10px; padding: 0px; word-wrap: break-word; line-height: 2em; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; white-space: normal; background-color: rgb(255, 255, 255);"/><p style="margin-top: 10px; margin-bottom: 10px; padding: 0px; word-wrap: break-word; line-height: 2em; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; white-space: normal; background-color: rgb(255, 255, 255);">对比2.6所有新特性如下：</p><pre style="margin-top: 0px; margin-bottom: 0px; padding: 18px 2px 2px 44px; word-wrap: break-word; border: 1px solid rgb(153, 153, 153); font-size: 12px; background-color: rgb(27, 36, 38); color: rgb(185, 189, 182); line-height: 1.2em;"># UPGRADE URGENCY: LOW, unless you want to upgrade to new Sentinel code.
+
+* [FIX] Fixed an error in rdbWriteRaw() that should have no practical impact.
+* [NEW] Log the new master when SLAVEOF command is used.
+* [NEW] Sentinel code synchronized with the unstable branch, the new Sentinel
+        is a reimplementation that uses more reliable algorithms.
+
+--[ Redis 2.8 Release Candidate 6 (2.7.106) ] Release date: 6 Nov 2013
+
+This is the 6th release candidate of Redis 2.8 (official version is 2.7.106).
+
+# UPGRADE URGENCY: LOW, only new features back ported, no fixes.
+
+* [NEW] SCAN, SSCAN, HSCAN, ZSCAN commands.
+
+--[ Redis 2.8 Release Candidate 5 (2.7.105) ] Release date: 9 Oct 2013
+
+This is the 5th release candidate of Redis 2.8 (official version is 2.7.105).
+Important bugs fixed inside.
+
+# UPGRADE URGENCY: HIGH because of many non critical replication bugs fixed.
+
+* [FIX] redis-cli: don't crash with --bigkeys when the key no longer exist.
+* [FIX] Allow AUTH / PING when disconnected from slave and serve-stale-data is no.
+* [FIX] PSYNC: safer handling of PSYNC requests with offsets in the future.
+* [FIX] Replication: Fix master timeout detection.
+* [FIX] Replication: Correctly install the write handler after successful PSYNC.
+
+--[ Redis 2.8 Release Candidate 4 (2.7.104) ] Release date: 30 Aug 2013
+
+This is the fourth release candidate of Redis 2.8 (official version is 2.7.104).
+Important bugs fixed inside.
+
+# UPGRADE URGENCY: HIGH because of the EVAL memory leak.
+
+* [FIX] Fixed a serious EVAL memory leak in the Lua stack.
+* [FIX] Fixed server startup when no IPv6 address exists in any interface.
+* [FIX] Send MISCONFIG error when BGSAVE fails because can't fork.
+* [FIX] Memory efficiency with large (&gt; a few kbytes) values improved considerably.
+* [NEW] DEBUG SDSLEN for sds memory debugging.
+
+--[ Redis 2.8 Release Candidate 3 (2.7.103) ] Release date: 19 Aug 2013
+
+This is the third release candidate of Redis 2.8 (official version is 2.7.103).
+Important bugs fixed inside.
+
+# UPGRADE URGENCY: HIGH
+
+* [FIX] Improved expired keys collection algorithm. Even under heavy load keys
+        to be expired can't accumulate because of lack of CPU time.
+* [FIX] Replication speed regression fixed (issue #1238).
+* [FIX] Fixed an hard to trigger PSYNC bug.
+* [FIX] Fixed Issue #1240, ZUNIONSTORE could lead to wrong result.
+* [NEW] Add per-db average TTL information in INFO output.
+* [NEW] redis-benchmark improvements.
+* [NEW] dict.c API wrong usage detection.
+
+--[ Redis 2.8 Release Candidate 2 (2.7.102) ] Release date: 30 Jul 2013
+
+This is the second release candidate of Redis 2.8 (official version is 2.7.102).
+Important bugs fixed inside.
+
+# UPGRADE URGENCY: HIGH
+
+* [FIX] Fixed a critical replication bug, see issue #1221.
+* [NEW] The new inline protocol now accepts quoted strings like, for example
+        you can now type in a telnet session: set 'foo bar' "hello world\n".
+
+--[ Redis 2.8 Release Candidate 1 (2.7.101) ] Release date: 18 Jul 2013
+
+This is the first release candidate of Redis 2.8 (official version is 2.7.101).
+
+The following is a list of improvements in Redis 2.8, compared to Redis 2.6.
+
+* [NEW] Slaves are now able to partially resynchronize with the master, so most
+        of the times a full resynchronization with the RDB creation in the master
+        side is not needed when the master-slave link is disconnected for a short
+        amount of time.
+* [NEW] Experimental IPv6 support.
+* [NEW] Slaves explicitly ping masters now, a master is able to detect a timed out
+        slave independently.
+* [NEW] Masters can stop accepting writes if not enough slaves with a given
+        maximum latency are connected.
+* [NEW] Keyspace changes notifications via Pub/Sub.
+* [NEW] CONFIG SET maxclients is now available.
+* [NEW] Ability to bind multiple IP addresses.
+* [NEW] Set process names so that you can recognize, in the "ps" command output,
+        the listening port of an instance, or if it is a saving child.
+* [NEW] Automatic memory check on crash.
+* [NEW] CONFIG REWRITE is able to materialize the changes in the configuration
+        operated using CONFIG SET into the redis.conf file.
+* [NEW] More NetBSD friendly code base.
+* [NEW] PUBSUB command for Pub/Sub introspection capabilities.
+* [NEW] EVALSHA can now be replicated as such, without requiring to be expanded
+        to a full EVAL for the replication link.
+* [NEW] Better Lua scripts error reporting.
+* [NEW] SDIFF performance improved.
+* [FIX] A number of bugfixes.</pre><p style="margin-top: 10px; margin-bottom: 10px; padding: 0px; word-wrap: break-word; line-height: 2em; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; white-space: normal; background-color: rgb(255, 255, 255);">完整的发布声明： https://raw.github.com/antirez/redis/2.8/00-RELEASENOTES  </p><p style="margin-top: 10px; margin-bottom: 10px; padding: 0px; word-wrap: break-word; line-height: 2em; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; white-space: normal; background-color: rgb(255, 255, 255);">下载：http://download.redis.io/releases/redis-2.8.0.tar.gz</p><p style="margin-top: 10px; margin-bottom: 10px; padding: 0px; word-wrap: break-word; line-height: 2em; font-family: Tahoma, Helvetica, SimSun, sans-serif; font-size: 14px; white-space: normal; background-color: rgb(255, 255, 255);"><img src="../Images/25a3067db826ab8f919f5769d91856e4.png" style="" data-original-src="http://img.linux.net.cn/static/image/common/weixin_sign_1.png"/><span style=""> </span></p>
+        
+</body>
+</html>

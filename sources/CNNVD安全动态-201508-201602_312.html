@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>谷歌公司正式宣布将停止使用SSLv3以及RC4</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>谷歌公司正式宣布将停止使用SSLv3以及RC4</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxODY1OTM5OQ==&amp;mid=212035643&amp;idx=3&amp;sn=6dcc393625718f1a00987b0a2e21b112&amp;chksm=1285291325f2a005751a1b0771e4c35087df3359bc2e3447ef9dac6c29baaa8e7a6eaf9415d7&amp;scene=126&amp;sessionid=1681378456#rd">http://mp.weixin.qq.com/s?__biz=MzAxODY1OTM5OQ==&amp;mid=212035643&amp;idx=3&amp;sn=6dcc393625718f1a00987b0a2e21b112&amp;chksm=1285291325f2a005751a1b0771e4c35087df3359bc2e3447ef9dac6c29baaa8e7a6eaf9415d7&amp;scene=126&amp;sessionid=1681378456#rd</a></blockquote><p>       谷歌公司在上一周正式宣布，他们将停止对RC4加密技术以及SSLv3协议的技术支持。因为在过去的这么多年时间里，研究人员已经在这两种技术中发现了大量的设计缺陷。</p><p>       Adam Langley是谷歌公司的一名安全工程师，他在周四所发表的一篇文章中正式宣布了谷歌公司的这一计划。尽管他并没有提及该计划实施的具体时间，但Langley表示，谷歌公司正在计划从公司旗下的前端服务器，Chrome浏览器，安卓系统，网络爬虫，以及SMTP服务器中停止对RC4流密码以及SSLv3协议的技术支持。</p><p>       谷歌公司在去年就曾发表过一份关于SSLv3漏洞的简要分析报告，根据谷歌公司的描述，所有的SSLv3协议都存在有这些漏洞，利用这些漏洞，黑客可以通过中间人攻击等类似的攻击方式获取到目标设备的传输数据（例如cookies）。</p><p>       网络工程公司Task Force就曾在一篇互联网标准跟踪文件中提到过SSLv3协议的设计缺陷，并认为该协议的安全性能不高，甚至任意一个版本的安全传输层协议（TLS）都比SSLv3协议安全得多。</p><p>       Langley还在文章中提到，RC4加密技术诞生于1987年，距今已经有28年的历史了。在早期应用时，该技术还可以称得上是一个实用性较高的加密技术，但随着时间的推移，越来越多的网络攻击开始针对RC4了，而RC4加密技术中的设计缺陷将导致安全传输层协议的会话信息（TLS会话）受到黑客的攻击，以及cookie数据被解密。</p><p>       除此之外，谷歌公司还表示他们将会继续对TLS客户端提供技术支持，并公布了一个最低标准的集合。Langley在文章中写到：“如果你的TLS客户端，web服务器或者电子邮件服务器仍然在使用SSLv3协议或者RC4加密技术的话，你早就该对这些设备进行更新了，但是现在更新也不迟，毕竟晚做总比不做的好要。但用户需要注意的是，如果你目前仍然在使用RC4加密技术的话，这并不意味着你的客户端或者网站将会停止工作，因为TLS将会与设备中的密码套件自动进行适配。但是，如果你的设备仅支持RC4加密技术的话，那么可能就会产生一系列的问题了。”</p><p>       谷歌公司表示，SSLv3回退将导致攻击者可以强制使网站的连接使用SSLv3加密，而研究人员已经在这个版本的SSL协议中发现了安全漏洞。一些只支持SSLv3的HTTPS服务器可能会无法正常使用，但解决的办法只能是修复这些HTTPS服务器。公司计划将在下一版本的Chrome浏览器中完全禁用SSLv3协议，当然我们会一直关注这个问题的兼容性影响范围。</p><p>       （转载360安全播报）</p>
+        
+</body>
+</html>

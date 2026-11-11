@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>【漏洞预警】Apache Spark集群框架远程执行代码漏洞CVE-2020-9480</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>【漏洞预警】Apache Spark集群框架远程执行代码漏洞CVE-2020-9480</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxMjYyMzkwOA==&amp;mid=2247486453&amp;idx=3&amp;sn=a2d1f15159909454e89b729577eaeac6&amp;chksm=9bae42beacd9cba8565efd38d4780916c51de31971025dfb311c24abb9b6c497dfc98b8b528b&amp;scene=126&amp;sessionid=1681670183#rd">http://mp.weixin.qq.com/s?__biz=MzAxMjYyMzkwOA==&amp;mid=2247486453&amp;idx=3&amp;sn=a2d1f15159909454e89b729577eaeac6&amp;chksm=9bae42beacd9cba8565efd38d4780916c51de31971025dfb311c24abb9b6c497dfc98b8b528b&amp;scene=126&amp;sessionid=1681670183#rd</a></blockquote><p>在Apache Spark 2.4.5和更早版本中，独立资源管理器的主服务器可以配置为要求通过共享密钥（spark.authenticate）进行认证。但是，由于Spark身份验证机制的缺陷，共享密钥身份验证失败。攻击者可能利用此漏洞在未经授权的情况下在主机上执行命令，从而导致远程执行代码。</p><p><br/></p><p><strong>漏洞详情</strong></p><p>在Apache Spark 2.4.5和更早版本中，可以将独立资源管理器的主服务器配置为要求spark.authenticate通过共享密钥进行身份验证（）。但是，启用后，即使没有共享密钥，到主服务器的特制RPC也可以成功启动Spark集群上的应用程序资源。可以利用它在主机上执行Shell命令。</p><p><br/></p><p><strong>受影响的版本</strong></p><p>Apache Spark：&lt;= 2.4.5</p><p><br/></p><p><strong>解决方法：</strong></p><p>升级到Spark版本2.4.6或Spark版本3.0.0。</p><p style="text-align: center;"><img class="rich_pages" data-ratio="0.6" data-src="https://mmbiz.qpic.cn/mmbiz_gif/rWGOWg48taeW1wfdEvyrbEg9Y2ywOu5SkwVlSfAg7RT3B6n1iakWG6kDAZXY1ia9zworvfOvy89EibYziaGJ8Rl5Wg/640?wx_fmt=gif" data-type="gif" data-w="640" style="" src="../Images/e330cc65d254fa012d082c3ec7f08e76.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_gif/rWGOWg48taeW1wfdEvyrbEg9Y2ywOu5SkwVlSfAg7RT3B6n1iakWG6kDAZXY1ia9zworvfOvy89EibYziaGJ8Rl5Wg/640?wx_fmt=gif"/></p>
+        
+</body>
+</html>

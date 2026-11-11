@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>金玉其外败絮其中：百度杀毒“雪狼引擎”逆向分析</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>金玉其外败絮其中：百度杀毒“雪狼引擎”逆向分析</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=201660360&amp;idx=3&amp;sn=ff9fdb6b4431cf1c182e624cb0a107ac&amp;chksm=2f1e854318690c55503b2ae6a5bc14fdf36c3eb3a6036c2d8ee18adbec737df6e27220930285&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=201660360&amp;idx=3&amp;sn=ff9fdb6b4431cf1c182e624cb0a107ac&amp;chksm=2f1e854318690c55503b2ae6a5bc14fdf36c3eb3a6036c2d8ee18adbec737df6e27220930285&amp;scene=27#wechat_redirect</a></blockquote><p><strong><span style="font-size: 18px;">一、前言&amp;引子</span></strong></p><p><span style="font-size: 20px;"><br/></span></p><p>百无聊赖的夜晚，偶尔翻看到这么一篇介绍：</p><p><br/></p><pre><span style="color: rgb(146, 208, 80);">“百度首度自研推出的核心查杀引擎「雪狼」，采用全新「量子查杀」技术。”“雪狼引擎依托百度大数据分析，通过海量样本的分析技术得到文件多维度信息，实现了短小、抗免杀、能力超强的识别模式技术的突破。”</span></pre><p><br/></p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic2bTxlmia6AgQqYkYg3qnqPKfFT55kVHDcg8jqKpTtL1GicmUpQZI9lGZA/0" style="" data-ratio="0.5118110236220472" data-w="" src="../Images/65754384adb67bf63383993d913f56f9.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic2bTxlmia6AgQqYkYg3qnqPKfFT55kVHDcg8jqKpTtL1GicmUpQZI9lGZA/0"/></p><p><br/></p><p>虽然早已不像当年对软件安全那般狂热，但也许是虚荣心作祟，想练练手证明自己宝刀未老，外带着一点点传播真相的责任感。我花了几个无聊看视频的夜晚，完成了大部分百度雪狼引擎的逆向分析，如有错误望指正。</p><p><br/></p><p>1，BAV版本：3.0.0.4517</p><p><br/></p><p>2，引擎文件：</p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic2Iww1nV5TJWZEgibdIbPvB9O6Vd2B0lWefza1pwS8WzRI7cZiccyZQz9A/0" style="" data-ratio="0.41732283464566927" data-w="" src="../Images/7241f69ea21c7488a58d41b6898351fe.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic2Iww1nV5TJWZEgibdIbPvB9O6Vd2B0lWefza1pwS8WzRI7cZiccyZQz9A/0"/></p><p><br/></p><p>3，病毒库文件：</p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic2pT5shsPVUrZ3Xvib998nO9B4nhRicbmTHcibsVoyEJpic34QFLGCc6V7tQ/0" style="" data-ratio="0.5097613882863341" data-w="461" src="../Images/c232c7dc430c496e5b9769314edf1ecd.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic2pT5shsPVUrZ3Xvib998nO9B4nhRicbmTHcibsVoyEJpic34QFLGCc6V7tQ/0"/></p><p><br/></p><p>4，分析评估：</p><p><br/></p><p>个人认为雪狼仅仅是个非常薄弱传统特征引擎，没有启发，没有虚拟机，没有沙箱等等。</p><p><br/></p><p>即便是作为一款传统特征引擎也极其不合格，特征总数只有区区2000余条，远远低于传统杀毒软件数百万量级的特征数量。也绝不可能覆盖数量众多的病毒和木马。</p><p><br/></p><p>对比卡巴斯基特征数量：</p><p><br/></p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic28C9ibAqDVsKzYwB9tMwsx6INC77PGia2iacsoENbThicaVRicnxw3dLWLpw/0" style="" data-ratio="0.4389763779527559" data-w="" src="../Images/2cd8a806591064c2602ceb8825c1925c.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic28C9ibAqDVsKzYwB9tMwsx6INC77PGia2iacsoENbThicaVRicnxw3dLWLpw/0"/></p><p><br/></p><p>这里不禁要提一下，雪狼引擎的库之所以这么小，并非如宣传说的那样是多么牛X的技术突破和多么强大的压缩算法。原因只有一个：特征太少。<br style="box-sizing: border-box;"/></p><p><br/></p><p>这种拿自己的弱点放大百遍当优点大肆宣传的做法，是非常为人不齿的。</p><p><br/></p><p><strong><span style="font-size: 18px;">二、“量子查杀”&amp;“大数据分析”深度剖析</span></strong></p><p><br/></p><p>尽管从上述分析中已经得知，雪狼仅仅是一个传统特征引擎，特征数量也非常少。那么所谓的“量子查杀”和“大数据分析”是不是名副其实呢？下面我将以尽量严谨的逆向分析过程，来揭露它的本质。</p><p><br/></p><p>MALWARE查杀逆向分析：<br style="box-sizing: border-box;"/></p><p><br/></p><p>1，特征结构描述：<br style="box-sizing: border-box;"/></p><p><br/></p><p>以某条二进制特征为例：</p><p><br/></p><pre>B0 AE CE D2 D6 D0 B9 D8 B4 E5
+红色字体为FIRST_WORD
+蓝色字体为SECOND_DWORD
+黑色字体为THREE_SCRIPT_DATA</pre><p><br/></p><p>2，结构表：</p><p><br/></p><p>特征库SM_VDF结构一共13张</p><p><br/></p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic2q7Bl6BRJibvEzcp4YZTFYbCWM8784zheaxiadnGPriarqU9MYTG7E4r8A/0" style="" data-ratio="0.9657387580299786" data-w="467" src="../Images/7a2863f1ba648c4cef8d172b41bc0b4a.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic2q7Bl6BRJibvEzcp4YZTFYbCWM8784zheaxiadnGPriarqU9MYTG7E4r8A/0"/></p><p><br/></p><p>3，流程：<br style="box-sizing: border-box;"/></p><p><br/></p><p>每次读入0X40字节，以WORD形式挨个遍历，第一次匹配WORD提速，成功则第二次匹配DWORD，再成功则执行脚本匹配，再成功则保存特征ID，最后根据这条特征ID查询二叉树关系是否需要满足命中其他特征ID。满足所有条件则最后报毒。</p><p><br/></p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic2Z0VpLKKfXe4qX5VdAI0lmbYFkkvOO2C7FQkmuMia67szqjg8qo5LeRg/0" style="" data-ratio="0.41338582677165353" data-w="" src="../Images/c14ccb3e801054d00da6b749c39913db.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic2Z0VpLKKfXe4qX5VdAI0lmbYFkkvOO2C7FQkmuMia67szqjg8qo5LeRg/0"/></p><p><br/></p><p>4，二叉树：</p><p><br/></p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic2FSrJ3unNxWxvy0LRy73MfcgSTqobuMEwgXxE47gazoPLiafo1bvNScw/0" style="" data-ratio="0.5973597359735974" data-w="303" src="../Images/898da48e852b87511106a2f54800ec60.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic2FSrJ3unNxWxvy0LRy73MfcgSTqobuMEwgXxE47gazoPLiafo1bvNScw/0"/></p><p><br/></p><p><br/></p><p>5，特征命中：<br style="box-sizing: border-box;"/></p><p><br/></p><p>以上图为例，命中 ID_0可以分为以下几种情况：</p><p><br/></p><pre>0-&gt;1-&gt;2-&gt;3
+0-&gt;4&gt;5
+0-&gt;4&gt;6</pre><p><br/></p><p>任意3种组合，命中其中一组即报毒。说白了，其实就一个多种组合匹配。</p><p><br/></p><p>假设特征描述如下，举例：<br style="box-sizing: border-box;"/></p><p><br/></p><pre>0：入口点指令为push ebp
+4：文件区段数为4
+5：匹配字符串“I AM MALWARE!”。
+6：匹配字符串“I AM VIRUS!”。</pre><p><br/></p><p>根据组合0，4，5报毒规则描述如下：<br style="box-sizing: border-box;"/></p><p>(入口点指令为push ebp)&amp;(文件区段数为4)&amp;(匹配字符串“I AM MALWARE!”)</p><p><br/></p><p>根据组合0，4，6报毒规则描述如下：<br style="box-sizing: border-box;"/></p><p>(入口点指令为push ebp)&amp;(文件区段数为4)&amp;(匹配字符串“I AM VIRUS!”)。</p><p><br/></p><p>这里的特征4-&gt;“文件区段数为4”便是百度所谓的复用特征。<br style="box-sizing: border-box;"/></p><p><br/></p><p>不过这种复用特征数量非常少，而且复用度很低。而且实际上也不是什么了不起的技术，只是一个最简单的多模匹配。</p><p><br/></p><p>6，实例：<br style="box-sizing: border-box;"/></p><p><br/></p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic2Glr1WCia640Sn6RxiaH8mXzgtB6DquIeufVwtnkXaKvkgdLRJQF9qNQQ/0" style="" data-ratio="0.5567685589519651" data-w="458" src="../Images/7036483d57c3d73a8a0b89d82322b1ae.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic2Glr1WCia640Sn6RxiaH8mXzgtB6DquIeufVwtnkXaKvkgdLRJQF9qNQQ/0"/></p><p><br/></p><p>简单特征，例“Win32.Trojan.Delf.a”：<br style="box-sizing: border-box;"/></p><p><br/></p><p>引用：</p><pre>Word OP：0x6464
+sign count：00000001
+idx：000003BC，idy：00000351，Match_Dword：75626569， Virname：Win32.Trojan.Delf.a
+Method Size：0000000C</pre><p><br/></p><p>step：1</p><p>匹配2进制数据：69 65 62 75 64 64 79</p><p>简单特征，例“Win32.Trojan.BHO.a”：<br style="box-sizing: border-box;"/></p><p><br/></p><p>引用：<br style="box-sizing: border-box;"/></p><pre>Word OP：0x2D42
+sign count：00000001
+idx：000003E1，idy：00000337，Match_Dword：45423638， Virname：Win32.Trojan.BHO.a
+Method Size：0000000C</pre><p><br/></p><p>step：1</p><p>匹配2进制数据：38 36 42 45 42 2D 34 44 32 38 2D 34 35 30 36 2D 41 36 42 41 2D 38 44 30 34 36 36 36 33 38 42 35 33</p><p>简单特征，例“Base.Record.InternetExplorer.a”</p><p><br/></p><p>引用：<br style="box-sizing: border-box;"/></p><pre>Word OP：0x6E72
+sign count：00000002
+idx：00000030，idy：00000003，Match_Dword：65746E49，Virname：Base.Record.InternetExplorer.a
+Method Size：0000000C</pre><p><br/></p><p>step：1</p><p>匹配2进制数据：49 6E 74 65 72 6E 65 74 20 45 78 70 6C 6F 72 65 72</p><p>复杂脚本特征，例“Win32.Trojan.Nimnal.e”：</p><p><br/></p><p>引用：<br style="box-sizing: border-box;"/></p><pre>Word OP：0x7404
+sign count：00000001
+idx：000001EE，idy：00000797，Match_Dword：43390575， Virname：Win32.Trojan.Nimnal.e
+Method Size：00000088<br/><br/></pre><pre>step：1
+回退文件偏移：FFFFFFE4
+step：2
+匹配2进制数据：8A 10 83 
+step：3
+运算匹配 ANDKEY：0xF0，AndData：E0 
+step：4
+匹配2进制数据：01 88 14 
+step：5
+运算匹配 ANDKEY：0xF0，AndData：00 
+step:6
+匹配2进制数据:83 C0 01 85 
+step：7
+移动Buf指针：00000001
+step：8
+匹配2进制数据：75 F1 8B DF B8 
+step：9
+移动Buf指针：00000004
+step：10
+匹配2进制数据：81 3B 
+step：11
+移动Buf指针：00000004
+step：12
+匹配2进制数据：75 05 39 43 04 74 05 83 C3 01 EB EE</pre><p><br/></p><p>7，分析评估：<br style="box-sizing: border-box;"/></p><p><br/></p><p>所谓“量子查杀”：</p><p><br/></p><pre><span style="color: rgb(146, 208, 80);">本质：基于样本“全文”的明文2进制多方式匹配。通过（1.WORD）,（2.DWORD）进行提速，最后（3.脚本）3个步骤，每次匹配中的病毒IDX保存，在随后进行多模匹配。只是一个最基本最基本的传统特征码查杀方式而已。尽管切分了文件，但本质不变。</span></pre><p><br/></p><p>所谓“大数据分析”：</p><p><br/></p><pre><span style="color: rgb(146, 208, 80);">因雪狼查杀机制为全文查杀，导致效率会极为低下。为了提高效率通过统计已有的样本而做出的SECT0表来做提速，仅此而已。</span></pre><p><br/></p><p>VIRUS查杀逆向分析：</p><p><br/></p><p>1，特征结构描述：</p><p><br/></p><p>编译了的二进制格式，包含寄存器，逻辑运算，JCC跳转处理的特性。</p><p>PS：只反编译了查杀脚本，修复脚本没有弄，纯体力活，搞不动了，没动力。</p><p><br/></p><p>2，结构表：<br style="box-sizing: border-box;"/></p><p><br/></p><p>特征库SV_VDF结构一共4张结构表</p><p><br/></p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic27KWRzxkU3L2DW4qotEzicAibDRzEqnW7qzoPZwEf7IuThCFGzfcmNBHg/0" style="" data-ratio="0.4723404255319149" data-w="235" src="../Images/26afd4d6614d6295afbca8d43b2822d0.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic27KWRzxkU3L2DW4qotEzicAibDRzEqnW7qzoPZwEf7IuThCFGzfcmNBHg/0"/></p><p><br/></p><p>3，自己反编译后定义脚本执行描述：<br style="box-sizing: border-box;"/></p><p><br/></p><p>BAVREG[0]~BAVREG[9] 为引擎寄存器。</p><p>BAVREG[0]类似X86下 EAX。返回值。</p><p>BAV_FLAGS 对应X86 FLAGS 寄存器。</p><p><br/></p><p>4，实例：<br style="box-sizing: border-box;"/></p><p><br/></p><p>引用：<br style="box-sizing: border-box;"/></p><p>脚本特征，例“Win32.Virus.Loader.u”</p><p><br/></p><pre>id：0000006D，Win32.Virus.Loader.u
+BAVREG[0] = BAVE_GetEP_Section_Index();
+BAV_FLAGS = BAVREG[0] - 0x00000000;
+Check_BAV_FLAGS == 0 {RetnScan FALSE}
+//if(BAVE_GetEP_Section_Index() == 0){retn FALSE;}</pre><p><br/></p><p>//获取EP段在第几段，为0就失败。</p><p><br/></p><pre>BAVREG[0] = BAVE_GetAddressOfEntryPoint_RVA();
+BAVREG[9] = BAVREG[0];
+BAV_FLAGS = MatchData RVA:BAVREG[0], 60 64 A1 30 00 00 00 8B 40 0C 8B ;
+Add Offset:00000001;
+BAV_FLAGS = MatchData RVA:BAVREG[0], 1C AD ;
+Check_BAV_FLAGS == 1 {RetnScan FALSE};</pre><p><br/></p><p>//获取OEP入口点，匹配2进制60 64 A1 30 00 00 00 8B 40 0C 8B ?? 1C AD</p><p><br/></p><pre>BAVREG[0] += 0x00000015;
+BAV_FLAGS = MatchData RVA:BAVREG[0], 8B 45 3C 8B 54 05 78 ;
+Check_BAV_FLAGS == 1 {RetnScan FALSE};</pre><p><br/></p><p>//当前指针+0×15偏移 匹配8B 45 3C 8B 54 05 78</p><p><br/></p><pre>BAVREG[0] += 0x00000074;
+BAV_FLAGS = MatchData RVA:BAVREG[0], 61 E9 ;
+Check_BAV_FLAGS == 0 {Goto _000000A0};</pre><p><br/></p><p>//当前指针+0×74偏移 匹配61 E9  匹配成功则跳转到 _000000A0:</p><p><br/></p><pre>BAVREG[0] += 0x0000000B;
+BAV_FLAGS = MatchData RVA:BAVREG[0], 61 E9 ;
+Check_BAV_FLAGS == 0 {Goto _00000079};</pre><p><br/></p><p>//当前指针+0xB偏移 匹配61 E9  匹配成功则跳转到 _00000079:</p><p><br/></p><pre>BAVREG[0] += 0x00000009;
+BAV_FLAGS = MatchData RVA:BAVREG[0], 61 E9 ;
+Check_BAV_FLAGS == 0 {Goto _00000052};</pre><p><br/></p><p>//当前指针+0×9偏移 匹配61 E9  匹配成功则跳转到 _00000052:</p><p><br/></p><pre>BAVREG[0] += 0x00000007;
+BAV_FLAGS = MatchData RVA:BAVREG[0], 61 E9 ;
+Check_BAV_FLAGS == 0 {Goto _0000002B};</pre><p><br/></p><p>//当前指针+0×7偏移 匹配61 E9  匹配成功则跳转到 _0000002B:</p><p><br/></p><pre>BAVREG[0] += 0x00000045;
+BAV_FLAGS = MatchData RVA:BAVREG[0], 61 E9 ;
+Check_BAV_FLAGS == 0 {Goto _00000004};</pre><p><br/></p><p>//当前指针+0×45偏移 匹配61 E9  匹配成功则跳转到 _00000004:</p><p><br/></p><pre>{RetnScan FALSE};
+//返回失败
+_000000A0:
+{RetnScan TRUE};
+//返回成功报毒
+_00000079:
+{RetnScan TRUE};
+//返回成功报毒
+_00000052:
+{RetnScan TRUE};
+//返回成功报毒
+_0000002B:
+{RetnScan TRUE};
+//返回成功报毒
+_00000004:
+{RetnScan TRUE};//返回成功报毒</pre><p><br/></p><p><strong><span style="font-size: 18px;">三、Virus&amp;Anti-Virus攻防实验</span></strong></p><p><br/></p><p>作为一款传统特征引擎,雪狼在免杀对抗上的能力又如何？</p><p><br/></p><p>常见的特征免杀方式有两种：</p><p><br/></p><pre>1，逆向分析传统特征库，避开检测条件。
+2，黑盒定位特征。</pre><p><br/></p><p>尽管我已经解开了雪狼的特征库，但是方法2的成本更低，也是一般黑客最常用的免杀方式。以此做实验更能说明问题。</p><p><br/></p><p>1，以雪狼可以检测出的某恶意程序为例，使用MYCCL定位特征码。</p><p>2，十六进制查看</p><p><br/></p><p>特征码1：</p><p><br/></p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic27g8An9ea8ocmJJS1amiap7TicZyFfyAzAAnz35y1vtEic2GXGc72z8kIQ/0" style="" data-ratio="0.051181102362204724" data-w="" src="../Images/dc47f33f5f9891d80b6ccc772720077d.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic27g8An9ea8ocmJJS1amiap7TicZyFfyAzAAnz35y1vtEic2GXGc72z8kIQ/0"/></p><p><br/></p><p>特征码2：</p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic2vs6a1icoHeF3nq6nsYicMC3HFo1wlvEP27ibXC2AsK4HajZhRRTy8RAUg/0" style="" data-ratio="0.05511811023622047" data-w="" src="../Images/06e40fb4148de467cfbf32459b2b1018.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic2vs6a1icoHeF3nq6nsYicMC3HFo1wlvEP27ibXC2AsK4HajZhRRTy8RAUg/0"/></p><p><br/></p><p>特征码3：</p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic2842liaxOWut7vgxpegtObTmgVwkqzM57EicK7tAaVicP6yjDrc4ewtZcA/0" style="" data-ratio="0.05511811023622047" data-w="" src="../Images/0c6f4090997c5d95dacdabeabd5b03dc.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic2842liaxOWut7vgxpegtObTmgVwkqzM57EicK7tAaVicP6yjDrc4ewtZcA/0"/></p><p><br/></p><p>3，得知这一条特征对应的三处特征码全取在PDB路径上。</p><p>4，把路径大小写修改以后保存。</p><p>5，查杀测试：</p><p><br/></p><p>将virus.exe和virus_bypass.exe同时扫描，结果如下。</p><p><br/></p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic2dHnqRUqOZrTMNus74tO0TIXmjZyh3VqVxcCibd4AhichIAdVwQLdN90Q/0" style="" data-ratio="0.5708661417322834" data-w="" src="../Images/547a2212be7dcc19537e96c69e145cf6.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic2dHnqRUqOZrTMNus74tO0TIXmjZyh3VqVxcCibd4AhichIAdVwQLdN90Q/0"/></p><p><br/></p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic22s1PsPfJ0VYLJdt3RvdRYJmEmxp5WAPuBMibhsTYeCsd8Q2aZuWicHeA/0" style="" data-ratio="0.594488188976378" data-w="" src="../Images/eea75c1458a2c9b74e47251bb4ed98b7.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic22s1PsPfJ0VYLJdt3RvdRYJmEmxp5WAPuBMibhsTYeCsd8Q2aZuWicHeA/0"/></p><p><br/></p><p>6，评估分析：<br style="box-sizing: border-box;"/></p><p><br/></p><p>如此简单的特征方式也预见到了会被如此简单的BYPASS。</p><p><br/></p><p><span style="font-size: 20px;">四、雪狼&amp;其他杀软查杀效果实际对比</span></p><p><br/></p><p>为了验证以上所有结论，我托朋友从某论坛下载了一些恶意程序样本，使用几款常见的杀毒软件来做查杀对比测试。一共63个文件。下载链接：</p><p><br/></p><p>http://bbs.kafan.cn/forum.php?mod=viewthread&amp;tid=1790021  </p><p>http://bbs.kafan.cn/forum.php?mod=viewthread&amp;tid=1790016</p><p>http://bbs.kafan.cn/forum.php?mod=viewthread&amp;tid=1789970</p><p>http://bbs.kafan.cn/forum.php?mod=viewthread&amp;tid=1789968</p><p>http://bbs.kafan.cn/forum.php?mod=viewthread&amp;tid=1789889</p><p>http://bbs.kafan.cn/forum.php?mod=viewthread&amp;tid=1789867</p><p>http://bbs.kafan.cn/forum.php?mod=viewthread&amp;tid=1789965</p><p><br/></p><p><strong>1，测试条件：</strong></p><p><br/></p><p>1.百度杀毒不允许关闭卡巴引擎，但是在代码里判断系统是否为双核，内存是否大于4G。不满足条件则不打开卡巴引擎，于是被我以此巧妙地关闭了卡巴引擎，以检测雪狼真实效果。</p><p>2.360杀毒关闭了BD和小红伞。</p><p>3.全部测试都是断网。(各家杀软显示样本数不同原因是有些杀软统计了解包数量，实际测试样本数量均为63个)</p><p><br/></p><p><strong>2，查杀效果：</strong><br style="box-sizing: border-box;"/></p><p><strong><br/></strong></p><p>瑞星：<br style="box-sizing: border-box;"/></p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic2JIvgtv9hv52dI7MWvicTXA13W162RHibgsag6WmH3NYOSAkjJnrZsRIg/0" style="" data-ratio="0.6259842519685039" data-w="" src="../Images/e070549cfa56dc2afd174292444520d6.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic2JIvgtv9hv52dI7MWvicTXA13W162RHibgsag6WmH3NYOSAkjJnrZsRIg/0"/></p><p><br/></p><p>360杀毒：</p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic2ObDy7O127pSt0KcXyoRD2cG6rJwHCrywNZHfK8I75eMic9JB0bV2qCg/0" style="" data-ratio="0.6850393700787402" data-w="" src="../Images/3c4886fdf48daa6f2be5001b6d78579f.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic2ObDy7O127pSt0KcXyoRD2cG6rJwHCrywNZHfK8I75eMic9JB0bV2qCg/0"/></p><p><br/></p><p>百度杀毒：</p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic2K4LkRk8F8Yvweiaia5icdpDuoJkRSCa9wv0M4UG61dcDLRYTWcIktwz6g/0" style="" data-ratio="0.562992125984252" data-w="" src="../Images/bc006eaa91a6a89b60277c6ea667411b.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic2K4LkRk8F8Yvweiaia5icdpDuoJkRSCa9wv0M4UG61dcDLRYTWcIktwz6g/0"/></p><p><br/></p><p>火绒杀毒：</p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic2VKwBoB8fibnu4I505osqbDGIuYHAQbpPuMKeld9XicnPfCqWsokf1GFA/0" style="" data-ratio="0.6279527559055118" data-w="" src="../Images/8428e592ebb35059c05fb6123e527b8d.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic2VKwBoB8fibnu4I505osqbDGIuYHAQbpPuMKeld9XicnPfCqWsokf1GFA/0"/></p><p><br/></p><p><strong>3，评估分析：</strong><br style="box-sizing: border-box;"/></p><p><br/></p><p>事实胜于雄辩，效果如何也一目了然。</p><p><br/></p><p>五、总结&amp;思考：</p><p><br/></p><p><span style="color: rgb(146, 208, 80);">百度的雪狼引擎只是一款基础的传统特征引擎，而且特征数量之少导致其远远无法应付当前的恶意程序环境，免杀对抗也极为容易。尤其是在系统配置低，只有单核和4g以下内存的机器。如果安装百度杀毒，将会直接关闭卡巴引擎不给用户任何提示和选择，单凭雪狼区区两千条特征远远无法抵御恶意程序的侵袭。</span></p><p><br/></p><p>最重要的是不负责任的盲目夸大宣传是不折不扣的欺骗，薄弱的查杀率将会使广大用户暴露在安全威胁之中。跟现在的主流杀软相比，还是太浮躁，一款优秀的反病毒引擎，不是一蹴而就，需要是时间，需要积累。</p><p><br/></p><p>[原文作者：看雪/monkeycz，感谢洛阳亲友投稿FreeBuf，版权属于作者]</p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic2ppaZ467FlGWz6ez8sSaBlZzb0F6bNprSMiczgDNVQ53oBgMibRuX1AkQ/0" data-ratio="0.2106299212598425" data-w="" src="../Images/6e62ddd5425baa71896cacd06a64d2a8.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39xTKa58vjR2jYeiaW2qraic2ppaZ467FlGWz6ez8sSaBlZzb0F6bNprSMiczgDNVQ53oBgMibRuX1AkQ/0"/></p>
+        
+</body>
+</html>

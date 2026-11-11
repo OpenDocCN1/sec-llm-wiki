@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>以色列黑客发现Gmail漏洞 遍历所有用户的电子邮件地址</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>以色列黑客发现Gmail漏洞 遍历所有用户的电子邮件地址</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=200256021&amp;idx=1&amp;sn=a8ecb49d5cf089b0aea4f54f4fa37c4a&amp;chksm=28f4389e1f83b188e0f0102d2080553ec5ad77f465fb5335afa495dc6a604b2e6d58ce31692a&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=200256021&amp;idx=1&amp;sn=a8ecb49d5cf089b0aea4f54f4fa37c4a&amp;chksm=28f4389e1f83b188e0f0102d2080553ec5ad77f465fb5335afa495dc6a604b2e6d58ce31692a&amp;scene=27#wechat_redirect</a></blockquote><p style=""><strong style="margin: 0px; padding: 0px;"><span style="margin: 0px; padding: 0px; color: rgb(0, 176, 80);">当有一天，你有机会邂逅所有的gmail邮箱，你会是怎样的感同身受？</span></strong></p><p style=""><strong style="margin: 0px; padding: 0px;"><span style="margin: 0px; padding: 0px; color: rgb(0, 176, 80);"><br/></span></strong></p><p style="">互联网上的每两三个用户就会有一个用户使用Gmail作为邮件服务提供商，而且gmail邮箱也成为我们在二次元里很关键的社交帐号凭证，诸如链接至facebook、twitter以及其他更多网站应用，我相信这个你比我更懂。</p><p style=""><br/></p><p style="">那么，关键是你是否曾见过世界上所有的Gmail邮箱地址，或者说如果上天许你一个机会，让你获得世界上所有的gmail邮箱地址，你会有怎样的反应？</p><p style=""><br/></p><p style="">当上帝不小心手抖了一下，于是这个苹果不偏不倚的的砸在了一名叫做“Oren Hafif”的以色列研究人员的头上。他在Gmail系统中找到了漏洞，从而能够进一步导出包括内部邮箱地址在内的所有的gmail邮箱地址。</p><p style=""><br/></p><p style="">Oren是从Gmail授权认证系统中发现这一bug的，它是用来验证其他人是否与你正在使用的账户相同。</p><p style=""><br/></p><p style="">这一漏洞实际存在在于Google系统发送的邮件中的URL，这一邮件是用来验证其他邮箱地址访问权限的。</p><p style=""><br/></p><p><img data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR3ib2p6P8XTuO2hwtbm6kEa56IfskI027LNxicmOhI0m6yib5LkqCJh4jSsbG5jU8ag4yLFaE7B6N420Q/0" src="../Images/d0725999c4ff5cd73329b8857551f3fc.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR3ib2p6P8XTuO2hwtbm6kEa56IfskI027LNxicmOhI0m6yib5LkqCJh4jSsbG5jU8ag4yLFaE7B6N420Q/0"/></p><p><br/></p><p style="">如上图邮件所示，在这封邮件中有两个URL，一个是接受邀请，一个是拒绝。Oren描述了上述的URL：让我们进一步仔细研究一下这个请求的URL</p><p style=""><br/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; background-color: rgb(247, 247, 249);">https://mail.google.com/mail/mdd-f560c0c4e1-oren.hafif%40gmail.com-bbD8J0t6P6JNOUO36vY6S_pZJy4
+第一：https://mail.google.com/mail/ ，只是正常映射到Gmail应用程序；
+第二：/mdd，是映射到邮件认证拒绝的servlet；
+第三：f560c0c4e1代表什么呢？它看起来像一个token。在这里有一些希望，因为这段链接是如此之短，并且让它是十六进制；
+第四：oren.hafif%40gmail.com我的电子邮件地址；
+第五：bbD8J0t6P6JNOUO36vY6S_pZJy4代表什么呢？它看起来像blob代码。这通常是一个不好的信号，意味着Google的HMAC请求的URL将可以应用于暴力扫描。</pre><p style=""><br/></p><p style="">之后，Oren将一有漏洞的URL放入Brute Force Tool中：</p><p><br/></p><p><img data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR3ib2p6P8XTuO2hwtbm6kEa56CiazfM5w8ibV7hnIfZicDz4zRkPXHVsllZwM4rxjVicTrroHdehDnU2iacw/0" src="../Images/d439ff498b7ef27c6c0ede3059722994.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR3ib2p6P8XTuO2hwtbm6kEa56CiazfM5w8ibV7hnIfZicDz4zRkPXHVsllZwM4rxjVicTrroHdehDnU2iacw/0"/></p><p><br/></p><p><span style="">他在URL to FUZZ填入/mail/mdd-{dir}-support@google.com-O6xUbWXP7hm8GaZGUetuk5f9vlU。之后，由于他的未授权请求次数太多，Google限制了他的访问，所以他尝试通过各种手段来旁路连接Google服务器。当然对于完整的演示，你可以参考</span>他的博客<span style="">或者观看下面视频(点击下方阅读原文观看)。</span></p><p><br/></p><p><span style="">当然在此期间，Google已经修复了这一漏洞并奖励Oren 500美元。</span><br/></p><p><span style=""><br/></span></p><p style=""><span style="margin: 0px; padding: 0px; font-family: 宋体;"/>[原文地址 译者选译]</p><p style="">http://hackersnewsbulletin.com/2014/06/israeli-hacked-found-flaw-gmail-exposed-email-address-every-user.html</p>
+        
+</body>
+</html>

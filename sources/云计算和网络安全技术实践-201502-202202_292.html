@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>介绍一款Web渗透测试演练系统APP：OWASP Mutillidae II</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>介绍一款Web渗透测试演练系统APP：OWASP Mutillidae II</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650743768&amp;idx=1&amp;sn=54e70bc91905267665ea30af19ccf904&amp;chksm=871482d8b0630bce7e6a536a42c507ca33f84a108d80b8a5f1e6c85147b32014930293594a8c&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650743768&amp;idx=1&amp;sn=54e70bc91905267665ea30af19ccf904&amp;chksm=871482d8b0630bce7e6a536a42c507ca33f84a108d80b8a5f1e6c85147b32014930293594a8c&amp;scene=27#wechat_redirect</a></blockquote><p>本周看到一款Web渗透测试演练系统APP（OWASP Mutillidae II）不错，在ubuntu系统里实践了一下安装过程，</p><p>首先安装数据库，</p><p>apt-get install mysql-server，</p><p>然后安装应用环境，</p><p>apt-get install unzip apache2 php5 php5-mysql php-pear，</p><p>下载OWASP Mutillidae II，当前最新版本下载地址如下，</p><p><a>http://downloads.sourceforge.net/project/mutillidae/mutillidae-project/LATEST-mutillidae-2.6.37.zip?r=&amp;ts=1463211298&amp;use_mirror=nchc</a>，</p><p>把下载到的LATEST-mutillidae-2.6.37.zip上传到/var/www/html目录并解压，</p><p>编辑配置文件，把数据库密码配上，</p><p>vim /var/www/html/mutillidae/classes/MySQLHandler.php，</p><p>static public $mMySQLDatabasePassword = "password";</p><p>首次访问，需要重置数据库，</p><p><img data-src="http://mmbiz.qpic.cn/mmbiz/F6TniceRacJ24eK1IBjNDr9LlpsHYStsxHm3jG9GT9A5nyvrvOdvwkP7wOy3qia1xfaG6b7CGGwibWVKplHm0g39Q/0?wx_fmt=png" data-ratio="0.5089928057553957" data-type="png" data-s="300,640" data-w="" src="../Images/8955fb79e11e79b85df7c02cd177c0f2.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/F6TniceRacJ24eK1IBjNDr9LlpsHYStsxHm3jG9GT9A5nyvrvOdvwkP7wOy3qia1xfaG6b7CGGwibWVKplHm0g39Q/0?wx_fmt=png"/><br/>重置数据库后自动跳转，</p><p><img data-src="http://mmbiz.qpic.cn/mmbiz/F6TniceRacJ24eK1IBjNDr9LlpsHYStsxF2uvCdfLVY7ib3Oo1vPJucibhcs929eEFhBQlNgadvsNgf0bI5kIjuCQ/0?wx_fmt=png" data-ratio="0.6312949640287769" data-type="png" data-s="300,640" data-w="" src="../Images/ab201e46c7d8701c756f41bffbe9a9e8.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/F6TniceRacJ24eK1IBjNDr9LlpsHYStsxF2uvCdfLVY7ib3Oo1vPJucibhcs929eEFhBQlNgadvsNgf0bI5kIjuCQ/0?wx_fmt=png"/><br/>这就可以开始做Web渗透测试演练了。</p>
+        
+</body>
+</html>

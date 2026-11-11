@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>一行cmd命令开启xp和2003下的远程3389服务</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>一行cmd命令开启xp和2003下的远程3389服务</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247485383&amp;idx=1&amp;sn=9121eb2a8828ad13829fe8f8db40b7ee&amp;chksm=f9e0689cce97e18af35906cd25fafe87125935996d301699c2b0a5be2a546900c319069ebd19&amp;scene=126&amp;sessionid=1681663467#rd">http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247485383&amp;idx=1&amp;sn=9121eb2a8828ad13829fe8f8db40b7ee&amp;chksm=f9e0689cce97e18af35906cd25fafe87125935996d301699c2b0a5be2a546900c319069ebd19&amp;scene=126&amp;sessionid=1681663467#rd</a></blockquote><p><br/></p><p>开启3389：</p><p>REG ADD HKLM\SYSTEM\CurrentControlSet\Control\Terminal” “Server /v fDenyTSConnections /t REG_DWORD /d 00000000 /f</p><p>——————————————————<br/>reg add “HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server” /v fDenyTSConnections /t REG_DWORD /d 0 /f</p><p><br/></p><p>这2 行都试试，都可以的</p><p><br/></p><p><br/></p><p><br/></p><p>关闭3389：</p><p>reg add “HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server” /v fDenyTSConnections /t REG_DWORD /d 0 /f</p><p><br/></p>
+        
+</body>
+</html>

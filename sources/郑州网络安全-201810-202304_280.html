@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>黑客通过Azure静态页面来冒充微软</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>黑客通过Azure静态页面来冒充微软</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247484446&amp;idx=1&amp;sn=0225a811a63c0ecb6a2318e51f506a11&amp;chksm=fa76e5e0cd016cf62526361733ae7aed4ea2173dc26e9e9d0af9e41eac775b07b98a36eb2f46&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247484446&amp;idx=1&amp;sn=0225a811a63c0ecb6a2318e51f506a11&amp;chksm=fa76e5e0cd016cf62526361733ae7aed4ea2173dc26e9e9d0af9e41eac775b07b98a36eb2f46&amp;scene=27#wechat_redirect</a></blockquote><blockquote><p><strong>据悉，钓鱼攻击正在滥用微软Azure静态Web应用服务，窃取微软、Office 365、Outlook和OneDrive的凭证。</strong></p></blockquote><p><br/></p><p><img class="rich_pages wxw-img" data-ratio="0.3333333333333333" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJk8VfEmCXvZDhIlcr5bCa12CFC9icnbI2dLlhUIpXsxZfpic6cwLwwSaJ5Y7AhrnepEMsf2kkXkmskg/640?wx_fmt=jpeg" data-type="jpeg" data-w="1080" height="360" width="1080" src="../Images/8c9e27860b683b43de40f799ea5ef19f.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJk8VfEmCXvZDhIlcr5bCa12CFC9icnbI2dLlhUIpXsxZfpic6cwLwwSaJ5Y7AhrnepEMsf2kkXkmskg/640?wx_fmt=jpeg"/></p><p> </p><p>Azure静态Web应用是微软的一项服务，可从代码存储库自动生成完整的堆栈Web应用，并将其部署到Azure。它允许开发人员使用自定义域名来标记web应用程序，并为HTML、CSS、JavaScript和图像等静态内容提供web托管。</p><p><br/></p><p>安全研究人员MalwareHunterTeam发现，威胁行为者注意到，可以很容易地将自定义域名标记web应用程序和web托管功能用于静态登录的钓鱼网页，并且正在积极利用微软的服务来攻击微软、Office 365、Outlook和OneDrive的用户。</p><p><br/></p><p>这些网络钓鱼活动中使用的一些登录页面看起来几乎与微软的官方页面一模一样。</p><p><br/></p><p>使用Azure静态Web应用平台来针对微软用户是一个很好的策略。因为拥有*.1.azurestaticapps.net通配符TLS证书，每个登录页面都会自动在地址栏中获得安全锁。</p><p><br/></p><p>在看到微软Azure TLS Issuing CA 05颁发给*.1.azurestaticapps.net的证书后，潜在的受害者会相信这是微软的官方登录页面。合法的微软TLS证书给此类登录页面遮上了虚假的安全面纱，也成为了针对Rackspace、AOL、雅虎等其他平台用户的有用的工具。</p><p><br/></p><p><img class="rich_pages wxw-img" data-ratio="1.3164556962025316" data-src="https://mmbiz.qpic.cn/mmbiz_png/3RdEEWyTHJk8VfEmCXvZDhIlcr5bCa12edEOkXxhXVrsd7NOLiaxTQ9icJsuYQlrCQJ5CYLibT0FSNq3g4ibIcjQkg/640?wx_fmt=png" data-type="png" data-w="474" height="624" width="474" src="../Images/321527adcb02a8442df41bcdf6e1c6a6.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/3RdEEWyTHJk8VfEmCXvZDhIlcr5bCa12edEOkXxhXVrsd7NOLiaxTQ9icJsuYQlrCQJ5CYLibT0FSNq3g4ibIcjQkg/640?wx_fmt=png"/></p><p><br/></p><p> </p><p>建议在登录页面中填写账户时，仔细检查URL，以此来检测您是否被网络钓鱼攻击针对。但是，滥用Azure静态Web应用的网络钓鱼活动使这个建议变得几乎毫无价值，因为许多用户会被azurestaticapps.net子域和TLS证书所欺骗。</p><p><br/></p><p>据悉，微软的服务并不是第一次被用来进行网络钓鱼攻击，其Azure Blob存储提供的*.blob.core.windows.net通配符证书也曾被用来针对Office 365和Outlook的用户。</p><p><br/></p>
+        
+</body>
+</html>

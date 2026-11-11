@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Log4Shell 遗产？大多数关键漏洞的修补时间直线下降报告</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Log4Shell 遗产？大多数关键漏洞的修补时间直线下降报告</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485544&amp;idx=1&amp;sn=96e4028c9674bf353078f85ad387e513&amp;chksm=fa76e996cd0160808736872a14d3f9866fb06e4c5f9133c52d7db1e0a9863e2b206701d1e254&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485544&amp;idx=1&amp;sn=96e4028c9674bf353078f85ad387e513&amp;chksm=fa76e996cd0160808736872a14d3f9866fb06e4c5f9133c52d7db1e0a9863e2b206701d1e254&amp;scene=27#wechat_redirect</a></blockquote><blockquote><p>一份报告发现，对受标志性Log4Shell漏洞影响的系统进行修补的热潮恰逢最关键缺陷的修补率得到更广泛的提高。几乎无处不在的开源Java日志记录实用程序Apache Log4j(CVE-2021-44228)中的远程代码执行 (RCE) 缺陷在2021年12月出现后导致整个生态系统中的组织争先恐后地修复应用程序或修补系统。八个月过去了，2022年Trustwave SpiderLabs遥测报告得出的结论是，组织“终于明白了拥有稳固安全态势的必要性”。</p></blockquote><p style="margin-bottom: 0em;"><img class="rich_pages wxw-img" data-ratio="0.5625" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJlB62JFLib9vJTZibVdcrZunCV4PnYwt4yE8AibDzSP3jyGtHh2cvuahyb9e9dRhicJ6myHVciaJ3fCFGg/640?wx_fmt=jpeg" data-type="jpeg" data-w="1200" height="675" width="1200" src="../Images/e7c967970b77bdcb34c8e350ef824cb4.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJlB62JFLib9vJTZibVdcrZunCV4PnYwt4yE8AibDzSP3jyGtHh2cvuahyb9e9dRhicJ6myHVciaJ3fCFGg/640?wx_fmt=jpeg"/></p><p><br/></p><p>Trustwave SpiderLabs研究人员进行的Shodan搜索显示，与2021年的同等漏洞相比，易受2022年最引人注目漏洞影响的受影响实例的比例急剧下降。</p><p>“漏洞披露到补丁的时间已经减少，”Trustwave研究和安全扫描主管Alex Rothacker说。</p><p>他还注意到，安全漏洞的“知名度”与补丁速度和补丁速度有关，Log4j和Spring Framework实例的得分超过了Rothacker所说的F5的BIG-IP和Atlassian的Confluence在这些方面的低调问题。</p><p>例如，在漏洞利用浮出水面六个月后，运行Log4j的最受欢迎产品的405,993个实例中只有0.36%容易受到第一个Log4Shell补丁（而不是随后的绕过）的攻击。</p><p>就“Spring4Shell”(CVE-2022-22965)披露三个月后，运行另一个流行的开源Java组件Spring Framework的未修补版本的 452520个实例中的等效数字为0.075% 。</p><p>在F5的BIG-IP(CVE-2022-1388)和Atlassian Confluence服务器和数据中心(CVE-2022-26134)中易受RCE攻击的实例分别为1719个和7074个主机的2.73%和7074个主机的4.44% - 尽管披露要多得多最近在这些情况下。</p><p>相比之下，Trustwave的2021年报告发现，在补丁发布数周或数月后，超过50%的实例易受三个具有类似影响的漏洞中的每一个的影响。</p><p>“Log4Shell似乎已成为许多组织的行动号召，” Rothacker说。“我们从客户那里收到的关于Log4Shell的问题和补救帮助请求的数量是前所未有的。”</p><p>报告发现，就发布的CVE数量和关键的比例而言，今年有望轻松超越2021年。</p><p>例如，Rothacker表示，8月已经超过了2022年和2021年的所有前几个月，截至8月26日发布了3779个CVE，而7月和6月也分别看到了2226和2377个的高数字。</p><p>关键漏洞占2022年CVE的18%，高于2021年的13%。</p><p>该报告还发现，一些受影响的实例仍然容易受到可追溯到2016年的CVE的攻击，其中最普遍的错误是CVE-2017-15906，这是加密远程登录工具OpenSSH中的一个问题。</p><p>尽管默认情况下分布在大多数Linux发行版中，但该错误的中等严重性意味着“很可能许多组织并不认为它是一个重大问题，并且正在降低修复它的优先级”，Rothacker说。</p><p>“其他列出的漏洞要么是针对不太常见的部署软件，例如CVE-2018-15199，要么确实有其他缓解措施或限制，例如CVE-2018-1312，这使得它们不太可能被利用，”他补充说。</p><p>2022年CWE排名前三的分类是跨站点脚本XSS、SQL注入和越界写入错误。</p><p><br/></p>
+        
+</body>
+</html>

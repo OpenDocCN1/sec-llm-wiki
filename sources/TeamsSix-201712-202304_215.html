@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Python3学习笔记 | 二十、Python的函数－参数</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Python3学习笔记 | 二十、Python的函数－参数</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI5Mzk5NTIwMg==&amp;mid=2247484976&amp;idx=2&amp;sn=a88583c0ad3d9af181eb6e569a6be9fe&amp;chksm=ec68d19ddb1f588b853fb5131f7fbccdc929d045329daafb1514557d50eaeb04b17c99e1d579&amp;scene=126&amp;sessionid=1681656197#rd">http://mp.weixin.qq.com/s?__biz=MzI5Mzk5NTIwMg==&amp;mid=2247484976&amp;idx=2&amp;sn=a88583c0ad3d9af181eb6e569a6be9fe&amp;chksm=ec68d19ddb1f588b853fb5131f7fbccdc929d045329daafb1514557d50eaeb04b17c99e1d579&amp;scene=126&amp;sessionid=1681656197#rd</a></blockquote><p style="text-align: center;"><span style="color: rgb(136, 136, 136);font-size: 16px;text-align: center;">部分设备阅读本文会存在代码错乱的情况，可点击阅读原文链接到博客中进行查看</span></p><h1 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 1.6em;border-bottom: 1px solid rgb(221, 221, 221);text-align: left;">一、参数简介</h1><p style="margin: 0px 0px 1.2em !important;text-align: left;"><span style="font-size: 16px;"><strong>参数：</strong><br/>argement 或parameter，对象作为输入值传递给函数的方式。<br/><strong>参数传递时的简要关键点：</strong><br/>• 参数的传递是通过自动将对象赋值给本地变量名来实现。<br/>• 在函数内部的参数名的赋值不会影响调用着。<br/>• 改变函数的可变对象参数的值也许会对调用者有影响。<br/><strong>传递参数为可变对象与不可变对象时：</strong><br/>不可变对象“通过值”进行传递 － 数值、字符串等<br/>可变对象是通过“指针”进行传递 － 列表、字典等</span></p><h1 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 1.6em;border-bottom: 1px solid rgb(221, 221, 221);text-align: left;">二、参数传递</h1><pre style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin: 1.2em 0px;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin: 0px 0.15em;background-color: rgb(248, 248, 248);white-space: pre;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;text-align: left;">&gt;&gt;&gt; def setnum(x):
+...     x = 10
+...
+&gt;&gt;&gt; def setlist(y):
+...     y.append(3)
+...
+&gt;&gt;&gt; a = 1
+&gt;&gt;&gt; b = [1,2]
+&gt;&gt;&gt; setnum(a)
+&gt;&gt;&gt; setlist(b)
+&gt;&gt;&gt; a
+1
+&gt;&gt;&gt; b
+[1, 2, 3]</code></pre><p style="text-align: left;"><img class="" data-ratio="0.9017467248908297" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/lvTqB4HLwG0WuF83JpMQf4amh8VEcC1Boel5xIuI4ArO9IvTv1RKTfmn5MNUZh2zvcQPXrXbnNVFpg3zNm5yibA/640?wx_fmt=png" data-type="png" data-w="916" style="" src="../Images/a1ccaee8b148dcbfe623b356f9fe314a.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/lvTqB4HLwG0WuF83JpMQf4amh8VEcC1Boel5xIuI4ArO9IvTv1RKTfmn5MNUZh2zvcQPXrXbnNVFpg3zNm5yibA/640?wx_fmt=png"/></p><h3 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 1.3em;text-align: left;">避免可变参数的修改</h3><pre style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin: 1.2em 0px;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin: 0px 0.15em;background-color: rgb(248, 248, 248);white-space: pre;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;text-align: left;">&gt;&gt;&gt; def setlist(y):
+...     y.append(3)
+...
+&gt;&gt;&gt; b = [1,2]
+&gt;&gt;&gt; setlist(b[:])
+&gt;&gt;&gt; b
+[1, 2]
+&gt;&gt;&gt; setlist(b)
+&gt;&gt;&gt; b
+[1, 2, 3]</code></pre><p style="margin: 0px 0px 1.2em !important;text-align: left;"><span style="font-size: 16px;">在这里，b[:]方式会新生成一个列表对象，因此函数里的y与setlist(b[:]) 是两个不同的对象。</span></p><h3 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 1.3em;text-align: left;">输出对象方法</h3><pre style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin: 1.2em 0px;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin: 0px 0.15em;background-color: rgb(248, 248, 248);white-space: pre;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;text-align: left;">&gt;&gt;&gt; def sernumandlist(x,y):
+...     x = 9
+...     y.append(3)
+...     return x,y
+...
+&gt;&gt;&gt; a = 1
+&gt;&gt;&gt; b = [1,2]
+&gt;&gt;&gt; a,b = sernumandlist(a,b)
+&gt;&gt;&gt; a,b
+(9, [1, 2, 3])</code></pre><p style="margin: 0px 0px 1.2em !important;text-align: left;"><span style="font-size: 16px;">可以使用return来进行参数的输出。</span></p><h1 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 1.6em;border-bottom: 1px solid rgb(221, 221, 221);text-align: left;">三、特定的参数匹配模型</h1><h1 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 1.6em;border-bottom: 1px solid rgb(221, 221, 221);text-align: left;">1、基础知识</h1><p style="margin: 0px 0px 1.2em !important;text-align: left;"><span style="font-size: 16px;">参数传递是有特定匹配规则的：<br/>• 位置：从左到右<br/>• 关键字参数：通过参数名进行匹配<br/>• 默认参数：为没有传入值的参数定义参数值<br/>• 可变参数：收集任意多基于位置或关键字的参数 － 参数以或**开头<br/>• 可变参数解包：传递任意多的基于位置或关键字的参数 － 传递值以或**开头<br/>• Keyword-only参数：参数必须按照名称传递（Python3.x）<br/>注：传递参数时，请注意顺序: 非关键字参数-&gt;关键字参数-&gt;字典参数</span></p><pre style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin: 1.2em 0px;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin: 0px 0.15em;background-color: rgb(248, 248, 248);white-space: pre;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;text-align: left;">&gt;&gt;&gt; def myfunc(a,b,c):
+...     print(a+b+c)
+...
+&gt;&gt;&gt; myfunc(1,b = 3,4)
+  File "&lt;stdin&gt;", line 1
+SyntaxError: positional argument follows keyword argument
+&gt;&gt;&gt; myfunc(1,b = 3,c = 4)
+8</code></pre><h1 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 1.6em;border-bottom: 1px solid rgb(221, 221, 221);text-align: left;">2、匹配语法</h1><p style="margin: 0px 0px 1.2em !important;text-align: left;"><span style="font-size: 16px;">func(value) - 调用着常规参数：通过位置进行匹配<br/>func(name=value) - 调用着关键字参数：通过变量名匹配<br/>func(sequence) - 调用着迭代传递所有元素<br/>func(**dict) - 调用着以’键’为关键字，’值‘为相应值的方式传递字典里所有元素<br/>def func(name) - 函数常规参数：通过位置或变量名进行匹配<br/>def func(name=value) - 函数默认参数值：如果没有在调用中传递的话<br/>def func(name) - 函数匹配并收集（在元祖中）所有包含位置的参数<br/>def func(*name) - 函数匹配并收集（在字典中）所有包含关键字的参数<br/>def func(arg, name) - 函数参数必须在调用中按照关键字传递<br/>def func(*,name=value) - 函数参数必须在调用中按照关键字传递</span></p><h1 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 1.6em;border-bottom: 1px solid rgb(221, 221, 221);text-align: left;">3、常规参数函数</h1><p style="margin: 0px 0px 1.2em !important;text-align: left;"><span style="font-size: 16px;">常规参数，就是最简单用法。函数：</span></p><pre style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin: 1.2em 0px;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin: 0px 0.15em;background-color: rgb(248, 248, 248);white-space: pre;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;text-align: left;">&gt;&gt;&gt; def myfunc(arg1,arg2,arg3):
+...     print(arg1,arg2,arg3)
+...</code></pre><p style="margin: 0px 0px 1.2em !important;text-align: left;"><span style="font-size: 16px;">当我们调用常规参数函数时，可以使用常规参数调用、关键字参数调用、迭代调用与字典调用。</span></p><pre style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin: 1.2em 0px;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin: 0px 0.15em;background-color: rgb(248, 248, 248);white-space: pre;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;text-align: left;">&gt;&gt;&gt; myfunc(1,2,3)
+1 2 3
+&gt;&gt;&gt; myfunc('1st arg',arg3 = '3rd arg',arg2 = '2nd arg2')
+1st arg 2nd arg2 3rd arg
+&gt;&gt;&gt; myfunc(*['1st','2nd','3rd'])
+1st 2nd 3rd
+&gt;&gt;&gt; myfunc(**{'arg2':'second','arg3':'thrid','arg1':'first'})
+first second thrid</code></pre><h1 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 1.6em;border-bottom: 1px solid rgb(221, 221, 221);text-align: left;">4、默认参数值函数</h1><p style="margin: 0px 0px 1.2em !important;text-align: left;"><span style="font-size: 16px;">默认参数值，就是当我们调用函数时，没有传递相应参数值的时候，避免报错。</span></p><pre style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin: 1.2em 0px;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin: 0px 0.15em;background-color: rgb(248, 248, 248);white-space: pre;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;text-align: left;">&gt;&gt;&gt; def myfunc(arg1,arg2,arg3 = 'thrid'):
+...     print(arg1,arg2,arg3)
+...
+&gt;&gt;&gt; myfunc('first','second')
+first second thrid
+&gt;&gt;&gt; myfunc(*['first','second'])
+first second thrid</code></pre><h1 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 1.6em;border-bottom: 1px solid rgb(221, 221, 221);text-align: left;">5、可变参数函数</h1><p style="margin: 0px 0px 1.2em !important;text-align: left;"><span style="font-size: 16px;">可变参数，可以传递任意个参数（包含0个）*args方式是把所有常规参数调用与迭代调用放进一个元组里：</span></p><pre style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin: 1.2em 0px;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin: 0px 0.15em;background-color: rgb(248, 248, 248);white-space: pre;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;text-align: left;">&gt;&gt;&gt; def myfunc(*arg):
+...     result = ''.join(arg)
+...     print(result)
+...
+&gt;&gt;&gt; myfunc('first ','second ','thrid ')
+first second thrid
+&gt;&gt;&gt; myfunc('first ','second ','thrid ','forth')
+first second thrid forth
+&gt;&gt;&gt; myfunc('first ',*['second ','thrid ','forth'])
+first second thrid forth</code></pre><p style="margin: 0px 0px 1.2em !important;text-align: left;"><span style="font-size: 16px;">**args 方式是把任意个关键字参数与字典调用方式存放在变量名为args的字典里。</span></p><pre style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin: 1.2em 0px;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin: 0px 0.15em;background-color: rgb(248, 248, 248);white-space: pre;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;text-align: left;">&gt;&gt;&gt; def myfunc(**arg):
+...     print(arg)
+...
+&gt;&gt;&gt; myfunc(myname = 'Dora',myjob = 'IT')
+{'myname': 'Dora', 'myjob': 'IT'}
+&gt;&gt;&gt; myfunc(myname = 'Dora',myjob = 'IT',**{'myage':'Thrid'})
+{'myname': 'Dora', 'myjob': 'IT', 'myage': 'Thrid'}</code></pre><h1 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 1.6em;border-bottom: 1px solid rgb(221, 221, 221);text-align: left;">6、必须使用关键字传递</h1><p style="margin: 0px 0px 1.2em !important;text-align: left;"><span style="font-size: 16px;">在Python3.0 开始支持必须使用关键字传递的参数设定。函数里的参数：<br/>常规 － 有／无默认值<br/>args － 存放在列表<br/>**args － 存放在字典。<br/>在Python2.x里，参数顺序必须是 0个或多个常规参数 ＋ 0个或1个args ＋0个或1个args。<br/>在Python3.0开始，在*args与args中间可以加入一个“必须使用关键字传递的参数”。<br/>使用方法为是 0个或多个常规参数 ＋ 或args + “必须使用关键字传递的参数”＋ 0个或1个**args。<br/>在不使用“必须使用关键字传递的参数”时，顺序与Python2.x相同。</span></p><pre style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin: 1.2em 0px;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin: 0px 0.15em;background-color: rgb(248, 248, 248);white-space: pre;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;text-align: left;">&gt;&gt;&gt; def myfunc(*,b):
+...     print(b)
+...
+&gt;&gt;&gt; myfunc(b = 3)
+3
+&gt;&gt;&gt; myfunc(**{'b':3})
+3
+&gt;&gt;&gt; def myfunc(*,b,**c):
+...     print(b)
+...     print(c)
+...
+&gt;&gt;&gt; myfunc(**{'b':3})
+3
+{}
+&gt;&gt;&gt; myfunc(**{'b':3,'c':4})
+3
+{'c': 4}
+&gt;&gt;&gt; myfunc(**{'b':3,'c':4,'d':5})
+3
+{'c': 4, 'd': 5}</code></pre><h1 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 1.6em;border-bottom: 1px solid rgb(221, 221, 221);text-align: left;">四、特殊参数的传递</h1><p style="margin: 0px 0px 1.2em !important;text-align: left;"><span style="font-size: 16px;">在Python里，因为函数也是对象，函数名也是变量名，因此函数本身也可以传递。写计算最大、最小值的函数时，一般用法：</span></p><pre style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin: 1.2em 0px;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin: 0px 0.15em;background-color: rgb(248, 248, 248);white-space: pre;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;text-align: left;">&gt;&gt;&gt; def min1(*arg):
+...     reg = arg[0]
+...     for i in arg[1:]:
+...             if i &lt; reg:
+...                     reg = i
+...     print(reg)
+...
+&gt;&gt;&gt; def min2(*arg):
+...     tmp = sorted(arg)
+...     print(tmp[0])
+...
+&gt;&gt;&gt; min1(2,1,3,-1,-5)
+-5
+&gt;&gt;&gt; min2(2,1,3,-1,-5)
+-5</code></pre><p style="margin: 0px 0px 1.2em !important;text-align: left;"><span style="font-size: 16px;">之前方法要是需要计算最大值，需要再写一个函数。我们有没有特殊方法呢？</span></p><pre style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin: 1.2em 0px;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin: 0px 0.15em;background-color: rgb(248, 248, 248);white-space: pre;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;text-align: left;">&gt;&gt;&gt; def lessthan(x,y):return x &lt; y
+...
+&gt;&gt;&gt; def greaterthan(x,y):return x &gt; y
+...
+&gt;&gt;&gt; def minmax(test,*args):
+...     res = args[0]
+...     for i in args[1:]:
+...             if test(i,res):
+...                     res = i
+...     print(res)
+...
+&gt;&gt;&gt; minmax(lessthan,2,4,1,-1)
+-1
+&gt;&gt;&gt; minmax(greaterthan,2,4,1,-1)
+4</code></pre><h1 style="margin: 1.3em 0px 1em;padding: 0px;font-weight: bold;font-size: 1.6em;border-bottom: 1px solid rgb(221, 221, 221);text-align: left;">五、模拟Python3.x的print函数</h1><p style="margin: 0px 0px 1.2em !important;text-align: left;"><span style="font-size: 16px;">我们尝试模仿Python3.x里的print函数。Python3.x的document里可以看到print函数的参数：<br/>print(*objects, sep=’ ‘, end=’\n’, file=sys.stdout, flush=False)，在这里，我们忽略flush，这个与写入到文件时有用，以下是在Python2中进行Python3.x中的print函数模拟。</span></p><pre style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin: 1.2em 0px;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin: 0px 0.15em;background-color: rgb(248, 248, 248);white-space: pre;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;text-align: left;">&gt;&gt;&gt; import sys  #python2.7环境
+&gt;&gt;&gt; def print3(*args,**kargs):
+...     sep = kargs.get('sep','')
+...     end = kargs.get('end','\n')
+...     file = kargs.get('file',sys.stdout)
+...     output = sep.join(args)
+...     output += end
+...     file.write(output)
+...</code></pre><p style="margin: 0px 0px 1.2em !important;text-align: left;"><span style="font-size: 16px;">下面进行测试</span></p><pre style="font-family: Consolas, Inconsolata, Courier, monospace;font-size: 1em;line-height: 1.2em;margin: 1.2em 0px;"><code style="font-size: 0.85em;font-family: Consolas, Inconsolata, Courier, monospace;margin: 0px 0.15em;background-color: rgb(248, 248, 248);white-space: pre;overflow: auto;border-radius: 3px;border-width: 1px;border-style: solid;border-color: rgb(204, 204, 204);padding: 0.5em 0.7em;display: block !important;text-align: left;">&gt;&gt;&gt; print('a','b')
+('a', 'b')
+&gt;&gt;&gt; print3('a','b')
+ab
+&gt;&gt;&gt; print('a',end = ' ')
+  File "&lt;stdin&gt;", line 1
+    print('a',end = ' ')
+                  ^
+SyntaxError: invalid syntax
+&gt;&gt;&gt; print3('a',end = ' ')
+a &gt;&gt;&gt;</code></pre><hr style="border-style: solid;border-width: 1px 0 0;border-color: rgba(0,0,0,0.1);-webkit-transform-origin: 0 0;-webkit-transform: scale(1, 0.5);transform-origin: 0 0;transform: scale(1, 0.5);"/><p><br/></p><p style="text-align: center;"><img class="" data-copyright="0" data-ratio="0.5625" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/lvTqB4HLwG0qsz6icqBCI0JTyFcQxdEwLVegqic5JibFtlwIDy4WZaVtnuwcnZkzFEfUiajgvINj5Y1BvR8bn8L5uw/640?wx_fmt=png" data-type="png" data-w="1920" style="" src="../Images/1f35956fbe0f6122e92616f885b7240a.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/lvTqB4HLwG0qsz6icqBCI0JTyFcQxdEwLVegqic5JibFtlwIDy4WZaVtnuwcnZkzFEfUiajgvINj5Y1BvR8bn8L5uw/640?wx_fmt=png"/></p><p><br/></p>
+        
+</body>
+</html>

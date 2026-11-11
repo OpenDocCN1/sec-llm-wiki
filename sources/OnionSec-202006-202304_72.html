@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>针对安全研究人员的攻击活动</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>针对安全研究人员的攻击活动</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyMTUwMzI3Ng==&amp;mid=2247484069&amp;idx=1&amp;sn=c1af3f7736797567cac31ec30a51a713&amp;chksm=f9db55e6ceacdcf00e654bdef058fc12311b6a4602cfee58a86138fd7f3c483ae0a8ae23b623&amp;scene=126&amp;sessionid=1681654999#rd">http://mp.weixin.qq.com/s?__biz=MzUyMTUwMzI3Ng==&amp;mid=2247484069&amp;idx=1&amp;sn=c1af3f7736797567cac31ec30a51a713&amp;chksm=f9db55e6ceacdcf00e654bdef058fc12311b6a4602cfee58a86138fd7f3c483ae0a8ae23b623&amp;scene=126&amp;sessionid=1681654999#rd</a></blockquote><p><strong>记录</strong></p><p><br/></p><p>今天阅读了谷歌威胁分析小组发布的博客文章，大致写了他们几个月以来追踪到的一个高级威胁活动，已经被归因到国家级别（具体国家我也不好写下来）。不过这个高级威胁活动的目标有些不同以往，这次活动针对是在不同的公司与组织中从事漏洞研究与开发的安全研究人员。</p><p><br/></p><p>按照常识来看，安全研究人员自身往往拥有一些漏洞相关的敏感信息，而漏洞在网络安全领域实质是一种数字武器，确实符合了此次活动的高价值目标的要求。且攻击者由于需要针对安全研究人员进行攻击，不可避免需要采用高级的技巧。</p><p><br/></p><p>首先为了与目标拉进距离，第一步他们采用了社会工程学的模式，这些参与者已使用多个平台与潜在目标进行通信，包括Twitter，LinkedIn，Telegram，Discord，Keybase和电子邮件。会在热门的社交平台上建立一些账号发布相关领域信息（漏洞开发与研究文章或者演示视频）建立自身可信度，慢慢与安全研究人员进行互动，来最终建立信任的关系。</p><p><br/></p><p>与不知情的安全研究人员进行私下联系，是否希望在漏洞研究与分析方面进行合作，之后通过提供给受害者VS项目，受害者开始该项目后，会执行攻击者释放的恶意dll文件，此时便中招了。除了这种利用技巧外，<span style="color: unset;font-family: unset;font-size: unset;">最后会使用个人资料发布带有0day漏洞利用的博客超链接（</span>在进行这些访问时，受害者的系统正在运行全面修补的最新Windows 10和Chrome浏览器版本<span style="color: unset;font-family: unset;font-size: unset;">），引诱不知情相关的安全研究人员点击并被漏洞利用。</span></p><p><span style="color: unset;font-family: unset;font-size: unset;"><br/></span></p><p><span style="color: unset;font-family: unset;font-size: unset;"><br/></span></p><p><br/></p><p><br/></p><p><strong>启发</strong></p><p><strong><br/></strong></p><p>网络世界里，不要相信任何人。</p><p><br/></p><p>不要随便点击别人的链接，保不齐会有概率是0day，不管自身是不是高价值目标，也会误伤。</p><p><br/></p><p><br/></p><p>New campaign targeting security researchers</p><p>https://blog.google/threat-analysis-group/new-campaign-targeting-security-researchers/</p><p><br/></p>
+        
+</body>
+</html>

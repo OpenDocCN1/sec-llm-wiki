@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>[初级]Java中的switch对整型、字符型、字符串的具体实现细节</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>[初级]Java中的switch对整型、字符型、字符串的具体实现细节</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI3NzE0NjcwMg==&amp;mid=402369369&amp;idx=2&amp;sn=770bb2a754eb3db7f9206137300900f5&amp;chksm=7965b6784e123f6ebfe4d8bb3bf52eb264be78b6803de4a45e2a41723f2e54dbb13dad2b5d4a&amp;scene=126&amp;sessionid=1681657903#rd">http://mp.weixin.qq.com/s?__biz=MzI3NzE0NjcwMg==&amp;mid=402369369&amp;idx=2&amp;sn=770bb2a754eb3db7f9206137300900f5&amp;chksm=7965b6784e123f6ebfe4d8bb3bf52eb264be78b6803de4a45e2a41723f2e54dbb13dad2b5d4a&amp;scene=126&amp;sessionid=1681657903#rd</a></blockquote><p style="-webkit-print-color-adjust: exact; margin-bottom: 15px; font-family: Helvetica, arial, sans-serif; font-size: 14px; line-height: 22px; white-space: normal; widows: auto; background-color: rgb(255, 255, 255);">Java 7中，switch的参数可以是String类型了，这对我们来说是一个很方便的改进。到目前为止switch支持这样几种数据类型：<code style="-webkit-print-color-adjust: exact; margin-right: 2px; margin-left: 2px; padding-right: 5px; padding-left: 5px; white-space: nowrap; border: 1px solid rgb(234, 234, 234); border-radius: 3px; background-color: rgb(248, 248, 248);">byte</code><code style="-webkit-print-color-adjust: exact; margin-right: 2px; margin-left: 2px; padding-right: 5px; padding-left: 5px; white-space: nowrap; border: 1px solid rgb(234, 234, 234); border-radius: 3px; background-color: rgb(248, 248, 248);">short</code> <code style="-webkit-print-color-adjust: exact; margin-right: 2px; margin-left: 2px; padding-right: 5px; padding-left: 5px; white-space: nowrap; border: 1px solid rgb(234, 234, 234); border-radius: 3px; background-color: rgb(248, 248, 248);">int</code> <code style="-webkit-print-color-adjust: exact; margin-right: 2px; margin-left: 2px; padding-right: 5px; padding-left: 5px; white-space: nowrap; border: 1px solid rgb(234, 234, 234); border-radius: 3px; background-color: rgb(248, 248, 248);">char</code> <code style="-webkit-print-color-adjust: exact; margin-right: 2px; margin-left: 2px; padding-right: 5px; padding-left: 5px; white-space: nowrap; border: 1px solid rgb(234, 234, 234); border-radius: 3px; background-color: rgb(248, 248, 248);">String</code> 。但是，作为一个程序员我们不仅要知道他有多么好用，还要知道它是如何实现的，witch对整型的支持是怎么实现的呢？对字符型是怎么实现的呢？String类型呢？有一点Java开发经验的人这个时候都会猜测switch对String的支持是使用equals()方法和hashcode()方法。那么到底是不是这两个方法呢？接下来我们就看一下，switch到底是如何实现的。</p><h3 style=" -webkit-print-color-adjust: exact; margin-top: 20px; margin-bottom: 10px; font-weight: bold; -webkit-font-smoothing: antialiased; cursor: text;  font-size: 18px; font-family: Helvetica, arial, sans-serif; white-space: normal; widows: auto; background-color: rgb(255, 255, 255); ">一、switch对整型支持的实现</h3><p style="-webkit-print-color-adjust: exact; margin-top: 15px; margin-bottom: 15px; font-family: Helvetica, arial, sans-serif; font-size: 14px; line-height: 22px; white-space: normal; widows: auto; background-color: rgb(255, 255, 255);">下面是一段很简单的Java代码，定义一个int型变量a，然后使用switch语句进行判断。执行这段代码输出内容为5，那么我们将下面这段代码反编译，看看他到底是怎么实现的。</p><pre style="-webkit-print-color-adjust: exact; margin-top: 15px; margin-bottom: 15px; border: 1px solid rgb(204, 204, 204); font-size: 13px; line-height: 19px; overflow: auto; padding: 6px 10px; border-radius: 3px;"><code class="language-none" style="-webkit-print-color-adjust: exact; border: none; border-radius: 3px; background-color: transparent;">public class switchDemoInt {
+    public static void main(String[] args) {
+        int a = 5;
+        switch (a) {
+        case 1:
+            System.out.println(1);
+            break;
+        case 5:
+            System.out.println(5);
+            break;
+        default:
+            break;
+        }
+    }
+}
+//output 5</code></pre><p style="-webkit-print-color-adjust: exact; margin-top: 15px; margin-bottom: 15px; font-family: Helvetica, arial, sans-serif; font-size: 14px; line-height: 22px; white-space: normal; widows: auto; background-color: rgb(255, 255, 255);">反编译后的代码如下：</p><pre style="-webkit-print-color-adjust: exact; margin-top: 15px; margin-bottom: 15px; border: 1px solid rgb(204, 204, 204); font-size: 13px; line-height: 19px; overflow: auto; padding: 6px 10px; border-radius: 3px;"><code class="language-none" style="-webkit-print-color-adjust: exact; border: none; border-radius: 3px; background-color: transparent;">public class switchDemoInt
+{
+    public switchDemoInt()
+    {
+    }
+    public static void main(String args[])
+    {
+        int a = 5;
+        switch(a)
+        {
+        case 1: // '\001'
+            System.out.println(1);
+            break;
+
+        case 5: // '\005'
+            System.out.println(5);
+            break;
+        }
+    }
+}</code></pre><p style="-webkit-print-color-adjust: exact; margin-top: 15px; margin-bottom: 15px; font-family: Helvetica, arial, sans-serif; font-size: 14px; line-height: 22px; white-space: normal; widows: auto; background-color: rgb(255, 255, 255);">我们发现，反编译后的代码和之前的代码比较除了多了两行注释以外没有任何区别，那么我们就知道，<strong style="-webkit-print-color-adjust: exact;">switch对int的判断是直接比较整数的值</strong>。</p><h3 style=" -webkit-print-color-adjust: exact; margin-top: 20px; margin-bottom: 10px; font-weight: bold; -webkit-font-smoothing: antialiased; cursor: text;  font-size: 18px; font-family: Helvetica, arial, sans-serif; white-space: normal; widows: auto; background-color: rgb(255, 255, 255); ">二、switch对字符型支持的实现</h3><p style="-webkit-print-color-adjust: exact; margin-top: 15px; margin-bottom: 15px; font-family: Helvetica, arial, sans-serif; font-size: 14px; line-height: 22px; white-space: normal; widows: auto; background-color: rgb(255, 255, 255);">直接上代码：</p><pre style="-webkit-print-color-adjust: exact; margin-top: 15px; margin-bottom: 15px; border: 1px solid rgb(204, 204, 204); font-size: 13px; line-height: 19px; overflow: auto; padding: 6px 10px; border-radius: 3px;"><code class="language-none" style="-webkit-print-color-adjust: exact; border: none; border-radius: 3px; background-color: transparent;">public class switchDemoInt {
+    public static void main(String[] args) {
+        char a = 'b';
+        switch (a) {
+        case 'a':
+            System.out.println('a');
+            break;
+        case 'b':
+            System.out.println('b');
+            break;
+        default:
+            break;
+        }
+    }
+}</code></pre><p style="-webkit-print-color-adjust: exact; margin-top: 15px; margin-bottom: 15px; font-family: Helvetica, arial, sans-serif; font-size: 14px; line-height: 22px; white-space: normal; widows: auto; background-color: rgb(255, 255, 255);">编译后的代码如下： `public class switchDemoChar</p><pre style="-webkit-print-color-adjust: exact; margin-top: 15px; margin-bottom: 15px; border: 1px solid rgb(204, 204, 204); font-size: 13px; line-height: 19px; overflow: auto; padding: 6px 10px; border-radius: 3px;"><code class="language-none" style="-webkit-print-color-adjust: exact; border: none; border-radius: 3px; background-color: transparent;">public class switchDemoChar
+{
+    public switchDemoChar()
+    {
+    }
+    public static void main(String args[])
+    {
+        char a = 'b';
+        switch(a)
+        {
+        case 97: // 'a'
+            System.out.println('a');
+            break;
+        case 98: // 'b'
+            System.out.println('b');
+            break;
+        }
+  }
+}</code></pre><p style="-webkit-print-color-adjust: exact; margin-top: 15px; margin-bottom: 15px; font-family: Helvetica, arial, sans-serif; font-size: 14px; line-height: 22px; white-space: normal; widows: auto; background-color: rgb(255, 255, 255);">通过以上的代码作比较我们发现：对char类型进行比较的时候，实际上比较的是ascii码，编译器会把char型变量转换成对应的int型变量</p><h3 style=" -webkit-print-color-adjust: exact; margin-top: 20px; margin-bottom: 10px; font-weight: bold; -webkit-font-smoothing: antialiased; cursor: text;  font-size: 18px; font-family: Helvetica, arial, sans-serif; white-space: normal; widows: auto; background-color: rgb(255, 255, 255); ">三、switch对字符串支持的实现</h3><p style="-webkit-print-color-adjust: exact; margin-top: 15px; margin-bottom: 15px; font-family: Helvetica, arial, sans-serif; font-size: 14px; line-height: 22px; white-space: normal; widows: auto; background-color: rgb(255, 255, 255);">还是先上代码：</p><pre style="-webkit-print-color-adjust: exact; margin-top: 15px; margin-bottom: 15px; border: 1px solid rgb(204, 204, 204); font-size: 13px; line-height: 19px; overflow: auto; padding: 6px 10px; border-radius: 3px;"><code class="language-none" style="-webkit-print-color-adjust: exact; border: none; border-radius: 3px; background-color: transparent;">public class switchDemoString {
+    public static void main(String[] args) {
+        String str = "world";
+        switch (str) {
+        case "hello":
+            System.out.println("hello");
+            break;
+        case "world":
+            System.out.println("world");
+            break;
+        default:
+            break;
+        }
+    }
+}</code></pre><p style="-webkit-print-color-adjust: exact; margin-top: 15px; margin-bottom: 15px; font-family: Helvetica, arial, sans-serif; font-size: 14px; line-height: 22px; white-space: normal; widows: auto; background-color: rgb(255, 255, 255);">对代码进行反编译：</p><pre style="-webkit-print-color-adjust: exact; margin-top: 15px; margin-bottom: 15px; border: 1px solid rgb(204, 204, 204); font-size: 13px; line-height: 19px; overflow: auto; padding: 6px 10px; border-radius: 3px;"><code class="language-none" style="-webkit-print-color-adjust: exact; border: none; border-radius: 3px; background-color: transparent;">public class switchDemoString
+{
+    public switchDemoString()
+    {
+    }
+    public static void main(String args[])
+    {
+        String str = "world";
+        String s;
+        switch((s = str).hashCode())
+        {
+        default:
+            break;
+        case 99162322:
+            if(s.equals("hello"))
+                System.out.println("hello");
+            break;
+        case 113318802:
+            if(s.equals("world"))
+                System.out.println("world");
+            break;
+        }
+    }
+}</code></pre><p style="-webkit-print-color-adjust: exact; margin-top: 15px; margin-bottom: 15px; font-family: Helvetica, arial, sans-serif; font-size: 14px; line-height: 22px; white-space: normal; widows: auto; background-color: rgb(255, 255, 255);">看到这个代码，你知道原来字符串的switch是通过<code style="-webkit-print-color-adjust: exact; margin-right: 2px; margin-left: 2px; padding-right: 5px; padding-left: 5px; white-space: nowrap; border: 1px solid rgb(234, 234, 234); border-radius: 3px; background-color: rgb(248, 248, 248);">equals()</code>和<code style="-webkit-print-color-adjust: exact; margin-right: 2px; margin-left: 2px; padding-right: 5px; padding-left: 5px; white-space: nowrap; border: 1px solid rgb(234, 234, 234); border-radius: 3px; background-color: rgb(248, 248, 248);">hashCode()</code>方法来实现的。<strong style="-webkit-print-color-adjust: exact;">记住，switch中只能使用整型</strong>，比如<code style="-webkit-print-color-adjust: exact; margin-right: 2px; margin-left: 2px; padding-right: 5px; padding-left: 5px; white-space: nowrap; border: 1px solid rgb(234, 234, 234); border-radius: 3px; background-color: rgb(248, 248, 248);">byte</code>。<code style="-webkit-print-color-adjust: exact; margin-right: 2px; margin-left: 2px; padding-right: 5px; padding-left: 5px; white-space: nowrap; border: 1px solid rgb(234, 234, 234); border-radius: 3px; background-color: rgb(248, 248, 248);">short</code>，<code style="-webkit-print-color-adjust: exact; margin-right: 2px; margin-left: 2px; padding-right: 5px; padding-left: 5px; white-space: nowrap; border: 1px solid rgb(234, 234, 234); border-radius: 3px; background-color: rgb(248, 248, 248);">char</code>(ackii码是整型)以及<code style="-webkit-print-color-adjust: exact; margin-right: 2px; margin-left: 2px; padding-right: 5px; padding-left: 5px; white-space: nowrap; border: 1px solid rgb(234, 234, 234); border-radius: 3px; background-color: rgb(248, 248, 248);">int</code>。还好<code style="-webkit-print-color-adjust: exact; margin-right: 2px; margin-left: 2px; padding-right: 5px; padding-left: 5px; white-space: nowrap; border: 1px solid rgb(234, 234, 234); border-radius: 3px; background-color: rgb(248, 248, 248);">hashCode()</code>方法返回的是<code style="-webkit-print-color-adjust: exact; margin-right: 2px; margin-left: 2px; padding-right: 5px; padding-left: 5px; white-space: nowrap; border: 1px solid rgb(234, 234, 234); border-radius: 3px; background-color: rgb(248, 248, 248);">int</code>，而不是<code style="-webkit-print-color-adjust: exact; margin-right: 2px; margin-left: 2px; padding-right: 5px; padding-left: 5px; white-space: nowrap; border: 1px solid rgb(234, 234, 234); border-radius: 3px; background-color: rgb(248, 248, 248);">long</code>。通过这个很容易记住<code style="-webkit-print-color-adjust: exact; margin-right: 2px; margin-left: 2px; padding-right: 5px; padding-left: 5px; white-space: nowrap; border: 1px solid rgb(234, 234, 234); border-radius: 3px; background-color: rgb(248, 248, 248);">hashCode</code>返回的是<code style="-webkit-print-color-adjust: exact; margin-right: 2px; margin-left: 2px; padding-right: 5px; padding-left: 5px; white-space: nowrap; border: 1px solid rgb(234, 234, 234); border-radius: 3px; background-color: rgb(248, 248, 248);">int</code>这个事实。仔细看下可以发现，进行<code style="-webkit-print-color-adjust: exact; margin-right: 2px; margin-left: 2px; padding-right: 5px; padding-left: 5px; white-space: nowrap; border: 1px solid rgb(234, 234, 234); border-radius: 3px; background-color: rgb(248, 248, 248);">switch</code>的实际是哈希值，然后通过使用equals方法比较进行安全检查，这个检查是必要的，因为哈希可能会发生碰撞。因此它的性能是不如使用枚举进行switch或者使用纯整数常量，但这也不是很差。因为Java编译器只增加了一个<code style="-webkit-print-color-adjust: exact; margin-right: 2px; margin-left: 2px; padding-right: 5px; padding-left: 5px; white-space: nowrap; border: 1px solid rgb(234, 234, 234); border-radius: 3px; background-color: rgb(248, 248, 248);">equals</code>方法，如果你比较的是字符串字面量的话会非常快，比如”abc” ==”abc”。如果你把<code style="-webkit-print-color-adjust: exact; margin-right: 2px; margin-left: 2px; padding-right: 5px; padding-left: 5px; white-space: nowrap; border: 1px solid rgb(234, 234, 234); border-radius: 3px; background-color: rgb(248, 248, 248);">hashCode()</code>方法的调用也考虑进来了，那么还会再多一次的调用开销，因为字符串一旦创建了，它就会把哈希值缓存起来。因此如果这个<code style="-webkit-print-color-adjust: exact; margin-right: 2px; margin-left: 2px; padding-right: 5px; padding-left: 5px; white-space: nowrap; border: 1px solid rgb(234, 234, 234); border-radius: 3px; background-color: rgb(248, 248, 248);">siwtch</code>语句是用在一个循环里的，比如逐项处理某个值，或者游戏引擎循环地渲染屏幕，这里<code style="-webkit-print-color-adjust: exact; margin-right: 2px; margin-left: 2px; padding-right: 5px; padding-left: 5px; white-space: nowrap; border: 1px solid rgb(234, 234, 234); border-radius: 3px; background-color: rgb(248, 248, 248);">hashCode()</code>方法的调用开销其实不会很大。</p><p style="-webkit-print-color-adjust: exact; margin-top: 15px; font-family: Helvetica, arial, sans-serif; font-size: 14px; line-height: 22px; white-space: normal; widows: auto; background-color: rgb(255, 255, 255);">好，以上就是关于switch对整型、字符型、和字符串型的支持的实现方式，总结一下我们可以发现，<strong style="-webkit-print-color-adjust: exact;">其实swich只支持一种数据类型，那就是整型，其他数据类型都是转换成整型之后在使用switch的。</strong></p><p style="-webkit-print-color-adjust: exact; margin-top: 15px; font-family: Helvetica, arial, sans-serif; font-size: 14px; line-height: 22px; white-space: normal; widows: auto; background-color: rgb(255, 255, 255);"><strong style="-webkit-print-color-adjust: exact;"/></p><p>           <img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz/6fuT3emWI5LC3wm1ZVwwUxiapkbegia3VlbCwfT9PMrsjoaAfE6yrVRicria6KdIjDpe6mAEc23Prjht6wRnyGUEQw/0?wx_fmt=png" style="" data-ratio="0.38095238095238093" data-w="483" src="../Images/19cca8cdd51f5e284889168523feec6b.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/6fuT3emWI5LC3wm1ZVwwUxiapkbegia3VlbCwfT9PMrsjoaAfE6yrVRicria6KdIjDpe6mAEc23Prjht6wRnyGUEQw/0?wx_fmt=png"/></p><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz/6fuT3emWI5LC3wm1ZVwwUxiapkbegia3VlKKcOHiaZ9AvRBribFl9Jwa4fjekd3U74UcrwicUfxAwn3yy3uAxJl5eKA/0?wx_fmt=png" style="" data-ratio="0.07913669064748201" data-w="" src="../Images/f566d9fa1dbe4ba73653174fc5cc4cae.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/6fuT3emWI5LC3wm1ZVwwUxiapkbegia3VlKKcOHiaZ9AvRBribFl9Jwa4fjekd3U74UcrwicUfxAwn3yy3uAxJl5eKA/0?wx_fmt=png"/></p>
+        
+</body>
+</html>

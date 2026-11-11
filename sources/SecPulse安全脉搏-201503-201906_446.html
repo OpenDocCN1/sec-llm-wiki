@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>使用linkedin_crawl工具快速收集LinkedIn联系人</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>使用linkedin_crawl工具快速收集LinkedIn联系人</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxNDM3NTM0NQ==&amp;mid=214358741&amp;idx=2&amp;sn=e732bf2731151ac812af82a4faa815d5&amp;chksm=12a63a0b25d1b31dcb41db7cb5d82c553d61871bed14b9e5a2bbc4100d12bab577d94c1149c0&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzAxNDM3NTM0NQ==&amp;mid=214358741&amp;idx=2&amp;sn=e732bf2731151ac812af82a4faa815d5&amp;chksm=12a63a0b25d1b31dcb41db7cb5d82c553d61871bed14b9e5a2bbc4100d12bab577d94c1149c0&amp;scene=27#wechat_redirect</a></blockquote><p style=""><span style="color: rgb(51, 153, 102);">linkedin_crawl是recon-ng框架的一个模块，用来收集LinkedIn上指定公司的员工姓名和头衔。</span><br/><span style="color: rgb(51, 153, 102);">实现原理就是简单的爬取LinkedIn用户公共页面右边的”People also Viewed”这块，然后整理出数据。</span><br/><span style="color: rgb(51, 153, 102);">用在渗透或者长久的APT中，我们可以使用这些信息生成邮箱列表，可以用到字典暴力破解或者钓鱼等等手段。</span></p><p style=""><br/></p><h2 style=""><strong>安装</strong></h2><p style="">鉴于Linkedin_crawl是Recon-ng的一部分，安装很简单</p><pre style="">git clone https://LaNMaSteR53@bitbucket.org/LaNMaSteR53/recon-ng.git</pre><p style="">或者可以参考这里的wiki guide~</p><p style=""><br/></p><h2 style=""><strong>使用姿势</strong></h2><p style="">1.先确定一个目标公司的一名员工做源头，慢慢发散。这一步很简单，用Google搜索公司名称和Linkedin就可以了，或者使用Google Hacking语句如：</p><pre style="">      site:linkedin.com inurl:pub -inurl:dir "at " "Current"</pre><p style=""><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz/5u08OUQmyqcdT3xAzbp6fO0tu0CIUf2uibBzGWqSAAqe9YTUu5JP7Bab2dG6mRdUK0wic6LUchOJTjMjicJWpYwtA/0?wx_fmt=png" data-ratio="0.33992094861660077" data-w="" src="../Images/d6eaae7afb0d71ccade800fb4bdbabff.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/5u08OUQmyqcdT3xAzbp6fO0tu0CIUf2uibBzGWqSAAqe9YTUu5JP7Bab2dG6mRdUK0wic6LUchOJTjMjicJWpYwtA/0?wx_fmt=png"/><br/>2.你找到的源头员工必须要准确备注了他所在公司名称。而且“Viewers of this profile also viewed…（查看此简历的人也查看了）”这块必须存在。</p><p style="">复制这个链接如下，我们使用“Example Company”公司的 John Doe做个示范~</p><p style=""><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz/5u08OUQmyqcdT3xAzbp6fO0tu0CIUf2uibFvEFiaXUtGYZrcWq9NjCUhtNMjWnfmORMNCsCp7icDpicXK9x0EDFywA/0?wx_fmt=png" data-ratio="0.5691699604743083" data-w="" src="../Images/22622b2440e3cee5871e8bed2f2c8093.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/5u08OUQmyqcdT3xAzbp6fO0tu0CIUf2uibFvEFiaXUtGYZrcWq9NjCUhtNMjWnfmORMNCsCp7icDpicXK9x0EDFywA/0?wx_fmt=png"/><br/></p><p style="">3.开启 Recon-ng框架，转到 linkedin_crawl模块，设置好熟悉并且执行起来！</p><pre style="">root@kali:~/recon-ng# ./recon-ng
+[recon-ng][default] &gt; use recon/companies-contacts/linkedin_crawl
+[recon-ng][default][linkedin_crawl] &gt; show options
+ Name Current Value Req Description
+ ——- ————- — ———–
+ COMPANY no override the company name harvested…
+ URL yes public LinkedIn profile URL (seed)
+[recon-ng][default][linkedin_crawl] &gt; set URL http://www.linkedin.com/pub…
+URL =&gt; http://www.linkedin.com/pub/john-doe/82/2bb/7a3?trk=pub-pbmap
+[recon-ng][default][linkedin_crawl] &gt; show options
+ Name Current Value Req Description
+ ——- ————- — ———–
+ COMPANY no override the company…;
+ URL http://www.linkedin.com/pub… yes public linkedin profile…
+[recon-ng][default][linkedin_crawl] &gt; run
+—————
+EXAMPLE COMPANY
+—————
+[*] Parsing ‘http://www.linkedin.com/pub/john-doe…
+[*] Added: John Doe, Software Developer at Example Company(Washington…
+[*] Parsing ‘http://www.linkedin.com/pub/ali-price…
+[*] Added: Ali Price, Director at Example Company
+[*] Parsing ‘http://www.linkedin.com/pub/mary-kibble…
+[*] Parsing ‘http://www.linkedin.com/pub/matt-james…
+[*] Added: Matt James, Director of Software Services at Example Company…</pre><h2 style=""><strong>预期结果</strong></h2><p style="">这个模块就开始爬取也是目标公司的人员的联系信息，通过抓取“Viewers of this profile also viewed…”这块。</p><p style="">如果是小公司，30s就跑完了，不会有太多的联系人。如果是大公司，可以抓到数千联系人，当然这样也会耗费更多时间。</p><p style="">不管怎样，它能够正常抓取到目标公司的联系人，而且模块运行结束后会自动入库~聪明的你，常常关注安全脉搏，这点很简单吧。</p><pre style="">[recon-ng][default] &gt; show contacts
+
++---------------------..--------------------------------------------------------------+
+| rowid | first_name | | last_name | email | title |
++---------------------..--------------------------------------------------------------+
+| 1 | Ali | | Price | | Director at Example Company |
+| 2 | John | | Doe | | Software Developer at Example Company |
+| 3 | Marc | | Smith | | Computer Tech at Example Company |
+| 4 | Matt | | James | | Director at Example Company |
+| 6 | Robert | | Fiker | | Floor Manager at Example Company |
+| 5 | Tina | | Beard | | Marketing Consultant at Example Company |
++---------------------..--------------------------------------------------------------+
+
+[*] 6 rows returned</pre><p>输入show contacts可以看到整齐的数据，用户名和邮箱以及职位头衔啥的，这用于社工或者生成用户名字典非常有用~</p><p>recon-ng框架还有很多其他模块可以利用这些联系人信息或者导出成其他格式，非常有用。</p><h3 style=""><strong>总结</strong></h3><p style="">希望这篇简介会帮助你了解这款工具。对了recon-ng框架是开源的，你可以提交插件或者补丁。</p><p style="white-space: normal;"><span style="color: rgb(0, 176, 80);">----------------后续精彩文章点击左下角“阅读原文”</span></p><p style="white-space: normal;"><span style="color: rgb(0, 176, 80);">----------------安全脉搏SecPulse.com  分享技术 悦享品质</span></p><p><br/></p>
+        
+</body>
+</html>

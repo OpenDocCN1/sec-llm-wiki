@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>紧急，Apache Log4j2 远程代码执行漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>紧急，Apache Log4j2 远程代码执行漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA3MzYwNjQ3NA==&amp;mid=2651300905&amp;idx=1&amp;sn=75700b517a1602de6b93313ba4c25ddd&amp;chksm=84ff700cb388f91a57e1f25a3445b2e4b30e6ec490cf868789373b2b6bc38a3afcce4d6544d2&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA3MzYwNjQ3NA==&amp;mid=2651300905&amp;idx=1&amp;sn=75700b517a1602de6b93313ba4c25ddd&amp;chksm=84ff700cb388f91a57e1f25a3445b2e4b30e6ec490cf868789373b2b6bc38a3afcce4d6544d2&amp;scene=27#wechat_redirect</a></blockquote><section style="font-size: 16px;"><p>Apache Log4j2是一个基于Java的日志记录工具，是Log4j的升级，在其前身Log4j 1.x基础上提供了Logback中可用的很多优化，同时修复了Logback架构中的一些问题，是目前最优秀的Java日志框架之一。该日志框架被大量用于业务系统开发，用来记录日志信息。开发者可能会将用户输入造成的错误信息写入日志中。</p><p><br/></p><p>此次 Apache Log4j2 漏洞触发条件为只要外部用户输入的数据会被日志记录，即可造成远程代码执行。</p><p><br/></p><p>影响版本</p><p>2.0 &lt;= Apache log4j2 &lt;= 2.14.1</p><p><br/></p><p>官方补丁</p><p>https://github.com/apache/logging-log4j2/releases/tag/log4j-2.15.0-rc1</p><p><br/></p><p>临时解决方案</p><p>1. 设置jvm参数 “-Dlog4j2.formatMsgNoLookups=true”</p><p>2. 设置“log4j2.formatMsgNoLookups=True”</p><p>3. 系统环境变量“FORMAT_MESSAGES_PATTERN_DISABLE_LOOKUPS”设置为“true”</p><p>4. 关闭对应应用的网络外连，禁止主动外连</p></section>
+        
+</body>
+</html>

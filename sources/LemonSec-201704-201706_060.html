@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>robots.txt找后台-漏洞预警-</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>robots.txt找后台-漏洞预警-</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247483929&amp;idx=1&amp;sn=f686f29710f917327828ce1c4ca0b9d6&amp;chksm=f9e06d42ce97e45485d219ac73509ef55d503f83ed1a9932dbe3df11772c5a04e1151ec2ffbf&amp;scene=126&amp;sessionid=1681663537#rd">http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247483929&amp;idx=1&amp;sn=f686f29710f917327828ce1c4ca0b9d6&amp;chksm=f9e06d42ce97e45485d219ac73509ef55d503f83ed1a9932dbe3df11772c5a04e1151ec2ffbf&amp;scene=126&amp;sessionid=1681663537#rd</a></blockquote><p>什么是robots.txt文件?</p><p>    搜索引擎通过一种程序robot（又称spider），自动访问互联网上的网页并获取网页信息。</p><p>    您可以在您的网站中创建一个纯文本文件robots.txt，在这个文件中声明该网站中不想被robot访问的部分，这样，该网站的部分或全部内容就可以不被搜索引擎收录了，或者指定搜索引擎只收录指定的内容。</p><p>    #   robots.txt文件放在哪里?</p><p> 
+   
+robots.txt 文件应该放在网站根目录下。举例来说，当robots访问一个网站（比如http://www.abc.com）时，首先会检查该 网站中是否存在 http://www.abc.com/robots.txt这个文件，如果机器人找到这个文件，它就会根据这个文件的内容，来确 定它访问权限的范围。</p><p>    # robots.txt文件的格式</p><p>    "robots.txt"文件包含一条或更多的记录，这些记录通过空行分开（以CR,CR/NL, or NL作为结束符），每一条记录的格式如下所示：</p><p>    ":"。</p><p>    在该文件中可以使用#进行注解，具体使用方法和UNIX中的惯例一样。该文件中的记录通常以一行或多行User-agent开始，后面加上若干Disallow行,详细情况如下：</p><p>    User-agent:</p><p> 
+   
+该项的值用于描述搜索引擎robot的名字，在"robots.txt"文件中，如果有多条User-agent记录说明有多个robot会受到该协 议的限制，对该文件来说，至少要有一条User-agent记录。如果该项的值设为*，则该协议对任何机器人均有效，在"robots.txt"文件中， "User-agent:*"这样的记录只能有一条。</p><p>    Disallow:</p><p> 
+   
+该项的值用于描述不希望被访问到的一个URL，这个URL可以是一条完整的路径，也可以是部分的，任何以Disallow开头的URL均不会被 robot访问到。例如"Disallow:/help"对/help.html 和/help/index.html都不允许搜索引擎访问，而"Disallow:/help/"则允许robot访问/help.html，而不能访问 /help/index.html。任何一条Disallow记录为空，说明该网站的所有部分都允许被访问，在"/robots.txt"文件中，至少要 有一条Disallow记录。如果"/robots.txt"是一个空文件，则对于所有的搜索引擎robot，该网站都是开放的。</p><p>    例如http://www.slenk.net/robots.txt就可以拉</p><p>    如果存在就会出来一个这个目录：</p><p>    User-agent: *</p><p>    Disallow: /admini/</p><p>    Disallow语句后面就是管理员不想让我们知道的目录</p><p>    得到目录后，我们再使用方法一用工具再给他扫一遍基本就能出现后台了。</p><p>    要是管理员把后台文件名改成@#$D$#$类似的，那就得算卦了。</p><p><br/></p><p><br/></p><p>查看更多文章，关注下方二维码</p><p><img class="" data-ratio="1" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/p5qELRDe5ickAiax1Nv77rYNEC3sRgfAkw8hAX4rSjibP0FMnud3ZM4f0Jc7nkoCL2t8STuhTbnuxj6W6T8JumElA/640?wx_fmt=jpeg" data-type="jpeg" data-w="258" style="visibility: visible !important; width: auto !important; height: auto !important;" width="auto" src="../Images/60bd80188885b005ab426369f4086902.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/p5qELRDe5ickAiax1Nv77rYNEC3sRgfAkw8hAX4rSjibP0FMnud3ZM4f0Jc7nkoCL2t8STuhTbnuxj6W6T8JumElA/640?wx_fmt=jpeg"/></p><p><br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>动态添加导入表，花式DLL注入</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>动态添加导入表，花式DLL注入</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NDcxMDQzNA==&amp;mid=2247487585&amp;idx=1&amp;sn=272fb9bcac9f4ebda6e7b2306e5fd043&amp;chksm=a682c6ac91f54fba0851ba85682a1f4b1007a26fd56d340ab4651b8156647d866b05d9ce181c&amp;scene=126&amp;sessionid=1681666183#rd">http://mp.weixin.qq.com/s?__biz=MjM5NDcxMDQzNA==&amp;mid=2247487585&amp;idx=1&amp;sn=272fb9bcac9f4ebda6e7b2306e5fd043&amp;chksm=a682c6ac91f54fba0851ba85682a1f4b1007a26fd56d340ab4651b8156647d866b05d9ce181c&amp;scene=126&amp;sessionid=1681666183#rd</a></blockquote><p>        <span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">以前看过在静态</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 16px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">EXE</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">文件中添加导入表来载入</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">dll</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">，但缺点明显，对</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 16px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">EXE</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">文件修改了。近日看到老外一篇文章中描述的一个方法，挺有思路挺有意思，介绍给大家。原理是：在启动一个</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 16px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">EXE</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">文件时动态地将</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">dll</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">的导出表添加到此<span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 16px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">EXE</span>的导入表链中，从而在</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 16px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">EXE</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">启动的同时优先将</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">dll</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">载入的过程，优点是不修改<span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 16px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">EXE</span>，有人称这是</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">dll</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">的另类花式注入。即：主程序</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">ImportDllInjection</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">在挂起状态下启动</span><span style="font-size: 16px;color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">notepad.EXE</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">，修改内存中的</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">IAT</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">表以包含额外的</span><span style="font-size: 16px;color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">dll1.DLL</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">，然后继续执行；完成注入目标</span><span style="font-size: 16px;color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">dll1.DLL</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">文件。</span></p><p><br/></p><p style=""><strong><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">一、工作原理/步骤</span></strong><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);"/></p><p><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">1. 使用带有</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">CREATE_SUSPENDED</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">标志的</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">CreateProcess</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">创建目标</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">EXE</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">进程的挂起实例；</span></p><p><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">2.使用</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">NtQueryInformationProcess</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">计算目标EXE的基地址读取目标进程的</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">PEB</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">地址，并使用</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">ReadProcessMemory</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">取</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">ImageBaseAddress</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">字段值；</span></p><p><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">3. 使用</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">ReadProcessMemory</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">从目标进程读取主</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">PE</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">头</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">(IMAGE_NT_HEADERS)</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);"> ；</span></p><p><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">4. 存储未修改的</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">IMAGE_NT_HEADERS</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">结构的副本以备后用；</span></p><p><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">5. 将额外的</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">DLL</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">条目添加到</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">PE</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">头中的导入描述符列表 </span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">(ImageNtHeader.OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT] )</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">。目标进程中还需要分配模块路径、导入查找表和导入地址表；</span></p><p><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">6. 使用</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">WriteProcessMemory</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">将更新的</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">PE</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">头写回目标进程；</span></p><p><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">7. 使用</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">ResumeThread</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">恢复目标进程执行；</span></p><p><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">8.在循环中使用</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">ReadProcessMemory</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">读取注入的DLL的新导入地址表，等待目标进程更新单个导入的地址</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">（序号#1）；</span></p><p><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);"> 9. </span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">DLL</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">现已注入目标进程。释放任何临时内存并从步骤#4恢复原始</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">PE</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">头。这是有效的，因为新创建的挂起进程只有</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">ntdll.dll。</span></p><p><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">注意：最初加载 - 这意味着我们可以在加载剩余的DLL之前在内存中操作导入表。<br data-filtered="filtered" style="color: rgb(211, 255, 251);font-family: &quot;Lucida Sans&quot;, Geneva, sans-serif;font-size: 16px;text-align: start;white-space: normal;background-color: rgb(19, 19, 19);"/><br data-filtered="filtered" style="color: rgb(211, 255, 251);font-family: &quot;Lucida Sans&quot;, Geneva, sans-serif;font-size: 16px;text-align: start;white-space: normal;background-color: rgb(19, 19, 19);"/>这种方法的主要缺点是它只能用于将 DLL 注入新进程。无法使用此方法注入已在运行的进程，因为导入描述符列表仅在进程首次启动时处理。另一个小缺点是目标</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">DLL</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">需要导出至少一个函数。</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">Windows</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">不会加载具有空白导入查找表的导入</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">DLL</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">，因此我在导入序号#1的查找表中添加了一个条目。此导出条目必须存在于目标</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">DLL</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">中，否则目标进程将无法启动。我将在本文末尾包含示例</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">DLL</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">的代码。<br data-filtered="filtered" style="color: rgb(211, 255, 251);font-family: &quot;Lucida Sans&quot;, Geneva, sans-serif;font-size: 16px;text-align: start;white-space: normal;background-color: rgb(19, 19, 19);"/><br data-filtered="filtered" style="color: rgb(211, 255, 251);font-family: &quot;Lucida Sans&quot;, Geneva, sans-serif;font-size: 16px;text-align: start;white-space: normal;background-color: rgb(19, 19, 19);"/>不能保证在现有</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">PE</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">头数据中有足够的空间来添加额外的模块条目。为了解决这个问题，我将现有的导入描述符列表复制到我在内存中分配的更大的缓冲区，然后新的DLL被附加到这个列表中，</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">VirtualAddress</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">和</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">Size</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">字段用于</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">IMAGE_DIRECTORY_ENTRY_IMPORT</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">更新为指向新列表。<br data-filtered="filtered" style="color: rgb(211, 255, 251);font-family: &quot;Lucida Sans&quot;, Geneva, sans-serif;font-size: 16px;text-align: start;white-space: normal;background-color: rgb(19, 19, 19);"/><br data-filtered="filtered" style="color: rgb(211, 255, 251);font-family: &quot;Lucida Sans&quot;, Geneva, sans-serif;font-size: 16px;text-align: start;white-space: normal;background-color: rgb(19, 19, 19);"/>成功注入后恢复原始</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">PE</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">头可消除任何篡改证据。但是，目标</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">DLL</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">不会以任何方式隐藏 - 它会以与任何其他合法加载的</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">DLL</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">相同的方式在内存中公开可见。</span></p><p><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);"><br/></span></p><p><strong><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">二、实现源代码</span></strong></p><p><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">使用方法：</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">ImportDllInjection.exe notepad.exe dll1.dll</span></p><p><span style="color: rgb(0, 0, 0);background-color: rgb(255, 255, 255);"><span style="background-color: rgb(255, 255, 255);color: rgb(0, 0, 0);white-space: pre-wrap;font-family: &quot;Lucida Console&quot;, Monaco, monospace;font-size: 12px;text-align: start;"/></span></p><table style="word-break: break-all;"><tbody style="word-break: break-all;"><tr style="word-break: break-all;"><td width="557" valign="top" style="word-break: break-all;"><p style="word-break: break-all;"><span style="color: rgb(0, 209, 0);background-color: rgb(255, 255, 255);white-space: pre-wrap;font-family: &quot;Lucida Console&quot;, Monaco, monospace;font-size: 12px;text-align: start;">#include &lt;stdio.h&gt;
+#include &lt;windows.h&gt;
+
+DWORD (WINAPI *NtQueryInformationProcess)(HANDLE ProcessHandle, DWORD ProcessInformationClass, PVOID ProcessInformation, DWORD ProcessInformationLength, DWORD *ReturnLength);
+
+struct PROCESS_BASIC_INFORMATION
+{
+	DWORD ExitStatus;
+	void *PebBaseAddress;
+	DWORD AffinityMask;
+	DWORD BasePriority;
+	DWORD UniqueProcessId;
+	DWORD InheritedFromUniqueProcessId;
+};
+
+DWORD LaunchTargetProcess(char *pExePath, HANDLE *phProcess, HANDLE *phProcessMainThread)
+{
+	PROCESS_INFORMATION ProcessInfo;
+	STARTUPINFO StartupInfo;
+
+	// initialise startup data
+	memset((void*)&amp;StartupInfo, 0, sizeof(StartupInfo));
+	StartupInfo.cb = sizeof(StartupInfo);
+
+	printf("Launching target process...\n");
+
+	// create target process (suspended)
+	memset((void*)&amp;ProcessInfo, 0, sizeof(ProcessInfo));
+	if(CreateProcess(NULL, pExePath, NULL, NULL, 0, CREATE_SUSPENDED, NULL, NULL, &amp;StartupInfo, &amp;ProcessInfo) == 0)
+	{
+		return 1;
+	}
+
+	// store handles
+	*phProcess = ProcessInfo.hProcess;
+	*phProcessMainThread = ProcessInfo.hThread;
+
+	return 0;
+}
+
+DWORD InjectDll(HANDLE hProcess, HANDLE hProcessMainThread, char *pDllPath)
+{
+	IMAGE_DOS_HEADER ImageDosHeader;
+	IMAGE_NT_HEADERS ImageNtHeader;
+	IMAGE_NT_HEADERS ImageNtHeader_Original;
+	PROCESS_BASIC_INFORMATION ProcessBasicInfo;
+	DWORD dwExeBaseAddrPebPtr = 0;
+	DWORD dwExeBaseAddr = 0;
+	DWORD dwNtHeaderAddr = 0;
+	DWORD dwDllPathLength = 0;
+	void *pRemoteAlloc_DllPath = NULL;
+	void *pRemoteAlloc_ImportLookupTable = NULL;
+	void *pRemoteAlloc_ImportAddressTable = NULL;
+	void *pRemoteAlloc_NewImportDescriptorList = NULL;
+	DWORD dwImportLookupTable[2];
+	DWORD dwExistingImportDescriptorEntryCount = 0;
+	DWORD dwNewImportDescriptorEntryCount = 0;
+	BYTE *pNewImportDescriptorList = NULL;
+	IMAGE_IMPORT_DESCRIPTOR NewDllImportDescriptors[2];
+	DWORD dwExistingImportDescriptorAddr = 0;
+	BYTE *pCopyImportDescriptorDataPtr = NULL;
+	DWORD dwNewImportDescriptorListDataLength = 0;
+	DWORD dwOriginalProtection = 0;
+	DWORD dwOriginalProtection2 = 0;
+	DWORD dwCurrentImportAddressTable[2];
+
+	printf("Reading image base address from PEB...\n");
+
+	// get process info
+	memset(&amp;ProcessBasicInfo, 0, sizeof(ProcessBasicInfo));
+	if(NtQueryInformationProcess(hProcess, 0, &amp;ProcessBasicInfo, sizeof(ProcessBasicInfo), NULL) != 0)
+	{
+		return 1;
+	}
+
+	// get target exe base address from PEB
+	dwExeBaseAddrPebPtr = (DWORD)ProcessBasicInfo.PebBaseAddress + 8;
+	if(ReadProcessMemory(hProcess, (void*)dwExeBaseAddrPebPtr, (void*)&amp;dwExeBaseAddr, sizeof(DWORD), NULL) == 0)
+	{
+		return 1;
+	}
+
+	printf("Reading PE headers...\n");
+
+	// read PE header from target process
+	memset((void*)&amp;ImageDosHeader, 0, sizeof(ImageDosHeader));
+	if(ReadProcessMemory(hProcess, (void*)dwExeBaseAddr, (void*)&amp;ImageDosHeader, sizeof(ImageDosHeader), NULL) == 0)
+	{
+		return 1;
+	}
+
+	// read NT header from target process
+	dwNtHeaderAddr = dwExeBaseAddr + ImageDosHeader.e_lfanew;
+	memset((void*)&amp;ImageNtHeader, 0, sizeof(ImageNtHeader));
+	if(ReadProcessMemory(hProcess, (void*)dwNtHeaderAddr, (void*)&amp;ImageNtHeader, sizeof(ImageNtHeader), NULL) == 0)
+	{
+		return 1;
+	}
+
+	// save a copy of the original NT header
+	memcpy((void*)&amp;ImageNtHeader_Original, (void*)&amp;ImageNtHeader, sizeof(ImageNtHeader_Original));
+
+	// calculate dll path length
+	dwDllPathLength = strlen(pDllPath) + 1;
+
+	// allocate buffer for the dll path in the remote process
+	pRemoteAlloc_DllPath = VirtualAllocEx(hProcess, NULL, dwDllPathLength, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+	if(pRemoteAlloc_DllPath == NULL)
+	{
+		return 1;
+	}
+
+	// write dll path to remote process buffer
+	if(WriteProcessMemory(hProcess, (void*)pRemoteAlloc_DllPath, pDllPath, dwDllPathLength, NULL) == 0)
+	{
+		return 1;
+	}
+
+	// set import lookup table values (import ordinal #1)
+	dwImportLookupTable[0] = 0x80000001;
+	dwImportLookupTable[1] = 0;
+
+	// allocate buffer for the new import lookup table in the remote process
+	pRemoteAlloc_ImportLookupTable = VirtualAllocEx(hProcess, NULL, sizeof(dwImportLookupTable), MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+	if(pRemoteAlloc_ImportLookupTable == NULL)
+	{
+		return 1;
+	}
+
+	// write import lookup table to remote process buffer
+	if(WriteProcessMemory(hProcess, (void*)pRemoteAlloc_ImportLookupTable, (void*)dwImportLookupTable, sizeof(dwImportLookupTable), NULL) == 0)
+	{
+		return 1;
+	}
+
+	// allocate buffer for the new import address table in the remote process
+	pRemoteAlloc_ImportAddressTable = VirtualAllocEx(hProcess, NULL, sizeof(dwImportLookupTable), MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+	if(pRemoteAlloc_ImportAddressTable == NULL)
+	{
+		return 1;
+	}
+
+	// write import address table to remote process buffer (initially the same values as the import lookup table)
+	if(WriteProcessMemory(hProcess, (void*)pRemoteAlloc_ImportAddressTable, (void*)dwImportLookupTable, sizeof(dwImportLookupTable), NULL) == 0)
+	{
+		return 1;
+	}
+
+	// set import descriptor values for injected dll
+	NewDllImportDescriptors[0].OriginalFirstThunk = (DWORD)pRemoteAlloc_ImportLookupTable - dwExeBaseAddr;
+	NewDllImportDescriptors[0].TimeDateStamp = 0;
+	NewDllImportDescriptors[0].ForwarderChain = 0;
+	NewDllImportDescriptors[0].Name = (DWORD)pRemoteAlloc_DllPath - dwExeBaseAddr;
+	NewDllImportDescriptors[0].FirstThunk = (DWORD)pRemoteAlloc_ImportAddressTable - dwExeBaseAddr;
+
+	// end of import descriptor chain
+	NewDllImportDescriptors[1].OriginalFirstThunk = 0;
+	NewDllImportDescriptors[1].TimeDateStamp = 0;
+	NewDllImportDescriptors[1].ForwarderChain = 0;
+	NewDllImportDescriptors[1].Name = 0;
+	NewDllImportDescriptors[1].FirstThunk = 0;
+
+	// calculate existing number of imported dll modules
+	dwExistingImportDescriptorEntryCount = ImageNtHeader.OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].Size / sizeof(IMAGE_IMPORT_DESCRIPTOR);
+
+	if(dwExistingImportDescriptorEntryCount == 0)
+	{
+		// the target process doesn't have any imported dll entries - this is highly unusual but not impossible
+		dwNewImportDescriptorEntryCount = 2;
+	}
+	else
+	{
+		// add one extra dll entry
+		dwNewImportDescriptorEntryCount = dwExistingImportDescriptorEntryCount + 1;
+	}
+
+	// allocate new import description list (local)
+	dwNewImportDescriptorListDataLength = dwNewImportDescriptorEntryCount * sizeof(IMAGE_IMPORT_DESCRIPTOR);
+	pNewImportDescriptorList = (BYTE*)malloc(dwNewImportDescriptorListDataLength);
+	if(pNewImportDescriptorList == NULL)
+	{
+		return 1;
+	}
+
+	if(dwExistingImportDescriptorEntryCount != 0)
+	{
+		// read existing import descriptor entries
+		dwExistingImportDescriptorAddr = dwExeBaseAddr + ImageNtHeader.OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress;
+		if(ReadProcessMemory(hProcess, (void*)dwExistingImportDescriptorAddr, pNewImportDescriptorList, dwExistingImportDescriptorEntryCount * sizeof(IMAGE_IMPORT_DESCRIPTOR), NULL) == 0)
+		{
+			free(pNewImportDescriptorList);
+			return 1;
+		}
+	}
+
+	// copy the new dll import (and terminator entry) to the end of the list
+	pCopyImportDescriptorDataPtr = pNewImportDescriptorList + dwNewImportDescriptorListDataLength - sizeof(NewDllImportDescriptors);
+	memcpy(pCopyImportDescriptorDataPtr, (void*)NewDllImportDescriptors, sizeof(NewDllImportDescriptors));
+
+	// allocate buffer for the new import descriptor list in the remote process
+	pRemoteAlloc_NewImportDescriptorList = VirtualAllocEx(hProcess, NULL, dwNewImportDescriptorListDataLength, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+	if(pRemoteAlloc_NewImportDescriptorList == NULL)
+	{
+		free(pNewImportDescriptorList);
+		return 1;
+	}
+
+	// write new import descriptor list to remote process buffer
+	if(WriteProcessMemory(hProcess, (void*)pRemoteAlloc_NewImportDescriptorList, pNewImportDescriptorList, dwNewImportDescriptorListDataLength, NULL) == 0)
+	{
+		free(pNewImportDescriptorList);
+		return 1;
+	}
+
+	// free local import descriptor list buffer
+	free(pNewImportDescriptorList);
+
+	printf("Updating PE headers...\n");
+
+	// change the import descriptor address in the remote NT header to point to the new list
+	ImageNtHeader.OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress = (DWORD)pRemoteAlloc_NewImportDescriptorList - dwExeBaseAddr;
+	ImageNtHeader.OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].Size = dwNewImportDescriptorListDataLength;
+
+	// make NT header writable
+	if(VirtualProtectEx(hProcess, (LPVOID)dwNtHeaderAddr, sizeof(ImageNtHeader), PAGE_EXECUTE_READWRITE, &amp;dwOriginalProtection) == 0)
+	{
+		return 1;
+	}
+
+	// write updated NT header to remote process
+	if(WriteProcessMemory(hProcess, (void*)dwNtHeaderAddr, (void*)&amp;ImageNtHeader, sizeof(ImageNtHeader), NULL) == 0)
+	{
+		return 1;
+	}
+
+	printf("Resuming process...\n");
+
+	// resume target process execution
+	ResumeThread(hProcessMainThread);
+
+	printf("Waiting for target DLL...\n");
+
+	// wait for the target process to load the DLL
+	for(;;)
+	{
+		// read the IAT table for the injected DLL
+		memset((void*)dwCurrentImportAddressTable, 0, sizeof(dwCurrentImportAddressTable));
+		if(ReadProcessMemory(hProcess, (void*)pRemoteAlloc_ImportAddressTable, (void*)dwCurrentImportAddressTable, sizeof(dwCurrentImportAddressTable), NULL) == 0)
+		{
+			return 1;
+		}
+
+		// check if the IAT table has been processed
+		if(dwCurrentImportAddressTable[0] == dwImportLookupTable[0])
+		{
+			// IAT table for injected DLL not yet processed - try again in 100ms
+			Sleep(100);
+
+			continue;
+		}
+
+		// DLL has been loaded by target process
+		break;
+	}
+
+	printf("Restoring original PE headers...\n");
+
+	// restore original NT headers in target process
+	if(WriteProcessMemory(hProcess, (void*)dwNtHeaderAddr, (void*)&amp;ImageNtHeader_Original, sizeof(ImageNtHeader), NULL) == 0)
+	{
+		return 1;
+	}
+
+	// restore original protection value for remote NT headers
+	if(VirtualProtectEx(hProcess, (LPVOID)dwNtHeaderAddr, sizeof(ImageNtHeader), dwOriginalProtection, &amp;dwOriginalProtection2) == 0)
+	{
+		return 1;
+	}
+
+	// free temporary memory in remote process
+	VirtualFreeEx(hProcess, pRemoteAlloc_DllPath, 0, MEM_RELEASE);
+	VirtualFreeEx(hProcess, pRemoteAlloc_ImportLookupTable, 0, MEM_RELEASE);
+	VirtualFreeEx(hProcess, pRemoteAlloc_ImportAddressTable, 0, MEM_RELEASE);
+	VirtualFreeEx(hProcess, pRemoteAlloc_NewImportDescriptorList, 0, MEM_RELEASE);
+
+	return 0;
+}
+
+int main(int argc, char *argv[])
+{
+	HANDLE hProcess = NULL;
+	HANDLE hProcessMainThread = NULL;
+	char *pExePath = NULL;
+	char *pInjectDllPath = NULL;
+	char szInjectDllFullPath[512];
+
+	printf("ImportDLLInjection - www.x86matthew.com\n\n");
+
+	if(argc != 3)
+	{
+		printf("Usage: %s [exe_path] [inject_dll_path]\n\n", argv[0]);
+
+		return 1;
+	}
+
+	// get params
+	pExePath = argv[1];
+	pInjectDllPath = argv[2];
+
+	// get full path from dll filename
+	memset(szInjectDllFullPath, 0, sizeof(szInjectDllFullPath));
+	if(GetFullPathName(pInjectDllPath, sizeof(szInjectDllFullPath) - 1, szInjectDllFullPath, NULL) == 0)
+	{
+		printf("Invalid DLL path\n");
+
+		return 1;
+	}
+
+	// get NtQueryInformationProcess function ptr
+	NtQueryInformationProcess = (unsigned long (__stdcall *)(void *,unsigned long,void *,unsigned long,unsigned long *))GetProcAddress(GetModuleHandle("ntdll.dll"), "NtQueryInformationProcess");
+	if(NtQueryInformationProcess == NULL)
+	{
+		printf("Failed to find NtQueryInformationProcess function\n");
+
+		return 1;
+	}
+
+	// launch target process
+	if(LaunchTargetProcess(pExePath, &amp;hProcess, &amp;hProcessMainThread) != 0)
+	{
+		printf("Failed to launch target process\n");
+
+		return 1;
+	}
+
+	// inject DLL into target process
+	if(InjectDll(hProcess, hProcessMainThread, szInjectDllFullPath) != 0)
+	{
+		printf("Failed to inject DLL\n");
+
+		// error
+		TerminateProcess(hProcess, 0);
+		CloseHandle(hProcessMainThread);
+		CloseHandle(hProcess);
+
+		return 1;
+	}
+
+	printf("Finished\n");
+
+	// close handles
+	CloseHandle(hProcessMainThread);
+	CloseHandle(hProcess);
+
+	return 0;
+}</span></p><span style="white-space: pre-wrap;font-family: &quot;Lucida Console&quot;, Monaco, monospace;font-size: 12px;text-align: start;background-color: rgb(255, 255, 255);color: rgb(0, 209, 0);"/></td></tr></tbody></table><p><span style="white-space: pre-wrap;font-family: &quot;Lucida Console&quot;, Monaco, monospace;text-align: start;color: rgb(0, 0, 0);background-color: rgb(255, 255, 255);font-size: 16px;">dll1.dll</span><span style="white-space: pre-wrap;font-family: &quot;Lucida Console&quot;, Monaco, monospace;text-align: start;color: rgb(0, 0, 0);background-color: rgb(255, 255, 255);font-size: 17px;">源代码：</span></p><table style="word-break: break-all;"><tbody style="word-break: break-all;"><tr style="word-break: break-all;"><td width="557" valign="top" style="word-break: break-all;"><span style="white-space: pre-wrap;font-family: &quot;Lucida Console&quot;, Monaco, monospace;font-size: 12px;text-align: start;background-color: rgb(255, 255, 255);color: rgb(0, 209, 0);">#include &lt;stdio.h&gt;
+#include &lt;windows.h&gt;
+
+// a blank exported function - this will be ordinal #1
+__declspec(dllexport) void __cdecl ExportedFunction(void)
+{
+}
+
+BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
+{
+	if(fdwReason == DLL_PROCESS_ATTACH)
+	{
+		// display a message box
+		MessageBox(NULL, "MessageBox from injected DLL", "www.x86matthew.com", MB_OK);
+	}
+
+    return 1;
+}</span></td></tr></tbody></table><p style=""><strong><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);"/></strong></p><p style=""><strong><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">三、编译好的下载地址：</span></strong></p><p><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">链接：</span><span style="font-size: 16px;">https://pan.baidu.com/s/1ot8Ih3iY67dKCrZ28v8A2Q </span></p><p><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">提取码：</span><span style="font-size: 16px;">lttk </span></p><p><br/></p><p><strong><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">四、感想</span></strong></p><p style=""><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">作为一种想法，有它的优点和缺点，但确实敢想敢干（实现了）；作为一种方法思路，在注入完成后又恢复了原状，而且是在正规进程下(这里是</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">notepad.exe</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">)调用的</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">dll</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">，如果不了解这种方法，会百思不得其解，对溯源(</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);font-size: 16px;">ImportDllInjection</span><span style="color: rgb(34, 34, 34);font-family: 仿宋;font-size: 18.6667px;letter-spacing: 0.544px;background-color: rgb(255, 255, 255);">)是个很大问题。第三，让我们清晰地认识到导入表是优于主程序的运行，更加重视导入表。</span></p><p><br/></p><p><span style="color: rgb(0, 0, 0);background-color: rgb(255, 255, 255);"><span style="background-color: rgb(255, 255, 255);color: rgb(0, 0, 0);white-space: pre-wrap;font-family: &quot;Lucida Console&quot;, Monaco, monospace;font-size: 12px;text-align: start;"><br/></span></span></p><p style="display: none;"><mp-style-type data-value="3"/></p>
+        
+</body>
+</html>

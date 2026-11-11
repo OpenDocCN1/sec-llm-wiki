@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>WordPress插件安全审计发现了影响60000个网站的数十个漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>WordPress插件安全审计发现了影响60000个网站的数十个漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485372&amp;idx=1&amp;sn=c3ef616da48630dd8ea710621cd1558e&amp;chksm=fa76e642cd016f5454a705f2e2330cff0770114cd6bab1abaee7c048d0bc62716690dfdc8a5a&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485372&amp;idx=1&amp;sn=c3ef616da48630dd8ea710621cd1558e&amp;chksm=fa76e642cd016f5454a705f2e2330cff0770114cd6bab1abaee7c048d0bc62716690dfdc8a5a&amp;scene=27#wechat_redirect</a></blockquote><blockquote><p>安全公司Cyllective的一名研究人员在数十个WordPress插件中发现了漏洞，影响了数以万计的安装。领导Cyllective渗透测试团队的Dave Miller说，他们开始测试随机选择的插件，很快就发现了一个未经身份验证的SQL注入漏洞。他们还发现了一系列本地文件包含和远程代码执行(RCE)漏洞。然而，由于这些问题是在严重过时的插件中发现的，因此团队决定将精力集中在过去两年收到更新的插件上——总共大约5000个插件。</p></blockquote><p style="margin-bottom: 0em;"><img class="rich_pages wxw-img" data-ratio="0.5625" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJmXUl8vTib4yChicibZUzaCIx4JnwjwV12wm7FB2KxOoeqSz9VD6ujhH1E57yJ5M9Gjnd8vOEZmXZTicw/640?wx_fmt=jpeg" data-type="jpeg" data-w="1200" height="675" width="1200" src="../Images/358d899cab3348c41e88d03bd7f77c26.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJmXUl8vTib4yChicibZUzaCIx4JnwjwV12wm7FB2KxOoeqSz9VD6ujhH1E57yJ5M9Gjnd8vOEZmXZTicw/640?wx_fmt=jpeg"/></p><p><br/></p><p>研究人员特别寻找未经身份验证的SQL注入漏洞，使用标签系统来识别显示与WordPress数据库交互的插件；类SQL字符串中的字符串插值；与消毒尝试有关的安全措施；和暴露未经身份验证的端点。</p><p><br/></p><p>Miller说，经过三个月的研究，结果共有35个漏洞，所有这些漏洞都可能被未经身份验证的攻击者利用，影响了大约 60500个运行受影响的WordPress插件的实例。</p><p><br/></p><p>“虽然我报告的绝大多数漏洞都是未经身份验证的SQL注入漏洞，这将使攻击者能够转储整个WordPress数据库内容，但这些并不是最具破坏性的漏洞，”Miller说。</p><p><br/></p><p>“sitemap-by-click5插件存在未经身份验证的任意选项更新漏洞，这将允许攻击者恶意启用注册功能并将默认用户角色设置为管理员。”</p><p><br/></p><p>他说，这实质上将允许未经身份验证的攻击者创建一个新的管理员帐户并接管WordPress实例。而且，从那里，攻击者将能够上传恶意PHP文件，这将授予攻击者作为低权限用户在底层服务器上远程执行代码的能力。</p><p><br/></p><p>Miller说，通过更多的工程设计，团队的标签策略可以用来修复除SQL注入漏洞之外的缺陷。</p><p><br/></p><p>“需要开发新的模式来捕捉漏洞类别的细节，以便能够检测到它们，”他说。“但是，使用这种方法很难甚至无法检测到某些漏洞类别。”</p><p><br/></p><p>Miller说，尽管发现了大量漏洞，但披露过程进展顺利，团队在发现每个漏洞时都会报告 - 有时每天多达四五个。</p><p><br/></p><p>“WPScan[一个WordPress安全供应商] 及时协调了所有相关方——研究人员、插件作者和WordPress插件团队——之间的沟通过程，”他说。</p><p><br/></p><p>而且，他补充说，该团队仍在研究更多插件，发现并负责任地披露了更多漏洞。</p><p><br/></p><p>“安全最终是插件开发人员的责任，插件团队尽其所能鼓励这一点，”WordPress发言人说。</p><p><br/></p><p>“为此，插件作者在将插件提交到目录之前可以参考指南。所有开发人员都应遵守这些准则。此外，他们还拥有一本涵盖安全最佳实践的插件手册。”</p><p><br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CVE-2020-0796的跟踪（一）</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>CVE-2020-0796的跟踪（一）</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650745515&amp;idx=1&amp;sn=4a89d641a7093dc5b6c37e6aae5301fc&amp;chksm=87148babb06302bd1d1ce5a48f71fb2e5eae8dd2ee4a9a4ab6bb7bd0e04fe8a4d070b9547151&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650745515&amp;idx=1&amp;sn=4a89d641a7093dc5b6c37e6aae5301fc&amp;chksm=87148babb06302bd1d1ce5a48f71fb2e5eae8dd2ee4a9a4ab6bb7bd0e04fe8a4d070b9547151&amp;scene=27#wechat_redirect</a></blockquote><p>本周最火的漏洞，CVE-2020-0796，对于Win10的1903和1909版本，也是Win10最广泛使用的版本，一个SMBv3的可远程执行代码的漏洞，可用来做蠕虫，有人叫SMBGhost，竟然还有人叫CoronaBlue，真是应景。</p><p>看不少安全公司的研究员都在网上发了原理性研究文章，咱没这个能力，也就找找现成的PoC玩玩儿，最好的肯定是metasploit的，但是现在太早期，metasploit就算有远程利用的PoC也不会这么早放出来，顶多放出来个漏扫的PoC，搜了一天，也就找到两个python的PoC，一个漏扫的，一个远程利用的，还挺有意思，</p><p>我手里有三个Win10，一个1909的虚机，一个很早期版本的虚机，一个我自己的工作机（升级到了最新），</p><p>漏扫这个项目在https://github.com/cve-2020-0796/cve-2020-0796，</p><p>分别对三个Win10进行扫描，</p><p>python CVE-2020-0796_Scan_Vul.py 192.168.137.44，</p><p style="text-align: center;"><img class="rich_pages" data-ratio="0.37261146496815284" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ0KLN7kicSwEyGwoC6932Jy4FViaS83HiaD46fmZOtutz7Puic36m0u8tqkqpribLqxfAj9gicHSWibcMt1w/640?wx_fmt=png" data-type="png" data-w="942" style="" src="../Images/b83cb3e6c62b55fef95bd72bd1d01e1e.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ0KLN7kicSwEyGwoC6932Jy4FViaS83HiaD46fmZOtutz7Puic36m0u8tqkqpribLqxfAj9gicHSWibcMt1w/640?wx_fmt=png"/></p><p>1909的虚机确实报有漏洞，很早期版本的虚机报没漏洞，我自己的工作机也报有漏洞，都是关闭了主机防火墙才能扫出来，这么说来，对于没有共享文件夹出去，还开着主机防火墙的，即使有漏洞也不用担心。</p><p>远程利用这个项目在https://github.com/eerykitty/CVE-2020-0796-PoC，</p><p>给1909的虚机用上，直接干蓝屏，</p><p>python2.7 CVE-2020-0796.py 192.168.137.44 root password，</p><p style="text-align: center;"><img class="rich_pages" data-ratio="0.7067357512953368" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ0KLN7kicSwEyGwoC6932Jy4dsyj2uLgKN16gqKJWI71m0FNOgHXc27GBoibHEpmdEDiaic4zzZlzxwag/640?wx_fmt=png" data-type="png" data-w="965" style="" src="../Images/603eb7f28267ac58793bcecb96ac69dc.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ0KLN7kicSwEyGwoC6932Jy4dsyj2uLgKN16gqKJWI71m0FNOgHXc27GBoibHEpmdEDiaic4zzZlzxwag/640?wx_fmt=png"/></p><p>很早期版本的虚机确实没效果，我自己的工作机没敢试，哈哈。</p><p>等吧，估计很快远程利用拿反弹shell的PoC就能出来，那时再玩儿更有趣。</p><p>最后再说一句，咱们主机防火墙都开着，没大事儿，祝各位周末愉快。<br/></p>
+        
+</body>
+</html>

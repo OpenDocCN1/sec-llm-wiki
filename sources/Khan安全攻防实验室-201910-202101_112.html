@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>XStream远程执行代码CVE-2020-26217</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>XStream远程执行代码CVE-2020-26217</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAwMjQ2NTQ4Mg==&amp;mid=2247485008&amp;idx=1&amp;sn=dea4d228b831d6d71929013cf7a25b56&amp;chksm=9acb4df5adbcc4e363666809395a119026cf23012beb8ae7b5f82cc5132c86149326da71b298&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzAwMjQ2NTQ4Mg==&amp;mid=2247485008&amp;idx=1&amp;sn=dea4d228b831d6d71929013cf7a25b56&amp;chksm=9acb4df5adbcc4e363666809395a119026cf23012beb8ae7b5f82cc5132c86149326da71b298&amp;scene=27#wechat_redirect</a></blockquote><p><br/></p><p style="text-align: center;"><img class="rich_pages" data-ratio="0.3231197771587744" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/aPmkR80bcV3SribmxhsVoQiaKygOs2NzUzlUibJcIYCLcn317tRgrHWLoYkPUwkT3hmRB1VxNmTfjRCeLUZPuarKg/640?wx_fmt=png" data-type="png" data-w="359" style="" src="../Images/393140d01e37fbb558e214c2df4b7646.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/aPmkR80bcV3SribmxhsVoQiaKygOs2NzUzlUibJcIYCLcn317tRgrHWLoYkPUwkT3hmRB1VxNmTfjRCeLUZPuarKg/640?wx_fmt=png"/></p><p style="text-align: center;"><br/></p><p><strong><span style="font-size: 24px;">受影响的版本</span></strong></p><p>如果使用开箱即用的版本，则直到及包括1.4.13版的所有版本均会受到影响。没有用户受到影响，他们遵循该建议以白名单设置XStream的安全框架。</p><p><br/></p><p><strong><span style="font-size: 24px;">描述</span></strong><br/></p><p style="border-width: 0px;border-style: initial;border-color: initial;margin-bottom: 10px;color: rgb(0, 0, 0);font-family: helvetica, arial, sans-serif;font-size: 12px;text-align: start;white-space: normal;"><span style="vertical-align: inherit;">在解组时处理的流包含类型信息，以重新创建以前写入的对象。因此，XStream基于这些类型信息创建新的实例。攻击者可以操纵已处理的输入流，并替换或注入可以执行任意shell命令的对象。</span></p><p style="border-width: 0px;border-style: initial;border-color: initial;margin-bottom: 10px;color: rgb(0, 0, 0);font-family: helvetica, arial, sans-serif;font-size: 12px;text-align: start;white-space: normal;"><span style="vertical-align: inherit;">此问题是CVE-2013-7285的变体，这次使用的是Java运行时环境的不同类集，这些类都不是XStream默认黑名单的一部分。已经在CVE-2017-9805中针对Strut的XStream插件报告了相同的问题，但是XStream项目从未得到有关此问题的通知。</span></p><p style="border-width: 0px;border-style: initial;border-color: initial;margin-bottom: 10px;color: rgb(0, 0, 0);font-family: helvetica, arial, sans-serif;font-size: 12px;text-align: start;white-space: normal;"><span style="vertical-align: inherit;"><br/></span></p><p style="border-width: 0px;border-style: initial;border-color: initial;margin-bottom: 10px;color: rgb(0, 0, 0);font-family: helvetica, arial, sans-serif;font-size: 12px;text-align: start;white-space: normal;"><span style="vertical-align: inherit;">https://x-stream.github.io/CVE-2020-26217.html</span></p>
+        
+</body>
+</html>

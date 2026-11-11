@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>如何在冻死人的夏天清爽的手脱UPX（笔记）</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>如何在冻死人的夏天清爽的手脱UPX（笔记）</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzU1NjUyNTMxNA==&amp;mid=2247483659&amp;idx=1&amp;sn=177c50b6fd5f755eb1953f96e86445ce&amp;chksm=fbc2f366ccb57a704cdf503cc8301031635255f101ba03f1187fc517dd478131bc18434fe8cd&amp;scene=126&amp;sessionid=1681670673#rd">http://mp.weixin.qq.com/s?__biz=MzU1NjUyNTMxNA==&amp;mid=2247483659&amp;idx=1&amp;sn=177c50b6fd5f755eb1953f96e86445ce&amp;chksm=fbc2f366ccb57a704cdf503cc8301031635255f101ba03f1187fc517dd478131bc18434fe8cd&amp;scene=126&amp;sessionid=1681670673#rd</a></blockquote><p>（笔记）</p><p>调试工具：PEiD和OD</p><p><br/></p><p>方法一：单步跟踪法</p><p>1.查壳</p><p>2.OD载入</p><p>操作方法：只执行向下跳转，遇到向上时，切到下一行，右键断点运行到所选位置（F4）或先断点然后运行，之后再取消断点（F2）。一直单步到大幅跨度的点就是真正的入口，接着开始手动脱壳。     popab（出栈）</p><p>3.脱壳（两种方式）</p><p>方式一：OD插件</p><p>方式二：LPE</p><p><br/></p><p>方法二：ESP定律法</p><p>1.开局单步，后利用ESP数据窗口跟随，再设置硬件访问断点（断点要及时擦除），继续单步运行到达入口</p><p>2.手动脱壳</p><p>pushad （入栈）</p><p>dd XXXXX</p><p>hr XXXXX</p><p><br/></p><p>方法三：2次镜像法</p><p>1.内存映射（M）程序段寻找.rsrc，下断，运行</p><p>2.第二次找00401000UPX0，下断，运行，</p><p>3.单步到达入口</p><p>4.脱壳</p><p><br/></p><p>方法四：一步直达</p><p>从入栈点查找出栈点，适合大多数UPX</p><p><br/></p><p>此致</p><p>祝夏安</p><p><br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>特斯拉解决了导致内部网络易受攻击的CORS配置错误</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>特斯拉解决了导致内部网络易受攻击的CORS配置错误</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247486024&amp;idx=1&amp;sn=d90a00fa6e16b371c8444f3bee390217&amp;chksm=fa76ebb6cd0162a01a6ce758ac93ae8f2883c7e2562f8cf8ace4aa08ed100dd70592c874b03d&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247486024&amp;idx=1&amp;sn=d90a00fa6e16b371c8444f3bee390217&amp;chksm=fa76ebb6cd0162a01a6ce758ac93ae8f2883c7e2562f8cf8ace4aa08ed100dd70592c874b03d&amp;scene=27#wechat_redirect</a></blockquote><blockquote><p>在安全研究人员证明他们可以从汽车制造商的内部网络中窃取数据后，特斯拉是修复跨域资源共享(CORS)配置错误的几个组织之一。这是根据Truffle Security的说法，该公司表示其研究人员从通过各种漏洞赏金计划提交的CORS漏洞中赚取了“几千美元”。在为该项目定制的开发工具包的帮助下，这些缺陷验证了Truffle Security最初的假设，即“大型内部企业网络极有可能产生有影响的CORS配置错误”。</p></blockquote><p><img data-ratio="0.5625" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJkZHVibtzEIdYRLSgRzvCMtTchUFlL6TZE2HCgRNIXzWby25FOLlK6Kot7EskCYcg2V13Xyfq5rBQg/640?wx_fmt=jpeg" data-type="jpeg" data-w="1200" height="675" width="1200" src="../Images/93579c42c9125e7750375fdc1d63a7f8.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJkZHVibtzEIdYRLSgRzvCMtTchUFlL6TZE2HCgRNIXzWby25FOLlK6Kot7EskCYcg2V13Xyfq5rBQg/640?wx_fmt=jpeg"/></p><p>Truffle Security在博客文章和随附视频中详细介绍了其团队如何利用域名仿冒来规避漏洞赏金计划通常施加的限制（嵌入在下面）。</p><p>“由于对横向移动和社会工程的严格规定，内部网络通常不在漏洞赏金的范围内，”它指出。“我们知道我们离这条线很近，但我们不相信它已经被越过了。”</p><p>CORS是一种浏览器安全机制，它提供对位于给定域之外的资源的受控访问。在这样做时，它通过抵消同源策略(SOP)的刚性来帮助开发人员，该策略限制一个源上的脚本访问另一个源上的数据。</p><p>但是，过于宽松的配置可能会为跨域攻击敞开大门。</p><p>Truffle Security的研究以“通配符”配置为中心，通过不发送登录会话信息，对于面向外部的网站来说通常是安全的，“但对于不使用身份验证的面向内部的Web应用程序来说，可能会出现严重错误”。</p><p>这是因为“人们的浏览器跨越多个网络，所以当受害者访问一个恶意网站时，该恶意网站可以攻击内部网络上的所有内部应用程序。”</p><p>Truffle Security已邀请其他漏洞猎手使用它为该项目构建的工具来瞄准类似的漏洞。</p><p>Of-CORS是一个Python3应用程序，它可以“偷偷摸摸地针对CORS错误配置的目标企业网络使用域名仿冒，并在发现数据时给家里打电话”。</p><p>至于侦察，建议漏洞猎手通过检查Github存储库、Android构建甚至StackOverflow线程中的旧提交来识别目标公司正在使用的内部二级域。</p><p>Truffle Security然后建议购买利用“当您删除第一个或最后一个字符时发生的逐一复制粘贴错误”的域名仿冒域名。</p><p>例如，在特斯拉的案例中，eslamotors.com在几天内就诱捕了一名受害者。由of-CORS注册的服务人员随后探测了大约150个teslamotors.com子域，发现其中12个被配置为允许使用CORS进行跨源访问。</p><p>“我们展示了通过设置一个无害的陷阱并等待员工进入其中来访问和泄露特斯拉内部网络数据的能力，”博客文章说。“愉快。”</p><p>批准公开披露的特斯拉因通过其Bugcrowd漏洞赏金计划“迅速”升级、解决和支付高严重性问题而受到称赞。</p><p><br/></p><p style="display: none;"><mp-style-type data-value="3"/></p>
+        
+</body>
+</html>

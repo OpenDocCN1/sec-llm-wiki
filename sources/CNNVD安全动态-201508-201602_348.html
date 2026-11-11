@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>新的Android敲诈软件使用XMPP协议</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>新的Android敲诈软件使用XMPP协议</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxODY1OTM5OQ==&amp;mid=211837813&amp;idx=3&amp;sn=2c1b6a31f1f1ec8cd3aaff2db576fa94&amp;chksm=1286225d25f1ab4bf31cdbd06ec26f61cf0e0387eaecd15da98218a0d9b9c71cc6ba4fbe29ae&amp;scene=126&amp;sessionid=1681378467#rd">http://mp.weixin.qq.com/s?__biz=MzAxODY1OTM5OQ==&amp;mid=211837813&amp;idx=3&amp;sn=2c1b6a31f1f1ec8cd3aaff2db576fa94&amp;chksm=1286225d25f1ab4bf31cdbd06ec26f61cf0e0387eaecd15da98218a0d9b9c71cc6ba4fbe29ae&amp;scene=126&amp;sessionid=1681378467#rd</a></blockquote><p>       一个Android的勒索软件的新变种,依靠即时通讯协议XMPP与C&amp;C服务器建立通信。</p><p>       根据安全研究人员在检查软件时发现一个新的Android勒索软件用技术手段伪装成视频播放器,这个勒索软件实现了一个新的不同于其他任何勒索软件的通信方法。这个Android勒索软件是不同于任何其他的即时通讯协议的,它使用XMPP(可扩展消息传递和到场协议)与C&amp;C服务器建立通信。</p><p>       “我们发现勒索软件样本采用不同的方法进行通信。它采用了常见的即时通讯协议XMPP(可扩展消息传递和到场协议)从被感染的设备发送信息和接收指令,如用一个给定的密钥加密用户的文件,发送短信,拨打一个电话号码等”在美国发布的一份报告中提到。“使用XMPP协议使它更加难以跟踪恶意软件与C&amp;C服务器的交流信息,以及区别于其他合法的XMPP流量,也不能阻止监测到的可疑url。此外,这种技术使用外部库函数来处理通信,恶意软件不需要任何额外的应用程序安装在设备上。同时XMPP支持TLS,客户机和服务器之间的通信也会在本地加密。”</p><p>       开始时,受害者下载Flash播放器应用程序安装,然后会感染,勒索软件会要求他们批准同意请求的权限,同时勒索软件会加密所有的移动设备上的数据。</p><p>       据受害者声称Android设备上会显示赎金消息来自国家安全局,同时文本警告用户侵犯版权,如果受害者在48小时内不支付赎金,软件就会威胁要求用户交三倍的罚款,。这已经不是第一次骗子滥用国家安全局消息在社会里骗钱,勒索。</p><p>       研究人员已经发现了用于控制Android勒索软件的几十个XMPP账户已经被废除了。“通过我们的研究,我们发现了XMPP相关被感染的几十个C&amp;C账户。在过去几周里,我们已经通知相关XMPP服务器运营商把这些账户废除。这一行动将有效地破坏与任何当前被感染的客户端和防止恶意软件作者控制这些设备之间的通信。此外,新感染的这些样本设备却能逃过这次行动。不幸的是因为从这一运动检查出的新样本几乎每天都在出现。”</p><p>       大多数被感染的设备是在美国,其次是亚洲。到目前为止,可能成千上万的设备已经被感染,根据检查点近百分之10的受害者得知,已经有部分用户支付费用给网络罪犯了。赎金范围从200美元到500美元之间。专家们注意到,骗子精心赎金的消息基于受害者的地理位置以及更可信的国家安全局的消息。</p><p>       （转载360安全播报）</p>
+        
+</body>
+</html>

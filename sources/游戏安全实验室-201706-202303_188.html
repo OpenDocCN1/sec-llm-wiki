@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>【端游实战篇】植物大战僵尸自动游戏实现</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>【端游实战篇】植物大战僵尸自动游戏实现</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzIyMzc0NDU0Ng==&amp;mid=2247484738&amp;idx=2&amp;sn=18e79ae1898c7088b697b5a9194bc6fa&amp;chksm=e818c20fdf6f4b19f8103698991aa1dba25b3dafd8d759d8ca83e62d552394a4256bca26f00d&amp;scene=126&amp;sessionid=1681668777#rd">http://mp.weixin.qq.com/s?__biz=MzIyMzc0NDU0Ng==&amp;mid=2247484738&amp;idx=2&amp;sn=18e79ae1898c7088b697b5a9194bc6fa&amp;chksm=e818c20fdf6f4b19f8103698991aa1dba25b3dafd8d759d8ca83e62d552394a4256bca26f00d&amp;scene=126&amp;sessionid=1681668777#rd</a></blockquote><p style="line-height: 25.6px;white-space: normal;"><span style="font-size: 14px;"/></p><section style="line-height: 25.6px;white-space: normal;box-sizing: border-box;background-color: rgb(255, 255, 255);"><section class="Powered-by-XIUMI V5" powered-by="xiumi.us" style="box-sizing: border-box;"><section class="" style="margin-top: 10px;margin-bottom: 10px;box-sizing: border-box;text-align: center;"><section class="" style="padding: 2px 3px;display: inline-block;width: 558px;vertical-align: top;line-height: 1.6;box-sizing: border-box;background-image: url(&quot;http://mmbiz.qpic.cn/mmbiz_gif/cZMMEC3jlQtf6iciaGDZMYqWKqt5ubjPY6Ad92p9BFWX0PJjBbiaucwprIic8zfW2PKAbKWibLpm38LLUkQ5P1gGxGA/0?wx_fmt=gif&quot;);background-attachment: scroll;background-size: auto;background-position: 0% 0%;background-repeat: repeat;"><section class="Powered-by-XIUMI V5" powered-by="xiumi.us" style="box-sizing: border-box;"><section class="" style="margin-top: 1px;margin-bottom: 1px;box-sizing: border-box;"><section class="" style="padding: 10px;display: inline-block;width: 552px;border: 1px solid transparent;box-sizing: border-box;background-color: rgb(254, 255, 255);"><section class="Powered-by-XIUMI V5" powered-by="xiumi.us" style="box-sizing: border-box;"><section class="" style="box-sizing: border-box;"><section class="" style="text-align: left;box-sizing: border-box;"><p><span style="font-size: 14px;">致力于分享游戏安全技术，提供专业的游戏安全资讯</span></p></section></section></section></section></section></section></section></section></section></section><p style="line-height: 25.6px;white-space: normal;"><span style="font-size: 14px;"/></p><p class="p0"><strong><span style="font-size: 14px;">一、分析</span></strong></p><p/><p class="p0"><span style="font-size: 14px;">最近还在完善[PlantsVsZombies]的外挂功能，思考着如果人不在的时候，能有一个外挂帮助挂机，继续游戏就好了，于是有了写一个机器人的想法。</span></p><p/><p class="p0"><span style="font-size: 14px;">如果需要实现自动游戏，肯定需要从游戏中获得反馈的数据。比如在僵尸吃掉我们的植物的时候，外挂应该怎么样去反击，当一大波僵尸来临的时候，我们又应该怎么样去种植植物防守。</span></p><p/><p class="p0"><span style="font-size: 14px;">对于植物大战僵尸这款游戏，想要获得反馈数据，可以通过读取内存中的数据的方法，比如判断僵尸是否被制造，攻击植物是否发生，植物生命值是否减少为0……等等逻辑判断。另外一个可行的办法就是从屏幕上读取像素来获得。在通常情况下</span></p><p/><blockquote><p><img class="" data-ratio="0.2135593220338983" data-src="https://mmbiz.qpic.cn/mmbiz_png/cZMMEC3jlQsYbzSN4ib5dQHpvdHSCMUWnOg9CEmkPmSmTy9g5lu8MGLI8diaibXK1X3VFcMGq6qeGWrfcQBmlvqQg/640?wx_fmt=png" data-type="png" data-w="295" src="../Images/3c8d9de43aa34a43fd6da1ac60f63177.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/cZMMEC3jlQsYbzSN4ib5dQHpvdHSCMUWnOg9CEmkPmSmTy9g5lu8MGLI8diaibXK1X3VFcMGq6qeGWrfcQBmlvqQg/640?wx_fmt=png"/></p></blockquote><p class="p0"><span style="font-size: 14px;">代表了游戏进度，红色的地方代表这是否为攻击的界点（即一大波僵尸出现的地方）</span></p><p/><p class="p0"><span style="font-size: 14px;"> </span></p><p class="p0"><span style="font-size: 14px;">在僵尸攻击植物的时候界面显示为：</span></p><p/><blockquote><p><img class="" data-ratio="0.5770925110132159" data-src="https://mmbiz.qpic.cn/mmbiz_png/cZMMEC3jlQsYbzSN4ib5dQHpvdHSCMUWnotCnf0MlS0cqltpWWFwpL2v3KgWdsKSmjJgT3GPIItbVTJGhcUH7SA/640?wx_fmt=png" data-type="png" data-w="227" src="../Images/4a7b196df360d3cbac7056ebe46e4c8a.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/cZMMEC3jlQsYbzSN4ib5dQHpvdHSCMUWnotCnf0MlS0cqltpWWFwpL2v3KgWdsKSmjJgT3GPIItbVTJGhcUH7SA/640?wx_fmt=png"/></p></blockquote><p class="p0"><span style="font-size: 14px;">攻击之后为</span></p><p/><blockquote><p><img class="" data-ratio="0.6301369863013698" data-src="https://mmbiz.qpic.cn/mmbiz_png/cZMMEC3jlQsYbzSN4ib5dQHpvdHSCMUWn6GTH3RIuPghD8cMyrwDC3nibyCfYWicAQrNGcJpNs7bF0C1EQS05k7sA/640?wx_fmt=png" data-type="png" data-w="219" src="../Images/f0e6aa54b4183b4947ab2ece9d5c29d9.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/cZMMEC3jlQsYbzSN4ib5dQHpvdHSCMUWn6GTH3RIuPghD8cMyrwDC3nibyCfYWicAQrNGcJpNs7bF0C1EQS05k7sA/640?wx_fmt=png"/></p></blockquote><p class="p0"><span style="font-size: 14px;">像素明显发生了变化，于是，我们就可以通过像素采集来获得游戏中的信息了。</span></p><p/><p class="p0"><span style="font-size: 14px;"> </span></p><p class="p0"><strong><span style="font-size: 14px;">二、实现方式</span></strong></p><p/><p class="p0"><span style="font-size: 14px;">首先我们利用通过代码获得游戏在屏幕中的绝对位置</span></p><pre class="language-markup"><span style="font-size: 14px;">hGameWnd = FindWindow(NULL,szwindow);
+	if (hGameWnd == NULL)
+	{
+		printf("error\n");
+		return 1;
+	}
+	RECT lrect;
+	GetWindowRect(hGameWnd,&amp;lrect);
+	p.x = lrect.right;
+	p.y = lrect.bottom;</span></pre><blockquote><p class="p0"><span style="font-size: 14px;">然后通过按键精灵的抓图功能，算出偏移，并抓取你敢兴趣地方的像素点</span></p><p><img class="" data-ratio="0.8140794223826715" data-src="https://mmbiz.qpic.cn/mmbiz_png/cZMMEC3jlQsYbzSN4ib5dQHpvdHSCMUWn98icadJbSflYRG2K6U76JplhgNSujZAvZgtq0DQeSXTXCmx71kfczKg/640?wx_fmt=png" data-type="png" data-w="554" src="../Images/340791f371c56bac617e775390a31bca.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/cZMMEC3jlQsYbzSN4ib5dQHpvdHSCMUWn98icadJbSflYRG2K6U76JplhgNSujZAvZgtq0DQeSXTXCmx71kfczKg/640?wx_fmt=png"/></p><p class="p0"><span style="font-size: 14px;">接下来就是判断像素了（下面是部分判断逻辑）</span></p></blockquote><pre class="language-markup"><span style="font-size: 14px;">while (true)
+	{
+		//最后一波攻击
+		COLORREF cr2 = GetPixel(hdc,dwx-188,dwy-15);
+		if(cr2 != 0)
+		{
+			
+			PostMessage(hthreadwnd,WM_ATTACKWAVE,ATTACK_SECOND,0);
+			//判断坚果是否没有了，如果遭到攻击，则补充坚果，同事种植炸
+			break;
+		}
+		Sleep(3000);
+	
+	}
+		
+		COLORREF dwcr_nut[5];
+		DWORD x,y;
+		x = dwx-440;
+		y = dwy-433;
+		for (int i = 0; i &lt; 5; i++)
+		{
+			dwcr_nut[i] = GetPixel(hdc,x,y+i*100);
+		}
+		while (true)
+		{
+			for (int i = 0; i &lt; 5; i++)
+			{
+				
+				if(dwcr_nut[i] != GetPixel(hdc,x,y+i*100))
+				{
+					PostMessage(hthreadwnd,WM_ATTACKWAVE,ATTACK_NUT,i);
+					continue;
+				}
+			}
+			DWORD buf_read,br;
+			ReadProcessMemory(hProcess, (PVOID)dwAddrbase, &amp;buf_read, sizeof(buf_read), &amp;br);
+			ReadProcessMemory(hProcess, (PVOID)(buf_read+dwAddroffset_money_first), &amp;buf_read, sizeof(buf_read), &amp;br);
+			ReadProcessMemory(hProcess, (PVOID)(buf_read+0xB8), &amp;buf_read, sizeof(buf_read), &amp;br);
+
+			//没有僵尸，判定关卡结束，终止线程
+			if(buf_read == 0)
+				return 0 ;
+
+			Sleep(3000);
+		}</span></pre><p class="p0"><strong><span style="font-size: 14px;">三、结论：</span></strong></p><p/><p class="p0"><span style="font-size: 14px;">结合内存和像素判断，可以更精确的知道游戏中的信息，进而采取相应的操作（程序中将自定义了windows消息，将地址和当前状态写入windows消息参数，发送到对应的消息处理过程中进行相应处理，进而实现了自动游戏）。</span></p><p style="line-height: 25.6px;white-space: normal;"><br/></p><p style="line-height: 25.6px;white-space: normal;"><span style="font-size: 14px;color: rgb(178, 178, 178);">*转载请注明来自游戏安全实验室（GSLAB.QQ.COM）</span></p><p style="line-height: 25.6px;white-space: normal;"><img class="" data-ratio="0.465" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/cZMMEC3jlQtf6iciaGDZMYqWKqt5ubjPY6jfDYOfMJm4DibKzVNic0h5ia4bdmAiaiciczncTkvevkFuXSdeSo0YfxjyEg/640?wx_fmt=jpeg" data-type="jpeg" data-w="400" style="word-wrap: break-word;border: none;" src="../Images/508f85576bc3e9ea04094b90642311d2.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/cZMMEC3jlQtf6iciaGDZMYqWKqt5ubjPY6jfDYOfMJm4DibKzVNic0h5ia4bdmAiaiciczncTkvevkFuXSdeSo0YfxjyEg/640?wx_fmt=jpeg"/></p><p style="line-height: 25.6px;white-space: normal;"><br/></p><section style="line-height: 25.6px;white-space: normal;box-sizing: border-box;background-color: rgb(255, 255, 255);"><section class="Powered-by-XIUMI V5" powered-by="xiumi.us" style="box-sizing: border-box;"><section class="" style="box-sizing: border-box;"><section class="" style="padding-left: 10px;display: inline-block;vertical-align: top;width: 500.391px;box-sizing: border-box;"><section class="Powered-by-XIUMI V5" powered-by="xiumi.us" style="box-sizing: border-box;"><section class="" style="box-sizing: border-box;"><section class="" style="box-sizing: border-box;"><section style="box-sizing: border-box;"><section class="Powered-by-XIUMI V5" powered-by="xiumi.us" style="box-sizing: border-box;"><section class="" style="margin-top: 0.5em;box-sizing: border-box;"><section class="" style="height: 1px;box-sizing: border-box;background-color: rgb(249, 110, 87);"/><section class="" style="margin-top: 0.3em;margin-bottom: 0.3em;height: 3px;box-sizing: border-box;background-color: rgb(249, 110, 87);"/><section class="" style="padding: 0.5em;border: 1px solid rgb(249, 110, 87);box-shadow: rgb(226, 226, 226) 0px 16px 1px -13px;box-sizing: border-box;"><section class="Powered-by-XIUMI V5" powered-by="xiumi.us" style="box-sizing: border-box;"><section class="" style="box-sizing: border-box;"><section class="" style="color: rgb(64, 84, 115);box-sizing: border-box;"><p style="box-sizing: border-box;">回复“<span style="color: rgb(255, 41, 65);">游戏名</span>”，有惊喜哦~</p><p style="box-sizing: border-box;">点击下方“阅读原文”查看更多</p></section></section></section></section></section></section><section class="Powered-by-XIUMI V5" powered-by="xiumi.us" style="box-sizing: border-box;"><section class="" style="box-sizing: border-box;"><section class="" style="font-size: 32px;color: rgb(249, 110, 87);box-sizing: border-box;">↓↓↓ </section></section></section></section></section></section></section></section></section></section></section>
+        
+</body>
+</html>

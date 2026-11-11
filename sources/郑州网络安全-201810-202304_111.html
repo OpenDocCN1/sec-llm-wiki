@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>NETGEAR（美国网件）解决捆绑游戏组件中的路由器漏洞CVE-2022-40619，CVE-2022-40620</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>NETGEAR（美国网件）解决捆绑游戏组件中的路由器漏洞CVE-2022-40619，CVE-2022-40620</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485599&amp;idx=1&amp;sn=fc707a8430c834f63edfabed7e7ddd54&amp;chksm=fa76e961cd01607729957fe3d8b3516301e24929b7281c92b2f32fa2a6a7489ab4657b86aca5&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485599&amp;idx=1&amp;sn=fc707a8430c834f63edfabed7e7ddd54&amp;chksm=fa76e961cd01607729957fe3d8b3516301e24929b7281c92b2f32fa2a6a7489ab4657b86aca5&amp;scene=27#wechat_redirect</a></blockquote><blockquote><p>NETGEAR（美国网件）路由器和奥秘WiFi系统固件中的第三方模块中的漏洞可能导致受影响设备上的任意代码执行。根据欧洲物联网安全公司9月15日发布的安全公告，有问题的组件是由中国厦门讯网科技开发的“第三方游戏速度提升服务”FunJSQ，包含在NETGEAR固件图像中一把钥匙。现在已修补，高严重性漏洞包括未经身份验证的命令注入漏洞(CVE-2022-40619)，以及启用中间操纵器(MitM)攻击的不安全自动更新机制(CVE-2022-40620)，可能导致远程代码执行（RCE）。</p></blockquote><p><img class="rich_pages wxw-img" data-ratio="0.5625" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJlfO0LA71KjGqNTq81cqGnB9SRVAaLWpXl598DddNbJjI0PCicLNwdGe1rmcvowubm1NLxUsZVA6Gw/640?wx_fmt=jpeg" data-type="jpeg" data-w="1200" height="675" width="1200" src="../Images/4c7114e57059423b7784ff8097e9a06a.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJlfO0LA71KjGqNTq81cqGnB9SRVAaLWpXl598DddNbJjI0PCicLNwdGe1rmcvowubm1NLxUsZVA6Gw/640?wx_fmt=jpeg"/></p><p>根据NETGEAR的一份公告，这两个问题的CVSS评分均为7.7，只有在攻击者拥有受害者的WiFi密码或访问路由器的以太网连接时才能被利用。</p><p>此外，ONEKEY表示，FunJSQ似乎只有在服务质量(QoS)功能（该功能优先考虑VoIP或在线游戏等应用程序的互联网流量）也被激活时才启用。</p><p>由于三个问题，不安全的自动更新机制导致从WAN接口执行任意代码。</p><p>据ONEKEY研究人员称，首先，不安全的通信源于“显式禁用证书验证(-k)，这使我们能够篡改从服务器返回的数据”。</p><p>其次，“更新包只是通过哈希校验和验证，包没有以任何方式签名”。</p><p>最后，“任意提取到具有提升权限的根路径[允许]控制更新包的任何人覆盖设备上任何位置的任何内容（这非常信任第三方供应商）”。</p><p>命令注入问题是在对HTTP服务器funjsq_httpd暴露的apply_bind.cgi的调查期间发现的。</p><p>该端点接受了action_mode参数，这些参数需要由使用硬编码字符串和设备MAC地址的弱算法生成的身份验证令牌。</p><p>生成的令牌被发送到远程FunJSQ服务以供curl验证。</p><p>“我们发现curl命令行是使用funjsq_access_token参数值构建的，该值在创建完整命令行之前由用户控制和未经处理，”研究人员透露。</p><p>ONEKEY于5月19日向NETGEAR报告了该漏洞，这家硅谷供应商于9月9日披露了该漏洞的详细信息以及固件更新。</p><p>受影响的路由器型号包括R6230、R6260、R7000、R8900、R9000和XR300，而易受攻击的奥秘WiFi系统型号是RBR20、RBS20、RBR50和RBS50。</p><p>ONEKEY表示，该研究强调了“广泛部署的嵌入式设备中未记录和易受攻击的软件组件”所构成的供应链威胁。</p><p>研究人员敦促供应商“确保所有第三方供应商都遵守至少与他们自己相同的网络安全标准”。</p><p><br/></p><p style="display: none;"><mp-style-type data-value="3"/></p>
+        
+</body>
+</html>

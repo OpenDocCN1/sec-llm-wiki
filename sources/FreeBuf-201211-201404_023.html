@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>技术宅打造全能美剧播放器</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>技术宅打造全能美剧播放器</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=200130646&amp;idx=1&amp;sn=110be317c916143b9e57ef422c8f1e3a&amp;chksm=28f652dd1f81dbcb3521235d6c27e555581b34f709aa5810c6f9c7565a1f499dcf42bda84b9a&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=200130646&amp;idx=1&amp;sn=110be317c916143b9e57ef422c8f1e3a&amp;chksm=28f652dd1f81dbcb3521235d6c27e555581b34f709aa5810c6f9c7565a1f499dcf42bda84b9a&amp;scene=27#wechat_redirect</a></blockquote><h3 style=""><span style="margin: 0px; padding: 0px; color: rgb(38, 38, 38); font-size: 20px;"><strong style="margin: 0px; padding: 0px;">1:前言</strong></span></h3><p><span style="margin: 0px; padding: 0px; color: rgb(38, 38, 38); font-size: 20px;"><strong style="margin: 0px; padding: 0px;"><br/></strong></span></p><p style="">看到有同仁发《权力的游戏》自动追剧脚本,老衲也来凑个热闹…</p><p style=""><br/></p><p style="">移动端最好的播放器非云播君莫属了,极速而方便,高清而无码,可惜最近资源被和谐,每次有美剧更新需要用浏览器手工添加播放源或者pc端添加,很是麻烦的说。于是就简单diy了下云播1.9 for Android ,使其支持自定义搜索引擎(比如人人影视,xxx资源站等),并且修复了原来搜索结果列表页标题的bug,为了迎接Game of Thrones Season 4 的回归,特记录下修改过程。</p><p style=""><br/></p><p style=""><img data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR3icOak0HzL9x4bkYibqnTchkvefnt9dNyzzGStBicf4ibKlrBntsqv6dY5SJ1BlGuccDRjbUhT36Xibt8g/0" src="../Images/5a1f6e4c6eca8a8a35798fff6a383ba3.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR3icOak0HzL9x4bkYibqnTchkvefnt9dNyzzGStBicf4ibKlrBntsqv6dY5SJ1BlGuccDRjbUhT36Xibt8g/0"/></p><h3 style=""><span style="margin: 0px; padding: 0px; color: rgb(38, 38, 38); font-size: 20px;"><strong style="margin: 0px; padding: 0px;"><br/></strong></span></h3><h3 style=""><span style="margin: 0px; padding: 0px; color: rgb(38, 38, 38); font-size: 20px;"><strong style="margin: 0px; padding: 0px;">2:添加yyets.com搜索引擎</strong></span></h3><p style=""><br/></p><p style="">反编译搜索引擎代码<br style="margin: 0px; padding: 0px;"/><br/></p><p style="">com\xunlei\cloud\action\search\AdviseEngine.java  89 行</p><p style=""><br/></p><pre class="prettyprint lang-java prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px;">try
+    {
+      str = SearchAdviceEngineListResp.getDomainName(paramString);
+      if (str.equalsIgnoreCase("btdigg.org"))
+      {
+        localAdviseEngine.url_pattern = "http://btdigg.org/search?q={searchTerms}&amp;p={page}";
+        localAdviseEngine.multi_page = true;
+        localAdviseEngine.page_start_point = 0;
+        return localAdviseEngine;
+      }
+      if (str.equalsIgnoreCase("so.com"))
+      {
+        localAdviseEngine.url_pattern = "http://www.so.com/s?q={searchTerms}+site%3Abtdigg.org&amp;pn={page}";
+        localAdviseEngine.multi_page = true;
+        localAdviseEngine.page_start_point = 1;
+        return localAdviseEngine;
+      }
+    }
+    catch (URISyntaxException localURISyntaxException)
+    {
+      localURISyntaxException.printStackTrace();
+      return localAdviseEngine;
+    }
+    if (str.equalsIgnoreCase("torrentkitty.com"))
+    {
+      localAdviseEngine.url_pattern = "http://www.torrentkitty.com/search/{searchTerms}/{page}";
+      localAdviseEngine.multi_page = true;
+      localAdviseEngine.page_start_point = 1;
+      return localAdviseEngine;
+    }
+    if (str.equalsIgnoreCase("kuaichuanmirror.com"))
+    {
+      localAdviseEngine.url_pattern = "http://www.kuaichuanmirror.com/search/{searchTerms}/";
+      localAdviseEngine.multi_page = false;
+      localAdviseEngine.page_start_point = 1;
+    }</pre><p style=""><br/></p><p style="">挖槽  竟然内置四大毛片搜索引擎 !!!<br style="margin: 0px; padding: 0px;"/><br/></p><p style="">随便改掉一个即可<br style="margin: 0px; padding: 0px;"/><br/></p><p style="">由于内置引擎只识别磁力链接 需要一个脚本文件来做中转(代码见最后链接)<br style="margin: 0px; padding: 0px;"/><br/></p><p style="">输出格式为</p><p style=""><br/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px;">magnet:?xt=urn:btih:hash1&amp;title1&lt;/br&gt;magnet:?xt=urn:btih:hash2&amp;title2&lt;/br&gt;</pre><p style=""><br/></p><p style="">修改 smali\com\xunlei\cloud\action\search\AdviseEngine.smali   239 行</p><p style=""><br/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px;">.line 127 
+:cond_1 
+const-string v2, "yyets.com" 
+invoke-virtual {v0, v2}, Ljava/lang/String;-&gt;equalsIgnoreCase(Ljava/lang/String;)Z 
+move-result v2 
+if-eqz v2, :cond_2 
+.line 128 
+const-string v0, "http://www.ttst.com/y2c.php?keyword={searchTerms}&amp;page={page}" 
+iput-object v0, v1, Lcom/xunlei/cloud/action/search/AdviseEngine;-&gt;url_pattern:Ljava/lang/String;
+.line 129 
+const/4 v0, 0x1</pre><h3 style=""><span style="margin: 0px; padding: 0px; color: rgb(38, 38, 38); font-size: 20px;"><strong style="margin: 0px; padding: 0px;"><br/></strong></span></h3><h3 style=""><span style="margin: 0px; padding: 0px; color: rgb(38, 38, 38); font-size: 20px;"><strong style="margin: 0px; padding: 0px;">3:修正标题bug</strong></span></h3><p style=""><br/></p><p style="">云播在使用第三方搜索引擎时,发现结果列表页面的标题全部是随机的字符串<br/></p><p style=""><br/></p><p style=""><img data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR3icOak0HzL9x4bkYibqnTchkvBeIwO6kDgTVFiafUI3exkT1tiaLZYE0n0ZduPGlo01KuVOO2S2HfVQMw/0" src="../Images/1818395899aa71a435fb9dfef17cb443.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR3icOak0HzL9x4bkYibqnTchkvBeIwO6kDgTVFiafUI3exkT1tiaLZYE0n0ZduPGlo01KuVOO2S2HfVQMw/0"/></p><p style=""><br/></p><p style="">查看对应的dalvik代码<br style="margin: 0px; padding: 0px;"/><br/></p><p style="">smali\com\xunlei\cloud\action\search\AdviseEngine.smali   990行</p><p style=""><br/></p><pre class="prettyprint lang-java prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px;">const-string v0, "magnet:\\?xt=urn:btih:([A-Za-z\\d]{32,})&amp;?"      //批量正则   遍历结果数组  ..... invoke-static {v0, v1}, Ljava/util/regex/Pattern;-&gt;compile(Ljava/lang/String;I)Ljava/util/regex/Pattern; ..... invoke-virtual {v5}, Ljava/util/regex/Matcher;-&gt;find()Z
+move-result-object v0
+ .line 88 invoke-virtual {v0}, Ljava/lang/String;-&gt;length()I
+move-result v1
+add-int/lit8 v1, v1, -0x1 invoke-virtual {v0, v1}, Ljava/lang/String;-&gt;charAt(I)C 
+move-result v1.line 89const/16 v6, 0x26if-ne v1, v6, :cond_4.line 90invoke-virtual {v0}, Ljava/lang/String;-&gt;length()I
+move-result v1
+add-int/lit8 v1, v1, -0x1invoke-virtual {v0, v3, v1}, Ljava/lang/String;-&gt;substring(II)Ljava/lang/String; move-result-object v0
+    move-object v1, v0
+    .line 92    :goto_1
+    const/16 v0, 0x14    invoke-virtual {v1}, Ljava/lang/String;-&gt;length()I
+    move-result v6
+    invoke-virtual {v1, v0, v6}, Ljava/lang/String;-&gt;substring(II)Ljava/lang/String;    move-result-object v0
+    .line 93    invoke-static {v0, v2}, Lcom/xunlei/cloud/action/search/g;-&gt;a(Ljava/lang/String;I)Ljava/lang/String; // str2.substring(20, str2.length())    move-result-object v6
+ .......line 105 
+iput-object v6, v0, Lcom/xunlei/cloud/action/search/SnifferData;-&gt;title:Ljava/lang/String;.line 106 
+ iput-object v1, v0, Lcom/xunlei/cloud/action/search/SnifferData;-&gt;url:Ljava/lang/String;.line 107 
+ iput-object v6, v0, Lcom/xunlei/cloud/action/search/SnifferData;-&gt;hash:Ljava/lang/String;</pre><p style=""><br/></p><p style="">可以看到,标题被直接赋值给  magnet 的 hash 了  …..<br style="margin: 0px; padding: 0px;"/><br/></p><p style="">修改为</p><p style=""><br/></p><pre class="prettyprint lang-java prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px;">ArrayList localArrayList = new ArrayList();
+  Matcher localMatcher = Pattern.compile(".*?&lt;/br&gt;", 2).matcher(   //中转脚本每行用&lt;/br&gt; 分割
+    paramString);
+  if (!localMatcher.find()) {
+   return;
+  }
+  String str1;
+  str1 = localMatcher.group();
+  for (String str2 = str1.substring(0, 60);; str2 = str1) {
+   String str3 = str2.substring(20, 60);
+   String str4 = str1.substring(61, str1.length() - 5);
+   SnifferData localSnifferData = new SnifferData();
+   localSnifferData.title = str4;
+   localSnifferData.url = str2;
+   localSnifferData.hash = str3;
+   localArrayList.add(localSnifferData);
+   break;
+  }</pre><p style=""><br/></p><p style="">对应的dalvik 代码(具体见后面链接)</p><p style=""><br/></p><pre class="prettyprint lang-java prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px;">locals 15 //15个寄存器
+const-string v0, ".*?&lt;/br&gt;"
+const/4 v10, 0x0
+const/16 v11, 0x3c // 60
+const/16 v12, 0x3d //61
+const/4 v1, 0x2
+invoke-static {v0, v1}, Ljava/util/regex/Pattern;-&gt;compile(Ljava/lang/String;I)Ljava/util/regex/Pattern;
+move-result-object v0
+invoke-virtual {v0, v10, v11}, Ljava/lang/String;-&gt;substring(II)Ljava/lang/String;
+                                                                                                              
+move-result-object v8
+move-object v1, v8
+                                                                                                              
+.line 92
+:goto_1
+move-object v9, v0     // copy 一份v0   magnet:?xt=urn:btih:hash&amp;title
+const/16 v0, 0x14
+                                                                                                              
+invoke-virtual {v1}, Ljava/lang/String;-&gt;length()I
+                                                                                                              
+........
+new-instance v0, Lcom/xunlei/cloud/action/search/SnifferData;
+invoke-direct {v0}, Lcom/xunlei/cloud/action/search/SnifferData;-&gt;&lt;init&gt;()V
+invoke-virtual {v9}, Ljava/lang/String;-&gt;length()I
+move-result v13
+add-int/lit8 v13, v13, -0x5
+invoke-virtual {v9, v12, v13}, Ljava/lang/String;-&gt;substring(II)Ljava/lang/String;
+move-result-object v14
+.line 105
+iput-object v14, v0, Lcom/xunlei/cloud/action/search/SnifferData;-&gt;title:Ljava/lang/String;
+                                                                                                              
+.line 106
+iput-object v1, v0, Lcom/xunlei/cloud/action/search/SnifferData;-&gt;url:Ljava/lang/String;
+                                                                                                              
+.line 107
+iput-object v6, v0, Lcom/xunlei/cloud/action/search/SnifferData;-&gt;hash:Ljava/lang/String;</pre><p style=""><span style="margin: 0px; padding: 0px; color: rgb(38, 38, 38); font-size: 20px;"><strong style="margin: 0px; padding: 0px;"><br/></strong></span></p><p style=""><span style="margin: 0px; padding: 0px; color: rgb(38, 38, 38); font-size: 20px;"><strong style="margin: 0px; padding: 0px;">4:编译错误处理</strong></span></p><p style=""><span style="margin: 0px; padding: 0px; color: rgb(38, 38, 38); font-size: 20px;"><strong style="margin: 0px; padding: 0px;"><br/></strong></span></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px;">java -jar apktool.jar b CloudPlay_ybappgw c1.apk
+libpng error: Not a PNG file
+ERROR: Failure processing PNG image F:\Pentest\Ya 
+Tools\pendroid\apktool1.5.2\CloudPlay_ybappgw\res\drawable-hdpi\local_list_view_item_color.png</pre><p style=""><br/></p><p style="">不是真正的png文件  看了下文件头  bmp…  改过来 继续</p><p style=""><br/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px;">ERROR: 9-patch image F:\Pentest\Ya 
+Tools\pendroid\apktool1.5.2\CloudPlay_ybappgw\res\drawable-hdpi\progressbar_local_item.9.png
+malformed.</pre><p style=""><br/></p><p style="">把三个文件全部改成普通 png格式 progressbar_local_item.9.png =&gt; progressbar_local_item.png</p><p style=""><br/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px;">apktool b CloudPlay_ybappgw c1.apk
+I: Checking whether sources has changed...
+I: Smaling...
+I: Checking whether resources has changed...
+I: Building apk file...</pre><p style=""><br/></p><p style="">成功编译成apk 文件</p><p style=""><span style="margin: 0px; padding: 0px; color: rgb(38, 38, 38); font-size: 20px;"><strong style="margin: 0px; padding: 0px;"><br/></strong></span></p><p style=""><span style="margin: 0px; padding: 0px; color: rgb(38, 38, 38); font-size: 20px;"><strong style="margin: 0px; padding: 0px;">5:测试结果</strong></span></p><p style=""><br/></p><p style="">签名  安装到手机</p><p style=""><br/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px;">java -jar signapk.jar testkey.x509.pem testkey.pk8 c1.apk c1_s.apk
+adb install -r c1_s.apk</pre><p style=""><br/><img data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR3icOak0HzL9x4bkYibqnTchkvOtKsbtia37VbyxTEnuTIgvvVic4P6cVBwjtUXykfF4Mo6hEu416OTgcw/0" src="../Images/f79ddbb2871eee2f7f20be0251de6e5f.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR3icOak0HzL9x4bkYibqnTchkvOtKsbtia37VbyxTEnuTIgvvVic4P6cVBwjtUXykfF4Mo6hEu416OTgcw/0"/></p><p style=""><span style="margin: 0px; padding: 0px; color: rgb(38, 38, 38); font-size: 20px;"><strong style="margin: 0px; padding: 0px;"><br/></strong></span></p><p style=""><span style="margin: 0px; padding: 0px; color: rgb(38, 38, 38); font-size: 20px;"><strong style="margin: 0px; padding: 0px;">6:链接</strong></span></p><p style="">中转脚本:    https://github.com/yaseng/pentest/blob/master/project/diy_cloudplay/y2c.php<br style="margin: 0px; padding: 0px;"/>g.smali    : https://github.com/yaseng/pentest/blob/master/project/diy_cloudplay/g.smali<br style="margin: 0px; padding: 0px;"/>smali 语法 : https://code.google.com/p/smali/w/list<br style="margin: 0px; padding: 0px;"/>Av Top 10:   http://movie.douban.com/doulist/3822549</p><p><br/></p><p><img data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR3icOak0HzL9x4bkYibqnTchkvHy7Tz4jGNjfHmeJFPvGPIWW0wS0DmAopibltq5JzXam5Ix2Tb1v3lRw/0" style="" src="../Images/8b4cf4786f71cd0a7cb4b39987f9820c.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR3icOak0HzL9x4bkYibqnTchkvHy7Tz4jGNjfHmeJFPvGPIWW0wS0DmAopibltq5JzXam5Ix2Tb1v3lRw/0"/></p>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>关于Jackson框架存在Java反序列化代码执行漏洞的安全公告</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>关于Jackson框架存在Java反序列化代码执行漏洞的安全公告</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzU3ODM2NTg2Mg==&amp;mid=2247485339&amp;idx=1&amp;sn=6eed32945aa21e49c5df9dfa6a212caa&amp;chksm=fd773752ca00be442f964d5e6ff2db98739924753ea6acf425cf3fcd2337085f8f82d9bd0a3f&amp;scene=126&amp;sessionid=1681365982#rd">http://mp.weixin.qq.com/s?__biz=MzU3ODM2NTg2Mg==&amp;mid=2247485339&amp;idx=1&amp;sn=6eed32945aa21e49c5df9dfa6a212caa&amp;chksm=fd773752ca00be442f964d5e6ff2db98739924753ea6acf425cf3fcd2337085f8f82d9bd0a3f&amp;scene=126&amp;sessionid=1681365982#rd</a></blockquote><p style="text-indent: 0px;"><span style="font-size: 14px; color: rgb(0, 0, 0); font-weight: bold;">安全公告编号:CNTA-2017-0030</span><span style="font-size: 14px; color: rgb(0, 0, 0); font-weight: bold;"/></p><p style="text-align: left; text-indent: 2em;"><span style="font-size: 14px;">近日，国家信息安全漏洞共享平台（CNVD）收录了CNVD白帽子（ID：ayound）报送的Jackson框架enableDefaultTyping方法反序列化漏洞（CNVD-2017-04483）。攻击者利用漏洞可在服务器主机上执行任意代码或系统指令，取得网站服务器的控制权。</span></p><p style="text-indent: 37px;"><span style="font-size: 15px;"><strong>一、</strong><strong>漏洞情况分析</strong></span></p><p style="text-align: left; text-indent: 2em;"><span style="font-size: 14px;">Jackson是一套开源的java序列化与反序列化工具框架，可将java对象序列化为xml和json格式的字符串及提供对应的反序列化过程。由于其解析效率较高，目前是Spring MVC中内置使用的解析方式。4月15日，CNVD白帽子(ID:ayound)提交了Jackson存在Java反序列化漏洞的情况，CNVD秘书处进行了本地环境核实，确认漏洞在一定条件下可被触发，达到任意代码和系统指令执行的目的。该漏洞的触发条件是ObjectMapper反序列化前调用了enableDefaultTyping方法。该方法允许json字符串中指定反序列化java对象的类名，而在使用Object、Map、List等对象时，可诱发反序列化漏洞。</span></p><p style="text-align: left; text-indent: 2em;"><span style="font-size: 14px;">CNVD对该漏洞的综合评级为“高危”。</span></p><p style="text-indent: 37px;"><span style="font-size: 15px;"><strong>二、</strong><strong>漏洞影响范围</strong></span></p><p style="text-align: left; text-indent: 2em;"><span style="font-size: 14px;">漏洞影响Jackson 2.7版本（&lt;2.7.10）、2.8版本（&lt;2.8.9）。根据CNVD秘书处对Jackson应用普查的结果，目前互联网上约有9.1万台网站服务器标定为使用了Jackson框架，其中排名前五位的国家有：美国（占比68.8%）、中国（8.2%）、英国（4.1%）、德国（2.0%）、荷兰（2.0%）。目前，暂未进一步抽样核验实际受影响的比例情况。</span></p><p style="text-indent: 37px;"><span style="font-size: 15px;"><strong>三、</strong><strong>防护建议</strong></span></p><p style="text-indent: 2em;"><span style="font-size: 14px;">Jackson开发方已经对ayound提交的情况进行了回应，并发布了修复更新。用户需更新到2.7.10或2.8.9版本，同时后续将发布的2.9.0版本也会加入该漏洞的修复措离。</span></p><p style="text-indent: 2em;"><span style="font-size: 14px;">附：参考链接：</span></p><p style="text-indent: 2em;"><span style="font-size: 14px;">http://www.cnvd.org.cn/flaw/show/CNVD-2017-04483</span></p><p style="text-indent: 2em;"><span style="font-size: 14px;">https://github.com/FasterXML/jackson-databind/issues/1599(修复安全建议)</span></p><p><br/></p><p><br/></p>
+        
+</body>
+</html>

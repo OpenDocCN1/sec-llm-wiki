@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>用Metasploit体验memcached反射放大攻击</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>用Metasploit体验memcached反射放大攻击</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650744476&amp;idx=1&amp;sn=5a427f46cbe7d1c7afdc91c8f19c7129&amp;chksm=8714879cb0630e8aff09f726cff8f10d163ba127129e47eac4482101678517ef297b7fb0ef58&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650744476&amp;idx=1&amp;sn=5a427f46cbe7d1c7afdc91c8f19c7129&amp;chksm=8714879cb0630e8aff09f726cff8f10d163ba127129e47eac4482101678517ef297b7fb0ef58&amp;scene=27#wechat_redirect</a></blockquote><p>安全圈最近比较轰动的事件，github遭遇memcached反射放大攻击，号称史上最大，带宽1.3T，本周末用Metasploit体验了一下，</p><p>去https://apt.metasploit.com/下载最新的dailybuild，在ubuntu16.04里安装，</p><p>dpkg -i metasploit-framework_4.16.45+20180309114424.git.3.60152e9~1rapid7-1_amd64.deb，</p><p>启动，msfconsole，</p><p>找到memcached放大攻击扫描模块，</p><p>use auxiliary/scanner/memcached/memcached_amp，</p><p>设置memcached服务器地址，</p><p>set RHOSTS 10.90.3.60，</p><p>运行，run，</p><p><img class="" data-copyright="0" data-ratio="0.34065934065934067" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ0UrV3sXjzrGzmIBJ5K0sFvsicHrdbGse5ZPDoDMJ2dc8u3IurxCmfIicKdAAfezRQ40dljDicTbf0yw/640?wx_fmt=png" data-type="png" data-w="1092" style="" src="../Images/8a82c0835baab44a277fd82898b5718a.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ0UrV3sXjzrGzmIBJ5K0sFvsicHrdbGse5ZPDoDMJ2dc8u3IurxCmfIicKdAAfezRQ40dljDicTbf0yw/640?wx_fmt=png"/></p><p>同时抓包，</p><p><img class="" data-copyright="0" data-ratio="0.3239247311827957" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ0UrV3sXjzrGzmIBJ5K0sFvuL5JzdokuPoRI2ITWVsOUNx2OLR4uXUnbL8rcLibXoKMT6TibxqHEQIA/640?wx_fmt=png" data-type="png" data-w="744" style="" src="../Images/5a2049522c9f45e5f104f84c4f4b50a6.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/F6TniceRacJ0UrV3sXjzrGzmIBJ5K0sFvuL5JzdokuPoRI2ITWVsOUNx2OLR4uXUnbL8rcLibXoKMT6TibxqHEQIA/640?wx_fmt=png"/></p><p>能够看到memcache应用承载在udp上，发送报文57字节，返回报文1279字节，整体放大22倍多，其实从应用层来说，将近放大了100倍，感兴趣的可以往前翻看我之前写的dns反射放大攻击实践，就知道这个memcached反射放大的威力有多大了。</p>
+        
+</body>
+</html>

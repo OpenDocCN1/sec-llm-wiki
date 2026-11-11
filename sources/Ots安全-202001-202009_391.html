@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Cookiethief木马瞄准社交媒体帐户</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Cookiethief木马瞄准社交媒体帐户</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxMjYyMzkwOA==&amp;mid=2247485366&amp;idx=2&amp;sn=1db8ed746710769f7e276f95ca240dd7&amp;chksm=9bae4efdacd9c7ebc9535f14f984335754ddafcfe020e42690f64379e4e6e544523b056253b8&amp;scene=126&amp;sessionid=1681670213#rd">http://mp.weixin.qq.com/s?__biz=MzAxMjYyMzkwOA==&amp;mid=2247485366&amp;idx=2&amp;sn=1db8ed746710769f7e276f95ca240dd7&amp;chksm=9bae4efdacd9c7ebc9535f14f984335754ddafcfe020e42690f64379e4e6e544523b056253b8&amp;scene=126&amp;sessionid=1681670213#rd</a></blockquote><p style="text-align: center;"><img class="rich_pages js_insertlocalimg" data-ratio="0.5238095238095238" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/rWGOWg48taekOLyLoSCMLmAHwr9rLtsSXgJQGsuy7sLZRYq5ZiaCZbbjAHrwHrpQ7Pia1nuRzhmuXRJaYicibEFmdQ/640?wx_fmt=jpeg" data-type="jpeg" data-w="630" style="" src="../Images/88ad508e0632e6ac7b5859151690ad1d.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/rWGOWg48taekOLyLoSCMLmAHwr9rLtsSXgJQGsuy7sLZRYq5ZiaCZbbjAHrwHrpQ7Pia1nuRzhmuXRJaYicibEFmdQ/640?wx_fmt=jpeg"/></p><p>研究人员发现了一个名为“ Cookiethief”的新型cookie窃取木马，它针对用户的社交媒体帐户和浏览器。</p><p><br/></p><p>卡巴斯基实验室（Kaspersky Lab）观察到，该恶意软件的主要目标是在受害者的Android设备上获得root用户特权，该恶意软件将其检测为Trojan-Spy.AndroidOS.Cookiethief。然后，窃取cookie的恶意软件利用该级别的访问权限，将用户浏览器和Facebook帐户使用的cookie转移到攻击者控制下的命令与控制（C＆C）服务器。这样做不是通过利用Facebook或浏览器中的漏洞来实现的。相反，它与安装在同一设备上的后门连接并用于执行命令。</p><p><br/></p><p>为了避免在Facebook上引发危险信号，Cookiethief使用Trojan-Proxy.AndroidOS.Youzicheng在受害者的设备上运行代理。此步骤通过将攻击者的请求伪装成来自合法用户帐户的请求，帮助恶意软件绕过了社交网络上的安全解决方案。</p><p><br/></p><p><strong>社交媒体Cookie窃取者很多</strong></p><p>Cookiethief不是第一个针对社交媒体用户Cookie的恶意软件。例如，早在2018年4月，Radware就检测到了一个攻击活动，该活动依赖于一个名为“ Stresspaint”的恶意软件家族，可在几天之内感染40,000个用户并窃取数万个Facebook用户凭据/ cookie。2019年12月，Naked Security报告了一个名为“ AdKoob”的威胁，该威胁被挖掘到受害者的Cookie浏览器数据库中，目的是查找其在Facebook上的广告支出。</p><p><br/></p><p><strong>防御窃取Cookie的木马</strong></p><p>窃取用户的Cookie并不是开玩笑。诸如Facebook之类的Web服务利用Cookie在受害者的设备上存储唯一的会话ID。该会话ID可以允许用户在不提供登录凭据的情况下重新获得对其帐户的访问权限。这意味着，如果使用不当，Cookie可以使数字攻击者假定合法用户的身份，并有效地绕过身份和访问管理（IAM）功能，例如多因素身份验证（MFA）。</p><p><br/></p><p>然后，威胁参与者可以利用这种伪装进行二次攻击。对于Cookiethief，攻击者可以使用一个模块在社交网络和Messenger上分发垃圾邮件，这种活动可能损害受害者的声誉。</p><p><br/></p><p>认识到此活动，安全专业人员可以使用最新的威胁情报保持警惕并了解针对其用户的恶意软件威胁，从而帮助保护其组织免受Cookie窃贼之类的Cookie窃取木马的侵害。公司还应该通过投资于跨组织整个IT基础架构（包括云）的现代化系统来增强其IAM计划的实力。</p><p style="text-align: center;"><img class="rich_pages" data-ratio="0.6" data-src="https://mmbiz.qpic.cn/mmbiz_gif/rWGOWg48tadbE8yN48kgvK5SXR70WoTpfL4Z6HOQAYqTTskicbBOcWM88iblD0ku5hzq3icAVn4sEQ0TZkjHaDibeg/640?wx_fmt=gif" data-type="gif" data-w="640" style="" src="../Images/b347930f3d17ff6973eb4f3f766e8aaf.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_gif/rWGOWg48tadbE8yN48kgvK5SXR70WoTpfL4Z6HOQAYqTTskicbBOcWM88iblD0ku5hzq3icAVn4sEQ0TZkjHaDibeg/640?wx_fmt=gif"/></p>
+        
+</body>
+</html>

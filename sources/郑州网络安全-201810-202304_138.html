@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Reddit中的简单IDOR漏洞允许恶作剧者执行mod操作</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Reddit中的简单IDOR漏洞允许恶作剧者执行mod操作</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485454&amp;idx=1&amp;sn=ef7c16dbdeb3e9f7025c539211b2250e&amp;chksm=fa76e9f0cd0160e66f95333fb58b930d6820187c42b021660c5e4c9aacc8f769989b0be361bb&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485454&amp;idx=1&amp;sn=ef7c16dbdeb3e9f7025c539211b2250e&amp;chksm=fa76e9f0cd0160e66f95333fb58b930d6820187c42b021660c5e4c9aacc8f769989b0be361bb&amp;scene=27#wechat_redirect</a></blockquote><blockquote><p>Reddit中的一个漏洞允许攻击者在没有适当权限的情况下执行版主操作或将普通用户提升到mod状态。该漏洞可能导致各种恶作剧，因为Reddit模组有权执行固定或删除帖子、禁止其他用户和编辑subreddit信息等操作。</p></blockquote><p style="margin-bottom: 0em;"><img class="rich_pages wxw-img" data-ratio="0.5625" data-src="https://mmbiz.qpic.cn/mmbiz_png/3RdEEWyTHJkfFTicXQYVnWtNL3q2ywfQ4OZibevDXBaLjJOkpHbMr7TlBSZa8kicfBhMicbbYwmEAJG79mBZmkJqug/640?wx_fmt=png" data-type="png" data-w="1200" height="675" width="1200" src="../Images/2d0aced07a963cf6b5a8397d7474f9e3.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/3RdEEWyTHJkfFTicXQYVnWtNL3q2ywfQ4OZibevDXBaLjJOkpHbMr7TlBSZa8kicfBhMicbbYwmEAJG79mBZmkJqug/640?wx_fmt=png"/></p><p> </p><p><br/></p><p>正如在最近的HackerOne 告中所详述的那样，一个拥有“high_ping_ninja”句柄的漏洞猎手发现Reddit在尝试通过GraphQL访问mod日志时未能检查用户是否是特定subreddit的版主。</p><p><br/></p><p>“您可以将参数subredditName更改为任何公开或受限的目标subreddit名称，并可以访问该subreddit的mod日志，”他们解释说。</p><p><br/></p><p>8月3日报告了不安全的直接对象引用(IDOR)错误，并在同一天修复。</p><p><br/></p><p>“根据我们的计划政策，我将严重程度提高到高，”Reddit分类小组的一名成员在披露说明中说。</p><p><br/></p><p>研究人员因这一发现获得了5000美元的漏洞赏金。</p><p><br/></p>
+        
+</body>
+</html>

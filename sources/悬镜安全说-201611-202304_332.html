@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>GitLab曝高危漏洞，可致private token等敏感信息泄露</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>GitLab曝高危漏洞，可致private token等敏感信息泄露</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAwODc2NjgwMg==&amp;mid=2649105621&amp;idx=1&amp;sn=43dd6ccfa5b762b63674c5cf2badc220&amp;chksm=837b50e8b40cd9fe5bfe64cd8719791bada5882adb868f66492ced099d7ad691b80454ed2c07&amp;scene=126&amp;sessionid=1681324171#rd">http://mp.weixin.qq.com/s?__biz=MzAwODc2NjgwMg==&amp;mid=2649105621&amp;idx=1&amp;sn=43dd6ccfa5b762b63674c5cf2badc220&amp;chksm=837b50e8b40cd9fe5bfe64cd8719791bada5882adb868f66492ced099d7ad691b80454ed2c07&amp;scene=126&amp;sessionid=1681324171#rd</a></blockquote><p style="margin-bottom: 15px; border: 0px;">GitLab于昨日发布了8.17.4、8.16.8和8.15.8版本（社区版和企业版），修复多个高危漏洞，包含一个针对关键信息泄露漏洞的更新补丁，针对SSRF攻击的防护，以及针对可导致Atom源中私有邮件地址泄露漏洞的补丁，ElasticSearch中私有库数据泄露的补丁等。</p><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">GitLab特别在其更新日志中提到，在内部代码审核过程中，在GitLab Issue和Merge Request tracker中发现一个Critical级别的高危漏洞，并因此强烈建议受影响用户尽快升级。</p><h3 style="margin-top: 20px; margin-bottom: 10px; border: 0px; font-weight: bold; -webkit-font-smoothing: antialiased; font-size: 18px;">漏洞编号</h3><p style="margin-top: 10px; margin-bottom: 15px; border: 0px;">CVE-2017-0882</p><h3 style="margin-top: 20px; margin-bottom: 10px; border: 0px; font-weight: bold; -webkit-font-smoothing: antialiased; font-size: 18px;">漏洞介绍</h3><p style="margin-top: 10px; margin-bottom: 15px; border: 0px;">漏洞可导致拥有向其他用户发送issue或merge请求权限的攻击者获取到该用户的private token, email token, email地址和加密的OTP secret。想要利用漏洞需要有Reporter级别的权限。</p><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">通过Gitlab API和这些敏感信息，就能以该用户权限进行操作，如果目标用户是管理员则可能产生更大危害。</p><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">造成漏洞的原因是对用户对象序列化过程中的一个bug，这个问题自GitLab 8.7.0版本就开始出现。</p><h3 style="margin-top: 20px; margin-bottom: 10px; border: 0px; font-weight: bold; -webkit-font-smoothing: antialiased; font-size: 18px;">影响版本</h3><ul style="margin-top: 15px; margin-bottom: 15px; padding-left: 30px; border: 0px;" class=" list-paddingleft-2"><li><p style="margin-bottom: 15px; border: 0px;">8.7.0至8.15.7</p></li><li><p style="margin-bottom: 15px; border: 0px;">8.16.0至8.16.7</p></li><li><p style="margin-bottom: 15px; border: 0px;">8.17.0至8.17.3</p></li></ul><h3 style="margin-top: 20px; margin-bottom: 10px; border: 0px; font-weight: bold; -webkit-font-smoothing: antialiased; font-size: 18px;">升级后注意事项</h3><p style="margin-top: 10px; margin-bottom: 15px; border: 0px;">由于漏洞的性质，用户的token可能会缓存在代理或浏览器中。因此建议站长们重置所有用户的private token和email token。</p><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">一次性密码(OTP)的secret也有可能因漏洞而泄露。这些secret都经过加密，需要密钥才能解密，并且不能在没有用户密码的情况下使用。</p><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">尽管如此， 还是建议先将一次性密码功能关闭然后再重新打开，从而重置OTP secret。</p><h3 style="margin-top: 20px; margin-bottom: 10px; border: 0px; font-weight: bold; -webkit-font-smoothing: antialiased; font-size: 18px;">重置用户Tokens步骤</h3><p style="margin-top: 10px; margin-bottom: 15px; border: 0px;">使用Omnibus的用户将下面的源码保存到: /opt/gitlab/embedded/service/gitlab-rails/lib/tasks/reset_token.rake</p><blockquote style="margin-top: 15px; margin-bottom: 15px; padding-right: 15px; padding-left: 15px; border-width: 0px 0px 0px 4px; border-top-style: initial; border-right-style: initial; border-bottom-style: initial; border-top-color: initial; border-right-color: initial; border-bottom-color: initial; border-left-color: rgb(221, 221, 221); color: rgb(119, 119, 119);"><p style="border: 0px;">使用源码安装的用户保存到: <gitlab_installation_dir>/lib/tasks/reset_token.rake</gitlab_installation_dir></p></blockquote><pre style="margin-top: 15px; margin-bottom: 15px; padding: 6px 10px; border: 1px solid rgb(204, 204, 204); font-size: 13px; font-family: Consolas, 'Liberation Mono', Courier, monospace; line-height: 19px; overflow: auto; border-radius: 3px;"><code style="font-size: 12px; font-family: Consolas, 'Liberation Mono', Courier, monospace; border: none; border-radius: 3px; background-image: initial; background-attachment: initial; background-color: transparent; background-origin: initial; background-clip: initial;"># lib/tasks/reset_token.rake
+require_relative '../../app/models/concerns/token_authenticatable.rb'
+
+STDOUT.sync = true
+
+namespace :tokens do
+desc "Reset all GitLab user auth tokens"
+task reset_all: :environment do
+reset_all_users_token(:reset_authentication_token!)
+
+desc "Reset all GitLab email tokens"
+task reset_all_email: :environment do
+reset_all_users_token(:reset_incoming_email_token!)
+
+def reset_all_users_token(token)
+TmpUser.find_in_batches do |batch|
+  puts "Processing batch starting with user ID: #{batch.first.id}"
+
+  batch.each(&amp;token)
+
+class TmpUser &lt; ActiveRecord::Base
+include TokenAuthenticatable
+
+ self.table_name = 'users'
+
+ def reset_authentication_token!
+write_new_token(:authentication_token)
+save!(validate: false)
+
+ def reset_incoming_email_token!
+write_new_token(:incoming_email_token)
+save!(validate: false)</code></pre><h3 style="margin-top: 20px; margin-bottom: 10px; border: 0px; font-weight: bold; -webkit-font-smoothing: antialiased; font-size: 18px;">Omnibus用户运行</h3><pre style="margin-top: 15px; margin-bottom: 15px; padding: 6px 10px; border: 1px solid rgb(204, 204, 204); font-size: 13px; font-family: Consolas, 'Liberation Mono', Courier, monospace; line-height: 19px; overflow: auto; border-radius: 3px;"><code style="font-size: 12px; font-family: Consolas, 'Liberation Mono', Courier, monospace; border: none; border-radius: 3px; background-image: initial; background-attachment: initial; background-color: transparent; background-origin: initial; background-clip: initial;">sudo gitlab-rake tokens:reset_all
+
+sudo gitlab-rake tokens:reset_all_email</code></pre><h3 style="margin-top: 20px; margin-bottom: 10px; border: 0px; font-weight: bold; -webkit-font-smoothing: antialiased; font-size: 18px;">源码用户运行</h3><pre style="margin-top: 15px; margin-bottom: 15px; padding: 6px 10px; border: 1px solid rgb(204, 204, 204); font-size: 13px; font-family: Consolas, 'Liberation Mono', Courier, monospace; line-height: 19px; overflow: auto; border-radius: 3px;"><code style="font-size: 12px; font-family: Consolas, 'Liberation Mono', Courier, monospace; border: none; border-radius: 3px; background-image: initial; background-attachment: initial; background-color: transparent; background-origin: initial; background-clip: initial;">sudo -u git -H bundle exec rake tokens:reset_all RAILS_ENV=production
+
+sudo -u git -H bundle exec rake tokens:reset_all_email RAILS_ENV=production 
+</code></pre><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">执行完所有操作后可以把rake文件删除。</p><h3 style="margin-top: 20px; margin-bottom: 10px; border: 0px; font-weight: bold; -webkit-font-smoothing: antialiased; font-size: 18px;">临时补丁</h3><p style="margin-top: 10px; margin-bottom: 15px; border: 0px;">对于某些无法升级的用户可以使用以下的补丁：</p><h4 style="margin-top: 20px; margin-bottom: 10px; border: 0px; font-weight: bold; -webkit-font-smoothing: antialiased;">Omnibus用户：</h4><pre style="margin-top: 15px; margin-bottom: 15px; padding: 6px 10px; border: 1px solid rgb(204, 204, 204); font-size: 13px; font-family: Consolas, 'Liberation Mono', Courier, monospace; line-height: 19px; overflow: auto; border-radius: 3px;"><code style="font-size: 12px; font-family: Consolas, 'Liberation Mono', Courier, monospace; border: none; border-radius: 3px; background-image: initial; background-attachment: initial; background-color: transparent; background-origin: initial; background-clip: initial;">$ cd /opt/gitlab/embedded/service/gitlab-rails/
+$ git apply &lt;path_to_diff&gt;
+$ sudo gitlab-ctl restart unicorn</code></pre><h4 style="margin-top: 20px; margin-bottom: 10px; border: 0px; font-weight: bold; -webkit-font-smoothing: antialiased;">源码用户：</h4><pre style="margin-top: 15px; margin-bottom: 15px; padding: 6px 10px; border: 1px solid rgb(204, 204, 204); font-size: 13px; font-family: Consolas, 'Liberation Mono', Courier, monospace; line-height: 19px; overflow: auto; border-radius: 3px;"><code style="font-size: 12px; font-family: Consolas, 'Liberation Mono', Courier, monospace; border: none; border-radius: 3px; background-image: initial; background-attachment: initial; background-color: transparent; background-origin: initial; background-clip: initial;">$ cd &lt;gitlab_installation_dir/
+$ git apply &lt;path_to_diff&gt;
+diff --git a/app/controllers/projects/issues_controller.rb b/app/controllers/projects/issues_controller.rb
+index 1151555..857d907 100644
+--- a/app/controllers/projects/issues_controller.rb
++++ b/app/controllers/projects/issues_controller.rb
+@@ -129,7 +129,7 @@ class Projects::IssuesController &lt; Projects::ApplicationController
+   end
+
+   format.json do
+
+-        render json: @issue.to_json(include:  { milestone:
+-       {}, assignee: { methods: :avatar_url },  labels: { methods: :text_color } }, methods: [:task_status, :task_status_short])
++        render json: @issue.to_json(include: { milestone: {}, assignee: { only: [:name, :username], methods: [:avatar_url] }, labels: { methods: :text_color } }, methods: [:task_status, :task_status_short])
+
+
+diff --git a/app/controllers/projects/merge_requests_controller.rb b/app/controllers/projects/merge_requests_controller.rb
+index 82f9b6e..677a8a1 100644
+ --- a/app/controllers/projects/merge_requests_controller.rb
+ +++ b/app/controllers/projects/merge_requests_controller.rb
+@ -308,7 +308,7 @@ class Projects::MergeRequestsController &lt; Projects::ApplicationController
+   end
+
+   format.json do
+  -        render json: @merge_request.to_json(include: { milestone: {}, assignee: { methods: :avatar_url }, labels: { methods: :text_color } }, methods: [:task_status, :task_status_short])
+ +        render json: @merge_request.to_json(include: { milestone: {}, assignee: { only: [:name, :username], methods: [:avatar_url] }, labels: { methods: :text_color } }, methods: [:task_status, :task_status_short])
+   end
+ end
+ rescue ActiveRecord::StaleObjectError</code></pre><h3 style="margin-top: 20px; margin-bottom: 10px; border: 0px; font-weight: bold; -webkit-font-smoothing: antialiased; font-size: 18px;">检验漏洞是否修复</h3><ul style="margin-top: 15px; margin-bottom: 15px; padding-left: 30px; border: 0px;" class=" list-paddingleft-2"><li><p style="margin-bottom: 15px; border: 0px;">打开项目；</p></li><li><p style="margin-bottom: 15px; border: 0px;">打开项目的issue跟踪器；</p></li><li><p style="margin-bottom: 15px; border: 0px;">创建一个issue，将issue拥有权限分配给另一个用户；</p></li></ul><p style="margin-top: 15px; margin-bottom: 15px; border: 0px;">查看返回的JSON，检查其中是否有敏感信息。 相关本次发布GitLab新版本修复的更多漏洞，如SSRF漏洞、关键信息泄露漏洞等内容可参见GitLab的安全公告。</p><h5 style="margin-top: 20px; border: 0px; font-weight: bold; -webkit-font-smoothing: antialiased; font-size: 14px;">参考来源：GitLab，本文作者：Sphinx，转载请注明来自FreeBuf</h5><p style="margin-top: 15px; line-height: 25.6px; white-space: normal; border: 0px;"><strong><span style="color: rgb(136, 136, 136);">欢迎大家使用悬镜服务器卫士，在使用过程中如遇到任何问题，都可以加入我们的官方用户群【<span style="color: rgb(255, 41, 65);">539903443</span>】进行咨询，我们都会有专门的人员帮您解答。</span></strong></p><section class="xmyeditor" style="font-size: 16px; line-height: 25.6px; white-space: normal; max-width: 100%; font-family: &#x5FAE;&#x8F6F;&#x96C5;&#x9ED1;; box-sizing: border-box !important; word-wrap: break-word !important;"><fieldset class="wxqq-borderTopColor wxqq-borderRightColor wxqq-borderBottomColor wxqq-borderLeftColor" style="padding-top: 10px; padding-bottom: 10px; max-width: 100%; min-width: 0px; box-shadow: rgb(204, 204, 204) 0px 0px 10px; border: 1px solid rgb(170, 170, 170); border-radius: 5px; text-align: center; box-sizing: border-box !important; word-wrap: break-word !important; background-color: rgb(250, 250, 239);"><span style="padding-top: 10px; padding-bottom: 10px; line-height: 25.6px; max-width: 100%; display: block; color: rgb(255, 0, 0); font-weight: 700; box-sizing: border-box !important; word-wrap: break-word !important;"><strong style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;">关注悬镜安全实验室</strong></span><span style="padding-top: 10px; padding-bottom: 10px; line-height: 25.6px; max-width: 100%; display: block; color: rgb(75, 172, 198); font-weight: 700; box-sizing: border-box !important; word-wrap: break-word !important;"><span style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;">网络安全丨防黑加固丨高级渗透丨风险评估</span></span><p><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/YPliaPic9m8ud5lUkeR6UCSriaDFG9BIeV5rdSsnc8Z7uYztwqDPXgeZo2TDLpnkLC7P6xugW2za6icic9SosGBNpcw/0?wx_fmt=jpeg" data-ratio="1" data-w="258" src="../Images/2f10343dc5fa39748a78684cada41531.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/YPliaPic9m8ud5lUkeR6UCSriaDFG9BIeV5rdSsnc8Z7uYztwqDPXgeZo2TDLpnkLC7P6xugW2za6icic9SosGBNpcw/0?wx_fmt=jpeg"/></p><span style="padding-top: 10px; padding-bottom: 10px; line-height: 25.6px; max-width: 100%; display: block; color: rgb(75, 172, 198); font-weight: 700; box-sizing: border-box !important; word-wrap: break-word !important;"><span style="max-width: 100%; box-sizing: border-box !important; word-wrap: break-word !important;">长按二维码点选（识别图中二维码）</span></span></fieldset></section>
+        
+</body>
+</html>

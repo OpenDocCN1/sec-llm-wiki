@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>OpenDaylight的实践</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>OpenDaylight的实践</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=211109109&amp;idx=1&amp;sn=507b8a71f96b2d4ad1fe5ff69c6438ee&amp;chksm=167ee5f521096ce3150b3d16f2047dea450954fdbd9e409ca4f86dc7843294e5feb1c106a873&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=211109109&amp;idx=1&amp;sn=507b8a71f96b2d4ad1fe5ff69c6438ee&amp;chksm=167ee5f521096ce3150b3d16f2047dea450954fdbd9e409ca4f86dc7843294e5feb1c106a873&amp;scene=27#wechat_redirect</a></blockquote><p>OpenDaylight是目前最流行的开源SDN Controller，正像我上期中说的，如果不用北向接口（一般是RESTful API）去自动化驱动SDN Controller给vSwitch下流表，使用SDN Controller还不如直接在vSwitch下配置OpenFlow规则。</p><p>事实上，OpenStack本身也是一个SDN APP，可以通过配置让其将网络转发交给OpenDaylight来控制，然并卵，需要给NFV设备引流时，还是需要手动在OpenDaylight的UI上去操作。而且由于OpenDaylight和OpenStack各种版本之间配合的不稳定性，常常导致还没给NFV设备引流呢，基本的网络转发就跑不起来了。因此建议，即使是工程中，也不要用OpenStack直接做SDN APP，而是引入独立的SDN APP，让OpenDaylight或商用SDN Controller仅控制OpenStack下的OVS即可。</p><p>本人目前还没有本事写个独立的SDN APP出来，因此本期内容无法实践SDN的北向接口，仅实践一下OpenDaylight跟OpenStack下OVS的配合吧。</p><p>https://www.opendaylight.org/downloads提供了OpenDaylight的迭代版本（氢、氦、锂），但是经过实践，实在是不敢恭维，还是其最初提供的一个数据中心虚拟化专用版本要好用一些，下载地址http://nexus.opendaylight.org/content/repositories/opendaylight.release/org/opendaylight/integration/distributions-virtualization/0.1.1/distributions-virtualization-0.1.1-osgipackage.zip，安装就选一个干净的Ubuntu Server，先把JRE环境安装一下，apt-get install openjdk-7-jre，然后把zip包解压开，unzip distributions-virtualization-0.1.1-osgipackage.zip，如果Ubuntu Server之前没安装过unzip，那就先执行apt-get install unzip，解压完成后进入文件夹cd opendaylight，启动OpenDaylight，./run.sh -virt ovsdb，这就完了，就这么简单。</p><p>到OpenStack的各节点上配置OVS可被OpenDaylight管理，ovs-vsctl set-manager tcp:192.168.1.23:6640，我实践的环境是all in one的，效果如下，</p><p><img data-src="http://mmbiz.qpic.cn/mmbiz/F6TniceRacJ3UqqhtAibCJicj7kLJYUcuE0Ig2ZbVEY5UYicMIhLGsRVrdfpb3oEyVr6czogiaW9FKVXvSfuj7kLxWw/0?wx_fmt=png" data-type="png" data-s="300,640" data-ratio="2.267692307692308" data-w="325" src="../Images/490794995f6444271ef8112083eafc3d.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/F6TniceRacJ3UqqhtAibCJicj7kLJYUcuE0Ig2ZbVEY5UYicMIhLGsRVrdfpb3oEyVr6czogiaW9FKVXvSfuj7kLxWw/0?wx_fmt=png"/><br/></p><p>然后就可以到OpenDaylight的UI上看可视化了，http://192.168.1.23:8080/，用户名/密码是admin/admin，</p><p><img data-src="http://mmbiz.qpic.cn/mmbiz/F6TniceRacJ3UqqhtAibCJicj7kLJYUcuE0r1BJPzfmpYtkX8PiaCSpSHYiaicp2P9url13m5P15oVn0ffzdZH6c9Qlg/0?wx_fmt=png" data-type="png" data-s="300,640" data-ratio="0.5286624203821656" data-w="1256" src="../Images/c37a143c7a63a5653c4387bd8beae7d0.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/F6TniceRacJ3UqqhtAibCJicj7kLJYUcuE0r1BJPzfmpYtkX8PiaCSpSHYiaicp2P9url13m5P15oVn0ffzdZH6c9Qlg/0?wx_fmt=png"/><br/></p><p>接下来就可以在OpenDaylight的UI上添加流表实现向NFV设备引流了，我还是不得不说一句，然并卵，其复杂度一点不小于直接在OVS上配置OpenFlow规则。</p><p> </p><p>说是插播SDN/NFV，这一插就是5期，下期开始回归网络安全。</p>
+        
+</body>
+</html>

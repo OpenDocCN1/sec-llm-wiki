@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>DNS迭代穷举脚本</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>DNS迭代穷举脚本</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=200104372&amp;idx=2&amp;sn=cc99c019ee19d6503b6b17a8be0a5568&amp;chksm=28f6cb3f1f8142292190dfab31c5b308d0518927f7d7e47f381b58eb16750d02783cedb3f299&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=200104372&amp;idx=2&amp;sn=cc99c019ee19d6503b6b17a8be0a5568&amp;chksm=28f6cb3f1f8142292190dfab31c5b308d0518927f7d7e47f381b58eb16750d02783cedb3f299&amp;scene=27#wechat_redirect</a></blockquote><p style="">在普通的DNS穷举中，如果使用字典进行穷举，会发现没有哪个字典能穷举完所有的域名，国外安全研究者在常年累月的DNS记录收集中发现，很多域名有大量的短主机名，并且很易记，通常为4个字符或更少，所以有了以下脚本：</p><p style=""><br/></p><pre class="prettyprint lang-python prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px;">#!/usr/bin/env ruby
+#
+## Brute code stolen form: #
+
+@domain = 'microsoft.com'
+
+def result?(sub)  
+    results = %x(dig +noall #{sub}.#{@domain} +answer)  
+    if results != ""      
+        puts "============================"      
+        puts "FOUND: \t#{sub}"      
+        puts "============================"      
+        puts "#{results}"      
+        puts "============================"  
+    end
+      1 == 2
+end
+
+def crack_yielding(chars)  
+    crack_yield(chars){ |p|      
+        return p if result?(p)  
+    }
+end
+
+def crack_yield(chars)  
+    chars.each { |c| yield c }  
+    crack_yield(chars) { |c|      
+        chars.each do |x|          
+            yield c + x
+        end
+    }
+end
+
+chars = ('a'..'z').to_a(0..9).each {|x| chars &lt;&lt; x.to_s} 
+
+crack_yielding(chars)</pre><p style=""><br/></p><p style="">gist: https://gist.github.com/mubix/9107284 </p><p style=""><br/></p><p style=""><span id="result_box" class="short_text" lang="zh-CN" style="margin: 0px; padding: 0px;"><span class="" style="margin: 0px; padding: 0px;">它能正常运行</span>，但是速度比较慢，所以进行了改进。</span></p><p style=""><span class="short_text" lang="zh-CN" style="margin: 0px; padding: 0px;"><br/></span></p><pre class="prettyprint lang-ruby prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px;">#!/usr/bin/env ruby
+
+#
+## Brute code stolen form: #
+
+def result?(sub)  
+    puts sub    
+    1 == 2
+end
+
+def crack_yielding(chars)  
+    crack_yield(chars){ |p|      
+        return p if result?(p)  
+    }
+end
+
+def crack_yield(chars)  
+    chars.each { |c| yield c }  
+    crack_yield(chars) { |c|         
+        chars.each do |x|          
+            yield c + x
+          end  
+    }
+end
+
+chars = ('a'..'z').to_a(0..9).each {|x| chars &lt;&lt; x.to_s} 
+
+crack_yielding(chars)</pre><p style=""><br/></p><p style="">开始使用</p><pre class="prettyprint lang-ruby prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px;">ruby brutelist.rb | parallel -j100 dig +noall {}.microsoft.com +answer</pre><p style=""><br/></p><p style="">工作回显如下所示：</p><p class="p1">c.microsoft.com. 2   IN  CNAME   c.microsoft.akadns.net.</p><p class="p1">c.microsoft.akadns.net.   499 IN  A   65.55.58.184</p><p class="p1">e.microsoft.com.  3599    IN  A   191.234.1.50</p><p class="p1">g.microsoft.com.  2798    IN  CNAME   g.msn.com.</p><p class="p1">g.msn.com.        99  IN  CNAME   g.msn.com.nsatc.net.</p><p class="p1">g.msn.com.nsatc.net.  148 IN  A   131.253.34.154</p><p class="p1">i.microsoft.com.  779 IN  CNAME   i.toggle.www.ms.akadns.net.</p><p class="p1">i.toggle.www.ms.akadns.net. 44    IN  CNAME   i.g.www.ms.akadns.net.</p><p class="p1">i.g.www.ms.akadns.net.    225 IN  CNAME   i.microsoft.com.edgesuite.net.</p><p class="p1">i.microsoft.com.edgesuite.net. 116 IN CNAME   a1475.g.akamai.net.</p><p class="p1">a1475.g.akamai.net.   16  IN  A   23.45.65.26</p><p class="p1">a1475.g.akamai.net.   16  IN  A   23.45.65.33</p><p class="p1">m.microsoft.com.  3599    IN  CNAME   origin.mobile.ms.akadns.net.</p><p class="p1">origin.mobile.ms.akadns.net. 299 IN   A   65.55.186.235</p><p class="p1">s.microsoft.com.  3599    IN  CNAME   reroute.microsoft.com.</p><p class="p1">reroute.microsoft.com.    3599    IN  A   65.55.58.201</p><p class="p1">reroute.microsoft.com.    3599    IN  A   64.4.11.37</p><p class="p1">cs.microsoft.com. 81  IN  CNAME   wedcs.trafficmanager.net.</p><p class="p1">wedcs.trafficmanager.net. 7   IN  CNAME   wedcseus.cloudapp.net.</p><p class="p1">wedcseus.cloudapp.net.    8   IN  A   137.116.48.250</p><p class="p1">...</p><p style=""><br/></p><p style="">[via room362]</p><p style=""><img src="../Images/60500eb5461175e6fae2a4b92da15d4e.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR3icXqZ0QFmvicRXww4FP699GgibOZSPC1T9DeOobDafCwW2WPwuyYpmYDk7d5ycuF0lOwAeAmHuLplibQ/0"/></p><p><br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>python报错处理：'gbk' codec can't encode character</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>python报错处理：'gbk' codec can't encode character</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247484456&amp;idx=1&amp;sn=fbf91de06281f69ed9fce9cf3cce7a8d&amp;chksm=f9e06b73ce97e2659cb0e1765d838b40c272184d5f5e62c51ff2704d8a2c1993d09e7a0bc786&amp;scene=126&amp;sessionid=1681663502#rd">http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247484456&amp;idx=1&amp;sn=fbf91de06281f69ed9fce9cf3cce7a8d&amp;chksm=f9e06b73ce97e2659cb0e1765d838b40c272184d5f5e62c51ff2704d8a2c1993d09e7a0bc786&amp;scene=126&amp;sessionid=1681663502#rd</a></blockquote><p>#!/usr/bin/python<br/># -*- coding: utf-8 -*-<br/><br/>import sys<br/>import requests<br/>import sys<br/>reload(sys)<br/>sys.setdefaultencoding( "utf-8" )<br/>res = requests.post('https://bbs.aliyun.com/read/321548.html')<br/><br/>print res.text.encode('utf-8')<br/><br/>fo = open("C:/Users/ipaynow0520/Desktop/python/fool.txt","wb")<br/>fo.write(res.text);<br/><br/>fo.close <br/><br/>'''<br/>在cmd下执行，遇到个小错误:<br/><br/>UnicodeEncodeError:'gbk' codec can't encode character u'\xbb' in   <br/>position 23460: illegal multibyte sequence<br/><br/>分析:<br/>1、Unicode是编码还是解码<br/>UnicodeEncodeError<br/><br/>很明显是在编码的时候出现了错误<br/><br/>2、用了什么编码<br/><br/>'gbk' codec can't encode character<br/><br/>使用GBK编码出错<br/>解决办法：<br/><br/>确定当前字符串，比如<br/><br/>#-*- coding:utf-8 -*-<br/>import requests<br/>url = 'http://www.baidu.com'<br/>r = requests.get(url)<br/>print r.encoding<br/>&gt;utf-8<br/>已经确定html的字符串是utf-8的，则可以直接去通过utf-8去编码。<br/><br/>print res.text.encode('utf-8')<br/><br/>'''<br/></p>
+        
+</body>
+</html>

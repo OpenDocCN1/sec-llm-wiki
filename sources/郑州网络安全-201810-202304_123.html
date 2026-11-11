@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>在Bitbucket Server和Data Center中发现的关键命令注入漏洞CVE-2022-36804</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>在Bitbucket Server和Data Center中发现的关键命令注入漏洞CVE-2022-36804</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485539&amp;idx=1&amp;sn=7945a3606c14a8ef0f7f4bc90fccc29a&amp;chksm=fa76e99dcd01608b6974df2a50d5129703e778b007030d4524d50980c5688a8c9fd310ecb2f5&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485539&amp;idx=1&amp;sn=7945a3606c14a8ef0f7f4bc90fccc29a&amp;chksm=fa76e99dcd01608b6974df2a50d5129703e778b007030d4524d50980c5688a8c9fd310ecb2f5&amp;scene=27#wechat_redirect</a></blockquote><blockquote><p>研究人员警告说，Bitbucket产品中的一个关键命令注入漏洞可能允许攻击者执行任意代码。Bitbucket是Atlassian拥有的基于Git的源代码存储库托管服务。</p></blockquote><p style="margin-bottom: 0em;"><img class="rich_pages wxw-img" data-ratio="0.5625" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJnAnqicOzejbr2VgTgbbPtnEgibg0RY2jKZEiayoOr8JibIOyJOty6icdwPfu8gkENFicicjNKaQKx1g9FYA/640?wx_fmt=jpeg" data-type="jpeg" data-w="1200" height="675" width="1200" src="../Images/d7ab85e5b42d2a4bb52b24bdb177340b.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJnAnqicOzejbr2VgTgbbPtnEgibg0RY2jKZEiayoOr8JibIOyJOty6icdwPfu8gkENFicicjNKaQKx1g9FYA/640?wx_fmt=jpeg"/></p><p><br/></p><p>CVE-2022-36804 Bitbucket Server和Data Center的多个API端点中的命令注入漏洞。此漏洞可能允许对公共或私有 Bitbucket 储库具有读取权限的远程攻击者通过发送恶意HTTP请求来执行任意代码。</p><p>它是由研究人员“The Grand Pew”发现的，他通过Bugcrowd的漏洞赏金计划报告了它。</p><p>6.10.17之后发布的所有服务器和数据中心版本都会受到影响，这意味着运行7.0.0和8.3.0（含）之间任何版本的所有实例都容易受到攻击。</p><p>敦促用户更新到最新版本。对于那些不能的人，Bitbucket提供了一种解决方法。</p><p>一篇博客文章写道：“一个临时的缓解步骤是通过设置feature.public.access=false来全局关闭公共存储库，因为这会将攻击向量从未经授权的攻击更改为授权攻击。”</p><p><br/></p>
+        
+</body>
+</html>

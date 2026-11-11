@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>ISEC完成对TrueCrypt的第一阶段代码审计，未发现安全问题</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>ISEC完成对TrueCrypt的第一阶段代码审计，未发现安全问题</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=200152654&amp;idx=4&amp;sn=68e00ba8b07d4da77ffacf7060a5722d&amp;chksm=28f584c51f820dd32b06a1036897496a3f302506455d4b93765d5e2c0c335d0dc00c7053c8a6&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=200152654&amp;idx=4&amp;sn=68e00ba8b07d4da77ffacf7060a5722d&amp;chksm=28f584c51f820dd32b06a1036897496a3f302506455d4b93765d5e2c0c335d0dc00c7053c8a6&amp;scene=27#wechat_redirect</a></blockquote><p style=""><span style="margin: 0px; padding: 0px; color: rgb(38, 38, 38);"><strong style="margin: 0px; padding: 0px;">TrueCrypt是一款免费开源的加密软件，同时支持Windows Vista,7/XP, Mac OS X, Linux 等操作系统。TrueCrypt不需要生成任何文件即可在硬盘上建立虚拟磁盘，用户可以按照盘符进行访问，所有虚拟磁盘上的文件都被自动加密，需要通过密码来进行访问。</strong></span></p><p style=""><span style="margin: 0px; padding: 0px; color: rgb(38, 38, 38);"><strong style="margin: 0px; padding: 0px;"><br/></strong></span></p><p style=""><img data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39EAAZibpQYwxibiaJEibISa8J2ewCRwaAgHAB75xnU0VlFJezZVCVfzRpVAJkhs73DT6jo5VUuib22trA/0" src="../Images/cc32fdb6f4f7db641d770998b1030923.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39EAAZibpQYwxibiaJEibISa8J2ewCRwaAgHAB75xnU0VlFJezZVCVfzRpVAJkhs73DT6jo5VUuib22trA/0"/></p><p style="">    </p><p style="">2014年1月，安全组织iSEC宣布启动TrueCrypt代码审计项目，将重点审计TrueCrypt以下几个部分：Windows内核代码、引导程序、文件系统驱动程序等</p><p style=""><br style="margin: 0px; padding: 0px;"/>    </p><p style="">在2014年4月中旬的时候，iSEC公布了加密软件TrueCrypt第一阶段的安全审计报告，初步分析显示TrueCrypt没有发现含有后门或其它故意加入的恶意代码的证据。TrueCrypt是流行的加密软件，但从未进行过安全审计，在NSA大规模监控活动曝光之后安全研究人员发起了对 TrueCrypt的完整安全审计，iSEC负责此次审计。研究人员在代码中发现了一些小的漏洞——例如TrueCrypt使用的迭代次数是1000或 2000，不足以保护密码抵抗暴力破解攻击——但没有一个大到足以称之为后门。第一阶段的安全评估重点是TrueCrypt 引导程序和Windows内核驱动等。第二阶段的安全审计将调查TrueCrypt加密套件、随机数生成器和关键密钥算法是否正确实现。</p><p style=""><br style="margin: 0px; padding: 0px;"/>报告中声明没有完成高危的安全问题，也没有发现任何后门和恶意代码。并提到了TrueCrypt虽然编程风格不是最高雅的，但是这样也不影响大局。<br style="margin: 0px; padding: 0px;"/><br/></p><p style="">报告查看地址 https://opencryptoaudit.org/report</p><p><br/></p><p><img data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39EAAZibpQYwxibiaJEibISa8J2mCQ2WaRsPgHoAu1BOcwXXWhM4PcjMJqQeo1NBu0rY1By7BAbMCCQrg/0" src="../Images/c4c5f9ce33f8a7a21446326e39b7c23d.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR39EAAZibpQYwxibiaJEibISa8J2mCQ2WaRsPgHoAu1BOcwXXWhM4PcjMJqQeo1NBu0rY1By7BAbMCCQrg/0"/></p>
+        
+</body>
+</html>

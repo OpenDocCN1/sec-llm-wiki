@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>任天堂3DS游戏机烧录卡蓝屏事件</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>任天堂3DS游戏机烧录卡蓝屏事件</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=100008956&amp;idx=1&amp;sn=9b5314121784824fb0ddb46a4ef81e0b&amp;chksm=26ed9177119a18610777179ecbbfc0cc1ee884870485d3d3f1a7c3bfbbff8a3e8386d143f396&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=100008956&amp;idx=1&amp;sn=9b5314121784824fb0ddb46a4ef81e0b&amp;chksm=26ed9177119a18610777179ecbbfc0cc1ee884870485d3d3f1a7c3bfbbff8a3e8386d143f396&amp;scene=27#wechat_redirect</a></blockquote><p style="">在2013年8月份gateway-3ds发布第一款3DS游戏烧录卡，正式宣告了3DS被破解，可以免费玩众多3DS游戏。在这几个月之后多家山寨厂商开始盗用gateway3DS烧录卡固件自立门户推出新烧录卡，拥有着比GW烧录卡更低的价格，也开始销量火爆起来。</p><p style=""><br/></p><p style="">但就在1月13号，多名使用山寨烧录卡的玩家爆出了升级固件后重启3DS蓝屏导致变砖的事件。今天国外著名游戏破解论坛 gametemp 发帖指出：</p><p style=""><br/></p><p style=""><span style="margin: 0px; padding: 0px; color: rgb(0, 176, 80);">声明：本帖所有信息都已经从有名的几位破解黑客Neimod,yellow8,mathieulh和profi200得到证实</span><br style="margin: 0px; padding: 0px;"/><br style="margin: 0px; padding: 0px;"/>通俗来讲就是GW在2.0b2版本固件launcher.dat里动了手脚，只会影响山寨卡不会影响GW卡。山寨厂商没有仔细检查就放出来了结果导致了山寨卡3DS变砖。<br style="margin: 0px; padding: 0px;"/>那些声称GW卡变砖的人要不就是托，要不就是他们用其他未知的方式触发了机关导致自己中奖。希望他们能尽快提供更多证据。<br style="margin: 0px; padding: 0px;"/><br style="margin: 0px; padding: 0px;"/><strong style="margin: 0px; padding: 0px;">细节解释：</strong></p><p style=""><strong><br style="margin: 0px; padding: 0px;"/></strong>GW团队在2.0b2（也就是山寨卡的3.2-3.3b）故意加入了一段代码，代码会检查launcher.dat的checksum，如果检查失败（山寨卡的肯定会失败）就会随机触发重写eMMC NAND并让这个文件大小变成0字节，因此而导致变砖。 这是因为3DSLINK/R4i在山寨GW的launcher.dat过程中没有完整复制所以导致checksum检查失败。这破坏代码不会百分百触发，触发条件是由一个随机数字生成器控制的。<br style="margin: 0px; padding: 0px;"/></p><p style=""><br/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px;">1.3DSLINK和R4i用户的3DS的system NAND和system NAND reader会被破坏，NAND恢复/硬降/焊接也不能修好。为什么呢？因为这代码会重写eMMC controller，这会让电脑和3DS都认为你的NAND是0字节。这种数据损坏用简单的USB读卡器是修不好的。
+2.用锁区破解补丁也会变砖。
+3.GW在ROP链里加入了一个检查，如果你的SD卡坏了但是用的是正牌GW那么破坏代码是不会执行的。</pre><p style=""><strong style="margin: 0px; padding: 0px;"><br/></strong></p><p style=""><strong style="margin: 0px; padding: 0px;">推荐做法：</strong><br style="margin: 0px; padding: 0px;"/></p><ul class=" list-paddingleft-2" style="list-style-type: none;"><li><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; background-color: rgb(247, 247, 249); border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; text-align: left;">不要用3DSLINK和R4i
+不要用任何修改版的launcher.dat文件
+检查SD卡上的launcher.dat（固件）的SHA值和MD5值，如果不符合这个
+SHA: 3508a54dd3b1ff903fbf18ecf97b075205b67d0c   
+MD5: 6361c5d4935af6d888ffc0646548f5dd  那说明launcher.dat可能有损坏。</pre></li></ul><p><br/></p><p style="text-align: left;"><img src="../Images/3cc58a916dba29bae1a3d7534b9c1d4c.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR3ibFeyCqCLNT8XBI6zGPZb5d3eTXLo9HDGDFvsbpf8WEfdNoHph0PYBthP5epnqJWicB8yGvia7tIiaew/0"/></p><p style="text-align: left;"><br/></p><p style="text-align: left;"><img src="../Images/ab727f8e75a318a2143684343c7053ee.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR3ibFeyCqCLNT8XBI6zGPZb5d2NEnQiap8kRZMzJMmTUyAiaKowapjbRBTBL4rg2HiaG7vO3P8HtPagEsQ/0"/></p>
+        
+</body>
+</html>

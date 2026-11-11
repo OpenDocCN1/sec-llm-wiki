@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>三星智能冰箱存在漏洞：可导致Gmail身份凭证被窃取</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>三星智能冰箱存在漏洞：可导致Gmail身份凭证被窃取</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxODY1OTM5OQ==&amp;mid=211473038&amp;idx=1&amp;sn=c7669bef5f9d2c667ad9b606b9820075&amp;chksm=12bc93a625cb1ab02a2ca3eab78117cce905c9108298f010ded37080130f1f63ec5c5d275a65&amp;scene=126&amp;sessionid=1681378467#rd">http://mp.weixin.qq.com/s?__biz=MzAxODY1OTM5OQ==&amp;mid=211473038&amp;idx=1&amp;sn=c7669bef5f9d2c667ad9b606b9820075&amp;chksm=12bc93a625cb1ab02a2ca3eab78117cce905c9108298f010ded37080130f1f63ec5c5d275a65&amp;scene=126&amp;sessionid=1681378467#rd</a></blockquote><p>       最近物联网又出了新的安全问题，这次安全研究人员从三星智能冰箱里提取出了Gmail认证信息。</p><p>       在最近的DEFCON黑客大会上，黑客们提出了一种通过中间人攻击窃取身份认证的法子，并且他们从三星的智能冰箱RF28HMELBSR上成功验证了这个猜想。安全专家Ken Munro表示，联网的智能冰箱是为了展示Gmail日历，其实这点跟其他同类设备没什么区别。登录的用户可以进行更新，并同步Gmail日历数据。虽然由于冰箱通信使用了SSL证书加密，但是黑客可以通过入侵冰箱所在局域网，对冰箱的Gmail日历客户端进行中间人攻击（MITM）以窃取Gmail登录凭证。</p><p>       简单来说，三星智能冰箱设计之初可以下载Gmail的日历信息，这意味着它会使用Gmail凭证认证。而该智能冰箱是通过移动app来控制智能家居，尽管它采用了SSL，但却未能验证SSL证书，黑客可以对它进行中间人攻击，而专家们也曾在博客中提到过。</p><p>       这些安全专家也尝试给三星智能冰箱提供欺骗性更新，但是需要的参数太多且有点复杂，测试不太好覆盖完全。我们也研究了伪造固件更新的可能性，期间还发现了智能冰箱下载所用的URL，但仍需要研究大量的未知参数来完成这次攻击。当然，这些参数值都不是机密，但是非常难预测。比如一个设备模型的名字，可能是一个随机的序列号。</p><p>       在测试期间，专家们还发现了控制智能冰箱的移动app里存在密钥，里面含有用于建立安全通信的数字证书。该证书有着密码保护，但专家们注意到该凭证存储在该移动app中，因此专家们努力尝试猜解密码，从而通过证书认证登录智能冰箱。</p><p>       专家表示：“我们本来还想通过USB接口或者JTAG、串行接口对冰箱的终端设备进行访问，但是测试的时间不够了。然而，我们现在已经发现的中间人攻击已经足够黑掉它。”专家们以前也做过类似的测试，今年年初他们发现三星智能电视在公网中发送未加密的语音数据和文本信息，导致黑客可以将其轻松捕获。</p><p>       三星表示他们他们极其看重客户的安全，已经在着手处理和调查。</p><p>       （转载Freebuf）</p>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>手动安装OpenStack FWaaS Dashboard</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>手动安装OpenStack FWaaS Dashboard</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650744799&amp;idx=1&amp;sn=70167bec6a9cb49d609ab710616ec85d&amp;chksm=871486dfb0630fc97c280bf16ee08c2e5ef9ada24bb3312385303a26b8f628f2ce0d3774535e&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650744799&amp;idx=1&amp;sn=70167bec6a9cb49d609ab710616ec85d&amp;chksm=871486dfb0630fc97c280bf16ee08c2e5ef9ada24bb3312385303a26b8f628f2ce0d3774535e&amp;scene=27#wechat_redirect</a></blockquote><h2 class="rich_media_title">之前做OpenStack FWaaS-V2的实践的时候说FWaaS-V1的Dashboard通过配置就能出来，那是过去了，现在不是了，比如最新的Rocky版本，怎么办呢，本周就实践了一下手动安装过程，</h2><div><p>还是要先做配置，参考https://docs.openstack.org/neutron/rocky/admin/fwaas-v1-scenario.html，v2的也是一样的，只是版本不同，</p><p>vim /etc/neutron/neutron.conf，</p><p>service_plugins = router,firewall</p><p>[service_providers]<br/>service_provider = FIREWALL:Iptables:neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver:default</p><p>vim /etc/neutron/fwaas_driver.ini，</p><p>[fwaas]<br/>agent_version = v1（v2只需在这里改一下版本号）<br/>driver = iptables<br/>enabled = True<br/>conntrack_driver = conntrack</p><p>vim /etc/neutron/l3_agent.ini，</p><p>[agent]<br/>extensions = fwaas</p><p>neutron-db-manage --subproject neutron-fwaas upgrade head，</p><p>vim /etc/openstack-dashboard/local_settings.py，</p><p>OPENSTACK_NEUTRON_NETWORK = {<br/>    # ...<br/>    'enable_firewall' = True,<br/>    # ...<br/>}</p><p>service neutron-l3-agent restart，</p><p>service neutron-server restart，</p><p>以上配置只能保证FWaaS是工作的，但是没有Dashboard，</p><p>参考https://docs.openstack.org/neutron-fwaas-dashboard/latest/install/index.html，</p><p>git clone https://git.openstack.org/openstack/neutron-fwaas-dashboard，</p><p>cd neutron-fwaas-dashboard，</p><p>apt install python-pip，</p><p>pip install .，</p><p>cp neutron_fwaas_dashboard/enabled/_70*_*.py /usr/share/openstack-dashboard/openstack_dashboard/local/enabled，</p><p>vim /etc/openstack-dashboard/local_settings.py，</p><p>POLICY_FILES = {<br/>     # ...<br/>     'neutron-fwaas': '/home/ubuntu/neutron-fwaas-dashboard/etc/neutron-fwaas-policy.json',<br/>     # ...<br/>}</p><p>apt-get install gettext，（这个地方参考原文没提到，很重要）</p><p>./manage.py compilemessages，</p><p>DJANGO_SETTINGS_MODULE=openstack_dashboard.settings python manage.py collectstatic --noinput，</p><p>DJANGO_SETTINGS_MODULE=openstack_dashboard.settings python manage.py compress --force，</p><p>service apache2 restart，</p><p>再打开Dashboard，你就能看到FWaaS的界面了。<br/></p></div>
+        
+</body>
+</html>

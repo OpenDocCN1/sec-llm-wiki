@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>helm的实践（一）</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>helm的实践（一）</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650746338&amp;idx=1&amp;sn=cc65ae54f60b76b97101001266f37e6f&amp;chksm=87148ce2b06305f4aa555d4751a8148d866c0392b0047a8e0ffcafa5616efd34e286ecc87793&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650746338&amp;idx=1&amp;sn=cc65ae54f60b76b97101001266f37e6f&amp;chksm=87148ce2b06305f4aa555d4751a8148d866c0392b0047a8e0ffcafa5616efd34e286ecc87793&amp;scene=27#wechat_redirect</a></blockquote><p>五一假期比较懒，就是歇着，啥也没干，为了不跳票，把之前做过的helm的实践总结一下吧，</p><p>记得之前做OSM实践的时候用过helm，那时是老版本，新版本有很大不同，</p><p>只需下载应用程序就可以了，不用再部署tiller服务，</p><p>wget https://get.helm.sh/helm-v3.5.4-linux-amd64.tar.gz，</p><p>sudo mv linux-amd64/helm /usr/local/bin/，</p><p>添加公共repo，</p><p>helm repo add stable http://mirror.azure.cn/kubernetes/charts，</p><p>helm repo update，</p><p>helm repo list，</p><p>删除repo，helm repo remove stable，</p><p>搜索chart，helm search repo ldap，</p><p>安装chart，helm install openldap stable/openldap，</p><p>查看安装好的部署，helm list，</p><p>也可以kubectl get pods --all-namespaces，</p><p>删除chart，helm uninstall openldap，</p><p>部署本地repo，</p><p>docker run --rm -d -it \<br/>  -p 8080:8080 \<br/>  -e DEBUG=1 \<br/>  -e STORAGE=local \<br/>  -e STORAGE_LOCAL_ROOTDIR=/charts \<br/>  -v $(pwd)/charts:/charts \<br/>  ghcr.io/helm/chartmuseum:v0.13.1</p><p>下载chart，sudo chmod 777 charts，cd charts，</p><p>可以直接把chart下载到chart目录，helm pull stable/openldap，</p><p>添加本地repo，<br/></p><p>helm repo add chartmuseum http://10.90.11.160:8080，</p><p>helm repo update，</p><p>查看本地repo上的chart，curl http://10.90.11.160:8080/api/charts | jq，<br/></p><p>也可以下载后远程push到本地repo上，</p><p>这需要先安装push插件，</p><p>helm plugin install https://github.com/chartmuseum/helm-push.git，</p><p>helm push openldap-1.2.7.tgz chartmuseum，</p><p>然后就可以使用本地repo上的chart安装openldap了，</p><p>最后就是怎么创建自己的chart，很简单，</p><p>helm create mychart，这是一个模板，按照自己的需要修改即可</p><p>再helm package mychart，打包成chart压缩包即可。</p><p><br/></p><p><br/></p>
+        
+</body>
+</html>

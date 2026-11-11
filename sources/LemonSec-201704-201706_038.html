@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>命令执行漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>命令执行漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247484069&amp;idx=1&amp;sn=df65607c33d0b55b305fcd321bd347ac&amp;chksm=f9e06dfece97e4e831e39061f9f8fcd226ebe81c6c449478b29a42cf2c6928e2cfef93dda74f&amp;scene=126&amp;sessionid=1681663527#rd">http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247484069&amp;idx=1&amp;sn=df65607c33d0b55b305fcd321bd347ac&amp;chksm=f9e06dfece97e4e831e39061f9f8fcd226ebe81c6c449478b29a42cf2c6928e2cfef93dda74f&amp;scene=126&amp;sessionid=1681663527#rd</a></blockquote><p>命令执行是指攻击者通过浏览器或者其他客户端软件提交一些cmd命令（或者bash命令）至服务器程序，服务器程序通过system、eval、exec等函数直接或者间接地调用cmd.exe执行攻击者提交的命令。<br/><br/>原理：<br/><br/>由于开发人员在编写php源代码时，没有对源代码中可执行的特殊函数入口做过滤，导致客户端可以提交一些cmd命令，并交由服务器程序执行。<br/><br/>WEB服务器没有过滤类似system、eval、exec等函数是该漏洞攻击成功最主要原因。<br/><br/>测试代码：<br/><br/>&lt;?php<br/><br/>$a = $_GET['a'];<br/><br/>system($a);<br/><br/>?&gt;<br/><br/>开启Firefox，输入：http://localhost:81/code_exec.php?a=ver<br/><br/>Webserver返回如下信息：<br/><br/>Microsoft Windows [版本 6.1.7601]<br/><br/>如今很多开源的php代码或者CMS几乎都存命令执行的漏洞，如：w3cschool、w3school，github，discuz，dedecms，phpcms，drupal。<br/><br/>而且很多php开发人员基本上都不重视代码编写的安全性，直接copy一些网上的开源代码，在自己的项目中使用，这样会产生很多安全隐患，开发人员一定得重视这个问题。不单是php，java，asp.net，Python等等也是一样。</p><p><br/></p><p><br/></p><p>查看更多文章，关注下方二维码</p><p><img class="" data-ratio="1" data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/p5qELRDe5ickAiax1Nv77rYNEC3sRgfAkw8hAX4rSjibP0FMnud3ZM4f0Jc7nkoCL2t8STuhTbnuxj6W6T8JumElA/640?wx_fmt=jpeg" data-type="jpeg" data-w="258" style="visibility: visible !important; width: auto !important; height: auto !important;" width="auto" src="../Images/60bd80188885b005ab426369f4086902.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/p5qELRDe5ickAiax1Nv77rYNEC3sRgfAkw8hAX4rSjibP0FMnud3ZM4f0Jc7nkoCL2t8STuhTbnuxj6W6T8JumElA/640?wx_fmt=jpeg"/></p><p><br/></p>
+        
+</body>
+</html>

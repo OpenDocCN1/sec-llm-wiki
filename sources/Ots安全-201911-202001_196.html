@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>可在线获得针对Apache Solr RCE漏洞的PoC漏洞利用代码</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>可在线获得针对Apache Solr RCE漏洞的PoC漏洞利用代码</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxMjYyMzkwOA==&amp;mid=2247483864&amp;idx=3&amp;sn=dcaca565f1cddc08bcf79c90b6c63c7c&amp;chksm=9bae4893acd9c1859c0f59e747f5708d8c441f5119f7b0e6f83031ab3184081a9c94a57d3aac&amp;scene=126&amp;sessionid=1681670253#rd">http://mp.weixin.qq.com/s?__biz=MzAxMjYyMzkwOA==&amp;mid=2247483864&amp;idx=3&amp;sn=dcaca565f1cddc08bcf79c90b6c63c7c&amp;chksm=9bae4893acd9c1859c0f59e747f5708d8c441f5119f7b0e6f83031ab3184081a9c94a57d3aac&amp;scene=126&amp;sessionid=1681670253#rd</a></blockquote><p>在整个夏天，Apache Solr团队解决了一个远程执行代码的缺陷，而不是在线发布有效的利用代码。</p><p>在夏天修复的Apache Solr团队解决的错误比最初想象的要危险得多。</p><p><br/></p><p>Apache Solr是一个用Java编写的高度可靠，可扩展且容错的开源搜索引擎。</p><p><br/></p><p>索尔 具有高度的可靠性，可伸缩性和容错能力，可提供分布式索引，复制和负载平衡查询，自动故障转移和恢复，集中式配置等。</p><p><br/></p><p>该漏洞被报告  由指定的用户维护者“珍妮”，并位于默认位置 索尔。在。sh  配置。</p><p>“此问题最初的标题为”默认 索尔。在。sh包含 没有评论 行”，并告诉用户检查其 索尔。在。sh文件。”阅读安全公告。“后来由于远程执行代码的风险，我们升级了此漏洞的严重性，获得了CVE编号并发布了下面引用的公开声明。”</p><p><br/></p><p>该问题影响Apache Solr for Linux的8.1.1和8.2.0版本（不影响Windows），默认情况下包含ENABLE_REMOTE_JMX_OPTS配置选项的不安全设置 sol.in.sh 配置文件。</p><p>“如果您使用默认 索尔。在。受影响的发行版中的sh文件，然后将启用JMX监视并将其暴露在RMI_PORT上（默认值= 18983），而无需进行任何身份验证。您的Solr节点将能够访问JMX，这可能又使它们能够上传恶意代码以在Solr服务器上执行。”</p><p><br/></p><p>根据Tenable发布的分析，从v7.7.2到v8.3的所有Solr版本均受此漏洞影响。</p><p><br/></p><p>“ 能成立的研究  已经证实，Apache Solr实现版本7.7.2通过8.3（最新版本）是脆弱的，我们怀疑旧版本，其中包括了配置API是潜在的脆弱。” 读通过发表能成立的分析。</p><p><br/></p><p>报告该漏洞时，Apache Solr团队承认 它但是 之所以没有意识到它的严重性，是因为专家认为攻击者可以利用它仅访问Solr监视数据。</p><p><br/></p><p>10月30日，用户“ s00py ” 在GitHub上发布了概念验证漏洞利用代码，利用该问题使易受攻击的系统远程执行代码。漏洞利用代码使用了暴露的8983港口 为了支持Apache Velocity模板，然后使用它来上传和运行恶意代码。</p><p><br/></p><p>据ZDNet称，两天后，用户“ jas502n ”发布了第二个PoC代码  ，该代码允许非常简单地利用此漏洞。</p><p><br/></p><p>这两个PoC漏洞的可用性迫使Solr团队于11月15日发布  更新的安全公告。的 CVE-2019-12409标识符</p><p><br/></p><p>“确保您有效 索尔。在。sh文件在每个Solr节点上都将ENABLE_REMOTE_JMX_OPTS设置为“ false”，然后重新启动Solr。注意有效索尔。在。sh文件可能位于/ etc / defaults /或其他位置，具体取决于安装。” 读取更新后的建议。“然后您可以验证com。太阳。管理。jmxremote *'系列属性 没有列出 在Solr管理员用户界面的“ Java属性”部分中，或以安全方式进行配置。”</p><p style="text-align: center;"><img class="rich_pages js_insertlocalimg" data-ratio="0.4326171875" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_gif/rWGOWg48tacA99ImjQAb52DYTXa3UgGHic589K6MUtW8WicWF0Odnnw4LfzTd4plrPBdgrWxEoYP0wMqLHI1k8Tw/640?wx_fmt=gif" data-type="gif" data-w="1024" style="" src="../Images/75dc9c0979f38714711f83681f0b3382.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_gif/rWGOWg48tacA99ImjQAb52DYTXa3UgGHic589K6MUtW8WicWF0Odnnw4LfzTd4plrPBdgrWxEoYP0wMqLHI1k8Tw/640?wx_fmt=gif"/></p><p>专家还建议在JMX_PORT上阻止入站流量。</p><p>在撰写本文时，专家们尚未意识到在野外利用该问题进行的攻击，但他们指出，这只是时间问题。</p>
+        
+</body>
+</html>

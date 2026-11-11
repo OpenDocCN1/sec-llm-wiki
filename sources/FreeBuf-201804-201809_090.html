@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>打造基于Nginx的敏感信息泄露检测系统</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>打造基于Nginx的敏感信息泄露检测系统</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=2651070599&amp;idx=3&amp;sn=f5ecbb53dee2fd03b37d0033f7fa81c5&amp;chksm=bd1fb20c8a683b1ac6773441b445a8152689ffc1ac369cb7269001157feee72bb7a138ae2060&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=2651070599&amp;idx=3&amp;sn=f5ecbb53dee2fd03b37d0033f7fa81c5&amp;chksm=bd1fb20c8a683b1ac6773441b445a8152689ffc1ac369cb7269001157feee72bb7a138ae2060&amp;scene=27#wechat_redirect</a></blockquote><p><strong><strong style="color: rgb(239, 71, 71);">*本文原创作者：f4ckbaidu，本文属FreeBuf原创奖励计划，未经许可禁止转载</strong> <br/></strong></p><h2><span style="font-size: 18px;"><strong>0、环境说明：</strong></span></h2><p><strong style="color: rgb(239, 71, 71);">注意：本文所有的代码都放在/data/code下面</strong></p><p>如路径变化则需要修改test.conf中标红的路径参数：</p><blockquote><p>操作系统：CentOS 7 Minimal</p><p>OpenResty版本：1.13.6.2（<span style="text-decoration:underline;"><span style="color:#0066cc;">https://openresty.org/cn/download.html</span></span>）</p><p>Splunk Free：<span style="text-decoration:underline;"><span style="color:#0066cc;">https://download.splunk.com/products/splunk/releases/7.1.2/linux/splunk-7.1.2-a0c72a66db66-linux-2.6-x86_64.rpm</span></span></p></blockquote><h2><span style="font-size: 18px;"><strong>1、需求说明</strong></span></h2><p>在甲方的小伙伴一定会碰到这样的问题：</p><p>日了狗的开发总是不把应用/数据库的详细错误信息隐藏，妈蛋要是哪天出个error-based sqli岂不是倒霉了？如何主动检测敏感信息泄露然后拿去使劲怼开发呢？</p><p>答案当然是用春哥的神器OpenResty（继承了Nginx、Nginx lua等一堆模块的合体）</p><h2><span style="font-size: 18px;"><strong>2、具体实现</strong></span></h2><p>Nginx Lua模块执行阶段如下图：</p><p><img width="650" height="588" data-ratio="0.9046153846153846" data-type="jpeg" data-w="650" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibXfbvIdicV0NGSxD5k9OGvBYAMNHNY7NVZ1nrB7mticIbD4lcawOm8g73efFJQvcLdMChpp1k2OJibA/640?wx_fmt=jpeg" src="../Images/208c4bab2fab100fac04d4a5e9cb812c.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibXfbvIdicV0NGSxD5k9OGvBYAMNHNY7NVZ1nrB7mticIbD4lcawOm8g73efFJQvcLdMChpp1k2OJibA/640?wx_fmt=jpeg"/></p><p>我们这次要实现的是服务器响应体敏感信息的记录，只需要用到body_filter（响应体处理）和log（日志记录）两个阶段处理，流程如下：</p><p>body_filter阶段匹配resp_body--&gt;通过ngx.ctx跨阶段传日志到log阶段--&gt;log阶段向Splunk发送日志--&gt;Splunk统计、告警、分析</p><p>body_filter阶段代码如下：（body_filter.lua）</p><pre>local resp_body = ngx.arg[1] --获取响应体
+local eof = ngx.arg[2]
+local ctx_log = {} --日志table
+
+local regex = [[You have an error in your SQL syntax]] --匹配的敏感内容
+
+local m = ngx.re.match(resp_body, regex, 'jio') --对响应体做正则匹配
+
+if m then --如果匹配到敏感信息
+	ctx_log.rule_match = m[0] --将匹配内容写入日志
+	ctx_log.Request_line = ngx.var.request --记录请求URL，包括GET参数
+	ctx_log.Request_headers = ngx.req.get_headers() --记录请求头部
+	ngx.ctx.log = ctx_log --日志赋值给跨阶段的ngx.ctx.log
+end</pre><p>log阶段代码如下：（log.lua）</p><pre>local logger = require "socket" --加载logger socket库
+local cjson = require "cjson.safe" --加载cjson库
+
+if not logger.initted() then --初始化logger
+	local ok,err = logger.init{
+			host = "127.0.0.1", --splunk IP
+			port = 8888,		--splunk端口
+			sock_type = "tcp",	--日志socket类型
+			flush_limit = 1,
+			}
+	if not ok then --初始化失败处理
+		ngx.log(ngx.ERR,"failed to initialize the logger: ",err)
+		return
+	end
+end
+
+local log = ngx.ctx.log --接收ngx.ctx.log跨阶段传过来的日志信息
+
+if type(log) == "table" then --判断日志不为空则记录
+	local bytes, err = logger.log(cjson.encode(log) .. "\r\n")
+	if err then
+		ngx.log(ngx.ERR, "failed to log message: ", err)	
+	end
+end</pre><p>然后在nginx的http级别include test.conf即可，test.conf内容如下：</p><pre>lua_package_path '/data/code/?.lua;;';
+body_filter_by_lua_file /data/code/body_filter.lua;
+log_by_lua_file /data/code/log.lua;
+lua_code_cache on;</pre><p><img width="690" height="492" data-ratio="0.7130434782608696" data-type="jpeg" data-w="690" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibXfbvIdicV0NGSxD5k9OGvBmWP0AWK557RroqnQsLlicTiclw33b2LRP3GEibtic6qGIFURwTxKS6mpwA/640?wx_fmt=jpeg" src="../Images/62c2f3ebba50ccd17fe3b8b6c8561a5d.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibXfbvIdicV0NGSxD5k9OGvBmWP0AWK557RroqnQsLlicTiclw33b2LRP3GEibtic6qGIFURwTxKS6mpwA/640?wx_fmt=jpeg"/></p><p>我这里使用dvwa的sqli部分做实验，用来记录服务器返回的MySQL错误信息：</p><p>我这里的测试架构是：nginx（反向代理）--&gt;httpd + php（dvwa）</p><p>输入单引号让服务器报MySQL错误</p><p><img width="650" height="453" data-ratio="0.696923076923077" data-type="jpeg" data-w="650" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibXfbvIdicV0NGSxD5k9OGvBAgAQ9leBwibAhwy9zjQneEmjl88WicIgkFn1ASSDqmLue3BsUCllMRMw/640?wx_fmt=jpeg" src="../Images/ce2450338ff1a4343cb7e3a88adb0582.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibXfbvIdicV0NGSxD5k9OGvBAgAQ9leBwibAhwy9zjQneEmjl88WicIgkFn1ASSDqmLue3BsUCllMRMw/640?wx_fmt=jpeg"/></p><p><img width="690" height="59" data-ratio="0.08550724637681159" data-type="jpeg" data-w="690" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibXfbvIdicV0NGSxD5k9OGvBSib4bP0lAqia9C8Rdtf5ODRahQ0RhTibhzuOP18ibn4bmicLeLd7UpDiabBw/640?wx_fmt=jpeg" src="../Images/fe2099e860f9e38a13e5afd6843b9723.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibXfbvIdicV0NGSxD5k9OGvBSib4bP0lAqia9C8Rdtf5ODRahQ0RhTibhzuOP18ibn4bmicLeLd7UpDiabBw/640?wx_fmt=jpeg"/></p><p>然后就能在splunk里看到日志了：</p><p>如下图所示，可以看到日志记录了客户端的请求头部（Request_headers、Request_line）以及服务器的相应体匹配数据（rule_match）</p><p>PS：如果要记录用户的POST请求体则会变得更复杂，需要在access阶段做处理，后面的文章里再说</p><p><img width="690" height="327" data-ratio="0.47391304347826085" data-type="jpeg" data-w="690" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibXfbvIdicV0NGSxD5k9OGvBMdkqwtO2BjO3x5iaRPiawfgBfnzaWNKSZeNicfQ7lDgXxR2q8MZV5vicCA/640?wx_fmt=jpeg" src="../Images/b170d4476e3379b56db00c6ff1e2ca50.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/qq5rfBadR3ibXfbvIdicV0NGSxD5k9OGvBMdkqwtO2BjO3x5iaRPiawfgBfnzaWNKSZeNicfQ7lDgXxR2q8MZV5vicCA/640?wx_fmt=jpeg"/></p><p>Splunk需要注意的地方：</p><p>需要编辑props.conf以免在日志过多的时候Splunk自动把多行Json格式日志合并</p><pre>vim /opt/splunk/etc/system/local/props.conf</pre><p>加入以下内容：</p><pre>[_json]  #这个是sourcetype
+SHOULD_LINEMERGE = false  #告诉Splunk不自动合并行</pre><h2><span style="font-size: 18px;"><strong>3、参考：</strong></span></h2><blockquote><p>春哥的nginx lua模块：</p><p><span style="text-decoration:underline;"><span style="color:#0066cc;">https://github.com/openresty/lua-nginx-module</span></span></p><p>OpenResty logger socket模块：</p><p><span style="text-decoration:underline;"><span style="color:#0066cc;">https://github.com/cloudflare/lua-resty-logger-socket</span></span></p><p>OpenResty最佳实践：</p><p><span style="text-decoration:underline;"><span style="color:#0066cc;">https://moonbingbing.gitbooks.io/openresty-best-practices/lua/main.html</span></span></p></blockquote><p><strong style="color: rgb(239, 71, 71);">*本文原创作者：f4ckbaidu，本文属FreeBuf原创奖励计划，未经许可禁止转载</strong><img style="" data-ratio="0.6466666666666666" data-type="png" data-w="600" data-src="https://mmbiz.qpic.cn/mmbiz_png/qq5rfBadR3icgd4icqu70ibGz2aGspXLoWicr49J5crdDzDdhkNAWV6T5nehHgV2DRtnhsSdmxIZL089Ws5hDDgwjA/640?wx_fmt=png" data-copyright="0" data-s="300,640" src="../Images/b4f1060a72a4ef1c78ba8fa8645e42e8.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/qq5rfBadR3icgd4icqu70ibGz2aGspXLoWicr49J5crdDzDdhkNAWV6T5nehHgV2DRtnhsSdmxIZL089Ws5hDDgwjA/640?wx_fmt=png"/></p>
+        
+</body>
+</html>

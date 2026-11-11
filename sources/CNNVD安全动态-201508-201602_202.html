@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>3G/4G调制解调器中的安全漏洞：可致设备被完全控制</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>3G/4G调制解调器中的安全漏洞：可致设备被完全控制</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxODY1OTM5OQ==&amp;mid=401468654&amp;idx=7&amp;sn=f7dd4dacb0a24e7dd9eca896e3edcc9c&amp;chksm=09cbadc63ebc24d057a6595361934544537fb71fb024e2ded8421bd67978161f0c1397d6e70e&amp;scene=126&amp;sessionid=1681378426#rd">http://mp.weixin.qq.com/s?__biz=MzAxODY1OTM5OQ==&amp;mid=401468654&amp;idx=7&amp;sn=f7dd4dacb0a24e7dd9eca896e3edcc9c&amp;chksm=09cbadc63ebc24d057a6595361934544537fb71fb024e2ded8421bd67978161f0c1397d6e70e&amp;scene=126&amp;sessionid=1681378426#rd</a></blockquote><p>来源：Freebuf</p><p>    近日，安全专家在调查中发现，来自四个厂商的蜂窝调制解调器中存在跨站脚本漏洞、跨站请求伪造漏洞和远程代码执行漏洞，并可能遭受完整性攻击。</p><p><span style="line-height: 25.6px;">       </span>该调查由PositiveTechnologies发起、SCADA Strangelove团队参与执行，主要涉及华为（Huawei）、正文科技（Gemtek）、广达科技（Quanta）和中兴通讯（ZTE）的调制解调器产品。该调查主要针对众多厂商中存在的一个普遍问题：多数厂商习惯以硬件供应商的代码为基础设计产品，而且往往不做任何更改。</p><p><span style="line-height: 25.6px;">       </span>通过对调查对象（包括两款Gemtek、两款Quanta、一款ZTE和三款Huawei）的测试，发现这些产品中均存在远程代码执行漏洞，并且除了华为的产品外均存在恶意固件。</p><p><span style="line-height: 25.6px;">       </span>参与测试的调制解调器中的漏洞可能导致远程攻击者完全控制设备。以下按漏洞的严重性对这些漏洞进行描述：</p><p><span style="line-height: 25.6px;">       </span>1、远程代码执行漏洞</p><p><span style="line-height: 25.6px;">       </span>导致该漏洞主要有三个原因：这些产品的Web服务器都是基于简单的为适当过滤的CGI脚本；调制解调器需要使用文件系统发送AT命令、读取和写入SMS消息和配置防火墙规则等；这些产品都没有CSRF保护，以至于攻击者可借助社会工程学和恶意网站的请求执行远程代码。因此，百分之六十的调制解调器中存在远程代码执行漏洞。</p><p><span style="line-height: 25.6px;">       </span>2、完整性漏洞</p><p><span style="line-height: 25.6px;">       </span>在这些产品中，有三款是配置了防固件篡改保护的，其中有两款使用了相同的完整性检测算法，在这种算法中攻击者可通过注入代码修改固件；其中一款仅仅使用RC4算法进行固件加密，攻击者可提取加密密钥并确定加密算法，进而更改固件。其中有三款没有任何完整性保护机制，并且固件升级需要本地访问COM接口。最后两款则必须通过运营商的网络、借助FOTA（移动终端的空中下载软件升级）技术进行升级。</p><p><span style="line-height: 25.6px;">       </span>3、跨站请求伪造漏洞</p><p><span style="line-height: 25.6px;">       </span>跨站请求伪造攻击主要用于远程上传修改的固件，并完成代码注入。对每个请求使用唯一的令牌是阻止此类攻击的有效方法。</p><p><span style="line-height: 25.6px;">       </span>4、跨站脚本漏洞</p><p><span style="line-height: 25.6px;">       </span>利用跨站脚本漏洞的攻击影响范围十分广泛，从宿主感染到SMS消息拦截都有可能发生。此次调查主要针对让AntiCSRF检查和同源策略的固件上传。</p><p><span style="line-height: 25.6px;">       </span>借助以上发现的这些漏洞，攻击者可以确定目标位置、拦截和发生SMS消息和USSD请求、读取HTTP和HTTPS流量、攻击SIM卡盒拦截2G流量，甚至通过运营商的网络对网站和设备进行蠕虫感染。经调查发现，华为的使用最新固件的调制解调器是最安全的，运营商只允许在固件中添加一些视觉元素和开启/启用特定的功能，并且会及时修补漏洞。调查的这些调制解调器产品一旦被攻击者攻破，很有可能影响所在的整个网络，所以厂商在设计和生产过程中一定要更加注重产品的安全性。</p><p><br/></p>
+        
+</body>
+</html>

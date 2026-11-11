@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>华为CPE设备存在远程任意文件读取漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>华为CPE设备存在远程任意文件读取漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxODY1OTM5OQ==&amp;mid=400736461&amp;idx=1&amp;sn=6a33271634c232e081a520d656590691&amp;chksm=09c481e53eb308f3dd78da553e8b100bd4aa8f30e661c37e778b7c025d8e9168fa3ad2eb9448&amp;scene=126&amp;sessionid=1681378446#rd">http://mp.weixin.qq.com/s?__biz=MzAxODY1OTM5OQ==&amp;mid=400736461&amp;idx=1&amp;sn=6a33271634c232e081a520d656590691&amp;chksm=09c481e53eb308f3dd78da553e8b100bd4aa8f30e661c37e778b7c025d8e9168fa3ad2eb9448&amp;scene=126&amp;sessionid=1681378446#rd</a></blockquote><p>来源：Freebuf    </p><p>       CPE是一种将高速4G信号转换成平板电脑、智能手机、笔记本等移动终端通用的WiFi信号的设备，可同时支持多部终端上网，大小相当于一本书，在有4G信号覆盖的地方，插上电源就能使用，不必拉网线，使用和携带都很方便。</p><p>       CPE的AP功能、路由器性能更强，可同时接平板电脑、智能手机、笔记本等移动终端几十个同时使用。具有较完整的用户认证功能及计费功能。</p><p>       向互联网开放网络端口（TCP/37215，测试设备）的华为CPE模块存在目录遍历漏洞（CNNVD-201511-114），37215端口是华为CPE设备的UPnP服务端口。通过利用这一漏洞，远程攻击者可以不经验证访问设备的任何本地文件，黑客可以通过这一漏洞控制存在漏洞的设备。详细来说，Web服务器被设计为无需身份验证就可以远程访问/icon/文件夹，然而这里提供的路径并不会检查目录遍历的尝试，导致攻击者可以用 ../ 访问任何本地文件。</p><p><br/></p>
+        
+</body>
+</html>

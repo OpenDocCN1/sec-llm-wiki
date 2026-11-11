@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>2007年以来的Python的Tarfile模块路径遍历错误仍然存 在于350k开源存储库中CVE-2007-4559</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>2007年以来的Python的Tarfile模块路径遍历错误仍然存 在于350k开源存储库中CVE-2007-4559</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485620&amp;idx=1&amp;sn=577b8fd739da9466f08de433e367ae0f&amp;chksm=fa76e94acd01605c3f71b5c26955c881f8aad28515bce0c5f1d2e8c5a9cba77495cb73f358b5&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485620&amp;idx=1&amp;sn=577b8fd739da9466f08de433e367ae0f&amp;chksm=fa76e94acd01605c3f71b5c26955c881f8aad28515bce0c5f1d2e8c5a9cba77495cb73f358b5&amp;scene=27#wechat_redirect</a></blockquote><blockquote><p>据安全研究人员称，估计有350000个开源存储库受到Python tarfile模块中存在15年历史的路径遍历漏洞的影响。在调查一个不相关的漏洞时“偶然发现”了未修补的问题，他们最初认为该漏洞是一个新的零日漏洞，然后才意识到它实际上可以追溯到2007年。Trellix研究员Kasimir Schulz在9月21日发布的博客文章中说，最初指定CVSS 6.8的严重性评分，CVE-2007-4559允许攻击者“在大多数情况下”从文件写入中获得代码执行。</p></blockquote><p><img class="rich_pages wxw-img" data-ratio="0.5625" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJmqgbfVU9cQMycypDUticn4Lj7mFCNTaEKlBiczguR55kRya4SU6kL8LeY7WP3tzMb43ToXRz5HUvibA/640?wx_fmt=jpeg" data-type="jpeg" data-w="1200" height="675" width="1200" src="../Images/0ae3c65142d22ba302f41d2e3e947848.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJmqgbfVU9cQMycypDUticn4Lj7mFCNTaEKlBiczguR55kRya4SU6kL8LeY7WP3tzMb43ToXRz5HUvibA/640?wx_fmt=jpeg"/></p><p>Schulz解释了Trellix研究人员如何通过无线协议分析仪Universal Radio Hacker、IT基础设施管理服务Polemarch和Spyder IDE（一种用于科学编程的开源开发环境）成功地实现了这一成果。</p><p>在另一篇Trellix博客文章中，Douglas McKee表示，在大约300000个包含tarfile模块的文件样本中，有61%的样本容易受到漏洞的影响，这使得读取和写入tar档案成为可能。</p><p>Trellix已经为大约11000个项目创建了补丁，并预计在未来几周内将有另外70000个项目得到修复。</p><p>Charles McFarland的第三篇Trellix博客文章解释说，该漏洞“来自使用未经处理的tarfile.extract()或tarfile.extractall()的内置默认值的两三行代码”。“在调用tarfile.extract()或tarfile.extractall()之前未能编写任何安全代码来清理成员文件会导致目录遍历漏洞，从而使不良行为者能够访问文件系统。”</p><p>如果攻击者在文件名中添加带有操作系统分隔符的“..”（“/”或“\”），他们可以转义文件应该被提取到的目录。</p><p>然而，最近几天重新打开的一个2007年的Python错误线程以维护者断言“tarfile.py没有做错，它的行为符合POSIX中的pax定义和路径名解析指南”结束。没有已知的或可能的实际利用”。</p><p>维护者确实在Python文档中添加了一个警告，该文档仍然存在，敦促开发人员“不要在未经事先检查的情况下从不受信任的来源提取档案”。</p><p>Trellix的McKee承认存在合法的用例来保护可能被滥用于恶意目的的行为。然而，他说，“在这种情况下，我相信风险超过了容纳一些极端案例的回报”，特别是考虑到“大多数”第三方在线教程似乎“错误地展示了tarfile模块的不安全使用”。</p><p>Trellix创建并开源了一个工具来帮助研究和修补过程，通过利用AST中间表示自动检测源代码中的漏洞。</p><p>该实用程序称为Creosote，也提供了一种扫描封闭源存储库的方法。</p><p>“这个漏洞非常容易被利用”并且在野外普遍存在，这使得Python的tarfile模块成为“威胁全球基础设施的巨大供应链问题”，Schulz总结道。</p><p><br/></p><p style="display: none;"><mp-style-type data-value="3"/></p>
+        
+</body>
+</html>

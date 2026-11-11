@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>【求翻译】通过用户模式进行内核攻击</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>【求翻译】通过用户模式进行内核攻击</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzA4NDk5NTYwNw==&amp;mid=2651424956&amp;idx=1&amp;sn=e3cb3d482c29b79df172943fd9759630&amp;chksm=842393c4b3541ad24fd2823b7e5a5149ab851cf386a8e47ae0339d6529f012891833fa40f6d6&amp;scene=126&amp;sessionid=1681656482#rd">http://mp.weixin.qq.com/s?__biz=MzA4NDk5NTYwNw==&amp;mid=2651424956&amp;idx=1&amp;sn=e3cb3d482c29b79df172943fd9759630&amp;chksm=842393c4b3541ad24fd2823b7e5a5149ab851cf386a8e47ae0339d6529f012891833fa40f6d6&amp;scene=126&amp;sessionid=1681656482#rd</a></blockquote><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/4CQUZJ9euSwQXhUibQQO2vS4R8ojBNaMDrB9liaj5W1bWOR6IS4or0N9Xjm2icdlnsZPvgHldOWqyJ2aFrF0jKZGw/0?wx_fmt=png" data-ratio="1.0746031746031746" data-w="630" src="../Images/1886bbc9270d7cd8a3e33313405bcd24.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/4CQUZJ9euSwQXhUibQQO2vS4R8ojBNaMDrB9liaj5W1bWOR6IS4or0N9Xjm2icdlnsZPvgHldOWqyJ2aFrF0jKZGw/0?wx_fmt=png"/></p><p>这是一篇英文文档，有兴趣的同学可以尝试翻译，在订阅号发布出来，造福大家。 文章下面留言，或者直接将文章发到我的qq邮箱：717532978@qq.com。<br/></p><p><br/></p><p>链接: http://pan.baidu.com/s/1hsqX76k 密码: w85p</p><p style="text-align: center;"><img data-s="300,640" data-type="jpeg" data-src="http://mmbiz.qpic.cn/mmbiz_jpg/4CQUZJ9euSxxWn19hSm7lVAFPhvODtgI6G7d0BSuIDAlrWicyUJzibyjyhPOcq8RDo4PBJwcmgzknicbeVibrlibG4A/0?wx_fmt=jpeg" data-ratio="1" data-w="300" src="../Images/5ccb2688e5235125029347a8e72cd6b7.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_jpg/4CQUZJ9euSxxWn19hSm7lVAFPhvODtgI6G7d0BSuIDAlrWicyUJzibyjyhPOcq8RDo4PBJwcmgzknicbeVibrlibG4A/0?wx_fmt=jpeg"/></p><p style="text-align: center;">关注玄魂工作室，精彩不断</p><p><br/></p><p><br/></p><p>Win32k.sys was introduced as part of the changes made in Windows NT 4.0 to
+increase graphics rendering performance and reduce the memory requirements of
+Windows applications [10]. Notably, the Windows Manager (User) as well as the
+Graphics Device Interface (GDI) were moved out of the client-server runtime subsystem
+(CSRSS) and implemented into a kernel module of its own. In Windows
+NT 3.51, graphics rendering and user interface management were performed by
+CSRSS using a fast form of interprocess communication between the application
+(client) and the subsystem server process (CSRSS.EXE). Although this design
+was optimized for performance, the graphics intensive nature of Windows lead
+developers to move to a kernel based design with the much faster system calls.
+Win32k essentially consists of three major components: the Graphics Device
+Interface (GDI), the Window Manager (User), and thunks to DirectX APIs to
+support both the XP/2000 and Longhorn (Vista) display driver models (sometimes
+also considered to be a part of GDI). The Window Manager is responsible
+for managing the Windows user interface, such as controlling window displays,
+managing screen output, collecting input from mouse and keyboard, and passing
+messages to applications. GDI, on the other hand, is mostly concerned with
+graphics rendering and implements GDI objects (brushes, pens, surfaces, device
+contexts, etc.), the graphics rendering engine (Gre), printing support, ICM color
+matching, a floating point math library, and font support.
+As the traditional subsystem design of CSRSS was built around having one
+process per user, each user session has its own mapped copy of win32k.sys. The
+concept of sessions also allows Windows to provide a more strict separation
+between users (otherwise known as session isolation). As of Windows Vista, services
+were also moved into their own non-interactive session [2] to avoid the
+array of problems associated with shared sessions such as shatter attacks [12]
+and vulnerabilities in privileged services. Moreover, User Interface Privilege Isolation
+(UIPI) [1] implements the concept of integrity levels and ensures that low
+privilege processes cannot interact (e.g. pass messages to) processes of a higher
+integrity.
+In order to properly interface with the NT executive, win32k registers several
+callouts (PsEstablishWin32Callouts) to support GUI oriented objects such as
+desktops and window stations. Importantly, win32k also registers callouts for
+threads and processes to define per-thread and per-process structures use</p><p><br/></p>
+        
+</body>
+</html>

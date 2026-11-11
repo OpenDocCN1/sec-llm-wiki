@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Metasploit实战攻击 MS12-020</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Metasploit实战攻击 MS12-020</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247484328&amp;idx=2&amp;sn=bd825e578424a6a3b7bf43c5d34c9754&amp;chksm=f9e06cf3ce97e5e56c10bf8943eaf29124d94b063e54dee6d1e7164f3a7121d9d532ef244172&amp;scene=126&amp;sessionid=1681663512#rd">http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247484328&amp;idx=2&amp;sn=bd825e578424a6a3b7bf43c5d34c9754&amp;chksm=f9e06cf3ce97e5e56c10bf8943eaf29124d94b063e54dee6d1e7164f3a7121d9d532ef244172&amp;scene=126&amp;sessionid=1681663512#rd</a></blockquote><p><strong><span style="font-family: 黑体; font-size: 21px;">漏洞定义：</span></strong></p><p><span style="font-family: 宋体; font-size: 19px;"> </span></p><p><span style="font-family: 宋体; font-size: 19px;">微软于2012年3月12日发布安全公告，公布了MS12-020漏洞，漏洞级别为严重，这个级别是微软所有漏洞级别的最高级别，意即会对服务和企业运营造成巨大损失。</span></p><p><span style="font-family: 宋体; font-size: 19px;"> </span></p><p><span style="font-family: 宋体; font-size: 19px;">这个漏洞的定义是指操作系统的远程桌面协议存在重大漏洞，入侵者（黑客）可以通过向远程桌面默认端口（3389）发一系列特定RDP包，从而获取超级管理员权限，进而入侵系统。</span></p><p><span style="font-family: 宋体; font-size: 19px;"> </span></p><h4>漏洞版本:</h4><pre>Microsoft Windows XP Professional
+Microsoft Windows XP Home
+Microsoft Windows Server 2003 Standard Edition
+Microsoft Windows Server 2003 Enterprise Edition
+Microsoft Windows Server 2003 Datacenter Edition
+Microsoft Windows 7</pre><h4>漏洞描述:</h4><pre>BUGTRAQ  ID: 52354
+CVE ID: CVE-2012-0152
+
+远程桌面协议（RDP, Remote Desktop Protocol）是一个多通道（multi-channel）的协议，让用户（客户端或称“本地电脑”）连上提供微软终端机服务的电脑（服务器端或称“远程电脑”）。
+
+Windows在处理某些RDP报文时Terminal Server 存在错误，可被利用造成服务停止响应。</pre><h4>安全建议:</h4><pre>厂商补丁：
+
+Microsoft
+---------
+Microsoft已经为此发布了一个安全公告（MS12-020）以及相应补丁:
+
+MS12-020：Vulnerabilities in Remote Desktop Could Allow Remote Code Execution (2671387)
+
+链接：http://www.microsoft.com/technet/security/bulletin/MS12-020.asp<br/><br/>使用MSF：use auxiliary/dos/windows/rdp/ms12_020_maxchannelids <wbr/> <wbr/>利用此漏洞<br/>我测试目标的远程端口为3389，如图：</pre><p><br/></p><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/p5qELRDe5icm8Rgaxc5FjFj63PFX6FlicSAwsLxlp6JUbTCib2EzR4e1983ptcIqDGm3dRA0Le95ZPM6v2FV4h68g/0?wx_fmt=png" data-ratio="0.5626880641925778" data-w="997" src="../Images/8f5055cdc559c3d7a949d11d9636b969.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/p5qELRDe5icm8Rgaxc5FjFj63PFX6FlicSAwsLxlp6JUbTCib2EzR4e1983ptcIqDGm3dRA0Le95ZPM6v2FV4h68g/0?wx_fmt=png"/></p><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/p5qELRDe5icm8Rgaxc5FjFj63PFX6FlicSIKML1pGDt9TyKBhTFiaCWxRviaWdfB3Jp0VicnR0Iw9CoEdEWAN6AywSw/0?wx_fmt=png" data-ratio="0.12323491655969192" data-w="779" src="../Images/501b2d3089269e453817dd49a2efcab8.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/p5qELRDe5icm8Rgaxc5FjFj63PFX6FlicSIKML1pGDt9TyKBhTFiaCWxRviaWdfB3Jp0VicnR0Iw9CoEdEWAN6AywSw/0?wx_fmt=png"/></p><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/p5qELRDe5icm8Rgaxc5FjFj63PFX6FlicS0ERcAPXiaLvGY7V8Y9ficaHckGu1uOQD9aHtPTvt0dFVo0mGpybbvhpg/0?wx_fmt=png" data-ratio="0.38328236493374107" data-w="981" src="../Images/daa8d61e0f4b20338784b9298338355f.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/p5qELRDe5icm8Rgaxc5FjFj63PFX6FlicS0ERcAPXiaLvGY7V8Y9ficaHckGu1uOQD9aHtPTvt0dFVo0mGpybbvhpg/0?wx_fmt=png"/></p><p><br/></p><p><br/></p><p><br/></p><p/><p><br/></p>
+        
+</body>
+</html>

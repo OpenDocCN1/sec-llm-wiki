@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>高通芯片缺陷让黑客窃取Android设备中的私人数据</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>高通芯片缺陷让黑客窃取Android设备中的私人数据</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxMjYyMzkwOA==&amp;mid=2247483672&amp;idx=4&amp;sn=9847f863f09cc932fcefcebace876d8e&amp;chksm=9bae4853acd9c14561894e09360c6d928f869d949dc6ae605c7c47fcf279c74874cb53ec2c46&amp;scene=126&amp;sessionid=1681670258#rd">http://mp.weixin.qq.com/s?__biz=MzAxMjYyMzkwOA==&amp;mid=2247483672&amp;idx=4&amp;sn=9847f863f09cc932fcefcebace876d8e&amp;chksm=9bae4853acd9c14561894e09360c6d928f869d949dc6ae605c7c47fcf279c74874cb53ec2c46&amp;scene=126&amp;sessionid=1681670258#rd</a></blockquote><p>使用高通芯片组的数亿台设备（尤其是Android智能手机和平板电脑）容易受到一系列潜在的严重漏洞的攻击。</p><p>根据一份与《黑客新闻》共享的网络安全公司CheckPoint 的报告，这些漏洞可能使攻击者能够窃取存储在安全区域中的敏感数据，否则该安全区域应该是移动设备中受保护最多的部分。</p><p>该漏洞位于高通公司的安全执行环境（QSEE）中，该系统是基于ARM TrustZone技术的受信任执行环境（TEE）的实现。</p><p>QSEE也称为高通公司的安全世界，是主处理器上与硬件隔离的安全区域，旨在保护敏感信息并提供用于执行受信任的应用程序的单独的安全环境（REE）。</p><p>与其他个人信息一起，QSEE通常包含专用加密密钥，密码，信用卡和借记卡凭据。</p><p><br/></p><p>由于它是基于最小特权原则的，因此除非有必要，否则即使驱动程序和应用程序等Normal World系统模块都具有root权限也无法访问受保护区域。</p><p>研究人员告诉《黑客新闻》：“在一个为期4个月的研究项目中，我们成功地逆转了高通公司的Secure World操作系统，并利用了模糊测试技术来掩盖漏洞。”</p><p>“我们实施了一种定制的模糊测试工具，该工具在Samsung，LG，摩托罗拉设备上测试了受信任的代码。”这使研究人员能够找到三星实施的受信任代码中的四个漏洞，其中一个在摩托罗拉中，一个在LG中。</p><ul class=" list-paddingleft-2" style="list-style-type: disc;"><li><p>dxhdcp2（LVE-SMP-190005）</p></li><li><p>sec_store（SVE-2019-13952）</p></li><li><p>验证（SVE-2019-13949）</p></li><li><p>esecomm（SVE-2019-13950）</p></li><li><p>kmota（CVE-2019-10574）</p></li><li><p>tzpr25（三星认可）</p></li><li><p>prov（摩托罗拉正在努力解决）</p></li></ul><p>据研究人员称，高通安全组件中所报告的漏洞可能使攻击者能够：</p><ul class=" list-paddingleft-2" style="list-style-type: disc;"><li><p>在正常世界（Android OS）中执行受信任的应用，</p></li><li><p>将修补的受信任应用程序加载到安全世界（QSEE）中，</p></li><li><p>绕过高通的信任链，</p></li><li><p>调整受信任的应用程序以使其在其他制造商的设备上运行，</p></li><li><p>和更多。</p></li></ul><p>“一个有趣的事实是，我们也可以从另一台设备加载信任密钥。我们要做的就是用从设备制造商的信任密钥中提取的哈希表，签名和证书链替换信任密钥的.mdt文件中的哈希表，签名和证书链。”研究人员说。</p><p>简而言之，TEE组件中的漏洞使设备容易遭受各种安全威胁，包括受保护数据的泄漏，设备生根，引导加载程序解锁以及无法检测到的APT的执行。</p><p>该漏洞还影响使用QSEE组件保护用户敏感信息的各种智能手机和IoT设备。</p><p>Check Point Research负责地向所有受影响的供应商披露了调查结果，其中三星，高通和LG已针对这些QSEE漏洞发布了补丁更新。</p>
+        
+</body>
+</html>

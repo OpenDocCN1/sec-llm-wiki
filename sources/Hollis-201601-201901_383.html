@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>[初级]Java命令学习系列（七）——javap</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>[初级]Java命令学习系列（七）——javap</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI3NzE0NjcwMg==&amp;mid=402566219&amp;idx=2&amp;sn=99fd772a83a268943830b98052e10dde&amp;chksm=7960b16a4e17387ca8c38e962e1823d5f7527a19c6087949c1b6b796ba7de4c463de87d8313e&amp;scene=126&amp;sessionid=1681657899#rd">http://mp.weixin.qq.com/s?__biz=MzI3NzE0NjcwMg==&amp;mid=402566219&amp;idx=2&amp;sn=99fd772a83a268943830b98052e10dde&amp;chksm=7960b16a4e17387ca8c38e962e1823d5f7527a19c6087949c1b6b796ba7de4c463de87d8313e&amp;scene=126&amp;sessionid=1681657899#rd</a></blockquote><blockquote style="-webkit-print-color-adjust: exact; margin-bottom: 15px; border-left-width: 4px; border-left-color: rgb(221, 221, 221); padding-right: 15px; padding-left: 15px; color: rgb(119, 119, 119); font-family: Helvetica, arial, sans-serif; font-size: 14px; line-height: 22px; white-space: normal; widows: auto; background-color: rgb(255, 255, 255);"><p style="-webkit-print-color-adjust: exact;">javap是jdk自带的一个工具，可以对代码<a href="http://mp.weixin.qq.com/s?__biz=MzI3NzE0NjcwMg==&amp;mid=402199167&amp;idx=1&amp;sn=f6597f81f7e961cfbc49b06085e8c2a5&amp;scene=21#wechat_redirect" target="_blank" data_ue_src="http://mp.weixin.qq.com/s?__biz=MzI3NzE0NjcwMg==&amp;mid=402199167&amp;idx=1&amp;sn=f6597f81f7e961cfbc49b06085e8c2a5&amp;scene=21#wechat_redirect">反编译</a>，也可以查看java编译器生成的字节码。</p></blockquote><p style="-webkit-print-color-adjust: exact; margin-top: 15px; margin-bottom: 15px; font-family: Helvetica, arial, sans-serif; font-size: 14px; line-height: 22px; white-space: normal; widows: auto; background-color: rgb(255, 255, 255);">一般情况下，很少有人使用javap对class文件进行反编译，因为有很多成熟的反编译工具可以使用，比如jad。但是，javap还可以查看java编译器为我们生成的字节码。通过它，可以对照源代码和字节码，从而了解很多编译器内部的工作。</p><h2 style=" -webkit-print-color-adjust: exact; margin-top: 20px; margin-bottom: 10px; font-weight: bold; -webkit-font-smoothing: antialiased; cursor: text;  font-size: 24px; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: rgb(204, 204, 204); font-family: Helvetica, arial, sans-serif; white-space: normal; widows: auto; background-color: rgb(255, 255, 255); ">实例</h2><p style="-webkit-print-color-adjust: exact; margin-top: 15px; margin-bottom: 15px; font-family: Helvetica, arial, sans-serif; font-size: 14px; line-height: 22px; white-space: normal; widows: auto; background-color: rgb(255, 255, 255);">javap命令分解一个class文件，它根据options来决定到底输出什么。如果没有使用options,那么javap将会输出包，类里的protected和public域以及类里的所有方法。<code style="-webkit-print-color-adjust: exact; margin-right: 2px; margin-left: 2px; padding-right: 5px; padding-left: 5px; white-space: nowrap; border: 1px solid rgb(234, 234, 234); border-radius: 3px; background-color: rgb(248, 248, 248);">javap</code>将会把它们输出在标准输出上。来看这个例子，先编译(<code style="-webkit-print-color-adjust: exact; margin-right: 2px; margin-left: 2px; padding-right: 5px; padding-left: 5px; white-space: nowrap; border: 1px solid rgb(234, 234, 234); border-radius: 3px; background-color: rgb(248, 248, 248);">javac</code>)下面这个类。</p><pre style="-webkit-print-color-adjust: exact; margin-top: 15px; margin-bottom: 15px; border: 1px solid rgb(204, 204, 204); font-size: 13px; line-height: 19px; overflow: auto; padding: 6px 10px; border-radius: 3px;"><code class="language-none" style="-webkit-print-color-adjust: exact; border: none; border-radius: 3px; background-color: transparent;">import java.awt.*;
+import java.applet.*;
+
+public class DocFooter extends Applet {
+        String date;
+        String email;
+
+        public void init() {
+                resize(500,100);
+                date = getParameter("LAST_UPDATED");
+                email = getParameter("EMAIL");
+        }
+
+        public void paint(Graphics g) {
+                g.drawString(date + " by ",100, 15);
+                g.drawString(email,290,15);
+        }
+}</code></pre><p style="-webkit-print-color-adjust: exact; margin-top: 15px; margin-bottom: 15px; font-family: Helvetica, arial, sans-serif; font-size: 14px; line-height: 22px; white-space: normal; widows: auto; background-color: rgb(255, 255, 255);">在命令行上键入javap DocFooter后，输出结果如下</p><pre style="-webkit-print-color-adjust: exact; margin-top: 15px; margin-bottom: 15px; border: 1px solid rgb(204, 204, 204); font-size: 13px; line-height: 19px; overflow: auto; padding: 6px 10px; border-radius: 3px;"><code class="language-none" style="-webkit-print-color-adjust: exact; border: none; border-radius: 3px; background-color: transparent;">Compiled from "DocFooter.java"
+public class DocFooter extends java.applet.Applet {
+  java.lang.String date;
+  java.lang.String email;
+  public DocFooter();
+  public void init();
+  public void paint(java.awt.Graphics);
+}</code></pre><p style="-webkit-print-color-adjust: exact; margin-top: 15px; margin-bottom: 15px; font-family: Helvetica, arial, sans-serif; font-size: 14px; line-height: 22px; white-space: normal; widows: auto; background-color: rgb(255, 255, 255);">如果加入了-c，即javap -c DocFooter，那么输出结果如下</p><pre style="-webkit-print-color-adjust: exact; margin-top: 15px; margin-bottom: 15px; border: 1px solid rgb(204, 204, 204); font-size: 13px; line-height: 19px; overflow: auto; padding: 6px 10px; border-radius: 3px;"><code class="language-none" style="-webkit-print-color-adjust: exact; border: none; border-radius: 3px; background-color: transparent;">Compiled from "DocFooter.java"
+public class DocFooter extends java.applet.Applet {
+  java.lang.String date;
+
+  java.lang.String email;
+
+  public DocFooter();
+    Code:
+       0: aload_0       
+       1: invokespecial #1                  // Method java/applet/Applet."&lt;init&gt;":()V
+       4: return        
+
+  public void init();
+    Code:
+       0: aload_0       
+       1: sipush        500
+       4: bipush        100
+       6: invokevirtual #2                  // Method resize:(II)V
+       9: aload_0       
+      10: aload_0       
+      11: ldc           #3                  // String LAST_UPDATED
+      13: invokevirtual #4                  // Method getParameter:(Ljava/lang/String;)Ljava/lang/String;
+      16: putfield      #5                  // Field date:Ljava/lang/String;
+      19: aload_0       
+      20: aload_0       
+      21: ldc           #6                  // String EMAIL
+      23: invokevirtual #4                  // Method getParameter:(Ljava/lang/String;)Ljava/lang/String;
+      26: putfield      #7                  // Field email:Ljava/lang/String;
+      29: return        
+
+  public void paint(java.awt.Graphics);
+    Code:
+       0: aload_1       
+       1: new           #8                  // class java/lang/StringBuilder
+       4: dup           
+       5: invokespecial #9                  // Method java/lang/StringBuilder."&lt;init&gt;":()V
+       8: aload_0       
+       9: getfield      #5                  // Field date:Ljava/lang/String;
+      12: invokevirtual #10                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      15: ldc           #11                 // String  by 
+      17: invokevirtual #10                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      20: invokevirtual #12                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      23: bipush        100
+      25: bipush        15
+      27: invokevirtual #13                 // Method java/awt/Graphics.drawString:(Ljava/lang/String;II)V
+      30: aload_1       
+      31: aload_0       
+      32: getfield      #7                  // Field email:Ljava/lang/String;
+      35: sipush        290
+      38: bipush        15
+      40: invokevirtual #13                 // Method java/awt/Graphics.drawString:(Ljava/lang/String;II)V
+      43: return        
+}</code></pre><p style="-webkit-print-color-adjust: exact; margin-top: 15px; margin-bottom: 15px; font-family: Helvetica, arial, sans-serif; font-size: 14px; line-height: 22px; white-space: normal; widows: auto; background-color: rgb(255, 255, 255);">上面输出的内容就是字节码。</p><h2 style=" -webkit-print-color-adjust: exact; margin-top: 20px; margin-bottom: 10px; font-weight: bold; -webkit-font-smoothing: antialiased; cursor: text;  font-size: 24px; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: rgb(204, 204, 204); font-family: Helvetica, arial, sans-serif; white-space: normal; widows: auto; background-color: rgb(255, 255, 255); ">用法摘要</h2><pre style="-webkit-print-color-adjust: exact; margin-top: 15px; margin-bottom: 15px; border: 1px solid rgb(204, 204, 204); font-size: 13px; line-height: 19px; overflow: auto; padding: 6px 10px; border-radius: 3px;"><code class="language-none" style="-webkit-print-color-adjust: exact; border: none; border-radius: 3px; background-color: transparent;">-help 帮助
+-l 输出行和变量的表
+-public 只输出public方法和域
+-protected 只输出public和protected类和成员
+-package 只输出包，public和protected类和成员，这是默认的
+-p -private 输出所有类和成员
+-s 输出内部类型签名
+-c 输出分解后的代码，例如，类中每一个方法内，包含java字节码的指令，
+-verbose 输出栈大小，方法参数的个数
+-constants 输出静态final常量</code></pre><h2 style=" -webkit-print-color-adjust: exact; margin-top: 20px; margin-bottom: 10px; font-weight: bold; -webkit-font-smoothing: antialiased; cursor: text;  font-size: 24px; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: rgb(204, 204, 204); font-family: Helvetica, arial, sans-serif; white-space: normal; widows: auto; background-color: rgb(255, 255, 255); ">总结</h2><p style="-webkit-print-color-adjust: exact; margin-top: 15px; font-family: Helvetica, arial, sans-serif; font-size: 14px; line-height: 22px; white-space: normal; widows: auto; background-color: rgb(255, 255, 255);">javap可以用于反编译和查看编译器编译后的字节码。平时一般用<code style="-webkit-print-color-adjust: exact; margin-right: 2px; margin-left: 2px; padding-right: 5px; padding-left: 5px; white-space: nowrap; border: 1px solid rgb(234, 234, 234); border-radius: 3px; background-color: rgb(248, 248, 248);">javap -c</code>比较多，该命令用于列出每个方法所执行的JVM指令，并显示每个方法的字节码的实际作用。可以通过字节码和源代码的对比，深入分析java的编译原理，了解和解决各种Java原理级别的问题。</p><p>    <img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz/6fuT3emWI5LC3wm1ZVwwUxiapkbegia3VlbCwfT9PMrsjoaAfE6yrVRicria6KdIjDpe6mAEc23Prjht6wRnyGUEQw/0?wx_fmt=png" style="" data-ratio="0.38095238095238093" data-w="483" src="../Images/19cca8cdd51f5e284889168523feec6b.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/6fuT3emWI5LC3wm1ZVwwUxiapkbegia3VlbCwfT9PMrsjoaAfE6yrVRicria6KdIjDpe6mAEc23Prjht6wRnyGUEQw/0?wx_fmt=png"/></p><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz/6fuT3emWI5LC3wm1ZVwwUxiapkbegia3VlKKcOHiaZ9AvRBribFl9Jwa4fjekd3U74UcrwicUfxAwn3yy3uAxJl5eKA/0?wx_fmt=png" style="" data-ratio="0.07913669064748201" data-w="" src="../Images/f566d9fa1dbe4ba73653174fc5cc4cae.png" data-original-src="http://mmbiz.qpic.cn/mmbiz/6fuT3emWI5LC3wm1ZVwwUxiapkbegia3VlKKcOHiaZ9AvRBribFl9Jwa4fjekd3U74UcrwicUfxAwn3yy3uAxJl5eKA/0?wx_fmt=png"/></p>
+        
+</body>
+</html>

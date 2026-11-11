@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>认识teler-waf软件：Go框架的以安全为中心的HTTP中间件</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>认识teler-waf软件：Go框架的以安全为中心的HTTP中间件</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247486034&amp;idx=1&amp;sn=634a7e88aafcb8f8dd2a76fbebc4b40a&amp;chksm=fa76ebaccd0162ba36cc0feb5bd48d940f20e57771920058f269a5131fb47d25417b11f19149&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247486034&amp;idx=1&amp;sn=634a7e88aafcb8f8dd2a76fbebc4b40a&amp;chksm=fa76ebaccd0162ba36cc0feb5bd48d940f20e57771920058f269a5131fb47d25417b11f19149&amp;scene=27#wechat_redirect</a></blockquote><blockquote><p>开发人员发布了一款用于Go应用程序的新工具，旨在对抗基于Web的攻击。开发人员兼安全工程师Dwi Siswanto于1月2 日透露了开源teler-waf软件。这位24岁的年轻人在Twitter上表示，该技术旨在“提高基于Go的Web应用程序的安全性”。在GitHub上可用，teler-waf充当HTTP中间件，具有用于将入侵检测系统(IDS)功能集成到现有应用程序中的接口。Teler-waf的安全功能包括防止常见的基于Web的威胁，例如跨站点脚本(XSS)攻击和SQL注入。此外，该工具将检测与已知威胁行为者和僵尸网络相关联的不良IP地址；涉嫌导致性能问题或执行非法数据抓取的恶意HTTP引用程序、爬虫和抓取程序；以及与基于目录的暴力攻击相关的位置。</p></blockquote><p><img class="rich_pages wxw-img" data-ratio="0.5625" data-src="https://mmbiz.qpic.cn/mmbiz_png/3RdEEWyTHJn9SIicZZxCsP1amX1s59GeUCI6Bw978dHt1KMSDmVEQUdicxZSARpBcSoZiaXHrdfJodhRRJPNuT95A/640?wx_fmt=png" data-type="png" data-w="1200" height="675" width="1200" src="../Images/35f17ef8684f1be1bc06c6cc1099446e.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/3RdEEWyTHJn9SIicZZxCsP1amX1s59GeUCI6Bw978dHt1KMSDmVEQUdicxZSARpBcSoZiaXHrdfJodhRRJPNuT95A/640?wx_fmt=png"/></p><p>独立开发teler-waf的Dwi在接受采访时表示，该软件有几个好处。</p><p>例如，一个关键特征是使用每天更新的数据集来跟踪已知的漏洞和恶意攻击模式。外部资源包括来自PHPIDS项目的信息、来自Project Discovery团队的CVE列表，以及来自Nginx Ultimate Bad Bot Blocker和Crawler Detect的集合。</p><p>此外，teler-waf带有一个net/http处理程序，用于与应用程序路由功能集成，Dwi说“这使得它可以轻松集成到任何框架中，并且[is]也是高度可配置的，允许它根据特定需求进行定制给定的Web应用程序。</p><p>“当客户端向受teler-waf保护的路由发出请求时，首先会根据teler IDS检查请求以检测已知的恶意模式，”开发人员说。“如果没有检测到恶意模式，则请求将被传递以进行进一步处理。”</p><p>Dwi还是实时HTTP入侵检测和威胁警报系统teler的创建者。</p><p>他告诉我们，Go框架的流行促使他采用teler IDS来类似于过去的项目AntiScanScanClub，一个自动网站扫描拦截程序包。</p><p>“我的目标是不仅将远程IDS功能用于检测，而且用于早期预防，”他解释道。“我可以说teler-waf是AntiScanScanClub的进步。”</p><p>目前，还没有正式的开发时间表，尽管有希望未来的贡献者加入并且一些里程碑“仍在确定中”。</p><p>Teler-waf的第一个和当前版本v0.0.1被标记为实验性的。</p><p>Dwi说：“它[是]实验性的，因为目前有一些我[必须]重新访问的TODO列表需要解决，这可能是可能影响配置和性能的重大变化。我希望teler-waf能够在不久的将来变得稳定并准备好在生产中使用。”</p><p>随着Go的持续流行，其他开发人员也发布了工具来保护使用该语言构建的应用程序。例如，去年12月，Viktor Chuchurski和Alessandro Cotto发布了Safeurl，这是一款旨在阻止服务器端请求伪造(SSRF)攻击的软件。</p><p><br/></p><p style="display: none;"><mp-style-type data-value="3"/></p>
+        
+</body>
+</html>

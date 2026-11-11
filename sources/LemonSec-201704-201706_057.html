@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>利用robots.txt找敏感文件教程</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>利用robots.txt找敏感文件教程</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247483929&amp;idx=4&amp;sn=7e713c1ae780f7dc56a45a0eda80b391&amp;chksm=f9e06d42ce97e454fd2812134a05a135a782932dfc47495652d4d5f559f15c5e269e2b00708c&amp;scene=126&amp;sessionid=1681663537#rd">http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247483929&amp;idx=4&amp;sn=7e713c1ae780f7dc56a45a0eda80b391&amp;chksm=f9e06d42ce97e454fd2812134a05a135a782932dfc47495652d4d5f559f15c5e269e2b00708c&amp;scene=126&amp;sessionid=1681663537#rd</a></blockquote><p>robots.txt是一个协议，而不是一个命令。robots.txt是搜索引擎中访问网站的时候要查看的第一个文件。robots.txt文件告诉蜘蛛程序在服务器上什么文件是可以被查看的。当一个搜索蜘蛛访问一个站点时，它会首先检查该站点根目录下是否存在robots.txt，如果存在，搜索机器人就会按照该文件中的内容来确定访问的范围；如果该文件不存在，所有的搜索蜘蛛将能够访问网站上所有没有被口令保护的页面。百度官方建议，仅当您的网站包含不希望被搜索引擎收录的内容时，才需要使用robots.txt文件。如果您希望搜索引擎收录网站上所有内容，请勿建立robots.txt文件。</p><p>
+	举例：<br/>
+	如果将网站视为酒店里的一个房间，robots.txt就是主人在房间门口悬挂的“请勿打扰”或“欢迎打扫”的提示牌。这个文件告诉来访的搜索引擎哪些房间可以进入和参观，哪些房间因为存放贵重物品，或可能涉及住户及访客的隐私而不对搜索引擎开放。但robots.txt不是命令，也不是防火墙，如同守门人无法阻止窃贼等恶意闯入者。</p><p>
+	这里不给时间大家看了，看完教程再仔细阅读一下，很容易理解的，其实就是SEO中的环节，做SEO的人都知道，这个文件很常用，为了不让百度蜘蛛抓取你的一些不重要的页面，或是你想百度蜘蛛抓取你的什么页面，就靠这个文件来控制即可，所以就给了我们入侵者大大的方便，根据我的经验</p><p>
+	有的时候各种扫目录，也找不到后台的时候，小心翼翼的访问一下这个文件，蛋疼的你就发现这个文件里面很多目录，其中可爱的后台地址就赫赫的展现在上面，你访问一下就获得后台地址了！</p><p>
+	下面来实战一下，让大家看看效果</p><p>
+	看目录，就知道是织梦程序 这个ICO也能看出。</p><p>
+	User-agent: *<br/>
+	Disallow: /plus/ad_js.php<br/>
+	Disallow: /plus/advancedsearch.php<br/>
+	Disallow: /plus/car.php<br/>
+	Disallow: /plus/carbuyaction.php<br/>
+	Disallow: /plus/shops_buyaction.php<br/>
+	Disallow: /plus/erraddsave.php<br/>
+	Disallow: /plus/posttocar.php<br/>
+	Disallow: /plus/disdls.php<br/>
+	Disallow: /plus/feedback_js.php<br/>
+	Disallow: /plus/mytag_js.php<br/>
+	Disallow: /plus/rss.php<br/>
+	Disallow: /plus/search.php<br/>
+	Disallow: /plus/recommend.php<br/>
+	Disallow: /plus/stow.php<br/>
+	Disallow: /plus/count.php<br/>
+	Disallow: /include<br/>
+	Disallow: /templets</p><p>
+	<br/>
+	这个没有后台地址，至少我没看出可疑的文件，原来是默认后台地址 dede/</p><p>
+	Disallow: /wp-admin/<br/>
+	Disallow: /wp-login.php</p><p>
+	<br/>
+	Disallow：不允许蜘蛛抓取的意思  一看就知道这是后台地址，试试，对吧</p><p>
+	#<br/>
+	# robots.txt for Discuz! X3<br/>
+	#</p><p>
+	User-agent: *<br/>
+	Disallow: /api/<br/>
+	Disallow: /data/<br/>
+	Disallow: /source/<br/>
+	Disallow: /install/<br/>
+	Disallow: /template/<br/>
+	Disallow: /config/<br/>
+	Disallow: /uc_client/<br/>
+	Disallow: /uc_server/<br/>
+	Disallow: /static/<br/>
+	Disallow: /admin.php<br/>
+	Disallow: /search.php<br/>
+	Disallow: /member.php<br/>
+	Disallow: /api.php<br/>
+	Disallow: /misc.php<br/>
+	Disallow: /connect.php<br/>
+	Disallow: /forum.php?mod=redirect*<br/>
+	Disallow: /forum.php?mod=post*<br/>
+	Disallow: /home.php?mod=spacecp*<br/>
+	Disallow: /userapp.php?mod=app&amp;*<br/>
+	Disallow: /*?mod=misc*<br/>
+	Disallow: /*?mod=attachment*</p><p>
+	<br/>
+	通过这里，可以看出这个是Discuz! X3程序 x3版本的，是一个论坛</p><p>
+	1.可以获取后台地址 效率不错<br/>
+	2.可以获得网站程序名称</p><p><br/></p>
+        
+</body>
+</html>

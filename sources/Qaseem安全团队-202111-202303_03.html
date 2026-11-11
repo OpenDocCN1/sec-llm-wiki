@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>登陆弱口令>>Fuzz技巧</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>登陆弱口令>>Fuzz技巧</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=Mzg5MTcwNzU4Nw==&amp;mid=2247485182&amp;idx=1&amp;sn=ab63523af5dfef51d737c56441e225aa&amp;chksm=cfc80f52f8bf8644a377f5b4e0a29608d86ab64ddabe04529f0089f961d08753ff587324a49f&amp;scene=126&amp;sessionid=1681444010#rd">http://mp.weixin.qq.com/s?__biz=Mzg5MTcwNzU4Nw==&amp;mid=2247485182&amp;idx=1&amp;sn=ab63523af5dfef51d737c56441e225aa&amp;chksm=cfc80f52f8bf8644a377f5b4e0a29608d86ab64ddabe04529f0089f961d08753ff587324a49f&amp;scene=126&amp;sessionid=1681444010#rd</a></blockquote><p><span style="background-color: rgb(255, 79, 121);">今天心情很好，再来写一篇. </span> 谈一些登陆弱口令fuzz的技巧，说不上很有技术，但挖了不少。<br/></p><p>选中的案例来源去年11月份，具体挖洞过程参考<br/></p><p>https://mp.weixin.qq.com/s/rGI1iXcfPBcD3Xmf0OHAMA</p><p>群里某位大师傅挖的，但他不够细，，不知道账号怎么来，说下这套系统，系统有两个排序注入，一个任意密码重置，<span style="background-color: rgb(255, 79, 121);">一切的一切，只需要一个账号，一个普通账号。</span><br/></p><p>一套系统其实有多种登陆方式，可以通过用户名登陆、手机号登陆、二维码登陆。所以，黑盒测试的时候单纯的top500测试说白了是很肤浅的！</p><p>  管理员账号可以是手机号也可以是用户名，也可以是系统序号， 也可以是一些测试账号，所以基于这几点做成的字典，</p><ol class="list-paddingleft-1" style="list-style-type: decimal;"><li><p>top500</p></li><li><p>top500中文名</p></li><li><p>top50管理员</p></li><li><p>top50管理员中文名</p></li><li><p>top20测试手机号</p></li><li><p>top100序号（1-20，100-120，1000-1100，11000-12000）</p></li></ol><p><br/></p><p>密码就是简单的123456、或者序号本身，黑盒字典的用途，</p><p/><div style="display: inline;"><p style="text-align: center;"><img class="rich_pages wxw-img" data-galleryid="" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/MTmB29pJFACKfwmNt0nibEHq6XE3rPY78sBVQRoRZicTdOdJWfo07hJCl1eD9VlrkPChV8QxvwEVqXBib26q6fECg/640?wx_fmt=png" data-type="png" style="" src="../Images/4ed51523e3821d1e1abd896d06a995dc.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/MTmB29pJFACKfwmNt0nibEHq6XE3rPY78sBVQRoRZicTdOdJWfo07hJCl1eD9VlrkPChV8QxvwEVqXBib26q6fECg/640?wx_fmt=png"/></p></div><div style="display: inline;"><p style="text-align: center;"><img class="rich_pages wxw-img" data-galleryid="" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/MTmB29pJFACKfwmNt0nibEHq6XE3rPY781wRS18Z7ENJgx9xk8tWWZcDHJklIu5HBZE9CIhXB0gPzQxErIgrneA/640?wx_fmt=png" data-type="png" style="" src="../Images/4af58f056b28ca42a30eb0de5d5bc9bd.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/MTmB29pJFACKfwmNt0nibEHq6XE3rPY781wRS18Z7ENJgx9xk8tWWZcDHJklIu5HBZE9CIhXB0gPzQxErIgrneA/640?wx_fmt=png"/></p></div><br/><p/><p style="text-align: center;"><br/></p><p><br/></p><p><br/></p><p><br/></p><p><br/></p><p><br/></p><p><br/></p><p><br/></p><p><br/></p><p><br/></p><p><br/></p><p><br/></p><p><br/></p><p><br/></p><p><br/></p><p><br/></p><p><br/></p><p><br/></p><p><br/></p><p><br/></p><p><br/></p><p><br/></p><p style="display: none;"><mp-style-type data-value="3"/></p>
+        
+</body>
+</html>

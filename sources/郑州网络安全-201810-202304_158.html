@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Microsoft Teams安全漏洞通过有缺陷的贴纸功能进行跨站点脚本(XSS)攻击</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Microsoft Teams安全漏洞通过有缺陷的贴纸功能进行跨站点脚本(XSS)攻击</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485309&amp;idx=1&amp;sn=5beb4b1158fb04d3ed3c65b8ff5cf69c&amp;chksm=fa76e683cd016f95f02a25d86ed70376fb1e9740dfaa53f9e0a9bbdf48a1a9745f729d52ffeb&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485309&amp;idx=1&amp;sn=5beb4b1158fb04d3ed3c65b8ff5cf69c&amp;chksm=fa76e683cd016f95f02a25d86ed70376fb1e9740dfaa53f9e0a9bbdf48a1a9745f729d52ffeb&amp;scene=27#wechat_redirect</a></blockquote><blockquote><p>一位安全研究人员发现，攻击者可能会滥用Microsoft Teams中流行的贴纸功能来进行跨站点脚本(XSS)攻击。Microsoft Teams以及包括Zoom在内的类似电话会议服务在过去几年中的受欢迎程度激增。Covid -19大流行迫使组织尽可能采用在家工作的模式。在此之后，员工通常可以选择保持远程或混合。拥有如此多的用户，Microsoft Teams中的任何漏洞都可能产生广泛影响。因此，包括Gais Cyber Security的高级网络安全专家Numan Turle在内的网络安全研究人员已经检查了该软件的潜在缺陷。</p></blockquote><p style="margin-bottom: 0em;"><img class="rich_pages wxw-img" data-ratio="0.5625" data-src="https://mmbiz.qpic.cn/mmbiz_png/3RdEEWyTHJm7JBRcZp4H78MGQ80DSkFDZPhWrjjvrV3v41NLTVXHpbicJBcXhWNAYxbWPuicensJbFM65daicLELg/640?wx_fmt=png" data-type="png" data-w="1200" height="675" width="1200" src="../Images/3550681b6f084561946b515a9055ad05.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/3RdEEWyTHJm7JBRcZp4H78MGQ80DSkFDZPhWrjjvrV3v41NLTVXHpbicJBcXhWNAYxbWPuicensJbFM65daicLELg/640?wx_fmt=png"/></p><p><br/></p><p>2021 年，Turle发现了CVE-2021-24114。CVSS评分为5.7，该漏洞是在通过Teams发送的图像的预览过程中发现的，用于泄漏Skype令牌(PDF)并触发Teams iOS中的帐户接管漏洞。</p><p><br/></p><p>一年后，研究人员决定检查Microsoft Teams的贴纸功能是否存在新的安全问题。</p><p><br/></p><p>当通过Teams发送贴纸时，平台会将其转换为图像并在后续消息中将内容上传为<code>“RichText/HTML”</code>。</p><p><br/></p><p>Turle使用Burp Suite检查了HTML请求并尝试了典型的属性——但由于Microsoft的内容安全策略(CSP)提供的保护而无济于事。</p><p><br/></p><p>CSP旨在缓解一系列常见的Web攻击，包括XSS。</p><p><br/></p><p>然而，在将CSP插入Google的CSP Evaluator工具后，研究人员发现了一个CSP缺陷<code>——script-src</code>字段被标记为不安全，这为针对多个域的潜在HTML注入攻击铺平了道路。</p><p><br/></p><p>微软已经通过Azure域更改堵上了这些安全漏洞。因此，在深入挖掘并检查浏览器中的Teams之后，Turle发现了一个 JavaScript元素<code>angular-jquery</code>，它可以用作替代品。</p><p><br/></p><p>jQuery with Angular是一个用于管理HTML和CSS交互的JavaScript框架。但是，此版本已过时，过时版本(1.5.14)中的漏洞可用于绕过CSP。</p><p><br/></p><p>在借助HTML编码制作恶意iframe后，研究人员能够创建恶意负载，通过Teams中的贴纸功能发送，以触发通过用户交互获得的XSS。</p><p><br/></p><p>Turle于1月6日向微软披露了XSS问题。该漏洞已于3月修复，研究人员获得了6000美元的漏洞赏金。</p><p><br/></p>
+        
+</body>
+</html>

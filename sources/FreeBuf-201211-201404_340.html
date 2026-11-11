@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>apple ID可绕过安全提示问题直接修改密码漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>apple ID可绕过安全提示问题直接修改密码漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/mp/appmsg/show?__biz=MjM5NjA0NjgyMA==&amp;appmsgid=10000089&amp;itemidx=1&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/mp/appmsg/show?__biz=MjM5NjA0NjgyMA==&amp;appmsgid=10000089&amp;itemidx=1&amp;scene=27#wechat_redirect</a></blockquote><p>利用前提：知道受害者的apple id及其注册时的出生日期<br/>利用步骤：<br/>第一步：登录https://iforgot.apple.com/iForgot/iForgot.html，填写指定的apple id，点击下一步<br/>第二步：选择验证方法—— 回答安全提示问题，点击下一步<br/>第三步：填写apple id注册时填写的出生日期<br/>第四步：开启web代理工具（我习惯用burpsuite），点击下一步，抓包，如下图所示。<img style="width:511px;height:399px;" src="../Images/9ab9638523b966bd50bb543cadd36434.png" width="283" height="358" data-original-src="http://mmsns.qpic.cn/mmsns/qq5rfBadR3ibiayNQs0hHeib8XzdukPoahdqmGrknYdzSOYaLxYicDMLng/0"/></p><p>修改https://iforgot.apple.com/iForgot/validateBirthDate.html请求中POST字段的authentication为Null，即可绕过其他提示问题，直接进入创建新密码页面<br/>以后在注册帐号时，设置找回密码提示问题时，一定不要填写真实的个人信息哦。</p>
+        
+</body>
+</html>

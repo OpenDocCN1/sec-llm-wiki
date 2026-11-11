@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CVE-2022-46166：Spring Boot Admin 任意代码执行</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>CVE-2022-46166：Spring Boot Admin 任意代码执行</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxMjYyMzkwOA==&amp;mid=2247496194&amp;idx=3&amp;sn=ce050415dfe633da42ee0aee7d16b39f&amp;chksm=9badbb49acda325f4091b7c03eff4e29e8deadeafd89f4e41e858ca74cd402aa9a368a93dbcc&amp;scene=126&amp;sessionid=1681669950#rd">http://mp.weixin.qq.com/s?__biz=MzAxMjYyMzkwOA==&amp;mid=2247496194&amp;idx=3&amp;sn=ce050415dfe633da42ee0aee7d16b39f&amp;chksm=9badbb49acda325f4091b7c03eff4e29e8deadeafd89f4e41e858ca74cd402aa9a368a93dbcc&amp;scene=126&amp;sessionid=1681669950#rd</a></blockquote><p>安全研究人员在 Spring Boot Admin 中发现了一个高危漏洞，这是一个远程代码执行漏洞，可以让远程攻击者对Spring Boot 应用程序执行任意代码。</p><p>Spring Boot 可帮助您轻松创建由 Spring 驱动的生产级应用程序和服务。Spring Boot admins 是一个用于管理 Spring Boot 应用程序的开源管理用户界面。应用程序注册到我们的 Spring Boot Admin Client（通过 HTTP）或使用 Spring Cloud（例如 Eureka、Consul）发现。UI 只是 Spring Boot Actuator 端点之上的 Vue.js 应用程序。</p><p style="text-align: center;"><img class="rich_pages wxw-img js_insertlocalimg" data-ratio="0.8971354166666666" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/rWGOWg48tacLwpG5ZVp5t2LtvatfLtzeGfoJNQwzveHIftktgq8jVKac8nhH8mLmUFU2haVeaWTibDbopey8hUQ/640?wx_fmt=png" data-type="png" data-w="768" style="" src="../Images/3995bfec5f1e7507dc8a0f74fbf1cc52.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/rWGOWg48tacLwpG5ZVp5t2LtvatfLtzeGfoJNQwzveHIftktgq8jVKac8nhH8mLmUFU2haVeaWTibDbopey8hUQ/640?wx_fmt=png"/></p><p>在 codecentric 最近发布的公告中，该公司详细介绍了在 Spring Boot Admins 之前版本 &lt; 2.6.10、之前版本 &lt; 2.7.8 和 &lt; 之前版本 3.0.0-M6 中发现的 CVE-2022-46166。</p><p>“所有运行 Spring Boot Admin Server、启用通知程序（例如 Teams-Notifier）并通过 UI 写入环境变量的用户都可能受到影响。”</p><p>如果您没有在/ent 执行器端点上使用通知程序或禁用写访问（POST 请求），则此漏洞不起作用</p><p>Codecentric 已发布 Spring Boot Admins 2.6.10、2.7.8 和 3.0.0-M6，其中包括针对此安全漏洞的修复。Spring Boot Admin 2.6.10 和 2.7.8 通过实施 SpEL 的SimpleExecutionContext 修复了 CVE- 2022-46166。这可以防止任意代码执行（即 SpEL 注入）。</p><p>因此，强烈建议开发人员和管理员立即将他们的软件升级到最新版本。</p><section><mp-common-profile class="js_uneditable custom_select_card mp_profile_iframe" data-pluginname="mpprofile" data-weui-theme="light" data-id="MzAxMjYyMzkwOA==" data-headimg="http://mmbiz.qpic.cn/mmbiz_png/rWGOWg48tafuNrsCa8r3cS8ELXc0sRkEctvU3dE97mP6RjEE3xHWt6v1Q0O4DPosXcF9XdsuTU6tPf7TSOywPA/0?wx_fmt=png" data-nickname="Ots安全" data-alias="AnQuan7" data-signature="持续发展共享方向：威胁情报、漏洞情报、恶意分析、渗透技术（工具）等，不会回复任何私信，感谢关注。" data-from="0" data-is_biz_ban="0"/></section><p style="display: none;"><mp-style-type data-value="3"/></p>
+        
+</body>
+</html>

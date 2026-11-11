@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Jenkins 未授权远程代码执行漏洞(CVE-2017-1000353)</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Jenkins 未授权远程代码执行漏洞(CVE-2017-1000353)</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzAxNDY2MTQ2OQ==&amp;mid=2650942475&amp;idx=1&amp;sn=4b153230102e2aeaff30d330e0b912c0&amp;chksm=80796e39b70ee72fc3240c5a17b19cd1ae51168787ca5673b91817736f962999bb4e963f271e&amp;scene=126&amp;sessionid=1681272237#rd">http://mp.weixin.qq.com/s?__biz=MzAxNDY2MTQ2OQ==&amp;mid=2650942475&amp;idx=1&amp;sn=4b153230102e2aeaff30d330e0b912c0&amp;chksm=80796e39b70ee72fc3240c5a17b19cd1ae51168787ca5673b91817736f962999bb4e963f271e&amp;scene=126&amp;sessionid=1681272237#rd</a></blockquote><h2>PS：文末有惊喜~</h2><p><br/></p><p><br/></p><h2 style="margin-bottom: 10px; border-width: 0px 0px 1px; border-top-style: initial; border-right-style: initial; border-left-style: initial; border-top-color: initial; border-right-color: initial; border-left-color: initial; font-weight: bold; -webkit-font-smoothing: antialiased; font-size: 24px; border-bottom-style: solid; border-bottom-color: rgb(204, 204, 204); color: rgb(0, 0, 0);">漏洞概要<br/></h2><p style="margin-top: 10px; margin-bottom: 15px; border-width: 0px; border-style: initial; border-color: initial;">Jenkins 未授权远程代码执行漏洞, 允许攻击者将序列化的Java SignedObject对象传输给Jenkins CLI处理，反序列化ObjectInputStream作为Command对象，这将绕过基于黑名单的保护机制, 导致代码执行。</p><h2 style="margin-top: 20px; margin-bottom: 10px; border-width: 0px 0px 1px; border-top-style: initial; border-right-style: initial; border-left-style: initial; border-top-color: initial; border-right-color: initial; border-left-color: initial; font-weight: bold; -webkit-font-smoothing: antialiased; font-size: 24px; border-bottom-style: solid; border-bottom-color: rgb(204, 204, 204); color: rgb(0, 0, 0);">漏洞触发执行流程</h2><p style="margin-top: 10px; margin-bottom: 15px; border-width: 0px; border-style: initial; border-color: initial;"><a target="_blank" style="border-width: 0px; border-style: initial; border-color: initial; color: rgb(65, 131, 196);">SSD的报告</a>披露了完整的漏洞细节，作为才学JAVA的我来说，看完这份报告，依旧不清楚具体的执行流程，因此有了下文，梳理漏洞触发的具体执行流程。</p><p style="margin-top: 15px; margin-bottom: 15px; border-width: 0px; border-style: initial; border-color: initial;">触发jenkins反序列化导致代码执行的漏洞发生在使用HTTP协议实现双向通信通道的代码中，Jenkins利用此通道来接收命令。大致流程如下图:</p><p style="margin-top: 15px; margin-bottom: 15px; border-width: 0px; border-style: initial; border-color: initial;"><br/></p><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/3k9IT3oQhT3jH5szicbMGAwKNgwuZrrMoLr55XgmWHfydNMlOX6YpBhHiaIU21Y36KgHk0WTm8liaGCmLMZibb3eicg/0?wx_fmt=png" data-ratio="1.4628571428571429" data-w="175" src="../Images/72c3e847ca70fd9504ee5c2e337810a3.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/3k9IT3oQhT3jH5szicbMGAwKNgwuZrrMoLr55XgmWHfydNMlOX6YpBhHiaIU21Y36KgHk0WTm8liaGCmLMZibb3eicg/0?wx_fmt=png"/></p><h3 style="margin-top: 20px; margin-bottom: 10px; border-width: 0px; border-style: initial; border-color: initial; font-weight: bold; -webkit-font-smoothing: antialiased; font-size: 18px;">如何建立双向Channel</h3><p style="margin-top: 10px; margin-bottom: 15px; border-width: 0px; border-style: initial; border-color: initial;">基于HTTP建立双向Channel的入口函数位于<code style=" border-width: 1px; font-size: 12px; ; ; ; ; ; ; ; ">jenkins-2.46.1/core/src/main/java/hudson/cli/CLIAction.java</code>文件中</p><pre style=" margin-top: 15px; margin-bottom: 15px; padding: 6px 10px; border-width: 1px; font-size: 13px; ; ; ; ; ; ; ; "><code style=" font-size: 12px; ; ; ; ; ; ; ; ; ; ; ; ">java
+@Extension @Symbol("cli")
+@Restricted(NoExternalUse.class)
+public class CLIAction implements UnprotectedRootAction, StaplerProxy {
+
+    private transient final Map&lt;UUID,FullDuplexHttpChannel&gt; duplexChannels = new HashMap&lt;UUID, FullDuplexHttpChannel&gt;();
+
+     ......
+
+    @Override
+    public Object getTarget() {
+        StaplerRequest req = Stapler.getCurrentRequest();
+        if (req.getRestOfPath().length()==0 &amp;&amp; "POST".equals(req.getMethod())) {
+            // CLI connection request
+            throw new CliEndpointResponse();
+        } else {
+            return this;
+        }
+    }
+
+    private class CliEndpointResponse extends HttpResponseException {
+        @Override
+        public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
+            try {
+                // do not require any permission to establish a CLI connection
+                // the actual authentication for the connecting Channel is done by CLICommand
+
+                UUID uuid = UUID.fromString(req.getHeader("Session"));
+                rsp.setHeader("Hudson-Duplex",""); // set the header so that the client would know
+
+                FullDuplexHttpChannel server;
+                if(req.getHeader("Side").equals("download")) {
+                    duplexChannels.put(uuid,server=new FullDuplexHttpChannel(uuid, !Jenkins.getActiveInstance().hasPermission(Jenkins.ADMINISTER)) {
+                        @Override
+                        protected void main(Channel channel) throws IOException, InterruptedException {
+                            // capture the identity given by the transport, since this can be useful for SecurityRealm.createCliAuthenticator()
+                            channel.setProperty(CLICommand.TRANSPORT_AUTHENTICATION, Jenkins.getAuthentication());
+                            channel.setProperty(CliEntryPoint.class.getName(),new CliManagerImpl(channel));
+                        }
+                    });
+                    try {
+                        server.download(req,rsp);
+                    } finally {
+                        duplexChannels.remove(uuid);
+                    }
+                } else {
+                    duplexChannels.get(uuid).upload(req,rsp);
+                }
+            } catch (InterruptedException e) {
+                throw new IOException(e);
+            }
+        }
+    }
+}<br/></code></pre><p style="margin-top: 15px; margin-bottom: 15px; border-width: 0px; border-style: initial; border-color: initial;">从上述代码可知，建立一对双向通道(download/upload), 需要发送两次POST请求，根据请求头Session字段的值uuid识别不同的双向通道，Side字段的值识别download或upload通道，请求发送的顺序是先发送download请求再发送upload请求，跟进<code style=" border-width: 1px; font-size: 12px; ; ; ; ; ; ; ; ">download</code>函数(<code style=" border-width: 1px; font-size: 12px; ; ; ; ; ; ; ; ">/Users/js/IdeaProjects/vulnhub/jenkins-2.46.1/core/src/main/java/hudson/model/FullDuplexHttpChannel.java</code>), 当服务器收到download请求时会阻塞请求，等待upload请求，收到upload请求后，新建Channel对象处理upload请求和返回响应，代码如下:</p><pre style=" margin-top: 15px; margin-bottom: 15px; padding: 6px 10px; border-width: 1px; font-size: 13px; ; ; ; ; ; ; ; "><code style=" font-size: 12px; ; ; ; ; ; ; ; ; ; ; ; ">java
+ public synchronized void download(StaplerRequest req, StaplerResponse rsp) throws InterruptedException, IOException {
+            ......
+
+        {// wait until we have the other channel
+            long end = System.currentTimeMillis() + CONNECTION_TIMEOUT;
+            while (upload == null &amp;&amp; System.currentTimeMillis()&lt;end)
+                wait(1000);
+
+            if (upload==null)
+                throw new IOException("HTTP full-duplex channel timeout: "+uuid);
+        }
+
+        try {
+            channel = new Channel("HTTP full-duplex channel " + uuid,
+                    Computer.threadPoolForRemoting, Mode.BINARY, upload, out, null, restricted);
+             ......
+        } finally {
+            // publish that we are done
+            completed=true;
+            notify();
+        }
+    }
+
+  public synchronized void upload(StaplerRequest req, StaplerResponse rsp) throws InterruptedException, IOException {
+        rsp.setStatus(HttpServletResponse.SC_OK);
+        InputStream in = req.getInputStream();
+        if(DIY_CHUNKING)    in = new ChunkedInputStream(in);
+
+        // publish the upload channel
+        upload = in;
+        notify();
+
+        // wait until we are done
+        while (!completed)
+            wait();
+    }<br/></code></pre><p style="margin-top: 15px; margin-bottom: 15px; border-width: 0px; border-style: initial; border-color: initial;">以上就是建立双向通道的基本过程。</p><h3 style="margin-top: 20px; margin-bottom: 10px; border-width: 0px; border-style: initial; border-color: initial; font-weight: bold; -webkit-font-smoothing: antialiased; font-size: 18px;">Channel对象启动ReaderThread</h3><p style="margin-top: 10px; margin-bottom: 15px; border-width: 0px; border-style: initial; border-color: initial;">upload请求作为输入流实例化Channel对象(<code style=" border-width: 1px; font-size: 12px; ; ; ; ; ; ; ; ">~/.m2/repository/org/jenkins-ci/main/remoting/3.7/remoting-3.7-sources.jar!/hudson/remoting/Channel.java</code>), Channel类的构造链比较繁琐如下图， </p><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/3k9IT3oQhT3jH5szicbMGAwKNgwuZrrMoWSNBTWP8mGyqxaPOgYft3WPb8lEhdGTwD9rgbQiamCictdNOGGZuHNBw/0?wx_fmt=png" data-ratio="0.4835680751173709" data-w="1278" src="../Images/dea8af7f0043c9f140cd15900cc97aff.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/3k9IT3oQhT3jH5szicbMGAwKNgwuZrrMoWSNBTWP8mGyqxaPOgYft3WPb8lEhdGTwD9rgbQiamCictdNOGGZuHNBw/0?wx_fmt=png"/></p><p style="margin-top: 15px; margin-bottom: 15px; border-width: 0px; border-style: initial; border-color: initial;">最终调用的构造方法为<code style=" border-width: 1px; font-size: 12px; ; ; ; ; ; ; ; ">Channel(ChannelBuilder settings, CommandTransport transport)</code>, 该构造方法的transport参数，由ChannelBuilder类的negotiate()方法获得。</p><pre style=" margin-top: 15px; margin-bottom: 15px; padding: 6px 10px; border-width: 1px; font-size: 13px; ; ; ; ; ; ; ; "><code style=" font-size: 12px; ; ; ; ; ; ; ; ; ; ; ; ">java
+protected CommandTransport negotiate(final InputStream is, final OutputStream os) throws IOException {
+          ......
+        {// read the input until we hit preamble
+            Mode[] modes={Mode.BINARY,Mode.TEXT};
+            byte[][] preambles = new byte[][]{Mode.BINARY.preamble, Mode.TEXT.preamble, Capability.PREAMBLE};
+            int[] ptr=new int[3];
+            Capability cap = new Capability(0); // remote capacity that we obtained. If we don't hear from remote, assume no capability
+
+            while(true) {
+                int ch = is.read();
+                ......
+                for(int i=0;i&lt;preambles.length;i++) {
+                    byte[] preamble = preambles[i];
+                    if(preamble[ptr[i]]==ch) {
+                        if(++ptr[i]==preamble.length) {
+                            switch (i) {
+                            case 0:
+                            case 1:
+                                ......
+                                return makeTransport(is, os, mode, cap);
+                            case 2:
+                                cap = Capability.read(is);
+```</code></pre><p style="margin-top: 15px; margin-bottom: 15px; border-width: 0px; border-style: initial; border-color: initial;">negotiate()会检查输入(upload请求)的前导码, 所有发往Jenkins CLI的命令中都包含某种格式的前导码（preamble），前导码格式通常为：<code style=" border-width: 1px; font-size: 12px; ; ; ; ; ; ; ; ">&lt;===[JENKINS REMOTING CAPACITY]===&gt;rO0ABXNyABpodWRzb24ucmVtb3RpbmcuQ2FwYWJpbGl0eQAAAAAAAAABAgABSgAEbWFza3hwAAAAAAAAAH4=</code>, 该前导码包含一个经过base64编码的序列化对象。“Capability”类型的序列化对象的功能是告诉服务器客户端具备哪些具体功能（比如HTTP分块编码功能）。</p><p style="margin-top: 15px; margin-bottom: 15px; border-width: 0px; border-style: initial; border-color: initial;">最后调用makeTransport()方法返回<code style=" border-width: 1px; font-size: 12px; ; ; ; ; ; ; ; ">CommandTransport</code>对象, 根据cap是否支持<code style=" border-width: 1px; font-size: 12px; ; ; ; ; ; ; ; ">Chunking</code>返回不同的对象<code style=" border-width: 1px; font-size: 12px; ; ; ; ; ; ; ; ">ChunkedCommandTransport</code>或<code style=" border-width: 1px; font-size: 12px; ; ; ; ; ; ; ; ">ClassicCommandTransport</code>。</p><pre style=" margin-top: 15px; margin-bottom: 15px; padding: 6px 10px; border-width: 1px; font-size: 13px; ; ; ; ; ; ; ; "><code style=" font-size: 12px; ; ; ; ; ; ; ; ; ; ; ; ">java
+protected CommandTransport makeTransport(InputStream is, OutputStream os, Mode mode, Capability cap) throws IOException {
+    FlightRecorderInputStream fis = new FlightRecorderInputStream(is);
+
+    if (cap.supportsChunking())
+        return new ChunkedCommandTransport(cap, mode.wrap(fis), mode.wrap(os), os);
+    else {
+        ObjectOutputStream oos = new ObjectOutputStream(mode.wrap(os));
+        oos.flush();    // make sure that stream preamble is sent to the other end. avoids dead-lock
+
+        return new ClassicCommandTransport(
+                new ObjectInputStreamEx(mode.wrap(fis),getBaseLoader(),getClassFilter()),
+                oos,fis,os,cap);
+    }
+}<br/></code></pre><p style="margin-top: 15px; margin-bottom: 15px; border-width: 0px; border-style: initial; border-color: initial;">利用SSD的PoC脚本发送的upload请求返回的是<code style=" border-width: 1px; font-size: 12px; ; ; ; ; ; ; ; ">ClassicCommandTransport</code>对象，其继承关系如下图所示。</p><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/3k9IT3oQhT3jH5szicbMGAwKNgwuZrrMoxECnfqmdP7UmSuWKJ3VF2ww0seypW6iacpaRC2N4gXIg7OsZOYqbnicg/0?wx_fmt=png" data-ratio="0.8357664233576643" data-w="548" src="../Images/682f314be2f25e3a62c9dfa67edd80bc.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/3k9IT3oQhT3jH5szicbMGAwKNgwuZrrMoxECnfqmdP7UmSuWKJ3VF2ww0seypW6iacpaRC2N4gXIg7OsZOYqbnicg/0?wx_fmt=png"/></p><p style="margin-top: 15px; margin-bottom: 15px; border-width: 0px; border-style: initial; border-color: initial;">Channel构造函数<code style=" border-width: 1px; font-size: 12px; ; ; ; ; ; ; ; ">Channel(ChannelBuilder settings, CommandTransport transport)</code>中, transport.setup()调用SynchronousCommandTransport类的setup()方法来启动一个ReaderThread线程。</p><p style="margin-top: 15px; margin-bottom: 15px; border-width: 0px; border-style: initial; border-color: initial;"><code style=" border-width: 1px; font-size: 12px; ; ; ; ; ; ; ; ">java public void setup(Channel channel, CommandReceiver receiver) { this.channel = channel; new ReaderThread(receiver).start(); }</code></p><h3 style="margin-top: 20px; margin-bottom: 10px; border-width: 0px; border-style: initial; border-color: initial; font-weight: bold; -webkit-font-smoothing: antialiased; font-size: 18px;">读取Command对象</h3><p style="margin-top: 10px; margin-bottom: 15px; border-width: 0px; border-style: initial; border-color: initial;">通过上面的ReaderThread.start()方法启动一个线程，ReaderThread为SynchronousCommandTransport类的内部类，在run()方法中，调用<code style=" border-width: 1px; font-size: 12px; ; ; ; ; ; ; ; ">ClassicCommandTransport</code>类的read()方法读取输入，read()方法实际是调用Command类的readFrom()方法读取，通过反序列化输入返回一个Command对象。</p><pre style=" margin-top: 15px; margin-bottom: 15px; padding: 6px 10px; border-width: 1px; font-size: 13px; ; ; ; ; ; ; ; "><code style=" font-size: 12px; ; ; ; ; ; ; ; ; ; ; ; ">java
+private final class ReaderThread extends Thread {
+        ......
+        public ReaderThread(CommandReceiver receiver) {
+            super("Channel reader thread: "+channel.getName());
+            this.receiver = receiver;
+        }
+
+        @Override
+        public void run() {
+            final String name =channel.getName();
+            try {
+                while(!channel.isInClosed()) {
+                    Command cmd = null;
+                    try {
+                        cmd = read();
+
+
+java
+  public final Command read() throws IOException, ClassNotFoundException {
+        try {
+            Command cmd = Command.readFrom(channel, ois);<br/></code></pre><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/3k9IT3oQhT3jH5szicbMGAwKNgwuZrrMoEOKBwFawuFHtR7K34LCq0JfuOicO8q6SDVafeOBPSuvm8eWYEIe4ahw/0?wx_fmt=png" data-ratio="0.16359163591635917" data-w="1626" src="../Images/56a0300476255df16fc392fcacecaec9.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/3k9IT3oQhT3jH5szicbMGAwKNgwuZrrMoEOKBwFawuFHtR7K34LCq0JfuOicO8q6SDVafeOBPSuvm8eWYEIe4ahw/0?wx_fmt=png"/></p><p style="margin-top: 15px; margin-bottom: 15px; border-width: 0px; border-style: initial; border-color: initial;">在反序列化输入返回一个Command对象时就执行了cmd命令，而不是通过正常的回调handle()方法执行cmd命令，反序列化导致的执行代码触发的相关异常如下:</p><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/3k9IT3oQhT3jH5szicbMGAwKNgwuZrrMoHM3pHRYGk6icdB0HScFrGiceeE5hJpXB9ySWHvE0dh15TibibenXHprAaw/0?wx_fmt=png" data-ratio="0.3370125091979397" data-w="2718" src="../Images/39d0df571e4c1c6992b588c778263429.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/3k9IT3oQhT3jH5szicbMGAwKNgwuZrrMoHM3pHRYGk6icdB0HScFrGiceeE5hJpXB9ySWHvE0dh15TibibenXHprAaw/0?wx_fmt=png"/></p><p style="margin-top: 15px; margin-bottom: 15px; border-width: 0px; border-style: initial; border-color: initial;">类型转换异常<code style=" border-width: 1px; font-size: 12px; ; ; ; ; ; ; ; ">ClassCastException</code>:<code style=" border-width: 1px; font-size: 12px; ; ; ; ; ; ; ; ">org.apache.commons.collections.map.ReferenceMap cannot be cast to hudson.remoting.Command</code>.</p><h3 style="margin-top: 20px; margin-bottom: 10px; border-width: 0px; border-style: initial; border-color: initial; font-weight: bold; -webkit-font-smoothing: antialiased; font-size: 18px;">正常执行Command</h3><p style="margin-top: 10px; margin-bottom: 15px; border-width: 0px; border-style: initial; border-color: initial;">虽说反序列化时就执行了cmd代码，这里也顺带了解下正常的执行cmd的过程。SynchronousCommandTransport类的run()方法中，获得返回的Command对象(cmd)，然后调用<code style=" border-width: 1px; font-size: 12px; ; ; ; ; ; ; ; ">receiver.handle(cmd);</code>处理命令，其实质是回调Channel类构造方法里面的handle方法，而传入handle方法的cmd参数就是反序列化得到的Command对象。</p><p style="margin-top: 15px; margin-bottom: 15px; border-width: 0px; border-style: initial; border-color: initial;"><code style=" border-width: 1px; font-size: 12px; ; ; ; ; ; ; ; ">transport.setup(this, new CommandReceiver() { public void handle(Command cmd) { ...... try { cmd.execute(Channel.this);</code></p><h2 style="margin-top: 20px; margin-bottom: 10px; border-width: 0px 0px 1px; border-top-style: initial; border-right-style: initial; border-left-style: initial; border-top-color: initial; border-right-color: initial; border-left-color: initial; font-weight: bold; -webkit-font-smoothing: antialiased; font-size: 24px; border-bottom-style: solid; border-bottom-color: rgb(204, 204, 204); color: rgb(0, 0, 0);">绕过黑名单保护机制</h2><p style="margin-top: 10px; margin-bottom: 15px; border-width: 0px; border-style: initial; border-color: initial;">上面过程主要讲述的是漏洞触发的流程，而该漏洞的核心是反序列化Java SignedObject对象会绕过黑名单保护机制，从而导致的代码执行漏洞。</p><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/3k9IT3oQhT3jH5szicbMGAwKNgwuZrrMoGMnnXDgMSsJEfWkic42VhORkPnxXvDSmnticbmrUy8MvENnrB9HqkoJw/0?wx_fmt=png" data-ratio="0.24963503649635035" data-w="1370" src="../Images/c9409fed56a50057aa7fb2828f8c8193.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/3k9IT3oQhT3jH5szicbMGAwKNgwuZrrMoGMnnXDgMSsJEfWkic42VhORkPnxXvDSmnticbmrUy8MvENnrB9HqkoJw/0?wx_fmt=png"/></p><p style="margin-top: 15px; margin-bottom: 15px; border-width: 0px; border-style: initial; border-color: initial;">ClassFilter类定义的默认的黑名单如下：</p><p style="margin-top: 15px; margin-bottom: 15px; border-width: 0px; border-style: initial; border-color: initial;"><code style=" border-width: 1px; font-size: 12px; ; ; ; ; ; ; ; ">java private static final String[] DEFAULT_PATTERNS = { "^bsh[.].*", "^com[.]google[.]inject[.].*", "^com[.]mchange[.]v2[.]c3p0[.].*", "^com[.]sun[.]jndi[.].*", "^com[.]sun[.]corba[.].*", "^com[.]sun[.]javafx[.].*", "^com[.]sun[.]org[.]apache[.]regex[.]internal[.].*", "^java[.]awt[.].*", "^java[.]rmi[.].*", "^javax[.]management[.].*", "^javax[.]naming[.].*", "^javax[.]script[.].*", "^javax[.]swing[.].*", "^org[.]apache[.]commons[.]beanutils[.].*", "^org[.]apache[.]commons[.]collections[.]functors[.].*", "^org[.]apache[.]myfaces[.].*", "^org[.]apache[.]wicket[.].*", ".*org[.]apache[.]xalan.*", "^org[.]codehaus[.]groovy[.]runtime[.].*", "^org[.]hibernate[.].*", "^org[.]python[.].*", "^org[.]springframework[.](?!(\\p{Alnum}+[.])*\\p{Alnum}*Exception$).*", "^sun[.]rmi[.].*", "^javax[.]imageio[.].*", "^java[.]util[.]ServiceLoader$", "^java[.]net[.]URLClassLoader$" };</code></p><p style="margin-top: 15px; margin-bottom: 15px; border-width: 0px; border-style: initial; border-color: initial;">黑名单机制绕过可以通过分析补丁得到印证。 </p><p><img data-s="300,640" data-type="png" data-src="http://mmbiz.qpic.cn/mmbiz_png/3k9IT3oQhT3jH5szicbMGAwKNgwuZrrMoNSIL60lpQbEc8vWJRLGQibJcYrZ9iaAMUaMjxRLMx3dDwrnyLHKUhPcg/0?wx_fmt=png" data-ratio="0.4311740890688259" data-w="1976" src="../Images/90ed44cb30c8cfb1841f8303b99a7b00.png" data-original-src="http://mmbiz.qpic.cn/mmbiz_png/3k9IT3oQhT3jH5szicbMGAwKNgwuZrrMoNSIL60lpQbEc8vWJRLGQibJcYrZ9iaAMUaMjxRLMx3dDwrnyLHKUhPcg/0?wx_fmt=png"/></p><h2 style="margin-top: 20px; margin-bottom: 10px; border-width: 0px 0px 1px; border-top-style: initial; border-right-style: initial; border-left-style: initial; border-top-color: initial; border-right-color: initial; border-left-color: initial; font-weight: bold; -webkit-font-smoothing: antialiased; font-size: 24px; border-bottom-style: solid; border-bottom-color: rgb(204, 204, 204); color: rgb(0, 0, 0);">参考</h2><ul style="margin-top: 15px; padding-left: 30px; border-width: 0px; border-style: initial; border-color: initial;" class=" list-paddingleft-2"><li><p><a target="_blank" style="border-width: 0px; border-style: initial; border-color: initial; color: rgb(65, 131, 196);">https://www.seebug.org/vuldb/ssvid-93062</a></p></li><li><p><a target="_blank" style="border-width: 0px; border-style: initial; border-color: initial; color: rgb(65, 131, 196);">http://www.securityfocus.com/bid/98056</a></p></li><li><p><a target="_blank" style="border-width: 0px; border-style: initial; border-color: initial; color: rgb(65, 131, 196);">https://blogs.securiteam.com/index.php/archives/3171</a></p></li><li><p><a target="_blank" style="border-width: 0px; border-style: initial; border-color: initial; color: rgb(65, 131, 196);">https://jenkins.io/security/advisory/2017-04-26/</a></p></li><li><p><a target="_blank" style="border-width: 0px; border-style: initial; border-color: initial; color: rgb(65, 131, 196);">https://github.com/jenkinsci/jenkins/commit/36b8285a41eb28333549e8d851f81fd80a184076</a></p></li><li><p><a target="_blank" style="border-width: 0px; border-style: initial; border-color: initial; color: rgb(65, 131, 196);">https://github.com/jenkinsci/jenkins/commit/f237601afd750a0eaaf961e8120b08de238f2c3f</a></p></li><li><p><a target="_blank" style="border-width: 0px; border-style: initial; border-color: initial; color: rgb(65, 131, 196);">http://www.lilihongblog.com/Blog/jenkins+Slave+Receiving+Remote+Request</a></p></li></ul><p><br/></p><p><br/></p><hr/><p><strong><br/></strong></p><p><strong>插播一条紧急新闻：</strong></p><p><br/></p><p>seebug漏洞平台，招聘萌妹子运营，有意者回复公众号~</p><p>hacked by 临时工小编~</p>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>小课堂 -- sql注入绕过技术</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>小课堂 -- sql注入绕过技术</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzI4MDQ5MjY1Mg==&amp;mid=2247483771&amp;idx=2&amp;sn=62e5bba7f401978af2cb3ef3250f929b&amp;chksm=ebb6ee78dcc1676e901797d052b7fe5461c34e6a295c358c5459880424c7395b4b2b03534fa6&amp;scene=126&amp;sessionid=1681670311#rd">http://mp.weixin.qq.com/s?__biz=MzI4MDQ5MjY1Mg==&amp;mid=2247483771&amp;idx=2&amp;sn=62e5bba7f401978af2cb3ef3250f929b&amp;chksm=ebb6ee78dcc1676e901797d052b7fe5461c34e6a295c358c5459880424c7395b4b2b03534fa6&amp;scene=126&amp;sessionid=1681670311#rd</a></blockquote><p><span style="font-size: 18px;">环境sqli-labs</span></p><p><span style="font-size: 18px;"><br/></span></p><p><span style="font-size: 18px;">一、大小写绕过</span></p><p><span style="font-size: 18px;">把关键字修改为And，OrdEr，UniOn。。。</span></p><p><span style="font-size: 18px;"><br/></span></p><p><span style="font-size: 18px;">二、双写绕过</span></p><p><span style="font-size: 18px;">把关键字修改为AandND，OOrderrder。。。</span></p><p><span style="font-size: 18px;"><br/></span></p><p><span style="font-size: 18px;">三、编码绕过</span></p><p><span style="color: rgb(0, 56, 132); text-decoration-line: underline; font-size: 18px;">http://192.168.1.120/sqli/Less-5/?id=1</span></p><p><span style="font-size: 18px;">转换后：http%3A%2F%2F192.168.1.120%2Fsqli%2FLess-5%2F%3Fid%3D1</span></p><p><span style="font-size: 18px;"><br/></span></p><p><span style="font-size: 18px;">四、内联注释</span></p><p><span style="font-size: 18px;">/*!  select*/ * form admin</span></p><p><span style="font-size: 18px;"><br/></span></p><p><span style="font-size: 18px;">禁止非法，后果自负</span></p><p/><p><br/></p>
+        
+</body>
+</html>

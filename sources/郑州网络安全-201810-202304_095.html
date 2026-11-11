@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Dex修补了允许未经授权访问客户端应用程序的身份验证错误</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Dex修补了允许未经授权访问客户端应用程序的身份验证错误</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485691&amp;idx=1&amp;sn=dbb6f3d05079dd438a53b37c3a509d07&amp;chksm=fa76e905cd0160133348aeea272f4e6c630b91b79908b096d6bce9b8de8896ba8f9e5b4daa8f&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485691&amp;idx=1&amp;sn=dbb6f3d05079dd438a53b37c3a509d07&amp;chksm=fa76e905cd0160133348aeea272f4e6c630b91b79908b096d6bce9b8de8896ba8f9e5b4daa8f&amp;scene=27#wechat_redirect</a></blockquote><blockquote><p>OpenID Connect(OIDC)身份服务Dex修补了一个严重漏洞，该漏洞允许攻击者通过拦截的授权代码获取ID令牌，并可能获得对客户端应用程序的未经授权的访问。Dex使用OIDC（OAuth 2.0协议之上的一个简单身份层）来为其他应用程序提供身份验证。它通过“连接器”充当其他身份提供者的门户，允许其将身份验证推迟到LDAP服务器、SAML提供者或身份提供者，如GitHub、Google和Active Directory。来自云原生计算基金会的开源沙盒项目Dex已被下载3560万次。</p></blockquote><p><img class="rich_pages wxw-img" data-ratio="0.5625" data-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJmPdnMGc6sgEUdJOeQNAHGuscIUibaZAbDrLF5ic9nJMOKEyqp3wibBHZRZazibaLNy9xvJ1s9BuialiaNw/640?wx_fmt=jpeg" data-type="jpeg" data-w="1200" height="675" width="1200" src="../Images/42846c79c480f8c46c745369eac5abcc.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_jpg/3RdEEWyTHJmPdnMGc6sgEUdJOeQNAHGuscIUibaZAbDrLF5ic9nJMOKEyqp3wibBHZRZazibaLNy9xvJ1s9BuialiaNw/640?wx_fmt=jpeg"/></p><p>安全研究人员发现，可以欺骗受害者导航到恶意网站的攻击者可以窃取OAuth授权代码，将其交换为令牌，然后访问接受该令牌的应用程序。该漏洞利用可以多次使用，允许攻击者在每次旧令牌过期时获取新令牌。</p><p>“错误的原因是同意页面的实施，”Dex维护者Maksim Nabokikh说。</p><p>“此页面旨在保护用户免于与应用程序共享过多的个人资料数据。相反，它在Dex中创建了一个漏洞。如果欺诈者可以先于用户访问此页面，他们不仅可以窃取用户的所有数据，还可以冒充用户。”</p><p>根据GitHub安全公告，当受害者导航到恶意网站时，Dex会向连接器IDP返回一个302重定向。然后，该利用涉及记录状态参数值g3dkmpontsr3ugocoddjx72ef，该值后来成为请求ID。</p><p>该网站随后将受害者的浏览器重定向到连接器IDP，用户对其进行身份验证。如果用户之前进行过身份验证，则可以在没有质询的情况下执行身份验证，连接器IDP使用代码将浏览器重定向到Dex回调。</p><p>然后，Dex从连接器IDP获取用户声明，将它们持久化并生成OAuth代码，然后将浏览器重定向到批准端点。复制步骤以Dex结束，使用请求ID查找OAuth代码，并构建到原始回调的重定向。</p><p>该漏洞的CVSS等级为9.3，影响版本2.34.0及更早版本，建议用户更新到版本2.35.0。那些使用谷歌连接器的人应该升级到2.35.1。</p><p>该补丁由Sigstore开发人员Hayden Blauzvern、Bob Callaway和该漏洞的原始报告人“joernchen”创建。</p><p>修复涉及引入基于哈希的消息身份验证(HMAC)代码，该代码使用随机生成的每个请求的秘密，攻击者无法知道该秘密，并在初始登录请求和批准请求之间持续存在。</p><p><br/></p><p style="display: none;"><mp-style-type data-value="3"/></p>
+        
+</body>
+</html>

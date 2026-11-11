@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Fastjson版本小于1.2.80的反序列化漏洞</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Fastjson版本小于1.2.80的反序列化漏洞</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247484783&amp;idx=1&amp;sn=7e0b596b5a8d90134572623aeb1a4973&amp;chksm=fa76e491cd016d87ef6951d1a1f88a476d3cf3aeed520415d00b2e2d72a2e5b2dcd30838fb46&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247484783&amp;idx=1&amp;sn=7e0b596b5a8d90134572623aeb1a4973&amp;chksm=fa76e491cd016d87ef6951d1a1f88a476d3cf3aeed520415d00b2e2d72a2e5b2dcd30838fb46&amp;scene=27#wechat_redirect</a></blockquote><blockquote><p>我司监测到一则Fastjson Develop Team发布的安全公告，修复了一个存在于Fastjson 1.2.80 及之前版本中的反序列化漏洞。Fastjson已使用黑白名单用于防御反序列化漏洞，经研究该利用在特定条件下可绕过默认autoType关闭限制，攻击远程服务器，风险影响较大。建议fastjson用户尽快采取安全措施保障系统安全。</p></blockquote><p style="margin-bottom: 0em;"><img class="rich_pages wxw-img" data-ratio="0.3464566929133858" data-src="https://mmbiz.qpic.cn/mmbiz_png/3RdEEWyTHJk38f1zMGZTEkl8ibALGT2XkrrdDLoyv5G69Hamqro17vjn16UzUaW8gCQnjUea0b5EICEAoV5JHdA/640?wx_fmt=png" data-type="png" data-w="381" height="132" width="381" src="../Images/ef912b4d7548647ee3162b84655f2f38.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/3RdEEWyTHJk38f1zMGZTEkl8ibALGT2XkrrdDLoyv5G69Hamqro17vjn16UzUaW8gCQnjUea0b5EICEAoV5JHdA/640?wx_fmt=png"/></p><p> </p><p>Fastjson 是阿里巴巴开源的 Java 对象和 JSON 格式字符串的快速转换的工具库。</p><p> </p><p><strong>影响版本</strong></p><ul class="list-paddingleft-1"><li><p>Fastjson ≤ 1.2.80</p></li></ul><p> </p><p><strong>安全版本</strong></p><ul class="list-paddingleft-1"><li><p>Fastjson &gt; 1.2.80</p></li></ul><p> </p><p><strong>修复建议</strong></p><ul class="list-paddingleft-1"><li><p>升级到最新版本1.2.83,下载链接：https://github.com/alibaba/fastjson/releases/tag/1.2.83</p></li></ul><p>该版本涉及autotype行为变更，在某些场景会出现不兼容的情况，如遇遇到问题可以到 https://github.com/alibaba/fastjson/issues 寻求帮助。</p><ul class="list-paddingleft-1"><li><p>升级到 Fastjson v2，Fastjson v2地址：https://github.com/alibaba/fastjson2/releases</p></li></ul><p>Fastjson 已经开源2.0版本，在2.0版本中，不再为了兼容提供白名单，提升了安全性。Fastjson v2 代码已经重写，性能有了很大提升，不完全兼容1.x，升级需要做认真的兼容测试。升级遇到问题，可以在 https://github.com/alibaba/fastjson2/issues 寻求帮助。</p><p><br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CIDF</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>CIDF</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247485770&amp;idx=3&amp;sn=f2ab21320f3463950f0b7165652e96f4&amp;chksm=f9e06611ce97ef07d2285bf2a9154a5f18696e11f21c5b89ca62655e14acd2a0e9c64c0b4e14&amp;scene=126&amp;sessionid=1681663457#rd">http://mp.weixin.qq.com/s?__biz=MzUyMTA0MjQ4NA==&amp;mid=2247485770&amp;idx=3&amp;sn=f2ab21320f3463950f0b7165652e96f4&amp;chksm=f9e06611ce97ef07d2285bf2a9154a5f18696e11f21c5b89ca62655e14acd2a0e9c64c0b4e14&amp;scene=126&amp;sessionid=1681663457#rd</a></blockquote><p>IDS系统组件之间需要通信，不同的厂商的IDS系统之间也需要通信。因此，定义统一的协议，使各部分能够根据协议所制订的标准进行沟通是很有必要的。IETF 目前有一个专门的小组 IDWG（IntrusionDetection Working Group）负责定义这种通信格式，称作Intrusion Detection Exchange Format。目前只有相关的草案，并未形成正式的RFC文档。尽管如此，草案为IDS各部分之间甚至不同IDS系统之间的通信提供层协议，其设计多其他功能（如可从任意端发起连接，结合了加密、身份验证等）。</p><p><br/></p><p><br/></p><p>.Common Intrusion Detection Framework；通用<span style="color: rgb(0, 0, 0);">入侵检测</span>框架。</p><p>以使入侵检测的研究项目之间能够共享信息和资源，并且入侵检测组件也能够在其它系统中再利用。</p><p>CIDF的工作集中体现在四个方面：IDS的<span style="color: rgb(0, 0, 0);">体系结构</span>，通信机制，描述语言和<span style="color: rgb(0, 0, 0);">应用程序接口</span>API。</p><p><br/></p><p><strong>1〉CIDF的体系结构</strong></p><p>CIDF在IDES和NIDES的基础上提出了一个通用模型，将<span style="color: rgb(0, 0, 0);">入侵检测系统</span>分为四个基本组件，<span style="color: rgb(255, 0, 0);">事件产生器，事件分析器，响应单元和事件数据库</span>，前三者通常以应用程序的形式出现，事件数据库则以文件或数据流的形式出现，以上四个组件只是逻辑实体，一个组件可能是某台计算机上的一个进程甚至线程，也可能是从多个计算机上多个进程，它们以GIDO（统一入侵检测对象）格式进行数据交换。</p><p><strong>2〉CIDF的通信机制</strong></p><p>CIDF将通信机制构造成一个三层模型：GIDO层，消息层和协商<span style="color: rgb(0, 0, 0);">传输层</span>。<strong>GIDO层</strong>的任务是提高组件之间的<span style="color: rgb(0, 0, 0);">互操作性</span>，负责考虑所传递信息语义，<strong>消息层</strong>确保被加密认证消息在<span style="color: rgb(0, 0, 0);">防火墙</span>或NAT等设备间传输过程中的可靠性，<strong>协商<span style="color: rgb(0, 0, 0);">传输层</span></strong>规定了GIDO在各个组件间的传输机制。</p><p><strong>3〉CIDF语言</strong></p><p>CIDF的总体目标是实现软件的复用和<span style="color: rgb(0, 0, 0);">入侵检测</span>与响应组件间的<span style="color: rgb(0, 0, 0);">互操作性</span>， CIDF定义了一种<span style="color: rgb(0, 0, 0);">应用层</span>语言：公共入侵规范语言，用来描述入侵检测组件间传送的信息，制定了一套对这些信息进行编码的协议。</p><p><strong>4〉</strong>CIDF的API接口</p><p>CIDF的API接口负责GID0的编码，解码和传递，它提供的调用功能使得<span style="color: rgb(0, 0, 0);">程序员</span>可以在不了解编码和传递过程具体细节的情况下，以一种简单的方式构建和传递GID0，GID0的生成分为两步：首先构造表示GID0的树形结构，然后将此结构编成字节码。</p><p>2. China Innovation Design Forum 中国工业设计论坛暨<span style="color: rgb(0, 0, 0);">中国企业产品创新设计奖</span></p><p><span style="color: rgb(0, 0, 0);">中国企业产品创新设计奖</span>等系列活动（简称CIDF）是由中国机械工程学会工业设计分会、原国家计委高技术产业司、浙江大学等单位于2001年发起，从第二届开始，国家知识产权局外观设计审查部、清华大学美院、香港理工大学、《第一财经日报》等单位参与主办，至今已成功举办了五届。CIDF创新务实、注重专业的权威性，并强调创新设计的市场价值等理念，不仅被中国和国际专业人士关注和喜爱，还赢得了企业与市场的认可，被誉为“中国设计界的奥斯卡奖”。</p><p><br/></p>
+        
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>多个云供应商受暴露企业数据库的PostgreSQL漏洞影响</title>
+<link href="../Styles/Style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>多个云供应商受暴露企业数据库的PostgreSQL漏洞影响</h1>
+<blockquote>原文：<a href="http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485499&amp;idx=1&amp;sn=2bdeab6c2b453633b14ca0ca4d3d3627&amp;chksm=fa76e9c5cd0160d3211194fc3842420c4e387c3eac922feb9f6b0aead0fd6e23153dba586339&amp;scene=27#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzUyNzk1NjExMw==&amp;mid=2247485499&amp;idx=1&amp;sn=2bdeab6c2b453633b14ca0ca4d3d3627&amp;chksm=fa76e9c5cd0160d3211194fc3842420c4e387c3eac922feb9f6b0aead0fd6e23153dba586339&amp;scene=27#wechat_redirect</a></blockquote><blockquote><p>Wiz Research在各种云供应商提供的流行“PostgreSQL 即服务”产品中发现了漏洞，这些产品由云供应商自己引入。今年早些时候，安全机构在Microsoft Azure Database for PostgreSQL灵活服务器中发现了一系列严重漏洞。该漏洞名为#ExtraReplica，允许对其他客户的PostgreSQL数据库进行未经授权的读取访问，从而绕过租户隔离。“隔离并不完美，我们的托管实例可以通过网络访问其他客户的实例，这为其他潜在漏洞打开了攻击面，”Wiz研究主管Shir Tamari说。“我们证明了利用这个攻击面并获得对其他客户数据库的完全读取权限是可能的。”</p></blockquote><p style="margin-bottom: 0em;"><img class="rich_pages wxw-img" data-ratio="0.5625" data-src="https://mmbiz.qpic.cn/mmbiz_png/3RdEEWyTHJn29mTvKicgT7rLzGibfOib3vubpSvesLfs9icMO1uOeicMerlDDYHxR8dYia7PaGQTFjH7KINxdtQiaOChQ/640?wx_fmt=png" data-type="png" data-w="1200" height="675" width="1200" src="../Images/f9f8a5ed76b6b52c789aced67c653f96.png" data-original-src="https://mmbiz.qpic.cn/mmbiz_png/3RdEEWyTHJn29mTvKicgT7rLzGibfOib3vubpSvesLfs9icMO1uOeicMerlDDYHxR8dYia7PaGQTFjH7KINxdtQiaOChQ/640?wx_fmt=png"/></p><p><br/></p><p>Wiz现在透露，一个类似的漏洞会影响谷歌云平台(GCP)，尽管潜在影响不太严重。</p><p>追溯到25年前，PostgreSQL缺乏适合托管服务的权限模型，导致供应商添加自己的代码。</p><p>“在将Postgres转变为托管服务的过程中，云服务提供商希望为用户提供超级用户权限，而不会因为允许某些被认为是危险的功能而危及他们的服务，”Tamari说。</p><p>“PostgreSQL的权限模型不能只为用户提供一组超级用户权限。因此，云供应商不得不进行修改，以允许普通用户拥有一组超级用户功能。“</p><p>这些修改让团队可以在多个PostgreSQL即服务产品的供应商管理的计算实例上执行任意命令——在极端情况下，使用受影响的服务获得对其他客户的未经授权的跨租户数据访问。</p><p>以Cloud SQL为例，虽然团队无法获得超级用户身份，但可以访问其部分权限。其中之一是能够任意将表的所有权更改为数据库中的任何用户或角色。</p><p>这意味着团队可以创建一个包含虚拟内容的表，在该表上创建一个恶意索引函数（及其代码执行负载），然后将表所有者更改为cloudsqladmin，GCP的超级用户角色，仅供Cloud SQL用于维护和管理数据库。</p><p>分析表后，PostgreSQL引擎将用户上下文切换到表的所有者cloudsqladmin ，并以cloudsqladmin权限调用恶意索引函数，从而执行shell命令。</p><p>“在研究期间，我们与十几个PostgreSQL供应商合作，以验证和修复我们发现的问题。事实证明，许多云提供商引入了相同的修改来将PostgreSQL调整为托管服务，因此可能存在漏洞，”Tamari说。</p><p>“作为广泛负责任的披露过程的一部分，我们与主要的云提供商和其他人分享了我们的调查结果，以帮助他们确定他们是否面临我们发现的问题。”</p><p><br/></p>
+        
+</body>
+</html>

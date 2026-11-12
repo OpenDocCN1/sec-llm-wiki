@@ -183,3 +183,4 @@
 ## [2026-11-13] ingest | 0w1网络安全俱乐部-201707-201903_08 -> 0w1club-wechat-archive-201707-201903.md
 ## [2026-11-13] ingest | 0w1网络安全俱乐部-201707-201903_09 -> 0w1club-wechat-archive-201707-201903.md
 ## [2026-11-13] ingest | 0w1网络安全俱乐部-201707-201903_10 -> 0w1club-wechat-archive-201908-202207.md, 0w1club-week8-raspberry-pi-training.md
+## [2026-11-13] ingest | 0w1网络安全俱乐部-201707-201903_11 -> 0w1club-wechat-archive-201908-202207.md

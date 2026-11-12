@@ -77,7 +77,7 @@ updated: '2026-11-13'
 - [ ] 2019 年 08 月
 - [ ] 2019 年 09 月
 - [ ] 2019 年 10 月
-- [x] **2019 年 11 月** — [第七周逆向入门&动态调试分析（上）](#2019-11-08-第七周逆向入门动态调试分析上) *(逆向工程定义、应用场景、学习路径、推荐资源、任务驱动学习法)* · [BUU Web 实训预告](#2019-11-08-buu-web-实训预告) *(SSRF、代码审计、反序列化、Phar反序列化、哈希长度扩展)* · [第八周服务器渗透萌新培训预告](#2019-11-15-第八周服务器渗透萌新培训预告) *(SSH、nmap、dirb、john、Kali Linux 前置工具与靶机环境准备)*
+- [x] **2019 年 11 月** — [第七周逆向入门&动态调试分析（上）](#2019-11-08-第七周逆向入门动态调试分析上) *(逆向工程定义、应用场景、学习路径、推荐资源、任务驱动学习法)* · [BUU Web 实训预告](#2019-11-08-buu-web-实训预告) *(SSRF、代码审计、Python反序列化、Phar反序列化、哈希长度扩展)* · [第八周服务器渗透萌新培训预告](#2019-11-15-第八周服务器渗透萌新培训预告) *(SSH、nmap、dirb、john、Kali Linux 前置工具与靶机环境准备)*
 - [ ] 2019 年 12 月
 
 ### 年 (2020.01 - 2020.12)
@@ -191,7 +191,7 @@ updated: '2026-11-13'
 
 ### 2019-11-08 BUU Web 实训预告
 
-> **原文链接**：[http://mp.weixin.qq.com/s?__biz=MzU3MTkzNzk4Mg==&mid=2247483875&idx=1&sn=f11d5c44a7465c77ed69cf7a9eedd011&chksm=fcd9c432cbae4d24e7ecf194f0eedc3189c0ca6761037e3cb9e08c0c51a6c861cb1752b970fd&scene=27#wechat_redirect](http://mp.weixin.qq.com/s?__biz=MzU3MTkzNzk4Mg==&mid=2247483875&idx=1&sn=f11d5c44a7465c77ed69cf7a9eedd011&chksm=fcd9c432cbae4d24e7ecf194f0eedc3189c0ca6761037e3cb9e08c0c51a6c861cb1752b970fd&scene=27#wechat_redirect)  
+> **原文链接**：[http://mp.weixin.qq.com/s?__biz=MzU3MTkzNzk4Mg==&mid=2247483874&idx=1&sn=a1fc3882feedf37e6a75e2fb97f911ca&chksm=fcd9c433cbae4d25b738e4e446668b8a9fb6420f102b4570e9faef580eff1e14627fc2f61bc6&scene=27#wechat_redirect](http://mp.weixin.qq.com/s?__biz=MzU3MTkzNzk4Mg==&mid=2247483874&idx=1&sn=a1fc3882feedf37e6a75e2fb97f911ca&chksm=fcd9c433cbae4d25b738e4e446668b8a9fb6420f102b4570e9faef580eff1e14627fc2f61bc6&scene=27#wechat_redirect)  
 > **发布日期**：2019-11-08  
 > **作者**：果果（文）、buu（图）  
 > **标签**：#CTF实训 #BUU #Web安全 #SSRF #代码审计 #反序列化 #Phar反序列化 #哈希长度扩展 #CISCN2019 #培训预告
@@ -435,4 +435,4 @@ updated: '2026-11-13'
 
 ## 来源
 
-- [0w1Club-201908-202207_07](../sources/0w1Club-201908-202207_07.md)
+- [0w1Club-201908-202207_08](../sources/0w1Club-201908-202207_08.md)

@@ -7,3 +7,4 @@
 ## [2026-11-12] ingest | 007攻防实验室-202007-202010_6 -> spring-boot-actuator配置不当rce利用.md, spring-boot-spel表达式注入.md
 ## [2026-11-12] ingest | 007攻防实验室-202007-202010_7 -> ctf-flask-path-traversal-vim-crypto.md
 ## [2026-11-12] ingest | 007攻防实验室-202007-202010_8 -> java-deserialization-fundamentals.md
+## [2026-11-12] ingest | 03sec网络安全团队-202105-202105_0 -> 03sec-network-security-team-202105-wechat-archive.md

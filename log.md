@@ -146,3 +146,4 @@
 ## [2026-11-13] ingest | 0th3rs安全团队-201911-202204_134 -> daily-security-digest-20191120.md
 ## [2026-11-13] ingest | 0w1Club-201908-202207_00 -> 0w1club-wechat-archive-201908-202207.md
 ## [2026-11-13] ingest | 0w1Club-201908-202207_01 -> 0w1club-wechat-archive-201908-202207.md
+## [2026-11-13] ingest | 0w1Club-201908-202207_02 -> 0w1club-wechat-archive-201908-202207.md

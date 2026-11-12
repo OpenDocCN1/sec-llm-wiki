@@ -28,6 +28,10 @@
 - [[xmind-xss-to-rce-vulnerability]] `XMind` `Electron` `XSS` `RCE` `子进程注入` `钓鱼攻击` `Eclipse RCP` `漏洞复现` — 复现 XMind 思维导图软件最新版本中从 XSS 到命令执行的完整利用链，分析其触发条件、Electron 架构根因与钓鱼攻击可行性
 - [[zzzphp-cve-2021-32605-rce]] `zzzphp` `CVE-2021-32605` `RCE` `模板注入` `eval注入` `前台无条件触发` `CMS漏洞` — zzzphp CMS <2.0.3 版本中模板渲染处理 if 标签时过滤不当，导致用户可控输入经 eval() 执行，前台搜索功能无需认证即可触发远程代码执行（CVE-2021-32605）
 
+## blockchain-security
+
+- [[solidifi-smart-contract-static-analysis-evaluation]] `智能合约安全` `静态分析` `漏洞检测评估` `Bug 注入` `SolidiFI` `ISSTA 2020` — ISSTA 2020 论文解读：SolidiFI 通过向智能合约所有语法合法位置注入 7 类典型漏洞代码片段，系统评估 Oyente、Securify、Mythril、SmartCheck、Manticore、Slither 六大静态分析工具的漏报与误报表现，揭示现有工具在检测能力与实用性上的显著鸿沟。
+
 ## program-analysis
 
 - [[google-ctf-2021-full-chain-v8-exploitation]] `V8` `Chrome` `CTF` `Browser Exploitation` `TypedArray` `Pointer Compression` `MojoJS` `Sandbox Escape` — Google CTF 2021 Full Chain 题目中 V8 部分的漏洞分析与利用过程：TypedArray.set 越界写漏洞、指针压缩下的任意读写原语构造、通过修改 RenderFrameImpl.enabled_bindings_ 开启 MojoJS 实现沙箱逃逸第一步

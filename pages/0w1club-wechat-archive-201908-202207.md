@@ -1,6 +1,6 @@
 ---
 title: 0w1Club 微信公众号文章归档索引（2019年8月–2022年7月）
-description: 0w1Club 网络安全俱乐部微信公众号 2019年8月至2022年7月期间发布文章的汇总索引，涵盖招新宣传、CTF比赛结果、萌新培养系列教程、安全峰会参会记录等核心内容。新增第八期萌新培养预告条目：树莓派（PI）有趣玩法分享会，社团人事架构重组与部门招募历史文章条目，以及「一次渗透测试」分享会条目：Bash
+description: 0w1Club 网络安全俱乐部微信公众号 2019年8月至2022年7月期间发布文章的汇总索引，涵盖招新宣传、CTF比赛结果、萌新培养系列教程、安全峰会参会记录等核心内容。新增第八期萌新培养预告条目：树莓派（PI）有趣玩法分享会，社团人事架构重组与部门招募历史文章条目，以及「一次渗透测试」分享会预告与实战条目：Bash
   Shellshock 漏洞（CVE-2014-6271）结合 CGI 环境变量注入实现反弹 Shell 的实战教程。
 category: ai-security
 tags:
@@ -107,6 +107,19 @@ updated: '2026-11-13'
 - **原文链接**：[分享会预告|W8](http://mp.weixin.qq.com/s?__biz=MzUzMzEwMDk3Mg==&mid=2247483961&idx=1&sn=52f8518a537f14eae793ce32334d6c2a&chksm=faa862facddfebecc7f8478a8d5eedda746443219a420a95ebef25773a70273af1c5fa3958ac&scene=27#wechat_redirect)
 - **关联页面**：[[0w1club-week2-wifi-hijacking-arp-spoofing]]、[[phishing-website-creation-tutorial]]、[[crypto-basics-xor-stream-cipher-tutorial]]、[[rop-linux-x86-beginner-tutorial]]（同系列前几期培训）
 
+#### **分享会预告|W2：一次渗透测试经历**
+- **发布日期**：2019-10 预估（mid=2247483912，位于实验室引导文后、渗透测试实战分享会前）
+- **核心标签**：`萌新培养` `渗透测试` `分享会预告` `投票定时间` `Shellshock` `CVE-2014-6271` `CGI漏洞` `严宋扬`
+- **关键内容**：
+  - **主题**：一次渗透测试经历
+  - **主讲人**：严宋扬（软件学院大三学生，发际线堪忧，安全路上永远是小白）
+  - **时长**：40 分钟
+  - **地点**：实验室（详见关联文章《请带我去实验室》mid=2247483906）
+  - **时间**：通过微信公众号投票决定（原文含投票卡片，supervoteid=480868054）
+  - **系列定位**：萌新培养第二期分享会预告（W2），预告后续实战分享会内容为 Bash Shellshock 漏洞（CVE-2014-6271）结合 CGI 环境变量注入反弹 Shell
+- **原文链接**：[分享会预告|W2](http://mp.weixin.qq.com/s?__biz=MzUzMzEwMDk3Mg==&mid=2247483912&idx=1&sn=836d26b9e6d655445c81fdcfa2df7b7b&chksm=faa862cbcddfebdd5ca7b005179bde49a8b8c32f112c71564e599fb4cfb2598fd3a837899ff8&scene=27#wechat_redirect)
+- **关联页面**：[[0w1club-training-shellshock-cgi-exploitation]]（对应的实战分享会详细记录）、[[0w1club-week2-wifi-hijacking-arp-spoofing]]（同期萌新培养周度教程）、[[ar-drone-2.0-penetration-testing]]、[[metasploit-framework-basics-tutorial]]、[[burpsuite-basics-tutorial]]、[[frp内网渗透应用]]（渗透测试工具链延伸）
+
 #### **分享会|一次渗透测试：Bash Shellshock 漏洞（CVE-2014-6271）结合 CGI 环境变量注入实战**
 - **发布日期**：2019-10 预估（mid=2247483921，位于实验室引导文后、W8预告前）
 - **核心标签**：`渗透测试` `Shellshock` `CVE-2014-6271` `CGI漏洞` `环境变量注入` `反弹Shell` `Bash` `萌新培养` `实战教程`
@@ -124,13 +137,13 @@ updated: '2026-11-13'
   - **练习环境**：`http://39.106.48.250:8080/cgi-bin/stats`（需公网服务器配合）
   - **参考资料**：Qualys QID 13038、Shellshock 系列漏洞分析、Linux 入侵控制与痕迹清理
 - **原文链接**：[分享会|一次渗透测试](http://mp.weixin.qq.com/s?__biz=MzUzMzEwMDk3Mg==&mid=2247483921&idx=1&sn=c74a8164494573cc3760b9bf50cdf959&chksm=faa862d2cddfebc41836d05cc2a8fe8ad91ed7f07de9fb61a7e15ce35640996a99d5def078da&scene=27#wechat_redirect)
-- **关联页面**：[[0w1club-week2-wifi-hijacking-arp-spoofing]]、[[ar-drone-2.0-penetration-testing]]、[[metasploit-framework-basics-tutorial]]、[[burpsuite-basics-tutorial]]（渗透测试基础工具链）、[[frp内网渗透应用]]（内网穿透延伸）
+- **关联页面**：[[0w1club-training-shellshock-cgi-exploitation]]（详细实战记录页面）、[[0w1club-week2-wifi-hijacking-arp-spoofing]]、[[ar-drone-2.0-penetration-testing]]、[[metasploit-framework-basics-tutorial]]、[[burpsuite-basics-tutorial]]、[[frp内网渗透应用]]
 
 #### 请带我去实验室（实验室位置引导）
 - **发布日期**：2019-10 预估（mid=2247483906）
 - **核心标签**：`社团运营` `实验室` `线下活动` `西安交通大学`
-- **关键内容**：图文引导新成员找到社团实验室位置，为后续线下分享会（如 W8 树莓派分享会）做准备
-- **原文链接**：[请带我去实验室](http://mp.weixin.qq.com/s?__biz=MzUzMzEwMDk3Mg==&mid=2247483906&idx=1&sn=xxx&chksm=xxx&scene=27#wechat_redirect)
+- **关键内容**：图文引导新成员找到社团实验室位置，为后续线下分享会（如 W2 渗透测试、W8 树莓派分享会）做准备
+- **原文链接**：[请带我去实验室](http://mp.weixin.qq.com/s?__biz=MzUzMzEwMDk3Mg==&mid=2247483906&idx=1&sn=7853e7efb9372ca8a74c500714b6817b&chksm=faa862c1cddfebd7f2fa07238a539bc8bedb7ad04c055f1e327f21f0e9b807509634940bc591&scene=21#wechat_redirect)
 
 #### 第五周萌新培养：ROP 入门（Linux x86）
 - **发布日期**：2019-10 预估
@@ -183,6 +196,7 @@ updated: '2026-11-13'
   - 2019-09-21 第 3 周培训：钓鱼网站制作 [[phishing-website-creation-tutorial]]
   - 2019-09-28 第 4 周培训：密码学入门 [[crypto-basics-xor-stream-cipher-tutorial]]
   - 2019-10-xx 第 5 周培训：ROP 入门 [[rop-linux-x86-beginner-tutorial]]
+  - 2019-10-xx **分享会预告 W2：一次渗透测试经历** [[#分享会预告w2一次渗透测试经历]]
   - 2019-10-xx **分享会：一次渗透测试（Shellshock+CGI）** [[#分享会一次渗透测试bash-shellshock-漏洞cve-2014-6271结合-cgi-环境变量注入实战]]
   - 2019-11 第 8 周预告：树莓派玩法 [[0w1club-week8-raspberry-pi-training]]
 
@@ -195,7 +209,7 @@ updated: '2026-11-13'
 | :--- | :--- | :--- |
 | **第三届 0w1 CTF 报名宣传** | 本页 2020年条目 1 | 赛事公告、奖品详情、报名方式、题解要求 |
 | **第三届 0w1 CTF 结果** | 本页 2020年条目 2 | 奖项设置、获奖名单、奖品清单 |
-| **萌新培养周度系列** | 第 2–5 周培训、第 8 周预告、**渗透测试分享会** | Web、逆向、Pwn、密码学、杂项、硬件/极客、**渗透测试实战**全覆盖 |
+| **萌新培养周度系列** | 第 2–5 周培训、第 8 周预告、**渗透测试分享会预告(W2)、渗透测试实战分享会** | Web、逆向、Pwn、密码学、杂项、硬件/极客、**渗透测试实战**全覆盖 |
 | **CTFd 靶场建设** | 2019-08-28 基建节点 | 自营平台支撑训练与选拔 |
 | **外部赛事参与** | 待补充 | 如启明星辰杯、TCTF 等战报 |
 
@@ -227,6 +241,7 @@ updated: '2026-11-13'
 | [[crypto-basics-xor-stream-cipher-tutorial]] | 萌新培养第 4 周：密码学入门（异或/流密码/实战题目） |
 | [[rop-linux-x86-beginner-tutorial]] | 萌新培养第 5 周：ROP 入门（GDB/GEF/Pwntools 全工具链） |
 | [[0w1club-week8-raspberry-pi-training]] | 第八期萌新培养预告详情页（同mid=2247483961 idx=1） |
+| [[0w1club-training-shellshock-cgi-exploitation]] | **一次渗透测试实战分享会详细记录**（对应W2预告的实战内容） |
 | [[reverse-engineering-beginner-learning-path]] | 逆向工程学习路径，可引用招新文“反汇编/软件破解”技能点 |
 | [[0th3rs-security-team-wechat-archive-201911-202204]] | 同类高校战队 0th3rs 微信归档索引，提供横向对照参照 |
 | [[ctftime-writeup-digest-20210325]] | CTFtime Writeup 汇总，展示同期外部赛事 Writeup 生态 |
@@ -250,6 +265,7 @@ updated: '2026-11-13'
 | 1.3 | 2026-11-13 | 知识库策展人 | 新增第八期萌新培养预告条目：树莓派（PI）有趣玩法分享会（2019年11月预估，mid=2247483961），完善萌新培养周度系列时间线至 W8，补充主讲人游江楠背景及投票定时间互动形式 |
 | 1.4 | 2026-11-13 | 知识库策展人 | 新增社团人事架构重组与部门成员招募条目（2019年11月，mid=2247483961 idx=2），记录组织架构从沙龙制向部门制演进、五大部门职责划分、公开招募机制及换届制度，补充社团运营方法论中的组织架构演进维度，关联同期W8预告条目 |
 | 1.5 | 2026-11-13 | 知识库策展人 | **新增「一次渗透测试」分享会条目（2019年10月预估，mid=2247483921）**，详细记录 Bash Shellshock 漏洞（CVE-2014-6271）结合 CGI 环境变量注入实现反弹 Shell 的完整实战教程，包含漏洞原理、攻击向量、利用链路、工具演示、痕迹清理、练习环境及参考资料，填补萌新培养系列中渗透测试实战方向的空白，关联 Metasploit、Burp Suite、frp 等渗透测试工具链页面 |
+| 1.6 | 2026-11-13 | 知识库策展人 | **新增「分享会预告|W2：一次渗透测试经历」条目（2019年10月预估，mid=2247483912）**，记录萌新培养第二期分享会预告，主讲人严宋扬，主题为渗透测试经历（Shellshock+CGI），含投票定时间、实验室地点引导等互动细节，串联预告与实战分享会（mid=2247483921）的完整培训闭环 |
 
 ---
 
@@ -258,10 +274,10 @@ updated: '2026-11-13'
 | 字段 | 说明 | 示例 |
 | :--- | :--- | :--- |
 | `__biz` | 公众号唯一标识 | `MzUzMzEwMDk3Mg==` |
-| `mid` | 消息 ID，单调递增，可推算发布先后 | `2247483664` (招新) < `2247483906` (实验室) < `2247483921` (**渗透测试分享会**) < `2247483961` (W8预告/人事重组) < `2247484006` (CTF报名) < `2247484036` (CTF结果) |
-| `idx` | 多图文时的索引（1 开始） | `1` (W8预告/渗透测试) / `2` (人事重组招募) |
-| `sn` | 签名哈希，用于去重校验 | `c74a8164494573cc3760b9bf50cdf959` (渗透测试) / `52f8518a537f14eae793ce32334d6c2a` (W8) / `cd619d88be05592079e85aae0c59f7e3` (人事重组) |
-| `chksm` | 校验码 | `faa862d2cddfebc41836d05cc2a8fe8ad91ed7f07de9fb61a7e15ce35640996a99d5def078da` (渗透测试) |
+| `mid` | 消息 ID，单调递增，可推算发布先后 | `2247483664` (招新) < `2247483906` (实验室) < `2247483912` (**W2预告**) < `2247483921` (**渗透测试分享会**) < `2247483961` (W8预告/人事重组) < `2247484006` (CTF报名) < `2247484036` (CTF结果) |
+| `idx` | 多图文时的索引（1 开始） | `1` (W8预告/渗透测试/W2预告) / `2` (人事重组招募) |
+| `sn` | 签名哈希，用于去重校验 | `836d26b9e6d655445c81fdcfa2df7b7b` (W2预告) / `c74a8164494573cc3760b9bf50cdf959` (渗透测试) / `52f8518a537f14eae793ce32334d6c2a` (W8) / `cd619d88be05592079e85aae0c59f7e3` (人事重组) |
+| `chksm` | 校验码 | `faa862cbcddfebdd5ca7b005179bde49a8b8c32f112c71564e599fb4cfb2598fd3a837899ff8` (W2预告) |
 | `scene` | 来源场景值 | `27` (历史消息页) |
 
 > **提示**：若需批量导出或编程检索，可利用 `mid` 单调性配合 `scene=27` 抓取历史消息列表，再结合 `sn` 去重。同一 `mid` 不同 `idx` 表示同一次群发中的多篇图文。
@@ -269,3 +285,4 @@ updated: '2026-11-13'
 ## 来源
 
 - [0w1网络安全俱乐部-201707-201903_15](../sources/0w1网络安全俱乐部-201707-201903_15.md)
+- [0w1网络安全俱乐部-201707-201903_16](../sources/0w1网络安全俱乐部-201707-201903_16.md)

@@ -2,10 +2,12 @@
 
 ## ai-security
 
+- [[elastic-stack-vulnerabilities-may2021]] `Elastic Stack` `Elasticsearch` `Kibana` `Logstash` `App Search` `CVE-2021-22135` `CVE-2021-22136` `CVE-2021-22137` `CVE-2021-22138` `CVE-2021-22139` `CVE-2021-22140` `文档泄露` `会话管理` `XXE` `DoS` `TLS 验证` — 汇总 2021 年 5 月披露的 Elastic Stack 组件（Elasticsearch、Kibana、Logstash、App Search）多个安全漏洞，涵盖文档泄露、会话超时绕过、跨集群搜索权限绕过、TLS 证书验证缺陷、Webhook DoS 及 XXE 注入等漏洞详情与影响版本。
 - [[frp内网渗透应用]] `frp` `内网穿透` `内网渗透` `Socks5` `Metasploit` `端口转发` `隧道技术` — 详细记录 frp 在内网渗透中的四大典型应用场景：Socks5 隧道搭建、多级隧道串联、代理本地 Metasploit 反弹、以及 RDP 等服务的远程端口转发，附完整配置示例与拓扑说明。
 - [[h2-console-jndi注入rce利用]] `H2 Database` `JNDI Injection` `RCE` `Spring Boot` `漏洞复现` `JNDI-Injection-Exploit` — 详细记录 H2 Database 控制台未授权访问配合 JNDI 注入（搭配 JNDI-Injection-Exploit 工具）实现远程代码执行的实战攻击链。
 - [[java-deserialization-fundamentals]] `Java` `序列化` `反序列化` `Serializable` `Externalizable` `serialVersionUID` `ObjectOutputStream` `ObjectInputStream` `基础机制` — 系统梳理 Java 序列化/反序列化核心机制：Serializable 与 Externalizable 接口对比、serialVersionUID 版本控制、ObjectOutputStream/ObjectInputStream 标准用法，为后续反序列化漏洞利用链分析奠定基础。
 - [[jwt漏洞原理与实战利用]] `JWT` `漏洞利用` `DDCTF` `垂直越权` `算法混淆` `密钥爆破` `信息泄露` — 系统梳理 JWT 结构、常见漏洞（算法混淆、密钥爆破、信息泄露）及利用工具，结合 DDCTF 实战复现垂直越权全过程。
+- [[mercedes-benz-mbux-vulnerabilities-2021]] `Mercedes-Benz` `MBUX` `车载系统安全` `远程代码执行` `HiQnet协议` `HERMES` `CVE-2021-23906` `CVE-2021-23907` `CVE-2021-23908` `CVE-2021-23909` `CVE-2021-23910` `汽车网络安全` — 汇总分析 2021 年披露的梅赛德斯-奔驰 MBUX 信息娱乐系统中的 5 个远程代码执行漏洞，涉及 Headunit NTG6 的 HiQnet 协议缺陷及 HERMES 2.1 组件漏洞，影响 2021 年及之前车型。
 - [[mtctf-2021-crypto-writeup]] `MTCTF` `2021` `Crypto` `RSA` `Padding Oracle` `One-Time Pad` `ZIP` `密码学攻击` — RSA 填充 Oracle 攻击解密 ZIP 密码，结合 One-Time Pad 部分已知明文语义逐步还原 Flag
 - [[mtctf-2021-web-writeup]] `MTCTF` `2021` `Web` `SQL注入` `PHP反序列化` `条件竞争` `Session Upload Progress` `黑名单绕过` — MTCTF 2021 Web 方向题解：SQL 注入过滤绕过（反斜杠转义、数值型布尔盲注）、PHP 反序列化条件竞争（preload/hack 竞争）、Session Upload Progress 利用及黑名单绕过（glob/copy/+a 技巧）
 - [[spring-boot-actuator配置不当rce利用]] `Spring Boot` `Actuator` `RCE` `H2 Database` `JNDI Injection` `Spring Cloud Config` `目录穿越` `Eureka` `XStream` `SpEL` `漏洞复现` — 详细记录 Spring Boot 2.x Actuator 暴露 env 与 restart 端点结合 H2 CREATE ALIAS 实现 RCE 的完整利用链；补充 Eureka XStream 反序列化 RCE 利用链、SpEL 表达式注入、完整 Actuator 端点清单及 /env /refresh 交互利用细节、H2 Console JNDI 注入及 Spring Cloud Config 目录穿越利用方式。

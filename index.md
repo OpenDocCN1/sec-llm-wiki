@@ -44,6 +44,7 @@
 - [[ida-pro-tips-plugins-python]] `IDA Pro` `FLIRT` `签名生成` `Findcrypt-Yara` `Keypatch` `IDAPython` `逆向工程` `插件安装` — 汇总 IDA Pro 逆向分析中的常用实用技巧，包括使用 FLIRT 从静态库生成签名恢复符号表、Windows 下安装 Findcrypt-Yara 与 Keypatch 插件、配置第三方 Python 库路径以便在 IDAPython 中直接导入。
 - [[linux-kernel-hardening-mechanisms]] `Linux Kernel` `Hardening` `Security Mitigations` `Grsecurity` `PaX` `Memory Protection` `Control Flow Integrity` `Side-channel Mitigation` — 系统梳理 Linux 内核主流防御机制，涵盖编译期硬化、内存保护、控制流完整性、硬件辅助防护、侧信道缓解及 Grsecurity/PaX 核心特性
 - [[mtctf-2021-pwn-writeup]] `CTF` `Pwn` `Heap Exploitation` `UAF` `Fastbin` `Unlink` `Double Free` `setcontext` `mprotect` `Shellcode` `MTCTF 2021` — MTCTF 2021 中两道 Pwn 题目的详细解析。baby_focal 利用堆溢出构造 UAF 泄露 stdout 绕过检查，再借助 setcontext+mprotect 执行 Shellcode；zlink 通过 Off-by-null 触发 Fastbin Consolidation 与 Unlink 实现 Double Free 劫持 __free_hook，同样使用 setcontext 获取 Shell。
+- [[v8-turbofan-changeint32toint64-1day-analysis]] `V8` `TurboFan` `JIT Compilation` `Vulnerability Analysis` `1-day` `Type Confusion` `Integer Overflow` `Browser Exploitation` `ChangeInt32ToInt64` `EarlyOptimization` `LoadElimination` — 深度分析 V8 TurboFan JIT 编译器中 ChangeInt32ToInt64 节点在处理无符号/有符号整数扩展时的逻辑缺陷，覆盖漏洞成因、优化阶段触发条件（EarlyOptimization 与 LoadElimination）、Exploit 构造链（Array.shift Fast Path 与长度字段篡改）及最终任意代码执行路径。
 
 ## uncategorized
 

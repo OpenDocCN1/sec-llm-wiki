@@ -48,3 +48,5 @@
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_036 -> ctftime-writeup-digest-20210406.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_037 -> cve-digest-20210404.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_038 -> ctftime-writeup-digest-20210404.md
+## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_039 -> cve-digest-20210403.md
+## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_040 -> ctftime-writeup-digest-20210403.md

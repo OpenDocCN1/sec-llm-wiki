@@ -162,3 +162,4 @@
 ## [2026-11-13] ingest | 0w1Club-201908-202207_15 -> rop-linux-x86-beginner-tutorial.md, 0w1club-wechat-archive-201908-202207.md
 ## [2026-11-13] ingest | 0w1Club-201908-202207_16 -> crypto-basics-xor-stream-cipher-tutorial.md, 0w1club-wechat-archive-201908-202207.md
 ## [2026-11-13] ingest | 0w1Club-201908-202207_17 -> redis-module-load-rce-exploitation.md
+## [2026-11-13] ingest | 0w1Club-201908-202207_18 -> 0w1club-wechat-archive-201908-202207.md, crypto-basics-xor-stream-cipher-tutorial.md

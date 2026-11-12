@@ -1,8 +1,8 @@
 ---
-title: 密码学基础：异或加密原理、二次加密攻击与流密码入门
-description: 系统梳理异或加密核心原理、Two-Time-Pad 攻击实战破解流程（以 de1ctf 2019 xor 题为例）、流密码基本概念及常见算法，适合
-  CTF 入门与密码学基础巩固。
-category: ai-security
+title: 密码学基础：异或加密原理、二次加密攻击与流密码入门（含 0w1Club 线下培训实战场景）
+description: 系统梳理异或加密核心原理、Two-Time-Pad 攻击实战破解流程（以 de1ctf 2019 xor 题为例）、流密码基本概念及常见算法，并结合
+  0w1Club 2019 年第四周线下密码学入门培训作为实战学习场景，适合 CTF 入门与密码学基础巩固。
+category: program-analysis
 tags:
 - 密码学
 - 异或加密
@@ -12,8 +12,26 @@ tags:
 - de1ctf
 - 密钥恢复
 - RC4
-date: '2019-11-20'
+- 0w1Club
+- 线下培训
+- 萌新培养
+date: '2019-09-28'
 updated: '2026-11-13'
+---
+
+## 0w1Club 线下培训背景：第四周密码学入门实战场景
+
+本页面技术内容源自 **0w1Club 安全团队 2019 年“萌新培养计划”第四周线下培训** 的教学大纲与配套资料。该培训于 **2019-09-28（周六）21:40** 在 **彭康楼**（梧桐东门集合）举行，时长约 1 小时，由洛钟珮主讲、夜晓绘制配图。
+
+### 培训前置建议（原文保留）
+
+- 了解**异或逻辑**
+- 了解 **OTP (One Time Pad)** 及其背景知识
+- 对**流密码**有一个大概的印象
+- 提前安装 **Python、Sage**（Sage 安装教程参考：<https://err0rzz.github.io/2017/11/16/sage%E5%AE%89%E8%A3%85/>，Linux 环境自带 Python 仅需装 Sage）
+
+> 📌 该培训作为 0w1Club 系统性密码学入门的**实战学习场景**，后续文章《【萌新培养】第四周：密码学入门》（2019-11-20 发布）进一步整理为图文教程。完整归档索引见 [[0w1club-wechat-archive-201908-202207]] 中 “2019-09-28 第四周密码学入门培训预告” 条目。
+
 ---
 
 ## 异或运算基础
@@ -34,6 +52,8 @@ updated: '2026-11-13'
 - **互反性（自逆性）**：`A ⊕ B ⊕ B = A`，即加密与解密操作完全相同。
 - **模 2 加法**：数学本质是不进位的二进制加法。
 - **字符空间**：判断密钥字符可行性的依据，通常为可打印 ASCII（0x20–0x7E）或特定字符集（如 `0-9a-fA-F_{}`）。
+
+---
 
 ## 破解 M ⊕ K = C：Two-Time-Pad 攻击实战
 
@@ -115,6 +135,8 @@ print(list_flag)
 - **xor-analyze**：<https://github.com/ThomasHabets/xor-analyze>  
   支持自动密钥长度检测、字符空间推断、已知明文攻击等，适合快速原型验证。
 
+---
+
 ## 流密码基础
 
 ### 从 OTP 到流密码
@@ -134,26 +156,22 @@ print(list_flag)
 
 > 💡 学习建议：先理解 **线性反馈移位寄存器 (LFSR)** 与 **非线性组合器** 的基本构造，再阅读现代算法规范（RFC 8439 for ChaCha20）。
 
+---
+
 ## 交叉引用与延伸阅读
 
-- [[mtctf-2021-crypto-writeup]] — 同类 CTF 密码学实战，涵盖 **One-Time Pad 部分已知明文攻击** 与 RSA Padding Oracle。
-- [[ctftime-writeup-digest-20210325]] — 2021 年 3 月多场 CTF Writeup 汇总，含 Crypto 方向题解。
-- [[daily-security-digest-20191120]] — 原文发布当期每日安全看点，包含更多入门资源链接。
-
-## 推荐书目与文献
-
-1. **《应用密码学——协议、算法与 C 源程序》** — Bruce Schneier  
-   经典百科全书式参考，涵盖流密码、分组密码、协议设计全谱系。
-2. **《深入浅出密码学——常用加密技术原理与应用》** — 适合工程视角快速建立直觉。
-3. **A natural language approach to automated cryptanalysis of two-time pads** — Mason et al., CCS 2006  
-   <https://www.cs.jhu.edu/~jason/papers/mason+al.ccs06.pdf>  
-   利用自然语言统计特性自动化破解 Two-Time-Pad，理论与工程结合的典范。
+- [[0w1club-wechat-archive-201908-202207]] — 0w1Club 微信归档总索引，含本培训预告及后续技术分享条目。
+- 《应用密码学——协议、算法与 C 源程序》 — Bruce Schneier，经典百科全书式参考。
+- 《深入浅出密码学——常用加密技术原理与应用》 — 适合工程视角快速建立直觉。
+- **A natural language approach to automated cryptanalysis of two-time pads** — Mason et al., CCS 2006  
+  <https://www.cs.jhu.edu/~jason/papers/mason+al.ccs06.pdf>  
+  利用自然语言统计特性自动化破解 Two-Time-Pad，理论与工程结合的典范。
 
 ---
 
-> 页面来源：0th3rs 安全团队微信公众号 2019-11-20 发布的《【萌新培养】第四周：密码学入门》整理而成。  
+> 页面来源：0w1Club 安全团队微信公众号 2019-09-28 线下培训预告及 2019-11-20 发布的《【萌新培养】第四周：密码学入门》整理而成。  
 > 如需系统性复现 de1ctf 2019 xor 全过程，建议结合本页脚本在本地环境运行调试。
 
 ## 来源
 
-- [0w1Club-201908-202207_16](../sources/0w1Club-201908-202207_16.md)
+- [0w1Club-201908-202207_18](../sources/0w1Club-201908-202207_18.md)

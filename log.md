@@ -125,3 +125,4 @@
 ## [2026-11-13] ingest | 0th3rs安全团队-201911-202204_113 -> daily-security-digest-20191216.md, docker-container-security-fundamentals.md
 ## [2026-11-13] ingest | 0th3rs安全团队-201911-202204_114 -> daily-security-digest-20191212.md
 ## [2026-11-13] ingest | 0th3rs安全团队-201911-202204_115 -> daily-security-digest-20191211.md
+## [2026-11-13] ingest | 0th3rs安全团队-201911-202204_116 -> daily-security-digest-20191210.md

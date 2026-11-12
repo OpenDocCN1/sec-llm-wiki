@@ -53,3 +53,4 @@
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_041 -> v8-issue-944062-gc-arbitrary-write.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_042 -> ctftime-writeup-digest-20210402.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_043 -> cve-digest-20210402.md
+## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_044 -> cve-digest-20210401.md

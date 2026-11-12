@@ -35,6 +35,7 @@
 - [[cve-digest-20210426]] `CVE` `漏洞聚合` `2021年4月` `VS Code` `npupnp` `Akuvox` `Webmin` `RCE` `CSRF` `XSS` `命令注入` `DNS重绑定` — 汇总2021年4月26日发布的多款产品安全漏洞预警，涵盖VS Code扩展、npupnp、Akuvox、Webmin等多个组件的RCE、CSRF、XSS、命令注入、DNS重绑定等漏洞详情。
 - [[cve-digest-20210506]] `CVE` `漏洞聚合` `2021年5月` `WordPress` `ArcGIS` `Vaadin` `Drupal` `IBM QRadar` `Samba` `Trend Micro` `Django` `BTCPay Server` `XSS` `目录遍历` `RCE` `CSRF` — 汇总2021年5月6日发布的多款产品安全漏洞预警，涵盖WordPress插件、ArcGIS、Vaadin、Drupal、IBM QRadar、Samba、Trend Micro、Django、BTCPay Server等多个厂商的XSS、目录遍历、RCE、CSRF等漏洞详情。
 - [[cve-digest-20210513]] `CVE` `漏洞聚合` `2021年5月` `BlackBerry` `Argo CD` `Linux内核` `以太坊` `Samba` `Trend Micro` `SIMATIC` `McAfee` `Atlassian Jira` `权限提升` `认证绕过` `拒绝服务` `信息泄露` — 汇总2021年5月13日发布的多款产品安全漏洞预警，涵盖BlackBerry Workspaces、Argo CD、Linux内核、以太坊EVM、Samba、Trend Micro HouseCall、SIMATIC HMI、McAfee、Atlassian Jira等多个厂商的认证绕过、权限提升、拒绝服务、信息泄露等漏洞详情。
+- [[daily-security-digest-20191226]] `每日安全看点` `逆向工程` `FLIRT` `Binary Ninja` `OLLVM` `区块链` `Fuzzing` `隐私安全` `网络安全竞赛` `学术会议` `2019年12月` — 2019年12月26日每日安全看点汇总，涵盖FLIRT符号恢复、Binary Ninja去混淆、区块链教程、Fuzzing会议资料、隐私安全、网络安全赛事及学术会议等技术资讯链接。
 - [[daily-security-digest-20191227]] `每日安全看点` `Web API安全` `Google Cloud Shell` `ATT&CK` `iOS代码签名` `SOP绕过` `逆向工程` `移动端渗透测试` `Nightmare` `2019年12月` — 汇总2019年12月27日每日安全看点，涵盖Web API安全、Google Cloud Shell漏洞、Vlunstack ATT&CK实战、iOS代码签名、浏览器缓存绕过SOP、Nightmare逆向入门、移动端渗透测试教程1-3等安全技术资讯
 - [[daily-security-digest-20191230]] `Google XSS` `Metasploit` `DoS` `CVE-2019-5645` `移动端渗透测试` `Fuzzing` `漏洞挖掘` — 汇总2019年12月30日每日安全看点，涵盖Google XSS技巧、Metasploit DoS漏洞(CVE-2019-5645)、移动端渗透测试教程第4-6部分及Fuzzing漏洞挖掘艺术等安全技术资讯。
 - [[daily-security-digest-20200102]] `每日安全看点` `机器学习` `KNN` `恶意流量检测` `微信` `CVE-2019-17151` `RCE` `Tesla` `Model S` `Wi-Fi漏洞` `供应链攻击` `防御策略` `2020年1月` — 2020年1月2日每日安全看点汇总：KNN算法检测恶意流量、微信CVE-2019-17151远程代码执行漏洞、Tesla Model S Wi-Fi协议栈漏洞利用、供应链攻击防御策略
@@ -102,6 +103,7 @@
 
 ## program-analysis
 
+- [[binary-ninja-ollvm-deobfuscation]] `Binary Ninja` `OLLVM` `Control Flow Flattening` `Deobfuscation` `Reverse Engineering` `Python` `Plugin Development` `Intermediate Language` — 索引并结构化记录微信公众号文章《利用Binary Ninja去除ollvm流程平坦化混淆》的技术主题，涵盖 OLLVM 控制流平坦化原理、Binary Ninja 中间表达（IL）分析、Python 插件/脚本编写思路及去平坦化自动化流程。
 - [[d3ctf-2021-d3dev-qemu-escape-writeup]] `QEMU` `VM Escape` `PCI Device` `MMIO` `OOB Read/Write` `CTF Writeup` `D3CTF 2021` — Analysis of the d3dev custom PCI device vulnerability in D3CTF 2021, covering OOB read/write via MMIO, leaking QEMU base address via rand_r pointer, and overwriting rand_r with system() for code execution.
 - [[google-ctf-2021-full-chain-v8-exploitation]] `V8` `Chrome` `CTF` `Browser Exploitation` `TypedArray` `Pointer Compression` `MojoJS` `Sandbox Escape` — Google CTF 2021 Full Chain 题目中 V8 部分的漏洞分析与利用过程：TypedArray.set 越界写漏洞、指针压缩下的任意读写原语构造、通过修改 RenderFrameImpl.enabled_bindings_ 开启 MojoJS 实现沙箱逃逸第一步
 - [[ida-pro-tips-plugins-python]] `IDA Pro` `FLIRT` `签名生成` `Findcrypt-Yara` `Keypatch` `IDAPython` `逆向工程` `插件安装` — 汇总 IDA Pro 逆向分析中的常用实用技巧，包括使用 FLIRT 从静态库生成签名恢复符号表、Windows 下安装 Findcrypt-Yara 与 Keypatch 插件、配置第三方 Python 库路径以便在 IDAPython 中直接导入。

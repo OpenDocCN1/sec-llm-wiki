@@ -73,3 +73,4 @@
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_061 -> zzzcms-v1.7.5-audit.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_062 -> daily-security-digest-20200318.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_063 -> daily-security-digest-20200317.md
+## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_064 -> daily-security-digest-20200316.md

@@ -2,6 +2,7 @@
 
 ## ai-security
 
+- [[ctftime-writeup-digest-20210413]] `CTF` `Writeup` `RITSEC CTF` `Blob` `2021年4月` — 汇总 2021 年 4 月 13 日 CTFtime 平台收录的比赛 Writeup，包含 RITSEC CTF 2021 Blob 题目解析链接
 - [[cve-digest-20200426]] `CVE` `漏洞聚合` `2020年4月` `Windows` `SickRage` `Chrome` `Firefox` `提权` `凭证泄露` `堆溢出` `XSS` — 汇总2020年4月26日发布的多个安全漏洞利用代码（PoC），涵盖Windows内核提权（CVE-2020-1054）、SickRage凭证泄露（CVE-2018-9160）、Chrome V8堆溢出（CVE-2018-6065）、Firefox PDF查看器XSS（CVE-2018-5158）等漏洞详情与利用脚本链接。
 - [[cve-digest-20210413]] `CVE` `漏洞聚合` `2021年4月` `Remote Clinic` `Gradle` `Synapse` `Matrix` `TP-Link` `ASUS` `Gargoyle` `IPv6路由环路` `IBM Jazz Team Server` `Fortinet` `GitLab` `WordPress插件` `PostCSS` `Handlebars` `Swiper` `SiCKRAGE` `D-Link` `XSS` `信息泄露` `RCE` `SQL注入` `命令注入` `路径遍历` `DoS` `ReDoS` `提权` — 汇总2021年4月13日发布的多厂商安全漏洞预警，涵盖Remote Clinic、Gradle、Synapse、TP-Link/ASUS/Gargoyle路由器IPv6路由环路、IBM Jazz Team Server、Fortinet、GitLab、WordPress多插件、PostCSS/Handlebars/Swiper等前端库、SiCKRAGE、D-Link等多组件漏洞详情。
 - [[cve-digest-20210414]] `CVE` `漏洞聚合` `2021年4月` `Windows` `Android` `SAP` `Visual Studio Code` `Exchange Server` `提权` `RCE` `信息泄露` `DoS` `XSS` `XXE` `SQL注入` `命令注入` `路径遍历` — 汇总2021年4月14日发布的多款产品安全漏洞预警，涵盖Windows、Android、SAP、Visual Studio Code、Microsoft Exchange Server、Eaton IPM、Lenovo、Thrift、Thanos-Soft Cheetah Browser、Xerox、Motorola、Slic3r、Ampache、C-Bus Toolkit、mongo-express、Gradle、trestle-auth、Anuko Time Tracker、ScratchOAuth2、Nextcloud dialogs、Grav、Perforce Helix ALM、Wind River VxWorks、phpGACL、OpenClinic GA等组件的提权、RCE、信息泄露、DoS、XSS、XXE、SQL注入、命令注入、路径遍历等漏洞详情。

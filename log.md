@@ -132,3 +132,4 @@
 ## [2026-11-13] ingest | 0th3rs安全团队-201911-202204_120 -> daily-security-digest-20191204.md
 ## [2026-11-13] ingest | 0th3rs安全团队-201911-202204_121 -> daily-security-digest-20191203.md
 ## [2026-11-13] ingest | 0th3rs安全团队-201911-202204_122 -> 0th3rs-security-team-wechat-archive-201911-202204.md
+## [2026-11-13] ingest | 0th3rs安全团队-201911-202204_123 -> daily-security-digest-20191202.md

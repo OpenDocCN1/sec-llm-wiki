@@ -17,3 +17,4 @@
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_005 -> linux-kernel-hardening-mechanisms.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_006 -> mtctf-2021-web-writeup.md, mtctf-2021-crypto-writeup.md, mtctf-2021-pwn-writeup.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_007 -> mercedes-benz-mbux-vulnerabilities-2021.md, elastic-stack-vulnerabilities-may2021.md
+## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_008 -> zzzphp-cve-2021-32605-rce.md

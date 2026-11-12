@@ -114,3 +114,4 @@
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_102 -> daily-security-digest-20191227.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_103 -> daily-security-digest-20191226.md, ida-pro-tips-plugins-python.md, binary-ninja-ollvm-deobfuscation.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_104 -> daily-security-digest-20191225.md
+## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_105 -> daily-security-digest-20191224.md

@@ -157,3 +157,4 @@
 ## [2026-11-13] ingest | 0w1Club-201908-202207_10 -> 0w1club-wechat-archive-201908-202207.md
 ## [2026-11-13] ingest | 0w1Club-201908-202207_11 -> ar-drone-2.0-penetration-testing.md
 ## [2026-11-13] ingest | 0w1Club-201908-202207_12 -> 0w1club-wechat-archive-201908-202207.md
+## [2026-11-13] ingest | 0w1Club-201908-202207_13 -> 0w1club-wechat-archive-201908-202207.md, web-fundamentals-lamp-wordpress-setup.md

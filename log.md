@@ -13,3 +13,4 @@
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_001 -> (无沉淀)
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_002 -> google-ctf-2021-full-chain-v8-exploitation.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_003 -> tctf-2021-1linephp-zip-include.md, tctf-2021-worldcup-xss-go-ssti.md
+## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_004 -> ida-pro-tips-plugins-python.md

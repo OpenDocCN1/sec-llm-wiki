@@ -4,3 +4,4 @@
 ## [2026-11-12] ingest | 007攻防实验室-202007-202010_3 -> jwt漏洞原理与实战利用.md
 ## [2026-11-12] ingest | 007攻防实验室-202007-202010_4 -> qwb2019-随便注-sql注入复现.md
 ## [2026-11-12] ingest | 007攻防实验室-202007-202010_5 -> spring-boot-actuator配置不当rce利用.md, h2-console-jndi注入rce利用.md, spring-cloud-config目录穿越漏洞.md
+## [2026-11-12] ingest | 007攻防实验室-202007-202010_6 -> spring-boot-actuator配置不当rce利用.md, spring-boot-spel表达式注入.md

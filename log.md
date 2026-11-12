@@ -37,3 +37,4 @@
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_025 -> hvv-2021-vulnerability-collection.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_026 -> cve-digest-20210414.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_027 -> secquan-bugwarning-1071987-device-credential-leak.md
+## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_028 -> cve-digest-20210413.md

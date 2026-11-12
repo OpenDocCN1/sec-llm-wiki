@@ -3,7 +3,7 @@
 ## ai-security
 
 - [[cve-digest-20200426]] `CVE` `漏洞聚合` `2020年4月` `Windows` `SickRage` `Chrome` `Firefox` `提权` `凭证泄露` `堆溢出` `XSS` — 汇总2020年4月26日发布的多个安全漏洞利用代码（PoC），涵盖Windows内核提权（CVE-2020-1054）、SickRage凭证泄露（CVE-2018-9160）、Chrome V8堆溢出（CVE-2018-6065）、Firefox PDF查看器XSS（CVE-2018-5158）等漏洞详情与利用脚本链接。
-- [[cve-digest-20210422]] `CVE` `漏洞聚合` `2021年4月` `Microsoft Exchange` `Apache Solr` `SonicWall` `MikroTik` `RCE` `SSRF` `目录遍历` — 汇总 2021 年 4 月 22 日发布的多个安全漏洞 PoC，涵盖 Microsoft Exchange RCE、Apache Solr SSRF、SonicWall RCE、MikroTik 目录遍历等漏洞详情与利用脚本链接
+- [[cve-digest-20210422]] `CVE` `漏洞聚合` `2021年4月` `Ruby` `IBM WebSphere` `Jenkins` `NVIDIA` `GPAC` `XXE` `RCE` `XSS` `缓冲区溢出` — 补充 2021 年 4 月 22 日发布的额外安全漏洞 PoC，涵盖 Ruby REXML、IBM WebSphere、Jenkins 插件、NVIDIA 驱动、GPAC 等多组件漏洞详情
 - [[cve-digest-20210423]] `CVE` `漏洞聚合` `2021年4月` `Linux内核` `overlayfs` `提权` `WordPress` `Contact Form 7` `文件上传` `Go语言` `RCE` `Elasticsearch` `CVE-2021-3493` `CVE-2020-35489` `CVE-2018-6574` `CVE-2015-5377` — 补充 2021 年 4 月 23 日 PoC 聚合的额外漏洞利用代码，含 Linux overlayfs 提权 (CVE-2021-3493)、WordPress Contact Form 7 文件上传 (CVE-2020-35489)、Go 语言远程代码执行 (CVE-2018-6574) 及 Elasticsearch RCE (CVE-2015-5377) 等漏洞详情与利用脚本链接
 - [[cve-digest-20210426]] `CVE` `漏洞聚合` `2021年4月` `VS Code` `npupnp` `Akuvox` `Webmin` `RCE` `CSRF` `XSS` `命令注入` `DNS重绑定` — 汇总2021年4月26日发布的多款产品安全漏洞预警，涵盖VS Code扩展、npupnp、Akuvox、Webmin等多个组件的RCE、CSRF、XSS、命令注入、DNS重绑定等漏洞详情。
 - [[cve-digest-20210506]] `CVE` `漏洞聚合` `2021年5月` `WordPress` `ArcGIS` `Vaadin` `Drupal` `IBM QRadar` `Samba` `Trend Micro` `Django` `BTCPay Server` `XSS` `目录遍历` `RCE` `CSRF` — 汇总2021年5月6日发布的多款产品安全漏洞预警，涵盖WordPress插件、ArcGIS、Vaadin、Drupal、IBM QRadar、Samba、Trend Micro、Django、BTCPay Server等多个厂商的XSS、目录遍历、RCE、CSRF等漏洞详情。

@@ -2,6 +2,7 @@
 
 ## ai-security
 
+- [[ctftime-writeup-digest-20210404]] `CTF` `Writeup` `UMassCTF` `PikCha` `Web` `2021年4月` — 汇总 2021 年 4 月 4 日 CTFtime 平台收录的 UMassCTF 2021 PikCha Web 题目 Writeup 链接
 - [[ctftime-writeup-digest-20210406]] `CTF` `Writeup` `Shakti CTF` `Chunkies` `Forensics` `2021年4月` — 汇总 2021 年 4 月 6 日 CTFtime 平台收录的 Shakti CTF Chunkies 取证题目 Writeup 链接
 - [[ctftime-writeup-digest-20210407]] `CTF` `Writeup` `b01lers CTF` `Reverse Engineering` `roulette_wheel` `2021年4月` — 汇总 2021 年 4 月 7 日 CTFtime 平台收录的 b01lers CTF roulette_wheel 逆向题目 Writeup 链接
 - [[ctftime-writeup-digest-20210413]] `CTF` `Writeup` `RITSEC CTF` `Blob` `2021年4月` — 汇总 2021 年 4 月 13 日 CTFtime 平台收录的比赛 Writeup，包含 RITSEC CTF 2021 Blob 题目解析链接

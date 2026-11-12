@@ -155,3 +155,4 @@
 ## [2026-11-13] ingest | 0w1Club-201908-202207_08 -> 0w1club-wechat-archive-201908-202207.md
 ## [2026-11-13] ingest | 0w1Club-201908-202207_09 -> burpsuite-basics-tutorial.md
 ## [2026-11-13] ingest | 0w1Club-201908-202207_10 -> 0w1club-wechat-archive-201908-202207.md
+## [2026-11-13] ingest | 0w1Club-201908-202207_11 -> ar-drone-2.0-penetration-testing.md

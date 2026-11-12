@@ -70,3 +70,4 @@
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_058 -> spring-boot-devtools-deserialization-rce.md, java-urlconnection-ssrf-protocol-bypass.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_059 -> 0th3rs-security-team-wechat-archive-201911-202204.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_060 -> diwuzhijian-2020-web-writeup.md
+## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_061 -> zzzcms-v1.7.5-audit.md

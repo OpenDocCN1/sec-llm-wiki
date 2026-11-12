@@ -137,3 +137,4 @@
 ## [2026-11-13] ingest | 0th3rs安全团队-201911-202204_125 -> daily-security-digest-20191128.md
 ## [2026-11-13] ingest | 0th3rs安全团队-201911-202204_126 -> daily-security-digest-20191127.md
 ## [2026-11-13] ingest | 0th3rs安全团队-201911-202204_127 -> waf-bypass-techniques-case-study-ruijie.md
+## [2026-11-13] ingest | 0th3rs安全团队-201911-202204_128 -> daily-security-digest-20191126.md

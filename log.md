@@ -142,3 +142,4 @@
 ## [2026-11-13] ingest | 0th3rs安全团队-201911-202204_130 -> daily-security-digest-20191123.md
 ## [2026-11-13] ingest | 0th3rs安全团队-201911-202204_131 -> daily-security-digest-20191122.md
 ## [2026-11-13] ingest | 0th3rs安全团队-201911-202204_132 -> daily-security-digest-20191121.md
+## [2026-11-13] ingest | 0th3rs安全团队-201911-202204_133 -> knob-bluetooth-bredr-key-negotiation-vulnerability.md

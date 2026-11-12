@@ -150,3 +150,4 @@
 ## [2026-11-13] ingest | 0w1Club-201908-202207_03 -> 0w1club-wechat-archive-201908-202207.md
 ## [2026-11-13] ingest | 0w1Club-201908-202207_04 -> 0w1club-wechat-archive-201908-202207.md
 ## [2026-11-13] ingest | 0w1Club-201908-202207_05 -> ctf-beginner-self-study-guide.md
+## [2026-11-13] ingest | 0w1Club-201908-202207_06 -> 0w1club-wechat-archive-201908-202207.md, reverse-engineering-beginner-learning-path.md

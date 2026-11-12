@@ -64,3 +64,5 @@
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_052 -> cve-digest-20210327.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_053 -> cve-digest-20210326.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_054 -> ecshop-414-sql-injection-analysis.md
+## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_055 -> cve-digest-20210325.md
+## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_056 -> ctftime-writeup-digest-20210325.md

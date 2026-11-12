@@ -2,6 +2,7 @@
 
 ## ai-security
 
+- [[ctftime-writeup-digest-20210325]] `CTF` `Writeup` `BlueHens CTF` `Securinets CTF` `SPRUSH CTF` `NahamCon CTF` `UTCTF` `Pwn` `Reverse Engineering` `Web` `Forensics` `2021年3月` — 汇总 2021 年 3 月 25 日 CTFtime 平台收录的多场 CTF 比赛 Writeup 链接，涵盖 BlueHens CTF、Securinets CTF Quals、SPRUSH CTF Quals、NahamCon CTF、UTCTF 等比赛的 Pwn、Rev、Web、Forensics 等题目解析
 - [[ctftime-writeup-digest-20210327]] `CTF` `Writeup` `NahamCon` `Cartesian` `GraphQL` `Web` `Mission` `2021年3月` — 汇总 2021 年 3 月 27 日 CTFtime 平台收录的 NahamCon CTF 2021 Cartesian 题目 Writeup 链接，涉及 GraphQL、Web、Mission 类别。
 - [[ctftime-writeup-digest-20210402]] `CTF` `Writeup` `UTCTF` `Sleeves` `2021年4月` — 汇总 2021 年 4 月 2 日 CTFtime 平台收录的 UTCTF 2021 Sleeves 题目 Writeup 链接
 - [[ctftime-writeup-digest-20210403]] `CTF` `Writeup` `UMassCTF` `replme` `Pwn` `2021年4月` — 汇总 2021 年 4 月 3 日 CTFtime 平台收录的 UMassCTF 2021 replme Pwn 题目 Writeup 链接
@@ -10,6 +11,7 @@
 - [[ctftime-writeup-digest-20210407]] `CTF` `Writeup` `b01lers CTF` `Reverse Engineering` `roulette_wheel` `2021年4月` — 汇总 2021 年 4 月 7 日 CTFtime 平台收录的 b01lers CTF roulette_wheel 逆向题目 Writeup 链接
 - [[ctftime-writeup-digest-20210413]] `CTF` `Writeup` `RITSEC CTF` `Blob` `2021年4月` — 汇总 2021 年 4 月 13 日 CTFtime 平台收录的比赛 Writeup，包含 RITSEC CTF 2021 Blob 题目解析链接
 - [[cve-digest-20200426]] `CVE` `漏洞聚合` `2020年4月` `Windows` `SickRage` `Chrome` `Firefox` `提权` `凭证泄露` `堆溢出` `XSS` — 汇总2020年4月26日发布的多个安全漏洞利用代码（PoC），涵盖Windows内核提权（CVE-2020-1054）、SickRage凭证泄露（CVE-2018-9160）、Chrome V8堆溢出（CVE-2018-6065）、Firefox PDF查看器XSS（CVE-2018-5158）等漏洞详情与利用脚本链接。
+- [[cve-digest-20210325]] `CVE` `漏洞聚合` `2021年3月` `Cisco` `IOS XE` `SD-WAN` `Cisco Jabber` `Bitweaver` `Mifos-Mobile` `APKLeaks` `GitLab` `Operator Framework` `SpinetiX` `MaEPSBroker` — 汇总 2021 年 3 月 25 日发布的多组件安全漏洞，重点涵盖 Cisco IOS XE/SD-WAN 系列大量漏洞、Cisco Jabber 多个高危漏洞、Bitweaver XSS、Mifos-Mobile HTTPS 验证绕过、APKLeaks 命令注入、GitLab 多个漏洞、Operator Framework 容器提权、SpinetiX SSRF/路径遍历、MaEPSBroker 命令注入等详情。
 - [[cve-digest-20210326]] `CVE` `漏洞聚合` `2021年3月` `Cisco` `IOS XE` `SD-WAN` `Bitweaver` `ThinkSAAS` `go-ipfs` `DaviewIndy` `XPLATFORM` `Cisco Jabber` `Mifos-Mobile` `APKLeaks` `GitLab` `Operator Framework` `SpinetiX` `MaEPSBroker` — 汇总 2021 年 3 月 26 日发布的多组件安全漏洞，涵盖 Cisco IOS XE/SD-WAN 系列大量漏洞、Bitweaver XSS、ThinkSAAS SQL 注入、go-ipfs 路径遍历与控制字符注入、DaviewIndy/XPLATFORM 堆溢出、Cisco Jabber 多漏洞、Mifos-Mobile HTTPS 验证缺失、APKLeaks 命令注入、GitLab 信息泄露、Operator Framework 容器提权、SpinetiX SSRF/路径遍历、MaEPSBroker 命令注入等详情。
 - [[cve-digest-20210327]] `CVE` `漏洞聚合` `2021年3月` `Linux内核` `FreeBSD` `BTCPay Server` `wire-server` `Nimble` `CNI` `ImageMagick` `GitLab` `Rocket.Chat` `SolarWinds` `TP-Link` `MuleSoft` — 汇总 2021 年 3 月 27 日发布的多组件安全漏洞，涵盖 Linux 内核、FreeBSD、BTCPay Server、wire-server、Nimble、CNI、ImageMagick、GitLab、Rocket.Chat、SolarWinds、TP-Link、MuleSoft 等产品的漏洞详情
 - [[cve-digest-20210328]] `CVE` `漏洞聚合` `2021年3月` `XSS` `bluemonday` `remark42` `Go语言` — 汇总 2021 年 3 月 28 日发布的安全漏洞，包含 bluemonday XSS (CVE-2021-29272) 和 remark42 XSS (CVE-2021-29271) 等漏洞详情

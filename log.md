@@ -43,3 +43,4 @@
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_031 -> cve-digest-20210408.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_032 -> hvv-2021-vulnerability-collection.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_033 -> ctftime-writeup-digest-20210407.md
+## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_034 -> cve-digest-20210407.md

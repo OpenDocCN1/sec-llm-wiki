@@ -1,7 +1,7 @@
 ---
 title: Docker 容器安全基础机制详解
 description: 系统梳理 Docker 容器安全核心机制，涵盖架构组件、Namespace 隔离、Cgroup 资源限制、Linux Capability
-  权限模型及主流加固方案（AppArmor/SELinux 等），为容器逃逸与攻击面分析奠定基础。
+  权限模型及主流加固方案（AppArmor/SELinux 等），并补充 2019-12-16 每日安全看点收录的三篇 Docker 容器安全实战文章作为扩展阅读，丰富攻防视角。
 category: ai-security
 tags:
 - Docker
@@ -12,8 +12,10 @@ tags:
 - AppArmor
 - SELinux
 - 安全架构
+- 容器逃逸
+- 攻击审计
 date: '2023-04-14'
-updated: '2026-11-12'
+updated: '2026-11-13'
 ---
 
 ## Docker 架构与核心组件
@@ -105,6 +107,48 @@ Docker 仅默认启用 Capability，生产环境建议叠加以下 **强制访�
 
 后续分析将以其中典型 CVE 为例，深入剖析容器逃逸、提权及攻击面利用链。
 
+## 扩展阅读：2019-12-16 Docker 容器安全实战系列
+
+以下三篇文章收录于 [[daily-security-digest-20191216]] 每日安全看点，从**攻击与审计实战**视角深入剖析 Docker 容器安全，与本页面的基础机制梳理互为补充，建议配合阅读。
+
+### Docker 容器安全性分析
+- **来源**：FreeBuf
+- **链接**：<https://www.freebuf.com/articles/system/221319.html>
+- **核心看点**：
+  - 系统性梳理容器安全威胁模型（镜像、运行时、编排、网络、宿主内核五大攻击面）
+  - 深度解析 Namespace 逃逸、Cgroup 逃逸、Capability 滥用、内核漏洞利用四大逃逸路径
+  - 实战演示脏牛、waitid、shocker 等经典内核提权漏洞在容器环境下的利用条件与限制
+  - 提供基于 AppArmor/SELinux/Seccomp 的纵深加固配置清单
+
+### 攻击和审计 Docker 容器（01）
+- **来源**：微信公众号（安全团队专栏）
+- **链接**：<https://mp.weixin.qq.com/s/_9vykBJfKA1K6J-ducLKcA>
+- **核心看点**：
+  - **镜像层审计**：恶意镜像植入、基础镜像篡改、构建时注入（`RUN curl ... | sh` 等供应链攻击）
+  - **运行时配置审计**：`--privileged`、`--cap-add=SYS_ADMIN`、宿主挂载（`/var/run/docker.sock`、 `/proc`、 `/sys`）等高危参数检测脚本
+  - **网络攻击面**：容器间横向访问、桥接网络嗅探、暴露管理端口（2375/2376）未授权访问
+  - 附赠自动化审计工具链（Docker Bench for Security、Clair、Anchore）对比评测
+
+### 攻击和审计 Docker 容器（02）
+- **来源**：微信公众号（安全团队专栏）
+- **链接**：<https://mp.weixin.qq.com/s/UjSGAUIy1KIXa-hDggaLLw>
+- **核心看点**：
+  - **容器逃逸实战复现**：
+    - `release_agent` + `cgroup` v1 逃逸（写宿主文件系统）
+    - `CAP_SYS_ADMIN` + `mount` 挂载宿主根目录
+    - `docker.sock` 挂载导致的非根用户提权
+    - 内核漏洞（CVE-2019-5736 runc 逃逸、CVE-2020-15257 containerd-shim 逃逸）复现步骤
+  - **取证与溯源**：容器日志审计（`docker logs`、`journald`、Falco 运行时监控）、文件系统层差异分析（`docker diff`）、网络流量镜像
+  - **红蓝对抗视角**：攻击者视角的“最小权限突破路径”、防御者视角的“检测规则与蜜罐容器部署”
+
+> **阅读建议**：先阅读本页面建立 **Namespace/Cgroup/Capability/MAC** 的底层机制心智模型，再结合上述三篇文章的实战案例，可快速形成“机制→攻击面→利用链→加固/检测”的完整攻防闭环认知。
+
+## 关联页面
+
+- [[daily-security-digest-20191216]] — 2019-12-16 每日安全看点原始归档，含本节引用的三篇 Docker 文章及其他安全资讯
+- [[cve-digest-20210420]] — 2021-04-20 漏洞聚合中包含容器安全相关 CVE 补充
+- [[frp内网渗透应用]] — 容器环境下内网穿透与横向移动的实战技术参考
+
 ## 来源
 
-- [0th3rs安全团队-201911-202204_012](../sources/0th3rs安全团队-201911-202204_012.md)
+- [0th3rs安全团队-201911-202204_113](../sources/0th3rs安全团队-201911-202204_113.md)

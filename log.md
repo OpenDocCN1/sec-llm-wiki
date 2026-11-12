@@ -164,3 +164,4 @@
 ## [2026-11-13] ingest | 0w1Club-201908-202207_17 -> redis-module-load-rce-exploitation.md
 ## [2026-11-13] ingest | 0w1Club-201908-202207_18 -> 0w1club-wechat-archive-201908-202207.md, crypto-basics-xor-stream-cipher-tutorial.md
 ## [2026-11-13] ingest | 0w1Club-201908-202207_19 -> 0w1club-wechat-archive-201908-202207.md, phishing-website-creation-tutorial.md
+## [2026-11-13] ingest | 0w1Club-201908-202207_20 -> metasploit-framework-basics-tutorial.md

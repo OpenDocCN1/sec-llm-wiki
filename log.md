@@ -9,3 +9,4 @@
 ## [2026-11-12] ingest | 007攻防实验室-202007-202010_8 -> java-deserialization-fundamentals.md
 ## [2026-11-12] ingest | 03sec网络安全团队-202105-202105_0 -> 03sec-network-security-team-202105-wechat-archive.md
 ## [2026-11-12] ingest | 03sec网络安全团队-202105-202105_1 -> wechat-pc-v8-rce-0day-analysis.md
+## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_000 -> 0th3rs-security-team-wechat-archive-201911-202204.md

@@ -62,6 +62,10 @@ IDA Pro 的 FLIRT（Fast Library Identification and Recognition Technology）技
 
 > **注意**：Windows 下 `sigmake` 可能报找不到 `.err` 文件，macOS/Linux 环境下生成通常更稳定。
 
+### 实战参考资料
+
+- 阿里云安全社区：《[利用 FLIRT 恢复静态编译程序的符号](https://xz.aliyun.com/t/4484)》—— 结合实战案例详细讲解 FLIRT 签名制作、冲突处理及符号恢复全流程，可作为本节操作的补充参考。
+
 ---
 
 ## Windows 下安装 Findcrypt-Yara 插件
@@ -152,6 +156,7 @@ IDA 内嵌 Python 解释器的 `sys.path` 不包含用户通过 `pip` 安装的 
 
 - FLIRT 签名制作详解：<https://www.weisblog.club/2020/12/07/IDA%E4%B8%AD%E8%AF%86%E5%88%AB%E5%BA%93%E5%87%BD%E6%95%B0/>
 - CSDN FLIRT 实战：<https://blog.csdn.net/lixiangminghate/article/details/82015202>
+- 阿里云安全社区 FLIRT 实战：<https://xz.aliyun.com/t/4484>
 - Findcrypt-Yara 安装指南：<https://blog.csdn.net/fjh1997/article/details/107167704> / <https://www.cnblogs.com/zhaijiahui/p/7978897.html>
 - Keypatch 官方仓库：<https://github.com/keystone-engine/keypatch>
 - IDAPython 扩展库配置：<https://unit42.paloaltonetworks.com/using-idapython-to-make-your-life-easier-part-5/> / <https://bbs.pediy.com/thread-249799.htm>
@@ -159,3 +164,4 @@ IDA 内嵌 Python 解释器的 `sys.path` 不包含用户通过 `pip` 安装的 
 ## 来源
 
 - [0th3rs安全团队-201911-202204_004](../sources/0th3rs安全团队-201911-202204_004.md)
+- [0th3rs安全团队-201911-202204_103](../sources/0th3rs安全团队-201911-202204_103.md)

@@ -23,3 +23,4 @@
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_011 -> cve-digest-20210506.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_012 -> docker-container-security-fundamentals.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_013 -> cve-digest-20210426.md
+## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_014 -> cve-digest-20200426.md

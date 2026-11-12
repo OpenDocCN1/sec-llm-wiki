@@ -91,3 +91,4 @@
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_079 -> daily-security-digest-20200218.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_080 -> daily-security-digest-20200217.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_081 -> daily-security-digest-20200214.md
+## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_082 -> daily-security-digest-20200213.md

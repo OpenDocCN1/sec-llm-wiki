@@ -139,7 +139,7 @@
 
 ## program-analysis
 
-- [[0w1club-wechat-archive-201908-202207]] `0w1Club` `社团活动` `线下见面会` `招新` `2019` `萌新培养` — 记录 0w1Club 社团成立早期的首次线下见面会组织细节，包括时间、地点、门禁集合安排等，展现社团萌新招新与线下活动启动的初期面貌。
+- [[0w1club-wechat-archive-201908-202207]] `0w1Club` `招新` `2019` `CTF` `企业实习` `科研训练` `绿盟科技` `网络安全学院` `萌新培养` `Base64` — 记录 0w1Club 2019 年秋季招新发布的微信公众号宣传文章，涵盖社团简介、CTF 活动介绍、企业实习（绿盟科技）、科研机会、萌新/大佬培养路径及入群方式（Base64 解码验证）。
 - [[binary-ninja-ollvm-deobfuscation]] `Binary Ninja` `OLLVM` `Control Flow Flattening` `Deobfuscation` `Reverse Engineering` `Python` `Plugin Development` `Intermediate Language` — 索引并结构化记录微信公众号文章《利用Binary Ninja去除ollvm流程平坦化混淆》的技术主题，涵盖 OLLVM 控制流平坦化原理、Binary Ninja 中间表达（IL）分析、Python 插件/脚本编写思路及去平坦化自动化流程。
 - [[crypto-basics-xor-stream-cipher-tutorial]] `密码学` `异或加密` `Two-Time-Pad` `流密码` `CTF` `de1ctf` `密钥恢复` `RC4` `0w1Club` `线下培训` `萌新培养` — 系统梳理异或加密核心原理、Two-Time-Pad 攻击实战破解流程（以 de1ctf 2019 xor 题为例）、流密码基本概念及常见算法，并结合 0w1Club 2019 年第四周线下密码学入门培训作为实战学习场景，适合 CTF 入门与密码学基础巩固。
 - [[d3ctf-2021-d3dev-qemu-escape-writeup]] `QEMU` `VM Escape` `PCI Device` `MMIO` `OOB Read/Write` `CTF Writeup` `D3CTF 2021` — Analysis of the d3dev custom PCI device vulnerability in D3CTF 2021, covering OOB read/write via MMIO, leaking QEMU base address via rand_r pointer, and overwriting rand_r with system() for code execution.

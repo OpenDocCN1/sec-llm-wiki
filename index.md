@@ -36,6 +36,7 @@
 - [[cve-digest-20210426]] `CVE` `漏洞聚合` `2021年4月` `VS Code` `npupnp` `Akuvox` `Webmin` `RCE` `CSRF` `XSS` `命令注入` `DNS重绑定` — 汇总2021年4月26日发布的多款产品安全漏洞预警，涵盖VS Code扩展、npupnp、Akuvox、Webmin等多个组件的RCE、CSRF、XSS、命令注入、DNS重绑定等漏洞详情。
 - [[cve-digest-20210506]] `CVE` `漏洞聚合` `2021年5月` `WordPress` `ArcGIS` `Vaadin` `Drupal` `IBM QRadar` `Samba` `Trend Micro` `Django` `BTCPay Server` `XSS` `目录遍历` `RCE` `CSRF` — 汇总2021年5月6日发布的多款产品安全漏洞预警，涵盖WordPress插件、ArcGIS、Vaadin、Drupal、IBM QRadar、Samba、Trend Micro、Django、BTCPay Server等多个厂商的XSS、目录遍历、RCE、CSRF等漏洞详情。
 - [[cve-digest-20210513]] `CVE` `漏洞聚合` `2021年5月` `BlackBerry` `Argo CD` `Linux内核` `以太坊` `Samba` `Trend Micro` `SIMATIC` `McAfee` `Atlassian Jira` `权限提升` `认证绕过` `拒绝服务` `信息泄露` — 汇总2021年5月13日发布的多款产品安全漏洞预警，涵盖BlackBerry Workspaces、Argo CD、Linux内核、以太坊EVM、Samba、Trend Micro HouseCall、SIMATIC HMI、McAfee、Atlassian Jira等多个厂商的认证绕过、权限提升、拒绝服务、信息泄露等漏洞详情。
+- [[daily-security-digest-20191219]] `每日安全看点` `区块链安全` `智能合约逆向` `IoT隐私` `儿童GPS手表` `漏洞合集` `DLL镂空` `Phantom DLL Hollowing` `网站镜像` `2019年12月` — 2019年12月19日每日安全看点汇总，涵盖区块链智能合约逆向分析、儿童GPS手表隐私泄露事件、2018-2019年漏洞合集、DLL镂空技术详解、网站镜像复制技巧等安全资讯。
 - [[daily-security-digest-20191220]] `每日安全看点` `APT-C-08` `蔓灵花` `移动端安全` `zzzphp` `SQL注入` `逆向工程` `数据泄露` `Facebook` `2019年12月` — 汇总2019年12月20日安全资讯，涵盖蔓灵花APT-C-08移动攻击分析、zzzphp SQL注入漏洞、逆向工程资源库及Facebook手机号泄露事件
 - [[daily-security-digest-20191223]] `每日安全看点` `ATT&CK` `APT归因` `Google Project Zero` `在野漏洞` `Chrome漏洞` `WebSQL` `SQLite` `RCE` `VMware Fusion` `RealWorldCTF` `Mozi` `P2P僵尸网络` `DHT协议` `2019年12月` — 汇总2019年12月23日安全资讯，涵盖ATT&CK/APT归因讨论、Google Project Zero在野漏洞统计、Chrome WebSQL/SQLite RCE漏洞、RealWorldCTF VMware Fusion RCE分析、Mozi P2P僵尸网络分析
 - [[daily-security-digest-20191224]] `每日安全看点` `内网穿透` `端口转发` `PHP木马` `零知识证明` `加密货币安全` `PHP动态特性` `Hypervisor` `虚拟化安全` `2019年12月` — 汇总2019年12月24日安全资讯，涵盖内网穿透端口转发合集、PHP一句话木马分析、零知识证明加密货币安全风险、PHP动态特性捕捉与逃逸、Hypervisor入门教程等安全技术资讯
@@ -105,6 +106,7 @@
 
 ## blockchain-security
 
+- [[blockchain-smart-contract-reverse-engineering-intro]] `智能合约` `逆向工程` `字节码分析` `反编译工具` `漏洞挖掘` `EVM` — 基于 2019.12.19 每日安全看点归档整理，系统梳理智能合约字节码结构、主流反编译工具链及漏洞挖掘基础分析流程，为合约安全审计与逆向分析提供入门参考。
 - [[solidifi-smart-contract-static-analysis-evaluation]] `智能合约安全` `静态分析` `漏洞检测评估` `Bug 注入` `SolidiFI` `ISSTA 2020` — ISSTA 2020 论文解读：SolidiFI 通过向智能合约所有语法合法位置注入 7 类典型漏洞代码片段，系统评估 Oyente、Securify、Mythril、SmartCheck、Manticore、Slither 六大静态分析工具的漏报与误报表现，揭示现有工具在检测能力与实用性上的显著鸿沟。
 
 ## program-analysis
@@ -116,6 +118,7 @@
 - [[linux-kernel-hardening-mechanisms]] `Linux Kernel` `Hardening` `Security Mitigations` `Grsecurity` `PaX` `Memory Protection` `Control Flow Integrity` `Side-channel Mitigation` — 系统梳理 Linux 内核主流防御机制，涵盖编译期硬化、内存保护、控制流完整性、硬件辅助防护、侧信道缓解及 Grsecurity/PaX 核心特性
 - [[mtctf-2021-pwn-writeup]] `CTF` `Pwn` `Heap Exploitation` `UAF` `Fastbin` `Unlink` `Double Free` `setcontext` `mprotect` `Shellcode` `MTCTF 2021` — MTCTF 2021 中两道 Pwn 题目的详细解析。baby_focal 利用堆溢出构造 UAF 泄露 stdout 绕过检查，再借助 setcontext+mprotect 执行 Shellcode；zlink 通过 Off-by-null 触发 Fastbin Consolidation 与 Unlink 实现 Double Free 劫持 __free_hook，同样使用 setcontext 获取 Shell。
 - [[oo7-spectre-defense-binary-analysis]] `Spectre` `二进制分析` `污点分析` `推测执行` `侧信道攻击` `漏洞修复` `程序分析` — 解析 oo7 论文核心思想：通过跨过程污点分析定位 Spectre 漏洞三元组 <CB, IM1, IM2>，结合推测窗口约束实现精准检测，支持变体识别与泄露量评估，并提供 Fence、NOP 填充、冗余数据填充三种修复手法。
+- [[phantom-dll-hollowing-technique]] `Malware Analysis` `Memory Injection` `DLL Hollowing` `Module Stomping` `Defense Evasion` `Windows Internals` `Red Teaming` — 深度解析 Phantom DLL Hollowing（幽灵 DLL 空洞化）技术，该技术通过劫持已加载合法 DLL 的内存区段实现恶意代码注入与持久化，利用模块加载伪装绕过内存扫描与 EDR 检测，属于无文件攻击与内存隐藏的高级利用手法。
 - [[sourcerercc-code-clone-detection]] `代码克隆检测` `Token-based` `倒排索引` `启发式过滤` `大规模代码分析` `ICSE 2016` — SourcererCC 是一种面向大规模代码库的 Token 级代码克隆检测工具，利用倒排索引与两阶段启发式过滤将检测复杂度显著降低，支持 Type-1/2/3 克隆且跨语言无关。
 - [[v8-issue-944062-gc-arbitrary-write]] `V8` `TurboFan` `JIT Compilation` `Vulnerability Analysis` `Browser Exploitation` `Garbage Collection` `Marking Bitmap` `OOB Read` `Arbitrary Write` `Issue 944062` — 深度分析 V8 TurboFan JIT 编译器中 ReduceArrayIndexOfIncludes 优化阶段遗漏 kUnreliableReceiverMaps 检查导致的 OOB 读漏洞，结合 V8 垃圾回收机制中的 Marking Bitmap 操作，通过伪造 Space 元数据与字符串 Flatten 操作泄露对象地址，最终实现任意地址写与稳定越界读写原语的完整利用链。
 - [[v8-turbofan-changeint32toint64-1day-analysis]] `V8` `TurboFan` `JIT Compilation` `Vulnerability Analysis` `1-day` `Type Confusion` `Integer Overflow` `Browser Exploitation` `ChangeInt32ToInt64` `EarlyOptimization` `LoadElimination` — 深度分析 V8 TurboFan JIT 编译器中 ChangeInt32ToInt64 节点在处理无符号/有符号整数扩展时的逻辑缺陷，覆盖漏洞成因、优化阶段触发条件（EarlyOptimization 与 LoadElimination）、Exploit 构造链（Array.shift Fast Path 与长度字段篡改）及最终任意代码执行路径。

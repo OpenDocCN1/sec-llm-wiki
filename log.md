@@ -68,3 +68,4 @@
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_056 -> ctftime-writeup-digest-20210325.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_057 -> xihulunjian-2020-iot-pwn3-ezarmpwn-writeup.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_058 -> spring-boot-devtools-deserialization-rce.md, java-urlconnection-ssrf-protocol-bypass.md
+## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_059 -> 0th3rs-security-team-wechat-archive-201911-202204.md

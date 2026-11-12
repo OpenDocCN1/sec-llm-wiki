@@ -10,3 +10,5 @@
 ## [2026-11-12] ingest | 03sec网络安全团队-202105-202105_0 -> 03sec-network-security-team-202105-wechat-archive.md
 ## [2026-11-12] ingest | 03sec网络安全团队-202105-202105_1 -> wechat-pc-v8-rce-0day-analysis.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_000 -> 0th3rs-security-team-wechat-archive-201911-202204.md
+## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_001 -> (无沉淀)
+## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_002 -> google-ctf-2021-full-chain-v8-exploitation.md

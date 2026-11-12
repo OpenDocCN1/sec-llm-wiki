@@ -11,6 +11,10 @@
 - [[spring-cloud-config目录穿越漏洞]] `Spring Cloud Config` `目录穿越` `CVE-2020-5410` `双重编码` `任意文件读取` `漏洞复现` — 详细记录 Spring Cloud Config Server 目录穿越漏洞（CVE-2020-5410 等变种）的两种双重编码绕过 PoC 与任意文件读取利用方式。
 - [[wechat-pc-v8-rce-0day-analysis]] `WeChat` `0day` `RCE` `V8引擎` `Chromium` `CobaltStrike` `内网渗透` `社会工程学` `漏洞复现` — 深度解析微信 PC 版 3.2.1.141 及以下版本因内嵌 Chromium V8 引擎漏洞且沙箱默认关闭，导致点击恶意链接即触发 RCE，配合 CobaltStrike 实现内网横向渗透的完整攻击链复现与防护指南。
 
+## program-analysis
+
+- [[google-ctf-2021-full-chain-v8-exploitation]] `V8` `Chrome` `CTF` `Browser Exploitation` `TypedArray` `Pointer Compression` `MojoJS` `Sandbox Escape` — Google CTF 2021 Full Chain 题目中 V8 部分的漏洞分析与利用过程：TypedArray.set 越界写漏洞、指针压缩下的任意读写原语构造、通过修改 RenderFrameImpl.enabled_bindings_ 开启 MojoJS 实现沙箱逃逸第一步
+
 ## uncategorized
 
 - [[007攻防实验室]] `007攻防实验室` `网络安全` `CTF` `安全研究` `微信归档` — 007攻防实验室 2020-07 至 2020-10 微信归档的入口、来源与待补全条目

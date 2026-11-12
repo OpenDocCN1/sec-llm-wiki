@@ -2,6 +2,7 @@
 
 ## ai-security
 
+- [[ctftime-writeup-digest-20210407]] `CTF` `Writeup` `b01lers CTF` `Reverse Engineering` `roulette_wheel` `2021年4月` — 汇总 2021 年 4 月 7 日 CTFtime 平台收录的 b01lers CTF roulette_wheel 逆向题目 Writeup 链接
 - [[ctftime-writeup-digest-20210413]] `CTF` `Writeup` `RITSEC CTF` `Blob` `2021年4月` — 汇总 2021 年 4 月 13 日 CTFtime 平台收录的比赛 Writeup，包含 RITSEC CTF 2021 Blob 题目解析链接
 - [[cve-digest-20200426]] `CVE` `漏洞聚合` `2020年4月` `Windows` `SickRage` `Chrome` `Firefox` `提权` `凭证泄露` `堆溢出` `XSS` — 汇总2020年4月26日发布的多个安全漏洞利用代码（PoC），涵盖Windows内核提权（CVE-2020-1054）、SickRage凭证泄露（CVE-2018-9160）、Chrome V8堆溢出（CVE-2018-6065）、Firefox PDF查看器XSS（CVE-2018-5158）等漏洞详情与利用脚本链接。
 - [[cve-digest-20210408]] `CVE` `漏洞聚合` `2021年4月` `FFmpeg` `Grav` `OpenLiteSpeed` `Directus` `Rust` `FreeBSD` `Jenkins` `Mosquitto` `RCE` `提权` `认证绕过` `双重释放` `CSRF` — 汇总 2021 年 4 月 8 日发布的多组件安全漏洞，涵盖 FFmpeg 远程代码执行、Grav Admin 认证绕过、OpenLiteSpeed 提权、Directus 文件上传 RCE、Rust id-map 双重释放、FreeBSD 内核漏洞、Jenkins CSRF/权限问题、MQTT Mosquitto 空指针解引用等高危漏洞详情。

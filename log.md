@@ -96,3 +96,4 @@
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_084 -> daily-security-digest-20200211.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_085 -> daily-security-digest-20200210.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_086 -> remote-work-security-covid19-20200210.md, daily-security-digest-20200210.md
+## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_087 -> 0th3rs-security-team-wechat-archive-201911-202204.md

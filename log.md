@@ -180,3 +180,4 @@
 ## [2026-11-13] ingest | 0w1网络安全俱乐部-201707-201903_05 -> 0w1club-ctf-misc-writeup-steganography-traffic-analysis.md
 ## [2026-11-13] ingest | 0w1网络安全俱乐部-201707-201903_06 -> 0w1club-ctf-crypto-writeup-easyrsa-t9.md
 ## [2026-11-13] ingest | 0w1网络安全俱乐部-201707-201903_07 -> 0w1club-wechat-archive-201908-202207.md
+## [2026-11-13] ingest | 0w1网络安全俱乐部-201707-201903_08 -> 0w1club-wechat-archive-201707-201903.md

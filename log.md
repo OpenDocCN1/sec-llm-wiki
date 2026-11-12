@@ -118,3 +118,4 @@
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_106 -> oo7-spectre-defense-binary-analysis.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_107 -> daily-security-digest-20191223.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_108 -> (无沉淀)
+## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_109 -> daily-security-digest-20191220.md, zzzphp-sql-injection-analysis.md, apt-c-08-mobile-attack-analysis.md

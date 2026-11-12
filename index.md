@@ -2,6 +2,7 @@
 
 ## ai-security
 
+- [[apt-c-08-mobile-attack-analysis]] `APT-C-08` `蔓灵花` `移动端安全` `APT攻击` `恶意样本分析` `C2基础设施` `威胁情报` — 深度解析蔓灵花（APT-C-08）组织针对移动平台的攻击活动，涵盖恶意样本特征、C2基础设施、攻击链条及归因分析，基于360威胁情报中心披露的技术报告整理。
 - [[cmseasy-7.3.8-code-audit]] `CmsEasy` `代码审计` `任意文件操作` `SQL注入` `黑名单绕过` `LFI` `RCE` `CMS漏洞` `PHP` — 深度分析 CmsEasy 7.3.8 版本中发现的任意文件读取/写入/删除、SQL注入黑名单绕过（benchmark替代sleep）、以及本地文件包含结合上传功能实现RCE的完整漏洞链条。
 - [[ctftime-writeup-digest-20210325]] `CTF` `Writeup` `BlueHens CTF` `Securinets CTF` `SPRUSH CTF` `NahamCon CTF` `UTCTF` `Pwn` `Reverse Engineering` `Web` `Forensics` `2021年3月` — 汇总 2021 年 3 月 25 日 CTFtime 平台收录的多场 CTF 比赛 Writeup 链接，涵盖 BlueHens CTF、Securinets CTF Quals、SPRUSH CTF Quals、NahamCon CTF、UTCTF 等比赛的 Pwn、Rev、Web、Forensics 等题目解析
 - [[ctftime-writeup-digest-20210327]] `CTF` `Writeup` `NahamCon` `Cartesian` `GraphQL` `Web` `Mission` `2021年3月` — 汇总 2021 年 3 月 27 日 CTFtime 平台收录的 NahamCon CTF 2021 Cartesian 题目 Writeup 链接，涉及 GraphQL、Web、Mission 类别。
@@ -35,6 +36,7 @@
 - [[cve-digest-20210426]] `CVE` `漏洞聚合` `2021年4月` `VS Code` `npupnp` `Akuvox` `Webmin` `RCE` `CSRF` `XSS` `命令注入` `DNS重绑定` — 汇总2021年4月26日发布的多款产品安全漏洞预警，涵盖VS Code扩展、npupnp、Akuvox、Webmin等多个组件的RCE、CSRF、XSS、命令注入、DNS重绑定等漏洞详情。
 - [[cve-digest-20210506]] `CVE` `漏洞聚合` `2021年5月` `WordPress` `ArcGIS` `Vaadin` `Drupal` `IBM QRadar` `Samba` `Trend Micro` `Django` `BTCPay Server` `XSS` `目录遍历` `RCE` `CSRF` — 汇总2021年5月6日发布的多款产品安全漏洞预警，涵盖WordPress插件、ArcGIS、Vaadin、Drupal、IBM QRadar、Samba、Trend Micro、Django、BTCPay Server等多个厂商的XSS、目录遍历、RCE、CSRF等漏洞详情。
 - [[cve-digest-20210513]] `CVE` `漏洞聚合` `2021年5月` `BlackBerry` `Argo CD` `Linux内核` `以太坊` `Samba` `Trend Micro` `SIMATIC` `McAfee` `Atlassian Jira` `权限提升` `认证绕过` `拒绝服务` `信息泄露` — 汇总2021年5月13日发布的多款产品安全漏洞预警，涵盖BlackBerry Workspaces、Argo CD、Linux内核、以太坊EVM、Samba、Trend Micro HouseCall、SIMATIC HMI、McAfee、Atlassian Jira等多个厂商的认证绕过、权限提升、拒绝服务、信息泄露等漏洞详情。
+- [[daily-security-digest-20191220]] `每日安全看点` `APT-C-08` `蔓灵花` `移动端安全` `zzzphp` `SQL注入` `逆向工程` `数据泄露` `Facebook` `2019年12月` — 汇总2019年12月20日安全资讯，涵盖蔓灵花APT-C-08移动攻击分析、zzzphp SQL注入漏洞、逆向工程资源库及Facebook手机号泄露事件
 - [[daily-security-digest-20191223]] `每日安全看点` `ATT&CK` `APT归因` `Google Project Zero` `在野漏洞` `Chrome漏洞` `WebSQL` `SQLite` `RCE` `VMware Fusion` `RealWorldCTF` `Mozi` `P2P僵尸网络` `DHT协议` `2019年12月` — 汇总2019年12月23日安全资讯，涵盖ATT&CK/APT归因讨论、Google Project Zero在野漏洞统计、Chrome WebSQL/SQLite RCE漏洞、RealWorldCTF VMware Fusion RCE分析、Mozi P2P僵尸网络分析
 - [[daily-security-digest-20191224]] `每日安全看点` `内网穿透` `端口转发` `PHP木马` `零知识证明` `加密货币安全` `PHP动态特性` `Hypervisor` `虚拟化安全` `2019年12月` — 汇总2019年12月24日安全资讯，涵盖内网穿透端口转发合集、PHP一句话木马分析、零知识证明加密货币安全风险、PHP动态特性捕捉与逃逸、Hypervisor入门教程等安全技术资讯
 - [[daily-security-digest-20191225]] `每日安全看点` `机器学习` `WAF测试` `Django` `CVE-2019-19844` `BurpSuite` `恶意软件分析` `DarkRat` `软件安全成熟度` `Empire` `后渗透` `2019年12月` — 2019年12月25日安全资讯汇总：机器学习测试WAF、Django密码重置漏洞CVE-2019-19844、BurpSuite乌云插件、DarkRat恶意软件面板入侵、软件安全成熟度实践、Empire 3.0发布
@@ -99,6 +101,7 @@
 - [[xmind-xss-to-rce-vulnerability]] `XMind` `Electron` `XSS` `RCE` `子进程注入` `钓鱼攻击` `Eclipse RCP` `漏洞复现` — 复现 XMind 思维导图软件最新版本中从 XSS 到命令执行的完整利用链，分析其触发条件、Electron 架构根因与钓鱼攻击可行性
 - [[zzzcms-v1.7.5-audit]] `zzzcms` `PHP` `CMS漏洞` `SSRF` `SQL注入` `信息泄露` `模板注入` `RCE` `代码审计` `利用链` — 深度审计 zzzcms PHP v1.7.5，挖掘并分析了 UEditor 插件 SSRF、短信插件前台 SQL 注入、WebUploader 配置文件后台路径泄露、模板引擎 parserIfLabel 过滤绕过导致的后台 RCE 完整利用链。
 - [[zzzphp-cve-2021-32605-rce]] `zzzphp` `CVE-2021-32605` `RCE` `模板注入` `eval注入` `前台无条件触发` `CMS漏洞` — zzzphp CMS <2.0.3 版本中模板渲染处理 if 标签时过滤不当，导致用户可控输入经 eval() 执行，前台搜索功能无需认证即可触发远程代码执行（CVE-2021-32605）
+- [[zzzphp-sql-injection-analysis]] `zzzphp` `SQL注入` `CMS漏洞` `代码审计` `PHP` `漏洞分析` — 深度分析zzzphp CMS中普遍存在的SQL注入漏洞，梳理漏洞触发点、利用方式及修复建议，关联zzzcms/zzzphp历史漏洞审计成果。
 
 ## blockchain-security
 

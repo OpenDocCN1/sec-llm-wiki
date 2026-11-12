@@ -108,3 +108,4 @@
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_096 -> daily-security-digest-20200113.md, spring-boot-actuator配置不当rce利用.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_097 -> (无沉淀)
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_098 -> daily-security-digest-20200103.md
+## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_099 -> daily-security-digest-20200102.md

@@ -6,6 +6,8 @@
 - [[h2-console-jndi注入rce利用]] `H2 Database` `JNDI Injection` `RCE` `Spring Boot` `漏洞复现` `JNDI-Injection-Exploit` — 详细记录 H2 Database 控制台未授权访问配合 JNDI 注入（搭配 JNDI-Injection-Exploit 工具）实现远程代码执行的实战攻击链。
 - [[java-deserialization-fundamentals]] `Java` `序列化` `反序列化` `Serializable` `Externalizable` `serialVersionUID` `ObjectOutputStream` `ObjectInputStream` `基础机制` — 系统梳理 Java 序列化/反序列化核心机制：Serializable 与 Externalizable 接口对比、serialVersionUID 版本控制、ObjectOutputStream/ObjectInputStream 标准用法，为后续反序列化漏洞利用链分析奠定基础。
 - [[jwt漏洞原理与实战利用]] `JWT` `漏洞利用` `DDCTF` `垂直越权` `算法混淆` `密钥爆破` `信息泄露` — 系统梳理 JWT 结构、常见漏洞（算法混淆、密钥爆破、信息泄露）及利用工具，结合 DDCTF 实战复现垂直越权全过程。
+- [[mtctf-2021-crypto-writeup]] `MTCTF` `2021` `Crypto` `RSA` `Padding Oracle` `One-Time Pad` `ZIP` `密码学攻击` — RSA 填充 Oracle 攻击解密 ZIP 密码，结合 One-Time Pad 部分已知明文语义逐步还原 Flag
+- [[mtctf-2021-web-writeup]] `MTCTF` `2021` `Web` `SQL注入` `PHP反序列化` `条件竞争` `Session Upload Progress` `黑名单绕过` — MTCTF 2021 Web 方向题解：SQL 注入过滤绕过（反斜杠转义、数值型布尔盲注）、PHP 反序列化条件竞争（preload/hack 竞争）、Session Upload Progress 利用及黑名单绕过（glob/copy/+a 技巧）
 - [[spring-boot-actuator配置不当rce利用]] `Spring Boot` `Actuator` `RCE` `H2 Database` `JNDI Injection` `Spring Cloud Config` `目录穿越` `Eureka` `XStream` `SpEL` `漏洞复现` — 详细记录 Spring Boot 2.x Actuator 暴露 env 与 restart 端点结合 H2 CREATE ALIAS 实现 RCE 的完整利用链；补充 Eureka XStream 反序列化 RCE 利用链、SpEL 表达式注入、完整 Actuator 端点清单及 /env /refresh 交互利用细节、H2 Console JNDI 注入及 Spring Cloud Config 目录穿越利用方式。
 - [[spring-boot-spel表达式注入]] `Spring Boot` `SpEL` `表达式注入` `Whitelabel Error Page` `RCE` `漏洞复现` — 记录 Spring Boot Whitelabel Error Page SpEL 表达式注入原理、影响版本、验证步骤与命令执行 Payload 构造方法
 - [[spring-cloud-config目录穿越漏洞]] `Spring Cloud Config` `目录穿越` `CVE-2020-5410` `双重编码` `任意文件读取` `漏洞复现` — 详细记录 Spring Cloud Config Server 目录穿越漏洞（CVE-2020-5410 等变种）的两种双重编码绕过 PoC 与任意文件读取利用方式。
@@ -18,6 +20,7 @@
 - [[google-ctf-2021-full-chain-v8-exploitation]] `V8` `Chrome` `CTF` `Browser Exploitation` `TypedArray` `Pointer Compression` `MojoJS` `Sandbox Escape` — Google CTF 2021 Full Chain 题目中 V8 部分的漏洞分析与利用过程：TypedArray.set 越界写漏洞、指针压缩下的任意读写原语构造、通过修改 RenderFrameImpl.enabled_bindings_ 开启 MojoJS 实现沙箱逃逸第一步
 - [[ida-pro-tips-plugins-python]] `IDA Pro` `FLIRT` `签名生成` `Findcrypt-Yara` `Keypatch` `IDAPython` `逆向工程` `插件安装` — 汇总 IDA Pro 逆向分析中的常用实用技巧，包括使用 FLIRT 从静态库生成签名恢复符号表、Windows 下安装 Findcrypt-Yara 与 Keypatch 插件、配置第三方 Python 库路径以便在 IDAPython 中直接导入。
 - [[linux-kernel-hardening-mechanisms]] `Linux Kernel` `Hardening` `Security Mitigations` `Grsecurity` `PaX` `Memory Protection` `Control Flow Integrity` `Side-channel Mitigation` — 系统梳理 Linux 内核主流防御机制，涵盖编译期硬化、内存保护、控制流完整性、硬件辅助防护、侧信道缓解及 Grsecurity/PaX 核心特性
+- [[mtctf-2021-pwn-writeup]] `CTF` `Pwn` `Heap Exploitation` `UAF` `Fastbin` `Unlink` `Double Free` `setcontext` `mprotect` `Shellcode` `MTCTF 2021` — MTCTF 2021 中两道 Pwn 题目的详细解析。baby_focal 利用堆溢出构造 UAF 泄露 stdout 绕过检查，再借助 setcontext+mprotect 执行 Shellcode；zlink 通过 Off-by-null 触发 Fastbin Consolidation 与 Unlink 实现 Double Free 劫持 __free_hook，同样使用 setcontext 获取 Shell。
 
 ## uncategorized
 

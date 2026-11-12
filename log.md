@@ -15,3 +15,4 @@
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_003 -> tctf-2021-1linephp-zip-include.md, tctf-2021-worldcup-xss-go-ssti.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_004 -> ida-pro-tips-plugins-python.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_005 -> linux-kernel-hardening-mechanisms.md
+## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_006 -> mtctf-2021-web-writeup.md, mtctf-2021-crypto-writeup.md, mtctf-2021-pwn-writeup.md

@@ -1,9 +1,9 @@
 ---
 title: 0w1Club 微信公众号文章归档索引 (2019.08-2022.07)
 description: 0w1Club 安全团队微信公众号 2019年8月至2022年7月期间发布文章的汇总索引页面，涵盖 AI 安全、CTF 实战、漏洞分析、工具分享、安全研究等技术内容。新增
-  2019-10-26 第六周 CTF Web 学习引导培训预告条目，记录 Burp Suite 预习建议与学习路线分享会信息；保留 2019-11-02 第七周
-  CTF 逆向入门 OD 动态调试培训预告条目、2019-11-08 第七周逆向入门培训文章条目、BUU Web 实训预告条目、2019-11-15 第八周服务器渗透培训预告条目、2020-02-09/10
-  学习资料放送两期条目、2022 年招新宣传文章条目。
+  2019-10-24 网站结构与 HTTP 协议分析（上）条目，记录 LAMP 环境搭建与 WordPress 部署教程；保留 2019-10-26 第六周 CTF
+  Web 学习引导培训预告条目、2019-11-02 第七周 CTF 逆向入门 OD 动态调试培训预告条目、2019-11-08 第七周逆向入门培训文章条目、BUU
+  Web 实训预告条目、2019-11-15 第八周服务器渗透培训预告条目、2020-02-09/10 学习资料放送两期条目、2022 年招新宣传文章条目。
 category: program-analysis
 tags:
 - 0w1Club
@@ -35,6 +35,13 @@ tags:
 - Burp Suite
 - Web安全
 - 学习路线
+- LAMP
+- WordPress
+- Apache
+- MySQL
+- PHP
+- HTTP协议
+- 建站教程
 date: '2019-08-01'
 updated: '2026-11-13'
 ---
@@ -77,7 +84,7 @@ updated: '2026-11-13'
 ### 年 (2019.08 - 2019.12)
 - [ ] 2019 年 08 月
 - [ ] 2019 年 09 月
-- [x] **2019 年 10 月** — [2019-10-26 第六周 CTF Web 学习引导培训预告](#2019-10-26-第六周-ctf-web-学习引导培训预告) *(Burp Suite 预习、CTF 入门认知、学习路线分享、资料分发)*
+- [x] **2019 年 10 月** — [2019-10-24 网站结构与 HTTP 协议分析（上）](#2019-10-24-网站结构与-http-协议分析上) *(LAMP 环境搭建、Apache+MySQL+PHP 安装配置、WordPress 部署、HTTP 协议分析预告)* · [2019-10-26 第六周 CTF Web 学习引导培训预告](#2019-10-26-第六周-ctf-web-学习引导培训预告) *(Burp Suite 预习、CTF 入门认知、学习路线分享、资料分发)*
 - [x] **2019 年 11 月** — [2019-11-02 第七周 CTF 逆向入门 OD 动态调试培训预告](#2019-11-02-第七周-ctf-逆向入门-od-动态调试培训预告) *(OllyDbg 环境配置、汇编基础预习、微信 PC 版逆向靶标准备)* · [2019-11-08 第七周逆向入门&动态调试分析（上）](#2019-11-08-第七周逆向入门动态调试分析上) *(逆向工程定义、应用场景、学习路径、推荐资源、任务驱动学习法)* · [2019-11-08 BUU Web 实训预告](#2019-11-08-buu-web-实训预告) *(SSRF、代码审计、Python反序列化、Phar反序列化、哈希长度扩展)* · [2019-11-15 第八周服务器渗透萌新培训预告](#2019-11-15-第八周服务器渗透萌新培训预告) *(SSH、nmap、dirb、john、Kali Linux 前置工具与靶机环境准备)*
 - [ ] 2019 年 12 月
 
@@ -123,6 +130,114 @@ updated: '2026-11-13'
 
 ## 年 10 月 文章详情
 
+### 2019-10-24 网站结构与 HTTP 协议分析（上）
+
+> **原文链接**：[http://mp.weixin.qq.com/s?__biz=MzU3MTkzNzk4Mg==&mid=2247483818&idx=1&sn=20735e705391775e2811b6d08f628b18&chksm=fcd9c47bcbae4d6d88a9398437b2fc6f80b2b8e3f72f7e203fcd690b2ece9bfdc3f5e62a4b95&scene=27#wechat_redirect](http://mp.weixin.qq.com/s?__biz=MzU3MTkzNzk4Mg==&mid=2247483818&idx=1&sn=20735e705391775e2811b6d08f628b18&chksm=fcd9c47bcbae4d6d88a9398437b2fc6f80b2b8e3f72f7e203fcd690b2ece9bfdc3f5e62a4b95&scene=27#wechat_redirect)  
+> **发布日期**：2019-10-24  
+> **作者**：夜晓（图文/排版）  
+> **标签**：#LAMP #WordPress #Apache #MySQL #PHP #HTTP协议 #建站教程 #Web安全入门 #BurpSuite预告
+
+#### 概述
+
+0w1Club 发布的技术入门文章，**网站结构与 HTTP 协议分析（上）**。文章由夜晓撰写并排版，采用"动手搭建"的教学模式，指导读者在 Ubuntu 环境下从零开始部署 LAMP (Linux + Apache + MySQL + PHP) 架构，并基于 WordPress CMS 快速建立个人博客站点。文章作为第六周 CTF Web 学习引导培训的配套技术基础，旨在让零基础成员理解网站后端运行机制，为后续使用 Burp Suite 进行 HTTP 协议分析打下实战基础。
+
+#### 核心内容结构
+
+##### 一、灵魂：Apache + MySQL
+
+###### Web 服务器：Apache
+- **定位**：运行在服务器上的 Web 服务程序，**通过 PHP 语言执行一切后端不可见的响应操作**，相当于网站的"大脑"
+- **市场地位**：当前市场份额最大的 Web 服务器软件
+- **安装部署**：
+  ```bash
+  sudo apt-get install apache2  # 安装 Apache 服务器
+  sudo apt-get install php      # 安装 PHP 解释器
+  apache2 -v                    # 验证 Apache 安装
+  php -v                        # 验证 PHP 安装
+  cd /etc/init.d/
+  sudo ./apache2 start          # 启动 Apache 服务
+  ```
+- **验证访问**：浏览器访问 `http://127.0.0.1` 显示 Apache 默认欢迎页
+- **网站根目录**：`/var/www/html` — 所有网站内容需放置于此目录下
+
+###### 数据库：MySQL
+- **定位**：解决大规模数据存储与高效查询的核心组件，集成优秀数据结构与算法，让开发者专注业务逻辑
+- **网站作用**：存储文件路径、用户信息、安全配置等关键数据
+- **安装部署**：
+  ```bash
+  sudo apt-get install mysql-server
+  sudo apt-get install php-mysql  # 使 PHP 能操作 MySQL
+  sudo service mysql start        # 启动 MySQL 服务
+  ```
+- **数据库初始化**：
+  ```sql
+  mysql -u root
+  -- 创建 wordpress 用户，密码 qwe123
+  CREATE USER 'wordpress'@'localhost' IDENTIFIED BY 'qwe123';
+  -- 创建 wordpress 数据库
+  CREATE DATABASE wordpress;
+  -- 授权
+  GRANT ALL ON wordpress.* TO 'wordpress'@'localhost';
+  ```
+
+##### 二、皮囊：CMS — WordPress
+
+- **CMS 价值**：免去手写 HTML/CSS/JavaScript/PHP 等繁琐细节，使用者专注内容创作
+- **WordPress 部署**：
+  ```bash
+  cd /var/www/html                    # 进入 Apache 根目录
+  wget https://cn.wordpress.org/latest-zh_CN.tar.gz  # 下载中文版
+  tar -xzf latest-zh_CN.tar.gz        # 解压
+  rm latest-zh_CN.tar.gz              # 清理压缩包
+  ```
+- **安装向导**：浏览器访问 `http://127.0.0.1/wordpress`，按向导填入数据库信息
+- **配置文件处理**：向导提示手动创建 `wp-config.php`，使用 `nano` 编辑器粘贴配置内容保存
+- **站点初始化**：设置站点标题、管理员账号/密码/邮箱，完成安装进入后台仪表盘
+- **后续扩展**：可自行研究主题切换、插件安装、内容发布等功能
+
+##### 三、HTTP 分析（预告）
+
+###### Burp Suite
+- **定位**：Web 渗透测试集成平台，集成 Proxy/Repeater/Intruder/Scanner 等核心模块，支持一键式 Web 安全测试
+- **后续用途**：将在下期文章中用于分析本文搭建站点的 HTTP 流量
+
+###### HTTP 协议
+- **定位**：应用层顶层协议，专用于 Web 浏览，特性丰富
+- **学习推荐**：《图解 HTTP》— 质量高、新手友好，结合抓包实践可建立全面基础认知
+- **后续安排**：下期结合 Burp Suite 实战分析 HTTP 报文结构与交互流程
+
+#### 技术栈全景图
+
+| 层级 | 组件 | 版本/来源 | 核心作用 |
+| :--- | :--- | :--- | :--- |
+| **操作系统** | Ubuntu (虚拟机) | - | 运行环境基座 |
+| **Web 服务器** | Apache 2 | `apt-get install apache2` | 监听 80 端口、解析 PHP、分发静态资源 |
+| **脚本引擎** | PHP | `apt-get install php` | 执行动态业务逻辑、连接数据库 |
+| **数据库** | MySQL Server | `apt-get install mysql-server` | 持久化存储站点数据、用户凭证、配置 |
+| **CMS 框架** | WordPress (中文版) | `cn.wordpress.org` | 提供后台管理、主题系统、插件生态、内容发布流程 |
+| **分析工具** | Burp Suite (预告) | PortSwigger | HTTP 抓包、篡改、重放、自动化扫描 |
+
+#### 训练系列定位对比
+
+| 期数 | 发布日期 | 主题 | 侧重 | 状态 |
+| :--- | :--- | :--- | :--- | :--- |
+| **技术基础（本文）** | 2019-10-24 | 网站结构与 HTTP 协议分析（上） | LAMP 搭建、WordPress 部署、网站后端原理、HTTP 分析预告 | ✅ 已发布 |
+| **第六周·预热** | 2019-10-26 | CTF Web 学习引导 | Burp Suite 预习、CTF 认知建立、Web 学习路线、资料分发 | ✅ [已归档](#2019-10-26-第六周-ctf-web-学习引导培训预告) |
+| **第七周·预热** | 2019-11-02 | CTF逆向入门 OD动态调试入门 | 环境部署、工具验证、靶标准备、基础预习 | ✅ [已归档](#2019-11-02-第七周-ctf-逆向入门-od-动态调试培训预告) |
+| **第七周·理论（上）** | 2019-11-08 | 逆向入门&动态调试分析（上） | 概念体系、应用场景、学习路径、推荐资源、方法论 | ✅ [已归档](#2019-11-08-第七周逆向入门动态调试分析上) |
+| **第七周·Web实训** | 2019-11-08 | BUU Web 实训 | SSRF、代码审计、反序列化、Phar、哈希长度扩展实战 | ✅ [已归档](#2019-11-08-buu-web-实训预告) |
+| **第八周** | 2019-11-15 | 服务器渗透萌新培训 | SSH、nmap、dirb、john、Kali 环境 | ✅ [已归档](#2019-11-15-第八周服务器渗透萌新培训预告) |
+
+#### 关联技术生态
+
+- **LAMP 架构**：经典开源 Web 技术栈，现代变体含 LNMP (Nginx 替代 Apache)、LAPP (PostgreSQL 替代 MySQL) 等
+- **WordPress 生态**：全球市场占有率超 40% 的 CMS，插件/主题机制丰富，但亦是漏洞高发区 (插件漏洞、核心代码审计、XML-RPC 攻击面等)
+- **HTTP 协议核心知识点**：请求/响应报文结构、方法语义 (GET/POST/PUT/DELETE 等)、状态码分类、Header 字段详解、Cookie/Session 机制、缓存控制、内容协商、HTTPS/TLS 握手、HTTP/2 多路复用、HTTP/3 QUIC
+- **Burp Suite 核心模块**：Proxy (拦截代理)、Repeater (请求重放)、Intruder (自动化攻击)、Scanner (漏洞扫描)、Decoder/Encoder (编解码)、Comparer (差异对比)、Sequencer (随机性分析)、Extender (插件扩展)
+- **进阶学习路线**：[[reverse-engineering-beginner-learning-path]] 中的任务驱动学习法同理适用 — 搭建靶场、抓包分析、漏洞复现、编写 PoC、工具二次开发
+
+---
+
 ### 2019-10-26 第六周 CTF Web 学习引导培训预告
 
 > **原文链接**：[http://mp.weixin.qq.com/s?__biz=MzU3MTkzNzk4Mg==&mid=2247483823&idx=1&sn=f9acef08558a331c63778a7b00a0f278&chksm=fcd9c47ecbae4d68bbf0e27e13105645cd369f449be1fab655cf70d799306de0598c4267baf9&scene=27#wechat_redirect](http://mp.weixin.qq.com/s?__biz=MzU3MTkzNzk4Mg==&mid=2247483823&idx=1&sn=f9acef08558a331c63778a7b00a0f278&chksm=fcd9c47ecbae4d68bbf0e27e13105645cd369f449be1fab655cf70d799306de0598c4267baf9&scene=27#wechat_redirect)  
@@ -154,16 +269,6 @@ updated: '2026-11-13'
 | **持续时长** | 1 小时左右 |
 | **地点** | 彭康楼（梧桐东门集合） |
 | **主讲人** | 夜晓 |
-
-#### 训练系列定位对比
-
-| 期数 | 发布日期 | 主题 | 侧重 | 状态 |
-| :--- | :--- | :--- | :--- | :--- |
-| **第六周（本文）** | 2019-10-26 | CTF Web 学习引导 | Burp Suite 预习、CTF 认知建立、Web 学习路线、资料分发 | ✅ 已发布 |
-| **第七周·预热** | 2019-11-02 | CTF逆向入门 OD动态调试入门 | 环境部署、工具验证、靶标准备、基础预习 | ✅ [已归档](#2019-11-02-第七周-ctf-逆向入门-od-动态调试培训预告) |
-| **第七周·理论（上）** | 2019-11-08 | 逆向入门&动态调试分析（上） | 概念体系、应用场景、学习路径、推荐资源、方法论 | ✅ [已归档](#2019-11-08-第七周逆向入门动态调试分析上) |
-| **第七周·Web实训** | 2019-11-08 | BUU Web 实训 | SSRF、代码审计、反序列化、Phar、哈希长度扩展实战 | ✅ [已归档](#2019-11-08-buu-web-实训预告) |
-| **第八周** | 2019-11-15 | 服务器渗透萌新培训 | SSH、nmap、dirb、john、Kali 环境 | ✅ [已归档](#2019-11-15-第八周服务器渗透萌新培训预告) |
 
 #### 关联技术生态
 
@@ -491,7 +596,8 @@ updated: '2026-11-13'
 | **Web 安全进阶** | 逻辑漏洞挖掘、反序列化链挖掘、SSTI/CSTI、新特性攻击面、WAF 绕过技巧 | [[jwt漏洞原理与实战利用]], [[tctf-2021-worldcup-xss-go-ssti]] |
 | **渗透测试基础** | 服务器渗透入门、SSH/端口扫描/目录扫描/密码破解工具链、Kali Linux 环境搭建 | [[frp内网渗透应用]], [[docker-container-security-fundamentals]] |
 | **逆向工程入门** | 逆向概念、汇编/C++/Windows API 基础、工具链、加壳脱壳、任务驱动学习法、经典教材与视频资源 | [[0w1club-wechat-archive-201908-202207#2019-11-02-第七周-ctf-逆向入门-od-动态调试培训预告]], [[0w1club-wechat-archive-201908-202207#2019-11-08-第七周逆向入门动态调试分析上]] |
-| **Web 安全入门** | CTF Web 学习引导、Burp Suite 实战、HTTP 协议分析、BUUOJ 实训、SSRF/代码审计/反序列化/Phar/哈希扩展攻击 | [[0w1club-wechat-archive-201908-202207#2019-10-26-第六周-ctf-web-学习引导培训预告]], [[0w1club-wechat-archive-201908-202207#2019-11-08-buu-web-实训预告]] |
+| **Web 安全入门** | CTF Web 学习引导、Burp Suite 实战、HTTP 协议分析、BUUOJ 实训、SSRF/代码审计/反序列化/Phar/哈希扩展攻击 | [[0w1club-wechat-archive-201908-202207#2019-10-24-网站结构与-http-协议分析上]], [[0w1club-wechat-archive-201908-202207#2019-10-26-第六周-ctf-web-学习引导培训预告]], [[0w1club-wechat-archive-201908-202207#2019-11-08-buu-web-实训预告]] |
+| **建站与 HTTP 分析** | LAMP 环境搭建、WordPress 部署、Apache/MySQL/PHP 配置、HTTP 协议基础、Burp Suite 入门 | [[0w1club-wechat-archive-201908-202207#2019-10-24-网站结构与-http-协议分析上]] |
 
 ---
 
@@ -534,14 +640,14 @@ updated: '2026-11-13'
 | 1.5 | 2026-11-13 | 知识库策展人 | 新增 2019-11-08 第七周逆向入门&动态调试分析（上）条目，详细记录逆向工程定义、应用场景（破解、外挂、病毒分析、汉化、CTF）、学习路径（汇编、C/C++、Windows API、加壳脱壳）、推荐资源（C Primer Plus、王爽汇编语言、看雪加密与解密、小甲鱼B站视频、知乎学习路线）及任务驱动型学习方法论；更新时间轴导航 2019 年 11 月状态，新增「逆向工程入门」专题分类，完善训练系列定位表 |
 | 1.6 | 2026-11-13 | 知识库策展人 | 新增 2019-11-08 BUU Web 实训预告条目，详细记录三道实训题目（delta_2019_ssrfme、CISCN2019 Dropbox、CISCN2019 IKUN）及核心知识点（SSRF、代码审计、Python反序列化、Phar反序列化、哈希长度扩展攻击），关联 Java 反序列化基础、zzzcms Phar 利用链、JWT 哈希攻击等技术页面；更新时间轴导航、标签体系与专题分类表 |
 | 1.7 | 2026-11-13 | 知识库策展人 | 新增 2019-11-02 第七周 CTF 逆向入门 OD 动态调试培训预告条目，详细记录 OllyDbg 环境配置、汇编基础预习建议、微信 PC 版逆向靶标准备、QQ 群后续练手安排等实战前置指引，完善第七周训练系列三阶段定位对比表（预热/理论/实战），关联逆向工程入门学习路径页面；更新时间轴导航 2019 年 11 月状态、标签体系（新增 OllyDbg、微信PC版）与专题分类表 |
-| 1.8 | 2026-11-13 | 知识库策展人 | **新增 2019-10-26 第六周 CTF Web 学习引导培训预告条目**，详细记录 Burp Suite 预习建议、CTF 竞赛形式认知建立、Web 安全学习路线分享会安排及资料分发预告，完善训练系列六至八周定位对比表，新增「Web 安全入门」专题分类，更新标签体系（新增 Burp Suite、Web安全、学习路线、HTTP分析）；更新时间轴导航 2019 年 10 月状态 |
-| 1.9 | TBD | - | 导入 2019.08-2022.07 全量文章元数据 (标题/链接/日期/摘要) |
-| 2.0 | TBD | - | 完成按月/按专题双维度导航页生成 |
-| 2.1 | TBD | - | 接入全文检索与标签云聚合功能 |
+| 1.8 | 2026-11-13 | 知识库策展人 | 新增 2019-10-26 第六周 CTF Web 学习引导培训预告条目，详细记录 Burp Suite 预习建议、CTF 竞赛形式认知建立、Web 安全学习路线分享会安排及资料分发预告，完善训练系列六至八周定位对比表，新增「Web 安全入门」专题分类，更新标签体系（新增 Burp Suite、Web安全、学习路线、HTTP分析）；更新时间轴导航 2019 年 10 月状态 |
+| 1.9 | 2026-11-13 | 知识库策展人 | **新增 2019-10-24 网站结构与 HTTP 协议分析（上）条目**，详细记录 LAMP 环境搭建全过程（Apache+PHP+MySQL 安装配置、WordPress 部署、数据库初始化）、CMS 选型理由、HTTP 协议与 Burp Suite 后续分析预告，完善 10 月训练系列定位对比表（技术基础/预热/第七周/第八周），新增「建站与 HTTP 分析」专题分类，更新标签体系（新增 LAMP、WordPress、Apache、MySQL、PHP、HTTP协议、建站教程）；更新时间轴导航 2019 年 10 月状态 |
+| 2.0 | TBD | - | 导入 2019.08-2022.07 全量文章元数据 (标题/链接/日期/摘要) |
+| 2.1 | TBD | - | 完成按月/按专题双维度导航页生成 |
+| 2.2 | TBD | - | 接入全文检索与标签云聚合功能 |
 
 > **提示**：若您手持 0w1Club 历史文章合集 (HTML/PDF/Markdown)，欢迎通过 PR 或 Issue 协助补全数据源，共建安全知识图谱。
 
 ## 来源
 
-- [0w1Club-201908-202207_10](../sources/0w1Club-201908-202207_10.md)
-- [0w1Club-201908-202207_12](../sources/0w1Club-201908-202207_12.md)
+- [0w1Club-201908-202207_13](../sources/0w1Club-201908-202207_13.md)

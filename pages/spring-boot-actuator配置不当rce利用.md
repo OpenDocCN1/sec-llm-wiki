@@ -2,7 +2,7 @@
 title: Spring Boot Actuator 配置不当 RCE 利用链复现
 description: 详细记录 Spring Boot 2.x Actuator 暴露 env 与 restart 端点结合 H2 CREATE ALIAS 实现
   RCE 的完整利用链；补充 Eureka XStream 反序列化 RCE 利用链、SpEL 表达式注入、完整 Actuator 端点清单及 /env /refresh
-  交互利用细节、H2 Console JNDI 注入及 Spring Cloud Config 目录穿越利用方式。
+  交互利用细节、H2 Console JNDI 注入及 Spring Cloud Config 目录穿越利用方式。包含 spaceraccoon.dev 原始分析文章引用。
 category: ai-security
 tags:
 - Spring Boot
@@ -16,19 +16,30 @@ tags:
 - XStream
 - SpEL
 - 漏洞复现
-date: 2024-01-15
+- spaceraccoon
+- HikariCP
+date: 2020-01-13
 updated: '2026-11-12'
 ---
 ## 概述
 
 本页面汇总 Spring Boot 生态中因配置不当导致的高危漏洞利用细节，涵盖四大类攻击面：
-1. **Actuator `env` + `restart` 端点联动 H2 `CREATE ALIAS` 实现 RCE**（Spring Boot 2.x）
+1. **Actuator `env` + `restart` 端点联动 H2 `CREATE ALIAS` 实现 RCE**（Spring Boot 2.x，基于 spaceraccoon.dev 原始分析）
 2. **Eureka XStream 反序列化 RCE 利用链**（`/env` + `/refresh` 交互，Spring Cloud 场景）
 3. **Spring Boot SpEL 表达式注入**（Whitelabel Error Page，Spring Boot 1.x）
 4. **H2 Console 开启 `web-allow-others` 导致 JNDI 注入 RCE**
 5. **Spring Cloud Config Server 目录穿越读取任意文件**
 
 所有利用均基于 **配置不当/组件版本过低** 而非框架核心代码缺陷，属于攻击面管理的核心排查项。
+
+---
+
+## 核心参考来源
+
+- **原始分析文章**：[Remote Code Execution in Three Acts: Chaining Exposed Actuators and H2 Database](https://spaceraccoon.dev/remote-code-execution-in-three-acts-chaining-exposed-actuators-and-h2-database) (spaceraccoon.dev, 2020-01-13 每日安全看点收录)
+- 微信公众号文章《Spring boot漏洞利用(2)》、《Spring boot相关漏洞利用（1）》
+- su18/JNDI: https://github.com/su18/JNDI
+- LandGrey/SpringBootVulExploit: https://github.com/LandGrey/SpringBootVulExploit
 
 ---
 
@@ -77,12 +88,14 @@ updated: '2026-11-12'
 | 依赖 H2 数据库 | `spring-boot-starter-data-jpa` + `com.h2database:h2` |
 | 端点暴露 | `management.endpoints.web.exposure.include=env,restart`（或 `*`） |
 | 权限 | 无认证/弱认证可直接访问 Actuator HTTP API |
+| 连接池 | HikariCP（Spring Boot 2.x 默认） |
 
-### 利用原理
-1. **`/actuator/env` (POST)**：动态修改 `spring.datasource.hikari.connection-test-query`，注入 H2 `CREATE ALIAS` 语句，将任意命令封装为 Java 静态方法 `EXEC(cmd)`。
-2. **`/actuator/restart` (POST)**：触发应用上下文重启，H2 连接池初始化时执行 `connection-test-query`，从而调用 `EXEC()` 执行命令。
+### 利用原理（基于 spaceraccoon.dev 三步曲分析）
+1. **Act 1 - 侦察**：通过 `/actuator/env` 确认应用使用 H2 数据库且 HikariCP 连接池
+2. **Act 2 - 注入**：利用 `/actuator/env` (POST) 动态修改 `spring.datasource.hikari.connection-test-query`，注入 H2 `CREATE ALIAS` 语句，将任意命令封装为 Java 静态方法 `EXEC(cmd)`
+3. **Act 3 - 触发**：调用 `/actuator/restart` (POST) 触发应用上下文重启，H2 连接池初始化时执行 `connection-test-query`，从而调用 `EXEC()` 执行命令
 
-> **关键点**：`connection-test-query` 在连接池获取连接前执行，重启会强制重建连接池，保证 Payload 触发。
+> **关键点**：`connection-test-query` 在连接池获取连接前执行，重启会强制重建连接池，保证 Payload 触发。这是 spaceraccoon.dev 文章中 "Three Acts" 的核心利用链。
 
 ### 完整利用流程
 
@@ -390,11 +403,14 @@ echo "[+] Exploit sent, check nc listener on port $nc_port"
 - 若目标同时存在 JWT 认证体系，可结合 [[jwt漏洞原理与实战利用]] 中算法混淆、密钥爆破等手段横向提权。
 - H2 Console JNDI 注入的完整复现流程可参考 [[h2-console-jndi注入rce利用]]。
 - Spring Cloud Config 目录穿越的更多绕过变体见 [[spring-cloud-config目录穿越漏洞]]。
+- Spring Boot DevTools 反序列化 RCE 细节见 [[spring-boot-devtools-deserialization-rce]]。
+- SpEL 表达式注入专题见 [[spring-boot-spel表达式注入]]。
 
 ---
 
 ## 参考资料
-- 原文：微信公众号文章《Spring boot漏洞利用(2)》、《Spring boot相关漏洞利用（1）》
+- **spaceraccoon.dev 原始分析**：[Remote Code Execution in Three Acts: Chaining Exposed Actuators and H2 Database](https://spaceraccoon.dev/remote-code-execution-in-three-acts-chaining-exposed-actuators-and-h2-database)
+- 每日安全看点 2020.01.13 收录
 - su18/JNDI: https://github.com/su18/JNDI
 - LandGrey/SpringBootVulExploit: https://github.com/LandGrey/SpringBootVulExploit
 - Spring Boot Actuator 官方文档：https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html
@@ -405,3 +421,4 @@ echo "[+] Exploit sent, check nc listener on port $nc_port"
 ## 来源
 
 - [007攻防实验室-202007-202010_6](../sources/007攻防实验室-202007-202010_6.md)
+- [0th3rs安全团队-201911-202204_096](../sources/0th3rs安全团队-201911-202204_096.md)

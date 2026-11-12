@@ -32,3 +32,4 @@
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_020 -> cve-digest-20210420.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_021 -> cve-digest-20210416.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_022 -> solidifi-smart-contract-static-analysis-evaluation.md
+## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_023 -> wechat-pc-v8-rce-0day-analysis.md

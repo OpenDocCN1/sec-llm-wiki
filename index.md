@@ -2,6 +2,7 @@
 
 ## ai-security
 
+- [[cmseasy-7.3.8-code-audit]] `CmsEasy` `代码审计` `任意文件操作` `SQL注入` `黑名单绕过` `LFI` `RCE` `CMS漏洞` `PHP` — 深度分析 CmsEasy 7.3.8 版本中发现的任意文件读取/写入/删除、SQL注入黑名单绕过（benchmark替代sleep）、以及本地文件包含结合上传功能实现RCE的完整漏洞链条。
 - [[ctftime-writeup-digest-20210325]] `CTF` `Writeup` `BlueHens CTF` `Securinets CTF` `SPRUSH CTF` `NahamCon CTF` `UTCTF` `Pwn` `Reverse Engineering` `Web` `Forensics` `2021年3月` — 汇总 2021 年 3 月 25 日 CTFtime 平台收录的多场 CTF 比赛 Writeup 链接，涵盖 BlueHens CTF、Securinets CTF Quals、SPRUSH CTF Quals、NahamCon CTF、UTCTF 等比赛的 Pwn、Rev、Web、Forensics 等题目解析
 - [[ctftime-writeup-digest-20210327]] `CTF` `Writeup` `NahamCon` `Cartesian` `GraphQL` `Web` `Mission` `2021年3月` — 汇总 2021 年 3 月 27 日 CTFtime 平台收录的 NahamCon CTF 2021 Cartesian 题目 Writeup 链接，涉及 GraphQL、Web、Mission 类别。
 - [[ctftime-writeup-digest-20210402]] `CTF` `Writeup` `UTCTF` `Sleeves` `2021年4月` — 汇总 2021 年 4 月 2 日 CTFtime 平台收录的 UTCTF 2021 Sleeves 题目 Writeup 链接

@@ -176,3 +176,4 @@
 ## [2026-11-13] ingest | 0w1网络安全俱乐部-201707-201903_01 -> 0w1club-wechat-archive-201707-201903.md
 ## [2026-11-13] ingest | 0w1网络安全俱乐部-201707-201903_02 -> 0w1club-wechat-archive-201908-202207.md
 ## [2026-11-13] ingest | 0w1网络安全俱乐部-201707-201903_03 -> 0w1club-ctf-re-writeup-beginner-challenges.md
+## [2026-11-13] ingest | 0w1网络安全俱乐部-201707-201903_04 -> 0w1club-ctf-web-writeup-hash-extension-rsa.md

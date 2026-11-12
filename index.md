@@ -3,6 +3,7 @@
 ## ai-security
 
 - [[0th3rs-security-team-wechat-archive-201911-202204]] `0th3rs` `安全团队` `微信归档` `文章索引` `网络安全` `2019` `2020` `2021` `2022` `CTF` `AWD` `启明星辰杯` — 0th3rs安全团队微信公众号 2019年11月至2022年4月期间发布文章的汇总索引页面，涵盖安全研究、CTF实战、漏洞分析、工具分享等技术内容。新增 2019 年启明星辰杯京津冀研究生网络安全大赛战报（AWD+CTF 双模式、两支战队包揽总榜 4/5 名）、除夕防疫祝福、TCTF2020 总决赛参赛宣言、鼠年新年贺词等重点历史文章条目。
+- [[0w1club-ctf-web-writeup-hash-extension-rsa]] `0W1Club` `CTF` `Web安全` `Writeup` `哈希长度扩展攻击` `PHP弱类型比较` `RSA解密` `BurpSuite` `hashpump` `源码泄露` `响应头获取Flag` — 详细记录 0W1 网络安全俱乐部发布的 CTF Web 方向四道题目完整解题过程：God is a flag（源码泄露/响应头获取 Flag）、快问我flag在哪（302 响应头获取 Flag）、哈哈哈希（MD5 哈希长度扩展攻击利用 hashpump）、逃亡计划（PHP 弱类型比较绕过获取金币 + RSA 私钥解密 Flag）。涵盖 Burp Suite 抓包改包、hashpump 工具使用、PHP 弱类型比较特性、RSA 密钥生成原理与 Python 解密脚本编写等核心技术点。
 - [[0w1club-wechat-archive-201707-201903]] `0w1Club` `微信归档` `招新宣传` `CTF竞赛` `绿盟科技` `网络安全社团` `西安交通大学` `2019年` — 0w1网络安全俱乐部2019年春季招新微信推文全文归档，详细记录0w1战队定位（西安交大0w1俱乐部与绿盟科技联合战队）、CTF竞赛简介、2016-2018历史战绩、合作伙伴绿盟科技核心成就、俱乐部文化三大支柱（轻松氛围、丰富资源、一流团队）及招新对象、报名方式等核心信息。
 - [[0w1club-wechat-archive-201908-202207]] `0w1Club` `微信归档` `文章索引` `CTF竞赛` `招新宣传` `萌新培养` `网络安全社团` `西安交通大学` `2019年` `2020年` `2021年` `2022年` — 0w1Club 网络安全俱乐部微信公众号 2019年8月至2022年7月期间发布文章的汇总索引，涵盖招新宣传、CTF比赛结果、萌新培养系列教程、安全峰会参会记录等核心内容。
 - [[0w1club-week2-wifi-hijacking-arp-spoofing]] `0w1Club` `ARP欺骗` `中间人攻击` `WiFi劫持` `渗透测试` `网络安全入门` `Kali Linux` `Wireshark` `netdiscover` `arpspoof` — 0w1Club 安全团队微信公众号萌新培养系列第二周教程，系统讲解 ARP 协议原理、ARP 欺骗攻击流程（探测、毒化、开启 IP 转发）、常用工具（netdiscover、arpspoof、Wireshark、ettercap、bettercap）及后续利用思路，适合网络安全初学者快速上手中间人攻击实战。

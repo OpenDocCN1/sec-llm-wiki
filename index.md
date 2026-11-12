@@ -2,6 +2,7 @@
 
 ## ai-security
 
+- [[ctftime-writeup-digest-20210402]] `CTF` `Writeup` `UTCTF` `Sleeves` `2021年4月` — 汇总 2021 年 4 月 2 日 CTFtime 平台收录的 UTCTF 2021 Sleeves 题目 Writeup 链接
 - [[ctftime-writeup-digest-20210403]] `CTF` `Writeup` `UMassCTF` `replme` `Pwn` `2021年4月` — 汇总 2021 年 4 月 3 日 CTFtime 平台收录的 UMassCTF 2021 replme Pwn 题目 Writeup 链接
 - [[ctftime-writeup-digest-20210404]] `CTF` `Writeup` `UMassCTF` `PikCha` `Web` `2021年4月` — 汇总 2021 年 4 月 4 日 CTFtime 平台收录的 UMassCTF 2021 PikCha Web 题目 Writeup 链接
 - [[ctftime-writeup-digest-20210406]] `CTF` `Writeup` `Shakti CTF` `Chunkies` `Forensics` `2021年4月` — 汇总 2021 年 4 月 6 日 CTFtime 平台收录的 Shakti CTF Chunkies 取证题目 Writeup 链接

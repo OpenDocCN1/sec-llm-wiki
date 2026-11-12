@@ -61,3 +61,4 @@
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_049 -> cve-digest-20210328.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_050 -> d3ctf-2021-d3dev-qemu-escape-writeup.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_051 -> ctftime-writeup-digest-20210327.md
+## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_052 -> cve-digest-20210327.md

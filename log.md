@@ -110,3 +110,4 @@
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_098 -> daily-security-digest-20200103.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_099 -> daily-security-digest-20200102.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_100 -> (无沉淀)
+## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_101 -> daily-security-digest-20191230.md

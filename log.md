@@ -55,3 +55,4 @@
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_043 -> cve-digest-20210402.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_044 -> cve-digest-20210401.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_045 -> cve-digest-20210331.md
+## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_046 -> jd-freefuck-panel-rce-analysis.md

@@ -2,6 +2,7 @@
 
 ## ai-security
 
+- [[0th3rs-security-team-wechat-archive-201911-202204]] `0th3rs` `安全团队` `微信归档` `文章索引` `网络安全` `2019` `2020` `2021` `2022` `CTF` `AWD` `启明星辰杯` — 0th3rs安全团队微信公众号 2019年11月至2022年4月期间发布文章的汇总索引页面，涵盖安全研究、CTF实战、漏洞分析、工具分享等技术内容。新增 2019 年启明星辰杯京津冀研究生网络安全大赛战报（AWD+CTF 双模式、两支战队包揽总榜 4/5 名）、除夕防疫祝福、TCTF2020 总决赛参赛宣言、鼠年新年贺词等重点历史文章条目。
 - [[apt-c-08-mobile-attack-analysis]] `APT-C-08` `蔓灵花` `移动端安全` `APT攻击` `恶意样本分析` `C2基础设施` `威胁情报` — 深度解析蔓灵花（APT-C-08）组织针对移动平台的攻击活动，涵盖恶意样本特征、C2基础设施、攻击链条及归因分析，基于360威胁情报中心披露的技术报告整理。
 - [[cmseasy-7.3.8-code-audit]] `CmsEasy` `代码审计` `任意文件操作` `SQL注入` `黑名单绕过` `LFI` `RCE` `CMS漏洞` `PHP` — 深度分析 CmsEasy 7.3.8 版本中发现的任意文件读取/写入/删除、SQL注入黑名单绕过（benchmark替代sleep）、以及本地文件包含结合上传功能实现RCE的完整漏洞链条。
 - [[ctftime-writeup-digest-20210325]] `CTF` `Writeup` `BlueHens CTF` `Securinets CTF` `SPRUSH CTF` `NahamCon CTF` `UTCTF` `Pwn` `Reverse Engineering` `Web` `Forensics` `2021年3月` — 汇总 2021 年 3 月 25 日 CTFtime 平台收录的多场 CTF 比赛 Writeup 链接，涵盖 BlueHens CTF、Securinets CTF Quals、SPRUSH CTF Quals、NahamCon CTF、UTCTF 等比赛的 Pwn、Rev、Web、Forensics 等题目解析
@@ -139,7 +140,6 @@
 
 - [[007攻防实验室]] `007攻防实验室` `网络安全` `CTF` `安全研究` `微信归档` — 007攻防实验室 2020-07 至 2020-10 微信归档的入口、来源与待补全条目
 - [[03sec-network-security-team-202105-wechat-archive]] `03sec` `网络安全` `微信归档` `2021年5月` `文章索引` — 03sec网络安全团队微信公众号2021年5月份文章归档索引页面，汇总当月发布的安全技术文章、工具分享、漏洞分析等内容。
-- [[0th3rs-security-team-wechat-archive-201911-202204]] `0th3rs` `安全团队` `微信归档` `文章索引` `网络安全` `2019` `2020` `2021` `2022` — 0th3rs安全团队微信公众号 2019年11月至2022年4月期间发布文章的汇总索引页面，涵盖安全研究、CTF实战、漏洞分析、工具分享等技术内容。新增除夕防疫祝福、TCTF2020 总决赛参赛宣言、鼠年新年贺词等重点历史文章条目。
 - [[ctf-flask-path-traversal-vim-crypto]] `CTF` `Flask` `目录穿越` `Vim加密` `Writeup` `实战复现` — 记录一道 Flask CTF 题目通过 move 接口目录穿越读取 flag、并结合剧集台词破解 Vim 加密文件的完整解题过程
 - [[ctf-misc入门与工具箱]] `CTF` `Misc` `隐写术` `流量分析` `内存取证` `文件修复` `工具箱` — 系统梳理 CTF Misc 方向常见考点：编码转换、隐写术、文件修复、流量/内存取证，以及核心工具链（binwalk、foremost、steghide、Volatility 等）速查表。
 - [[php伪协议与反序列化利用]] `PHP` `伪协议` `反序列化` `__toString` `CTF` `文件读取` — 系统梳理 PHP 伪协议（php://filter、php://input、data:// 等）利用技巧，结合 __toString 魔术方法反序列化漏洞实现任意文件读取。基于赣网杯2020题目实战复现。

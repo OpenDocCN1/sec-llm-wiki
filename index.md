@@ -16,6 +16,7 @@
 - [[tctf-2021-1linephp-zip-include]] `TCTF` `PHP` `ZIP协议` `文件包含` `临时文件` `Session` `利用链` — 记录 2021 TCTF 1linephp 题目利用 zip:// 协议包含临时上传文件与 Session 文件，通过 ZIP 头偏移绕过 upload_progress_ 前缀实现任意文件包含的完整利用链
 - [[tctf-2021-worldcup-xss-go-ssti]] `TCTF` `XSS` `SSTI` `Go` `模板注入` `2021` — 复现 2021 TCTF worldcup 三关挑战：Level 1/2 利用反引号逃逸与 Unicode 编码绕过实现 XSS 窃取 Nonce，Level 3 结合 Go 模板注入（SSTI）泄露服务端变量从而精准押注拿 Flag
 - [[wechat-pc-v8-rce-0day-analysis]] `WeChat` `0day` `RCE` `V8引擎` `Chromium` `CobaltStrike` `内网渗透` `社会工程学` `漏洞复现` — 深度解析微信 PC 版 3.2.1.141 及以下版本因内嵌 Chromium V8 引擎漏洞且沙箱默认关闭，导致点击恶意链接即触发 RCE，配合 CobaltStrike 实现内网横向渗透的完整攻击链复现与防护指南。
+- [[xmind-xss-to-rce-vulnerability]] `XMind` `Electron` `XSS` `RCE` `子进程注入` `钓鱼攻击` `Eclipse RCP` `漏洞复现` — 复现 XMind 思维导图软件最新版本中从 XSS 到命令执行的完整利用链，分析其触发条件、Electron 架构根因与钓鱼攻击可行性
 - [[zzzphp-cve-2021-32605-rce]] `zzzphp` `CVE-2021-32605` `RCE` `模板注入` `eval注入` `前台无条件触发` `CMS漏洞` — zzzphp CMS <2.0.3 版本中模板渲染处理 if 标签时过滤不当，导致用户可控输入经 eval() 执行，前台搜索功能无需认证即可触发远程代码执行（CVE-2021-32605）
 
 ## program-analysis

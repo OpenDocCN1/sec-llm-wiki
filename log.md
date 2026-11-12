@@ -19,3 +19,4 @@
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_007 -> mercedes-benz-mbux-vulnerabilities-2021.md, elastic-stack-vulnerabilities-may2021.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_008 -> zzzphp-cve-2021-32605-rce.md
 ## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_009 -> xmind-xss-to-rce-vulnerability.md
+## [2026-11-12] ingest | 0th3rs安全团队-201911-202204_010 -> cve-digest-20210513.md

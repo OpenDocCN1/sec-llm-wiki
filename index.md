@@ -2,6 +2,7 @@
 
 ## ai-security
 
+- [[cve-digest-20210513]] `CVE` `漏洞聚合` `2021年5月` `BlackBerry` `Argo CD` `Linux内核` `以太坊` `Samba` `Trend Micro` `SIMATIC` `McAfee` `Atlassian Jira` `权限提升` `认证绕过` `拒绝服务` `信息泄露` — 汇总2021年5月13日发布的多款产品安全漏洞预警，涵盖BlackBerry Workspaces、Argo CD、Linux内核、以太坊EVM、Samba、Trend Micro HouseCall、SIMATIC HMI、McAfee、Atlassian Jira等多个厂商的认证绕过、权限提升、拒绝服务、信息泄露等漏洞详情。
 - [[elastic-stack-vulnerabilities-may2021]] `Elastic Stack` `Elasticsearch` `Kibana` `Logstash` `App Search` `CVE-2021-22135` `CVE-2021-22136` `CVE-2021-22137` `CVE-2021-22138` `CVE-2021-22139` `CVE-2021-22140` `文档泄露` `会话管理` `XXE` `DoS` `TLS 验证` — 汇总 2021 年 5 月披露的 Elastic Stack 组件（Elasticsearch、Kibana、Logstash、App Search）多个安全漏洞，涵盖文档泄露、会话超时绕过、跨集群搜索权限绕过、TLS 证书验证缺陷、Webhook DoS 及 XXE 注入等漏洞详情与影响版本。
 - [[frp内网渗透应用]] `frp` `内网穿透` `内网渗透` `Socks5` `Metasploit` `端口转发` `隧道技术` — 详细记录 frp 在内网渗透中的四大典型应用场景：Socks5 隧道搭建、多级隧道串联、代理本地 Metasploit 反弹、以及 RDP 等服务的远程端口转发，附完整配置示例与拓扑说明。
 - [[h2-console-jndi注入rce利用]] `H2 Database` `JNDI Injection` `RCE` `Spring Boot` `漏洞复现` `JNDI-Injection-Exploit` — 详细记录 H2 Database 控制台未授权访问配合 JNDI 注入（搭配 JNDI-Injection-Exploit 工具）实现远程代码执行的实战攻击链。

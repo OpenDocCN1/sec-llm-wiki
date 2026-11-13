@@ -222,3 +222,4 @@
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_002 -> mfc-message-map-internals-reverse-engineering.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_003 -> mfc-serialization-internals.md, mfc-message-map-internals-reverse-engineering.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_004 -> windows-syscall-internals-sysenter-kifastcallentry.md
+## [2026-11-14] ingest | 0x00实验室-202108-202304_005 -> pe-manual-mapping-loader-implementation.md

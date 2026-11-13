@@ -206,3 +206,4 @@
 ## [2026-11-14] ingest | 0w1网络安全俱乐部-201707-201903_31 -> 0w1club-wechat-archive-201707-201903.md
 ## [2026-11-14] ingest | 0w1网络安全俱乐部-201707-201903_32 -> 0w1club-week8-wireshark-arp-mitm-training.md, 0w1club-wechat-archive-201707-201903.md
 ## [2026-11-14] ingest | 0w1网络安全俱乐部-201707-201903_33 -> 0w1club-week7-stack-overflow-rop-training.md
+## [2026-11-14] ingest | 0w1网络安全俱乐部-201707-201903_34 -> 0w1club-hardware-atlas.md, 0w1club-week8-raspberry-pi-training.md

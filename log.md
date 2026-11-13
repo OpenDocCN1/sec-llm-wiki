@@ -208,3 +208,4 @@
 ## [2026-11-14] ingest | 0w1网络安全俱乐部-201707-201903_33 -> 0w1club-week7-stack-overflow-rop-training.md
 ## [2026-11-14] ingest | 0w1网络安全俱乐部-201707-201903_34 -> 0w1club-hardware-atlas.md, 0w1club-week8-raspberry-pi-training.md
 ## [2026-11-14] ingest | 0w1网络安全俱乐部-201707-201903_35 -> 0w1club-week7-stack-overflow-rop-training.md
+## [2026-11-14] ingest | 0w1网络安全俱乐部-201707-201903_36 -> 0w1club-tiesan-training-camp.md

@@ -142,6 +142,7 @@
 - [[spring-cloud-config目录穿越漏洞]] `Spring Cloud Config` `目录穿越` `CVE-2020-5410` `双重编码` `任意文件读取` `漏洞复现` — 详细记录 Spring Cloud Config Server 目录穿越漏洞（CVE-2020-5410 等变种）的两种双重编码绕过 PoC 与任意文件读取利用方式。
 - [[tctf-2021-1linephp-zip-include]] `TCTF` `PHP` `ZIP协议` `文件包含` `临时文件` `Session` `利用链` — 记录 2021 TCTF 1linephp 题目利用 zip:// 协议包含临时上传文件与 Session 文件，通过 ZIP 头偏移绕过 upload_progress_ 前缀实现任意文件包含的完整利用链
 - [[tctf-2021-worldcup-xss-go-ssti]] `TCTF` `XSS` `SSTI` `Go` `模板注入` `2021` — 复现 2021 TCTF worldcup 三关挑战：Level 1/2 利用反引号逃逸与 Unicode 编码绕过实现 XSS 窃取 Nonce，Level 3 结合 Go 模板注入（SSTI）泄露服务端变量从而精准押注拿 Flag
+- [[vulnhub-sunset-decoy-ctf-writeup]] `VulnHub` `CTF` `渗透测试` `提权` `SSH绕过` `chkrootkit` `ZIP破解` `实战复现` — 从信息收集、ZIP 密码破解、SSH 受限 Shell 绕过、chkrootkit 0.49 本地提权到最终获取 Root 权限的全链路复现
 - [[wechat-pc-v8-rce-0day-analysis]] `WeChat` `0day` `RCE` `V8引擎` `Chromium` `CobaltStrike` `内网渗透` `社会工程学` `漏洞复现` `漏洞速报` — 深度解析微信 PC 版 3.2.1.141 及以下版本因内嵌 Chromium V8 引擎漏洞且沙箱默认关闭，导致点击恶意链接即触发 RCE，配合 CobaltStrike 实现内网横向渗透的完整攻击链复现与防护指南。补充 2023 年 4 月早期漏洞速报信息。
 - [[xmind-xss-to-rce-vulnerability]] `XMind` `Electron` `XSS` `RCE` `子进程注入` `钓鱼攻击` `Eclipse RCP` `漏洞复现` — 复现 XMind 思维导图软件最新版本中从 XSS 到命令执行的完整利用链，分析其触发条件、Electron 架构根因与钓鱼攻击可行性
 - [[zzzcms-v1.7.5-audit]] `zzzcms` `PHP` `CMS漏洞` `SSRF` `SQL注入` `信息泄露` `模板注入` `RCE` `代码审计` `利用链` — 深度审计 zzzcms PHP v1.7.5，挖掘并分析了 UEditor 插件 SSRF、短信插件前台 SQL 注入、WebUploader 配置文件后台路径泄露、模板引擎 parserIfLabel 过滤绕过导致的后台 RCE 完整利用链。

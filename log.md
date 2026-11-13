@@ -232,3 +232,4 @@
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_012 -> ctfd-whale-docker-swarm-frp-deployment.md, frp内网渗透应用.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_013 -> glasgowsmile-vulnhub-writeup.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_014 -> windows-x86-stack-overflow-shellcode-execution.md
+## [2026-11-14] ingest | 0x00实验室-202108-202304_015 -> vulnhub-sunset-decoy-ctf-writeup.md

@@ -1,7 +1,7 @@
 ---
 title: frp内网渗透应用
 description: 详细记录 frp 在内网渗透中的四大典型应用场景：Socks5 隧道搭建、多级隧道串联、代理本地 Metasploit 反弹、以及 RDP
-  等服务的远程端口转发，附完整配置示例与拓扑说明。
+  等服务的远程端口转发，并补充 CTFd-Whale 动态靶机场景下的集成配置用法，附完整配置示例与拓扑说明。
 category: ai-security
 tags:
 - frp
@@ -11,8 +11,12 @@ tags:
 - Metasploit
 - 端口转发
 - 隧道技术
+- CTFd-Whale
+- CTF
+- 动态靶机
+- Docker Swarm
 date: 2025-06-15
-updated: '2026-11-12'
+updated: '2026-11-14'
 ---
 
 ## 概述
@@ -199,6 +203,171 @@ mstsc /v:<VPS_IP>:4445
 
 ---
 
+## 场景五：CTFd-Whale 动态靶机场景集成
+
+### 适用背景
+**CTFd-Whale** 是 CTFd 平台的插件，用于在 CTF 比赛中动态创建、隔离、分发容器化靶机。其核心网络架构依赖 **frp 实现选手与动态容器的端口映射**，结合 **Docker Swarm** 实现跨主机容器编排。该场景展示了 frp 在 **自动化靶场、多租户隔离、动态端口分配** 等新型应用模式下的集成配置。
+
+> 相关项目：[CTFd](https://github.com/CTFd/CTFd) · [CTFd-Whale](https://github.com/glzjin/CTFd-Whale) · [Frp-Docker-For-CTFd-Whale](https://github.com/glzjin/Frp-Docker-For-CTFd-Whale)
+
+### 网络拓扑
+```
+选手 (公网) ──► frps (VPS/主控节点) ◄── frpc (CTFd主节点) ──► Docker Swarm Overlay 网络 ──► 动态靶机容器
+```
+
+**核心组件与 IP 规划（示例）**：
+| 组件 | 角色 | 网络 | 固定 IP |
+|---|---|---|---|
+| `ctfd_ctfd_1` | CTFd 主服务 | `ctfd_frp` (bridge) | 172.1.0.2 |
+| `ctfd_frpc_1` | frpc 客户端 | `ctfd_frp` (bridge) | 172.1.0.3 |
+| `frp-docker-for-ctfd-whale_frps_1` | frps 服务端 | `ctfd_frp` (bridge) | 172.1.0.4 |
+| 动态靶机容器 | 题目实例 | `ctfd_frp-containers` (overlay) | 172.2.0.0/16 自动分配 |
+
+### 关键配置文件
+
+#### frps.ini（frps 服务端，部署在 `frp-docker-for-ctfd-whale/frp/frps.ini`）
+```ini
+[common]
+token = randomme
+server_addr = 172.1.0.4
+server_port = 6490
+pool_count = 200
+tls_enable = true
+admin_addr = 172.1.0.3
+admin_port = 7400
+```
+
+#### frpc.ini（frpc 客户端，部署在 `CTFd/frpc/frpc.ini`）
+```ini
+[common]
+token = randomme
+server_addr = 172.1.0.4
+server_port = 6490
+pool_count = 200
+tls_enable = true
+admin_addr = 172.1.0.3
+admin_port = 7400
+```
+
+> **注意**：`token`、`server_addr`、`server_port`、`admin_addr`、`admin_port` 必须与 frps.ini 完全一致；`admin_addr` 指向 frpc 所在容器 IP（172.1.0.3），供 CTFd-Whale 插件通过 Admin API 动态管理代理规则。
+
+#### Docker Compose 核心片段（`CTFd/docker-compose.yml`）
+```yaml
+version: '2.2'
+services:
+  ctfd:
+    build: .
+    networks:
+      frp:
+        ipv4_address: 172.1.0.2
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock  # 关键：CTFd 需访问 Docker API
+    depends_on: [db]
+  frpc:
+    image: glzjin/frp:latest
+    entrypoint: ["/usr/local/bin/frpc", "-c", "/conf/frpc.ini"]
+    volumes:
+      - ./frpc:/conf/
+    networks:
+      frp:
+        ipv4_address: 172.1.0.3
+      frp-containers:
+networks:
+  frp:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.1.0.0/16
+  frp-containers:
+    driver: overlay
+    internal: true
+    ipam:
+      config:
+        - subnet: 172.2.0.0/16
+```
+
+#### CTFd-Whale 插件 Web 界面配置（管理后台 → Plugins → CTFd-Whale Settings）
+| 配置项 | 示例值 | 说明 |
+|---|---|---|
+| Docker API URL | `unix://var/run/docker.sock` | CTFd 容器内通过挂载的 sock 访问宿主机 Docker |
+| Frp API IP | `172.1.0.3` | frpc 容器 IP（admin_addr） |
+| Frp API Port | `7400` | frpc admin_port |
+| Frp Http Domain Suffix | `None` | 或自定义域名后缀 |
+| Frp Http Port | `80` | HTTP 代理端口 |
+| Frp Direct IP Address | `<你的公网IP>` | 选手直连 IP |
+| Frp Direct Minimum Port | `30000` | 与 frps `bind_port` 范围呼应 |
+| Frp Direct Maximum Port | `31000` | 同上 |
+| Frp config template | 见下方 | 仅需 `[common]` 段 |
+| Docker Auto Connect Containers | `ctfd_frpc_1` | 动态容器自动加入的网络别名 |
+| Docker Dns Setting | `114.114.114.114` | 容器内 DNS |
+| Docker Swarm Nodes | `linux-1` | `docker node ls` 中的节点名 |
+| Docker Multi-Container Network Subnet | `172.2.0.0/16` | Overlay 网络大子网 |
+| Docker Multi-Container Network Subnet New Prefix | `24` | 每个题目实例分配 /24 子网 |
+| Docker Container Timeout | `3600` | 容器生存时间（秒） |
+| Docker Auto Connect Network | `ctfd_frp-containers` | Overlay 网络名 |
+
+**Frp config template 内容**：
+```ini
+[common]
+token = randomme
+server_addr = 172.1.0.4
+server_port = 6490
+pool_count = 200
+tls_enable = true
+admin_addr = 172.1.0.3
+admin_port = 7400
+```
+
+### 部署与联调关键步骤
+
+1. **初始化 Docker Swarm**  
+   `docker swarm init` → `docker node update --label-add='name=linux-1' $(docker node ls -q)`
+
+2. **启动 frps 栈**  
+   在 `frp-docker-for-ctfd-whale` 目录执行 `docker-compose up -d`
+
+3. **构建并启动 CTFd 栈**  
+   在 `CTFd` 目录执行 `docker-compose up -d`（首次构建需拉取镜像、安装依赖，耐心等待）
+
+4. **修复网络连通性（关键）**  
+   默认仅 `ctfd_ctfd_1` 连入 `ctfd_frp` 网络，需手动加入其余两容器并固定 IP：
+   ```bash
+   docker network connect --ip 172.1.0.3 ctfd_frp ctfd_frpc_1
+   docker network connect --ip 172.1.0.4 ctfd_frp frp-docker-for-ctfd-whale_frps_1
+   docker restart ctfd_frpc_1 frp-docker-for-ctfd-whale_frps_1
+   ```
+   验证：`docker network inspect ctfd_frp` 应显示三个容器及对应 IP。
+
+5. **验证 frpc Admin API 可达**  
+   进入 CTFd 容器测试：
+   ```bash
+   docker exec -it <ctfd容器ID> sh
+   python3 -c "import requests; print(requests.get('http://172.1.0.3:7400/api/reload').status_code)"
+   ```
+   返回 `200` 即正常。
+
+6. **在 CTFd 后台创建 Dynamic Docker Challenge**  
+   - Challenge Type 选择 `dynamic_docker`
+   - `Docker Image` 填写镜像名（如 `ctftraining/qwb_2019_supersqli`）
+   - `Redirect Type` 选择 `direct` 或 `http`，设置端口映射
+   - 保存后选手点击「获取实例」即可自动拉取镜像、创建容器、通过 frp 映射端口并返回连接地址。
+
+### 常见问题排查
+| 现象 | 可能原因 | 解决方案 |
+|---|---|---|
+| `ctfd_frpc_1` 持续重启 | 网络未加入或 IP 冲突 | 按步骤 4 固定 IP 加入 `ctfd_frp` 网络 |
+| 选手无法连接靶机 | Frp Direct 端口范围未在云厂商安全组放行 | 在云控制台放行 `Frp Direct Minimum/Maximum Port` 对应端口段 |
+| 创建实例超时 | Docker 镜像拉取过慢 | 预先 `docker pull` 常用镜像；配置国内镜像源（Daocloud/阿里云） |
+| frpc Admin API 返回 Connection Refused | `admin_addr`/`admin_port` 配置错误 | 核对 `frpc.ini` 与 `frps.ini` 的 `admin_addr=172.1.0.3, admin_port=7400` |
+| 多容器题目（内网渗透链）网络不通 | Overlay 网络 `ctfd_frp-containers` 未正确创建或子网冲突 | 确保 `docker-compose.yml` 中 `frp-containers` driver=overlay, subnet=172.2.0.0/16 且与宿主机网段无冲突 |
+
+### 扩展阅读
+- [[docker-container-security-fundamentals]] —— Docker 容器安全基础与逃逸防范
+- [[内网穿透技术对比]] —— frp/nps/ngrok/Cloudflare Tunnel 横向对比
+- [[横向移动凭证导出与利用]] —— 隧道建立后的后渗透动作
+
+---
+
 ## 通用最佳实践与避坑指南
 
 1. **统一 Token 与加密**  
@@ -228,6 +397,7 @@ mstsc /v:<VPS_IP>:4445
 - [[Socks5 代理链构建]]（结合 proxychains、gost 实现多级代理）
 - [[Metasploit 免杀与流量隐藏]]（结合 frp 加密传输规避流量检测）
 - [[横向移动凭证导出与利用]]（隧道建立后的后续渗透动作）
+- [[docker-container-security-fundamentals]]（Docker 容器安全核心机制与加固）
 
 ---
 
@@ -235,7 +405,9 @@ mstsc /v:<VPS_IP>:4445
 | 日期 | 版本 | 说明 |
 |---|---|---|
 | 2025-06-15 | 1.0 | 初始版本，整理四大核心场景配置与拓扑 |
+| 2026-11-12 | 1.1 | 新增场景五：CTFd-Whale 动态靶机场景集成配置详解 |
 
 ## 来源
 
 - [007攻防实验室-202007-202010_1](../sources/007攻防实验室-202007-202010_1.md)
+- [0x00实验室-202108-202304_012](../sources/0x00实验室-202108-202304_012.md)

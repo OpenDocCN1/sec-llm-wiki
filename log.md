@@ -229,3 +229,4 @@
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_009 -> cybersecurity-training-resources-guide.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_010 -> android-shelling-unshelling-techniques.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_011 -> edu-src-penetration-test-case-study.md
+## [2026-11-14] ingest | 0x00实验室-202108-202304_012 -> ctfd-whale-docker-swarm-frp-deployment.md, frp内网渗透应用.md

@@ -219,3 +219,4 @@
 ## [2026-11-14] ingest | 0w1网络安全俱乐部-201707-201903_44 -> 0w1club-ctf-writeup-2019.md, 0w1club-wechat-archive-201707-201903.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_000 -> 0x00lab-wechat-archive-202108-202304.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_001 -> crackme-analysis-keygen-development-case-study.md
+## [2026-11-14] ingest | 0x00实验室-202108-202304_002 -> mfc-message-map-internals-reverse-engineering.md

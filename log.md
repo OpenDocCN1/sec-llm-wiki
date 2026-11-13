@@ -227,3 +227,4 @@
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_007 -> security-engineer-recruitment-requirements.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_008 -> pe-import-table-internals.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_009 -> cybersecurity-training-resources-guide.md
+## [2026-11-14] ingest | 0x00实验室-202108-202304_010 -> android-shelling-unshelling-techniques.md

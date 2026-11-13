@@ -202,3 +202,4 @@
 ## [2026-11-14] ingest | 0w1网络安全俱乐部-201707-201903_27 -> 0w1club-week11-crypto-re-pwn-training.md
 ## [2026-11-14] ingest | 0w1网络安全俱乐部-201707-201903_28 -> 0w1club-wechat-archive-201707-201903.md
 ## [2026-11-14] ingest | 0w1网络安全俱乐部-201707-201903_29 -> 0w1club-week10-web-injection-training.md
+## [2026-11-14] ingest | 0w1网络安全俱乐部-201707-201903_30 -> 0w1club-week8-wireshark-arp-mitm-training.md

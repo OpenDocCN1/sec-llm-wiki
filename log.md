@@ -210,3 +210,4 @@
 ## [2026-11-14] ingest | 0w1网络安全俱乐部-201707-201903_35 -> 0w1club-week7-stack-overflow-rop-training.md
 ## [2026-11-14] ingest | 0w1网络安全俱乐部-201707-201903_36 -> 0w1club-tiesan-training-camp.md
 ## [2026-11-14] ingest | 0w1网络安全俱乐部-201707-201903_37 -> 0w1club-wechat-archive-201707-201903.md, 0w1club-tiesan-training-camp.md
+## [2026-11-14] ingest | 0w1网络安全俱乐部-201707-201903_38 -> 0w1club-wechat-archive-201707-201903.md

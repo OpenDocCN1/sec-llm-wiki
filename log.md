@@ -233,3 +233,4 @@
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_013 -> glasgowsmile-vulnhub-writeup.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_014 -> windows-x86-stack-overflow-shellcode-execution.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_015 -> vulnhub-sunset-decoy-ctf-writeup.md
+## [2026-11-14] ingest | 0x00实验室-202108-202304_016 -> vulnhub-infosecprep-oscp-writeup.md

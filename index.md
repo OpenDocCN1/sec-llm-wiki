@@ -201,6 +201,7 @@
 - [[cybersecurity-training-resources-guide]] `网络安全` `培训课程` `学习资源` `小迪安全` `暗月渗透` `避坑指南` `学习方法论` — 汇总主流网络安全培训课程（小迪安全、暗月渗透等）对比、免费/付费学习资源推荐、学习方法论、行业避坑指南及证书建议，助力零基础入门与进阶。
 - [[php伪协议与反序列化利用]] `PHP` `伪协议` `反序列化` `__toString` `CTF` `文件读取` — 系统梳理 PHP 伪协议（php://filter、php://input、data:// 等）利用技巧，结合 __toString 魔术方法反序列化漏洞实现任意文件读取。基于赣网杯2020题目实战复现。
 - [[qwb2019-随便注-sql注入复现]] `CTF` `SQL注入` `强网杯2019` `MariaDB` `堆叠查询` `WAF绕过` `预编译` `表重命名` — 强网杯2019随便注题目完整复现，涵盖报错注入、WAF绕过、堆叠查询、预编译绕过、表重命名等MySQL/MariaDB注入实战技巧
+- [[recruitment-go-h5-development-chengdu]] `Go` `H5` `招聘` `成都` `支付业务` `15-20K` — 成都地区支付业务方向的Go语言与H5开发岗位招聘信息，薪资15-20K，要求有项目经验可直接上手，非应届生。
 - [[usb流量取证与隐写综合实战]] `CTF` `Misc` `USB取证` `流量分析` `隐写术` `PDF隐写` `视频隐写` `Steghide` `wbStego4open` `Base85` `赣网杯2020` — 基于赣网杯2020题目复现，系统梳理 USB 键盘流量按键码提取与 HID 映射还原明文、PDF 隐写工具 wbStego4open 解密、视频文件分离图片后结合 Steghide 爆破与 Base85 解码的完整实战链路。
 - [[vmware-ubuntu-security-lab-setup]] `VMware` `Ubuntu` `实验环境` `安全研究` `虚拟化` `教程` — 详细记录 VMware Workstation Pro 15 与 Ubuntu 18.04 虚拟机的下载、安装、配置全流程，面向网络安全研究、CTF 练习及渗透测试实验环境快速落地。
 - [[waf-bypass-techniques-case-study-ruijie]] `XSS` `WAF绕过` `反射型XSS` `锐捷` `校园网` `WiseGrid` `HTML标签嵌套` `Data URI` `Base64编码` `注释填充绕过` — 记录从锐捷校园网自助服务系统反射型 XSS 入手，逐步绕过内置过滤、WAF-A 关键词拦截、WAF-B (WiseGrid) 深度检测的完整实战绕过链，涵盖 HTML 标签嵌套逃逸、Data URI Base64 编码绕过、超长注释填充触发检测超时/长度限制等通用 WAF 绕过技巧。

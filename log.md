@@ -215,3 +215,4 @@
 ## [2026-11-14] ingest | 0w1网络安全俱乐部-201707-201903_40 -> 0w1club-first-ctf-writeup-2018.md
 ## [2026-11-14] ingest | 0w1网络安全俱乐部-201707-201903_41 -> 0w1club-wechat-archive-201707-201903.md
 ## [2026-11-14] ingest | 0w1网络安全俱乐部-201707-201903_42 -> badusb-hid-attack-arduino-leonardo.md, 0w1club-wechat-archive-201908-202207.md
+## [2026-11-14] ingest | 0w1网络安全俱乐部-201707-201903_43 -> 0w1club-wechat-archive-201908-202207.md

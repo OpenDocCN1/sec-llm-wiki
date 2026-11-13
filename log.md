@@ -197,3 +197,4 @@
 ## [2026-11-14] ingest | 0w1网络安全俱乐部-201707-201903_22 -> 0w1club-ctf-web-writeup-jwt-sqli-brute.md, jwt漏洞原理与实战利用.md
 ## [2026-11-14] ingest | 0w1网络安全俱乐部-201707-201903_23 -> 0w1club-ctf-misc-writeup-steganography-traffic-analysis.md
 ## [2026-11-14] ingest | 0w1网络安全俱乐部-201707-201903_24 -> 0w1club-ctf-re-writeup-beginner-challenges.md
+## [2026-11-14] ingest | 0w1网络安全俱乐部-201707-201903_25 -> 0w1club-week10-web-injection-training.md

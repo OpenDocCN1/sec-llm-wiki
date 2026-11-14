@@ -243,3 +243,4 @@
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_023 -> vulnhub-dawn2-writeup.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_024 -> vulnhub-sar-writeup.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_025 -> vulnhub-doubletrouble-writeup.md, vulnhub-platform-resource-index.md, 0w1club-training-shellshock-cgi-exploitation.md
+## [2026-11-14] ingest | 0x00实验室-202108-202304_026 -> vulnhub-pwned-writeup.md, vulnhub-platform-resource-index.md

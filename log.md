@@ -310,3 +310,4 @@
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_090 -> jwt漏洞原理与实战利用.md, java-preparedstatement-sql-injection-defense.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_091 -> php-file-inclusion-vulnerability.md, xd-security-file-inclusion-notes.md, php伪协议与反序列化利用.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_092 -> xd-security-logic-vulnerability-notes-day33-36.md
+## [2026-11-14] ingest | 0x00实验室-202108-202304_093 -> xd-security-code-audit-notes-day50-57.md

@@ -263,3 +263,4 @@
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_043 -> java-preparedstatement-sql-injection-defense.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_044 -> huxiangbei-willphp-file-inclusion-writeup.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_045 -> mysql-duplicate-entry-error-based-sqli.md
+## [2026-11-14] ingest | 0x00实验室-202108-202304_046 -> mysql-dnslog-injection-loadfile-unc.md

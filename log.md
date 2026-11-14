@@ -291,3 +291,4 @@
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_071 -> xss-haozi-lab-walkthrough.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_072 -> buuctf-pwn-writeup-collection.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_073 -> jwt漏洞原理与实战利用.md
+## [2026-11-14] ingest | 0x00实验室-202108-202304_074 -> vulnhub-admx-new-writeup.md, vulnhub-platform-resource-index.md

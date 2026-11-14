@@ -1,6 +1,7 @@
 ---
 title: VulnHub 靶场平台资源索引
-description: 汇总 VulnHub 靶场平台介绍、750+ 镜像资源合集（1053G）及知识库现有 Writeup 交叉引用，提供靶机获取方式、实战建议与学习路径指引。
+description: 汇总 VulnHub 靶场平台介绍、750+ 镜像资源合集（1053G）及知识库现有 Writeup 交叉引用，提供靶机获取方式、实战建议与学习路径指引。新增
+  AdmX_new 靶机 Writeup 交叉引用，完善实战练习库。
 category: program-analysis
 tags:
 - VulnHub
@@ -10,6 +11,10 @@ tags:
 - 实战练习
 - 资源合集
 - Writeup索引
+- WordPress
+- MySQL UDF
+- 插件上传
+- 无名安全团队
 date: '2025-01-15'
 updated: '2026-11-14'
 ---
@@ -58,6 +63,7 @@ updated: '2026-11-14'
 
 | 靶机名称 | 难度侧重 | 核心技术点 | 页面链接 |
 |----------|----------|------------|----------|
+| **AdmX_new** | 中等 | WordPress 后台弱口令爆破、插件上传 Getshell、Python 反弹 Shell、MySQL UDF 提权 | [[vulnhub-admx-new-writeup]] |
 | **Glasgow Smile** | 中等 | Joomla CMS 爆破、反弹 Shell、多层编码密码破解、定时任务提权 | [[glasgowsmile-vulnhub-writeup]] |
 | **BBS Cute 102** | 中等 | CuteNews 2.1.2 RCE、GIF89 头绕过上传、PHP 反弹 Shell、提权思路 | [[vulnhub-bbs-cute-102-writeup]] |
 | **Hard Socnet2** | 高难 | 文件上传、SQL 注入、XML-RPC 暴破、CVE-2021-3493 内核提权、add_record 缓冲区溢出（PEDA/GDB/ROP） | [[vulnhub-hard-socnet2-writeup]] |
@@ -93,4 +99,4 @@ updated: '2026-11-14'
 
 ## 来源
 
-- [0x00实验室-202108-202304_041](../sources/0x00实验室-202108-202304_041.md)
+- [0x00实验室-202108-202304_074](../sources/0x00实验室-202108-202304_074.md)

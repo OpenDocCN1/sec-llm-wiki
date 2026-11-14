@@ -267,3 +267,4 @@
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_047 -> java-preparedstatement-sql-injection-defense.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_048 -> mongodb-nosql-injection-guide.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_049 -> game-reverse-engineering-course-materials.md
+## [2026-11-14] ingest | 0x00实验室-202108-202304_050 -> security-engineer-recruitment-requirements.md

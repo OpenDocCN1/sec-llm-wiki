@@ -319,3 +319,4 @@
 ## [2026-11-15] ingest | 0x00实验室-202108-202304_099 -> vulnhub-chronos-writeup.md
 ## [2026-11-15] ingest | 0x00实验室-202108-202304_100 -> xd-security-xss-vulnerability-notes-day25-28.md
 ## [2026-11-15] ingest | 0x00实验室-202108-202304_101 -> xd-security-csrf-ssrf-rce-notes-day29-30.md, xd-security-pentest-course-curriculum.md, ssrf-bypass-techniques.md
+## [2026-11-15] ingest | 0x00实验室-202108-202304_102 -> xd-security-pentest-course-curriculum.md, security-study-group-methodology.md

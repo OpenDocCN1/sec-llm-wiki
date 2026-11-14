@@ -1,298 +1,224 @@
 ---
-title: AceLdr 用户态反射加载器核心规避技术深度解析
-description: 深度解析 AceLdr 用户态反射加载器的四大核心规避技术：基于 FOLIAGE 的 Sleep_Hook（APC队列ROP链延时混淆）、Heap_Hook（自定义堆加密Beacon数据）、Return
-  Address Spoofing（关键API调用栈欺骗）、动态内存加密（SystemFunction032 RC4），并附实测 moneta/pe-sieve
-  检出情况分析。
+title: PE内存执行技术谱系与反射式加载器对比分析
+description: 系统梳理 PE 不落地执行技术的三大类别：反射式加载器（RDI、sRDI、Donut/pe2shc）、Section 相关技术（Process
+  Doppelganging/Ghosting/Herpaderping）、镂空傀儡进程（Process Hollowing/Transacted Hollowing），深度解析各技术核心流程、PE
+  Loader 关键实现细节（延迟导入表、API Set Schema、MEM_IMAGE 内存分配）及 Sysmon Event ID 25 检测对抗现状。
 category: program-analysis
 tags:
-- AceLdr
-- User-Mode Reflective Loader
-- UDRL
-- Memory Evasion
-- FOLIAGE
-- Sleep Hook
-- Heap Hook
-- Return Address Spoofing
-- Dynamic Memory Encryption
-- SystemFunction032
-- RC4
-- APC Queue ROP
-- moneta
-- pe-sieve
-- Cobalt Strike
-- Beacon
-- Red Teaming
+- PE Memory Execution
+- Reflective DLL Injection
+- RDI
+- sRDI
+- Donut
+- pe2shc
+- Process Hollowing
+- Process Doppelganging
+- Process Ghosting
+- Process Herpaderping
+- Transacted Hollowing
+- PE Loader
+- Delayed Import Table
+- API Set Schema
+- MEM_IMAGE
+- Sysmon Event ID 25
 - Defense Evasion
+- Red Teaming
 date: 2023-04-16
 updated: '2026-11-15'
 ---
 
 ## 概述
 
-本页面系统梳理 AceLdr（A Cobalt Strike User-Mode Reflective Loader）的四大核心内存规避技术实现细节，并对比主流内存扫描工具（Hunt-Sleeping-Beacons、BeaconHunter、BeaconEye、patriot、moneta、pe-sieve、MalMemDetect）的检测原理，最后给出实测对抗效果分析。AceLdr 通过 **Sleep_Hook（FOLIAGE APC-ROP 延时混淆）**、**Heap_Hook（自定义堆加密）**、**Return Address Spoofing（调用栈欺骗）**、**动态内存加密（SystemFunction032 RC4）** 四大技术组合，试图绕过基于线程状态、内存完整性、调用栈分析、YARA 特征匹配等多维度的内存查杀。
+本页面基于 0x4d5a 微信归档文章《关于PE不落地执行技术的思考》整理，系统构建 **PE 内存执行技术谱系**，重点关联 **RDI、sRDI、Donut/pe2shc 等主流反射式加载器**，补全用户态反射加载器对比视角。文章将 PE 不落地执行分为三大类：
 
-> 相关背景：用户态反射加载器（UDRL）是 Cobalt Strike Beacon 免杀对抗中的关键组件，详见 [[memory-scanning-tools-evasion-techniques]] 所整理的内存扫描工具体系与 UDRL 对抗全景。
+1. **PE 加载器类**：常规 PE Loader、RDI、sRDI、pe2shellcode (Donut/pe2shc) —— 核心均为用户态 PE 解析与映射
+2. **Section 相关类**：Process Doppelganging、Process Ghosting、Process Herpaderping —— 核心利用 TxF/DELETE_PENDING 创建 IMAGE Section
+3. **镂空傀儡进程类**：Process Hollowing、Transacted Hollowing —— 复用进程创建流程，替换镜像内存
 
----
-
-## 主流内存扫描工具检测原理对比
-
-AceLdr 的 README 列举了七款代表性工具，覆盖线程状态枚举、ETW 行为分析、YARA 特征匹配、内存完整性校验、PE 结构异常检测等核心技术点。
-
-### Hunt-Sleeping-Beacons
-
-- **线程状态筛选**：`NtQuerySystemInformation` 枚举所有线程，筛选 `WaitReason == DelayExecution`（即 `Sleep` 线程）；若使用 `WaitForSingleObject` 则状态为 `UserRequest`，可绕过此筛选。
-- **三大检测模块**：
-  1. **调用栈模块完整性**（`checkCallstack`）：`StackWalk64` 遍历栈帧模块，检测 Module Stomping（.text 段被修改）或模块不存在于磁盘（忽略 .NET、NTDLL/KERNELBASE hook）。
-  2. **KernelTime/UserTime 比值**（`checkLandDiff`）：Beacon 大部分时间处于等待，内核/用户态时间比值异常可作为指纹。
-  3. **KERNEL32 Inline Hook 检测**（`checkInlineHooks`）：专门针对 hook `Sleep` 的场景。
-
-### BeaconHunter
-
-- 同样先筛选 `DelayExecution` 线程，再通过 ETW 采集 HTTP/HTTPS 回连、DNS 查询、文件系统操作、进程终止、Shell 命令执行等行为日志，计算可疑分值。
-
-### BeaconEye
-
-- 读取进程内存，配合 YARA 规则匹配 Beacon 静态特征（配置块、Watermark、导入表哈希等）。
-
-### patriot
-
-针对性极强的五大检测：
-
-1. **线程 EIP 指向 VM Protect 函数**（`FindSuspiciousContext`）：针对 **Ekko** / **NightHawk** 的 Timer+APC-ROP 延时混淆，8 字节步长暴力搜索可执行内存。
-2. **内存 PE/DOS 头检测**：识别 Process Hollowing。
-3. **高权限进程可疑内存块**（`EnumerateMemory`）：非 Image、可执行、已提交的私有内存。
-4. **模块内容完整性校验**（`ValidateIntegrity`）：检测 Stomping/Overwriting 导致的 .text 段修改。
-5. **PE 结构异常**（`ParseHeader`）：RWX 节、PE 头/节越界等。
-
-### moneta
-
-基于 **"Masking Malicious Memory Artifacts"** 理念，分三层扫描：
-
-1. **动态/未知代码**：可执行私有内存、被修改的映射代码段、PEB/线程起始地址越界、未签名 Image 未修改代码（软指标）。
-2. **映射 PE Image 自身异常**：内存/磁盘节保护属性不一致、PE 头被改、无 `FILE_OBJECT`（无磁盘映射文件）。
-3. **进程自身异常**：PEB 模块链表缺失、PEB 记录路径与 `FILE_OBJECT` 不符。
-
-> moneta 作者博客 [[memory-scanning-tools-evasion-techniques]] 已收录深度解析。
-
-### pe-sieve
-
-全面扫描 replaced/injected PE、Shellcode、Inline Hook、Process Hollowing/Doppelgänging、Reflective DLL Injection 等：
-
-- `scanModules`：模块名/磁盘存在性/PEB 存在性/头部修改/Inline Hook
-- `scanModuleIATs`：IAT Hook
-- `scanThreads` + `thread_scanner`：线程栈、Context 异常
-
-> 作者 hasherezade 同时开源大量攻防对抗技术（Process Ghosting、Doppelgänging、pe_to_shellcode、hollows_hunter），pe-sieve 体现"左右互搏"实战沉淀。
-
-### MalMemDetect
-
-DLL 注入式检测：Hollowing 检测 + Hook `RtlAllocateHeap`/`NtWaitForSingleObject`/`InternetConnect` 等关键 API，回溯调用栈定位可疑内存（`HookedInternetConnectW`、`DetectHollowingAndHooks`）。
+> 相关背景：用户态反射加载器（UDRL）是 Cobalt Strike Beacon 免杀对抗中的关键组件，详见 [[memory-scanning-tools-evasion-techniques]] 所整理的内存扫描工具体系与 UDRL 对抗全景。AceLdr 作为新一代 UDRL 的实现细节见 [[aceldr-technical-analysis]]。
 
 ---
 
-## AceLdr 四大核心规避技术实现深度解析
+## 一、反射式加载器技术谱系（PE Loader 类）
 
-### Sleep_Hook —— 基于 FOLIAGE 的 APC 队列 ROP 链延时混淆
+### 核心定位
 
-**源码位置**：`src/hooks/delay.c#L468`  
-**参考实现**：FOLIAGE、NightHawk "Obfuscate and Sleep"
+> **原文**：“1.PE加载器：除了常规的PE加载器，还有RDI，sRDI和pe2shellcode (如Donut / pe2shc）等，它们的核心都是PE加载器。”
 
-#### 核心流程
+反射式加载器的本质是**在用户态完整实现 Windows Loader 的核心功能**：分配内存、映射节区、处理重定位、解析导入表（含延迟导入、API Set Schema）、执行 TLS 回调、转入入口点。其优势在于**无需落地 PE 文件、无需创建进程/线程即可执行代码**，是 Shellcode、Beacon、后利用框架的核心加载组件。
 
-1. **创建专用 Wait Thread**（挂起状态）
-2. **向其 APC 队列压入一系列伪造 `CONTEXT` 记录**，构成 ROP 链，依次执行：
-   - **VM Protect**：将 Beacon 代码内存 `PAGE_EXECUTE_READ` → `PAGE_READWRITE`（或 `PAGE_NOACCESS`）
-   - **堆栈加密**：调用 `advapi32!SystemFunction032`（RC4）加密 Beacon 堆数据、代码段
-   - **真实延时**：`WaitForSingleObjectEx` 等待信号量/事件（此时线程状态为 `UserRequest`，规避 `DelayExecution` 筛选）
-   - **逆操作**：解密内存、恢复保护属性、恢复执行流
-3. **主线程调用 `NtSignalAndWaitForSingleObject`** 触发 Wait Thread 执行 APC 链，并同步等待其退出。
+### 主流实现对比
 
-#### 对抗效果
+| 加载器 | 形态 | 关键特性 | 典型场景 |
+|--------|------|----------|----------|
+| **RDI (Reflective DLL Injection)** | DLL 导出 `ReflectiveLoader` | Stephen Fewer 经典实现；DLL 自加载；支持 x86/x64 | Metasploit `exploit/windows/local/reflective_dll_injection`、Cobalt Strike 早期 Beacon |
+| **sRDI (Shellcode Reflective DLL Injection)** | 纯 Shellcode | 将 RDI 编译为位置无关 Shellcode；剥离 DLL 头；通过 `CallReflectiveLoader` 入口 | Cobalt Strike `artifact kit`、CrossC2、Sliver 等框架 Payload 生成 |
+| **Donut** | Shellcode 生成器 | 支持 .NET Assembly、PE 文件、VBScript/JS 转 Shellcode；内置 Changeling/Unmanaged CLR Hosting；支持 AMSI/ETW 绕过 | 红队武器化首选；`donut -f <payload> -o loader.bin` |
+| **pe2shc / pe2shellcode** | PE→Shellcode 转换器 | 将任意 PE（EXE/DLL）重写为位置无关 Shellcode；保留原导出表/资源；支持压缩/加密 | 免杀二次开发；将 C/C++/Rust/Go 编译产物直接 Shellcode 化 |
 
-- **绕过 Hunt-Sleeping-Beacons**：线程无 `DelayExecution` 状态，调用栈无 `Sleep`，Inline Hook 检测失效。
-- **绕过 patriot EIP 扫描**：EIP 指向合法 `WaitForSingleObjectEx`，非 VM Protect 代码区。
-- **绕过 moneta/pe-sieve 代码段完整性检查**：Sleep 期间代码段被加密/权限降低，内存与磁盘不一致窗口极短。
+> 技术渊源：RDI→sRDI 是“DLL 转 Shellcode”的标准化演进；Donut/pe2shc 进一步泛化为“任意 PE 转 Shellcode”，解决了 .NET、Go、Rust 等非传统 C/C++ 产物的内存执行问题。
 
-> 技术渊源：FOLIAGE 与 NightHawk 同源，详见 [[memory-scanning-tools-evasion-techniques]] 中 Ekko/FOLIAGE 专节。
-
----
-
-### Heap_Hook —— 自定义堆隔离与整体加密
-
-**源码位置**：`src/hooks/heap.c`（关键片段见文中代码块）
-
-#### 实现要点
-
-```c
-// 初始化阶段创建私有堆
-BeaconHeap = Api.ntdll.RtlCreateHeap(HEAP_GROWABLE, NULL, 0, 0, NULL, NULL);
-fillStub(MemoryBuffer, BeaconHeap, Reg.Full);
-
-// Hook GetProcessHeap，强制 Beacon 使用自定义堆
-SECTION(D) HANDLE GetProcessHeap_Hook(){
-    return ((PSTUB)OFFSET(Stub))->Heap;
-}
-```
-
-- **堆隔离**：Beacon 所有堆分配（`HeapAlloc`/`RtlAllocateHeap`）落在 AceLdr 私有堆，与进程默认堆物理分离。
-- **Sleep 时整体加密**：Sleep_Hook ROP 链中调用 `SystemFunction032` 对**整个私有堆内存区域**做 RC4 加密，醒来后解密。
-- **效果**：moneta/pe-sieve 扫描 "可执行私有内存" 或 "堆异常" 时，看到的是高熵加密块，YARA 特征匹配失效；堆元数据（LFH/段头）也被加密，堆完整性校验工具（如 `!heap -p`）失效。
-
----
-
-### Return Address Spoofing —— 关键 API 调用栈欺骗
-
-**源码位置**：`src/hooks/spoof.c`  
-**理论基础**：x64 Return Address Spoofing（UnknownCheats）
-
-#### Hook 目标 API
-
-| API | 场景 | 欺骗目的 |
-|-----|------|----------|
-| `RtlAllocateHeap` / `HeapAlloc` | 堆分配 | 隐藏调用者为 Beacon 代码区（加密/非镜像内存） |
-| `InternetConnectA` | C2 网络回连 | 绕过 MalMemDetect/patriot 对网络 API 调用栈回溯 |
-| `NtWaitForSingleObject` | 同步/延时 | 绕过 Hunt-Sleeping-Beacons/patriot 线程上下文检查 |
-
-#### 实现原理（x64）
-
-1. **构造伪造栈帧**：在受控内存（如线程栈或单独分配的 RW 内存）布置伪造 `CONTEXT` / 返回地址链，指向合法模块（如 `ntdll.dll`、`kernel32.dll` 导出函数中间指令）。
-2. **劫持控制流**：Hook 入口处保存原始返回地址，将 `RSP` 指向伪造栈帧，执行真实 API。
-3. **返回时落入伪造链**：API 返回时按伪造链逐级 `RET`，最终回到真实调用者，调用栈呈现"合法模块 → 合法模块 → ..."假象。
-
-#### 对抗效果
-
-- **MalMemDetect** Hook 回溯失效：调用栈无 Beacon 地址。
-- **patriot `EnumerateMemory`/`ValidateIntegrity`**：线程上下文显示合法模块地址。
-- **moneta 线程起始地址/PEB 校验**：配合 Sleep_Hook，主线程看似在合法 `WaitForSingleObjectEx` 中休眠。
-
----
-
-### 动态内存加密 —— SystemFunction032 (RC4) 全生命周期加密
-
-**算法**：`advapi32!SystemFunction032` 实现的 RC4（Windows 系统库，无需自带加密代码，减少静态特征）。
-
-#### 加密范围与时机
-
-| 阶段 | 加密对象 | 触发点 |
-|------|----------|--------|
-| **Sleep 入口** | Beacon 代码段（`MemoryBuffer`）、私有堆（`BeaconHeap`）、关键数据结构 | Sleep_Hook ROP 链第 2 步 |
-| **Sleep 期间** | 全内存高熵密文态 | 持续 |
-| **Wake-up** | 原地解密，恢复执行权限 | Sleep_Hook ROP 链逆操作步骤 |
-
-#### 关键代码片段（初始化分配 RWX 内存）
-
-```c
-Status = Api.ntdll.NtAllocateVirtualMemory((HANDLE)-1, &MemoryBuffer, 0, &Reg.Full, MEM_COMMIT, PAGE_READWRITE);
-if (Status == STATUS_SUCCESS) {
-    ...
-    Status = Api.ntdll.NtProtectVirtualMemory((HANDLE)-1, &MemoryBuffer, &Reg.Exec, PAGE_EXECUTE_READ, &OldProtection);
-    ...
-}
-```
-
-> **注**：初始化阶段仍存在 **RW→RX 变更** 与 **私有可执行内存** 窗口，这是实测被 moneta/pe-sieve 检出的根因（见下节）。
-
----
-
-## 实测对抗效果分析：moneta / pe-sieve 检出细节
-
-### 测试环境
-
-- **Loader**：AceLdr 编译版本（含上述四大 Hook）
-- **Beacon**：Cobalt Strike 4.x x64 Beacon
-- **扫描器**：moneta v1.0、pe-sieve64（最新 release）
-
-### moneta 输出关键发现
+### PE Loader 通用核心流程（原文 1.6 节）
 
 ```text
-0x0000000000100000:0x00001000 | Private | RX | 0x00000000 | Abnormal private executable memory...
+1. 为 PE Image 分配内存（VirtualAlloc / NtAllocateVirtualMemory）
+2. 依次写入 PE 头与节区（按 SectionAlignment 对齐）
+3. 处理重定位表（Base Relocation）
+4. 处理导入表（Import Address Table）
+5. 处理延迟导入表（Delay Import Table）← 关键补全点
+6. 恢复节区 DEP 属性（PAGE_EXECUTE_READ / PAGE_READONLY 等）
+7. 执行 TLS 回调（TLS Callback）
+8. 执行 EntryPoint（AddressOfEntryPoint）
 ```
 
-- **触发规则**：`Private` + `RX` + `非 Image` → **"Abnormal private executable memory"**（软指标 IOC）
-- **根因**：初始化 `NtAllocateVirtualMemory` + `NtProtectVirtualMemory` 产生的私有可执行内存区，**未在 Sleep 前释放或转为 RW/加密**。
-- **对抗建议**：
-  1. 初始化后立即 `PAGE_READWRITE`，仅在执行 Beacon 入口前 `PAGE_EXECUTE_READ`（缩小 RX 窗口）。
-  2. Sleep 时连同代码段一并 RC4 加密 + `PAGE_NOACCESS`（FOLIAGE 已做，需确保覆盖 `MemoryBuffer` 全范围）。
-  3. 考虑 **模块伪装**（Module Stomping 合法 DLL）或 **映射镜像内存**（`SEC_IMAGE`）替代私有内存。
+#### 关键工程化补全（原文 2.7 节）
 
-### pe-sieve 输出关键发现
+| 细节 | 问题现象 | 解决方案 |
+|------|----------|----------|
+| **延迟导入表** | `MemoryModule` 等开源 Loader 未处理 → `cmd.exe` 等依赖 `cmdext.dll` 的程序无法运行 | 解析 `IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT`，按需 `LoadLibrary`+`GetProcAddress` 并回填 IAT |
+| **API Set Schema** | 自实现 `GetProcAddress` 遇 `api-ms-win-core-*-l1-1-0` 虚拟 DLL 循环转发（如 `kernel32!InitializeProcThreadAttributeList` → `api-ms-win-core-processthreads-l1-1-0` → `kernel32`） | 指定 Base Module 解析虚拟 DLL 直接指向 `kernelbase`；或参考 `DarkLoadLibrary` 回退搜索 `kernel32/kernelbase/ntdll` 最终调用 `LdrGetProcedureAddress` |
+| **MEM_IMAGE 内存分配** | `VirtualAlloc` 产生 `MEM_PRIVATE` 可执行内存，极易被内存扫描标记（如 `pe-sieve` `Implanted shc`、`moneta` `Abnormal private executable memory`） | 通过 `NtCreateSection` + `SEC_IMAGE` 映射合法镜像文件、或 `NtMapViewOfSection` 伪装模块，使内存呈现 `MEM_IMAGE` 属性 |
 
-```text
----SUMMARY:
-Total scanned:      53
-Hooked:             3
-Hdrs Modified:      52
-Implanted:          1
-Implanted shc:      1
-Total suspicious:   56
-```
-
-- **Hooked: 3** → `GetProcessHeap`/`InternetConnectA`/`NtWaitForSingleObject` Inline Hook 被 `scanModules`/`scanModuleIATs` 捕获。
-- **Hdrs Modified: 52** → PE 头被修改（可能含 AceLdr 自身 PE 伪造、Beacon PE 头抹除、或模块 Stomping 残留）。
-- **Implanted shc: 1** → 即上述 `0x100000` 私有 RX 内存被判定为 Shellcode 植入。
-
-#### 误报说明
-
-> 扫描输出中 "ARM Windows xtajit64" 相关模块为 JIT 编译器生成的合法动态代码，属 pe-sieve 误报，非 AceLdr 问题。
+> 相关实现参考：[[pe-manual-mapping-loader-implementation]] 从零构建手动映射加载器全流程，含导入表修复、重定位、延迟导入、API Set Schema、MEM_IMAGE 伪装等工程化细节。
 
 ---
 
-## 总结与工程化建议
+## 二、Section 相关技术（TxF / DELETE_PENDING 创建 IMAGE Section）
 
-| 技术 | 核心价值 | 现存短板 | 强化方向 |
-|------|----------|----------|----------|
-| **Sleep_Hook (FOLIAGE)** | 彻底消除 `Sleep` 线程特征、代码段加密窗口极短 | 依赖单独 Wait Thread，线程对象可被枚举 | 融合 **Ekko** 无线程 Timer APC 方案，或 **Stack Spoofing** 使主线程直接执行 ROP 链 |
-| **Heap_Hook** | 堆隔离+整体加密，消除堆特征与 YARA 命中 | 堆句柄泄露（`GetProcessHeap` Hook 可被 `EnumProcessHeaps` 绕过） | Hook `RtlCreateHeap`/`RtlDestroyHeap` 全链路，配合 **堆元数据混淆** |
-| **Return Address Spoofing** | 关键 API 调用栈"洗白" | 仅覆盖 4 个 API，调用栈深度固定易被启发式识别 | 扩展 Hook 列表（`NtCreateThreadEx`/`NtQueueApcThread` 等），引入 **动态栈帧生成** 与 **随机化合法返回地址池** |
-| **动态内存加密** | 系统库 RC4 无静态特征，Sleep 期全内存高熵 | **初始化 RX 私有内存** 成硬伤 | **模块伪装/镜像映射** 替代私有内存；**延迟提交 RX** 至 Beacon 真正执行前 |
+三大技术共同核心：**不落地/近似不落地创建合法 IMAGE Section，再通过 `NtCreateProcessEx` 直接由内核完成映射、重定位、导入表解析、主线程创建**，省去用户态 Loader 代码。
 
-> **定位**：AceLdr 作为 **教学/原型级 UDRL**，完整演示了"Sleep 混淆+堆隔离+调用栈欺骗+动态加密"四大支柱，**实战部署需补齐初始化阶段内存伪装、Hook 面扩展、对抗主动扫描（如 patriot 8 字节搜索）的工程化细节**。
+### Process Doppelganging（TxF 事务）
+
+**流程**（原文 1.2 节）：
+1. `CreateTransaction` 创建 NTFS 事务
+2. 事务内创建/覆写文件，写入 Payload PE
+3. 文件句柄传给 `NtCreateSection(SEC_IMAGE)` 创建 IMAGE Section
+4. 关闭文件句柄
+5. `RollbackTransaction` 回滚事务 → 磁盘无文件残留
+6. `NtCreateProcessEx` 通过 Section 创建进程
+7. 写入 PEB `ProcessParameters` 与 `Environment`
+8. 创建主线程
+
+**特点**：**真正不落地**（ProcMon 无文件创建/写入事件）；**无需手动重定位/导入表**；但创建进程**异常**（任务管理器进程名不符、Process Hacker 显示源文件不存在）。
+
+### Process Ghosting（DELETE_PENDING）
+
+**流程**（原文 1.3 节）：
+1. 创建文件
+2. `SetFileInformation(FILE_DISPOSITION_INFORMATION.DeleteFile=TRUE)` 标记删除待定
+3. 写入 Payload PE
+4. 文件句柄创建 IMAGE Section
+5. 关闭句柄 → 文件物理删除
+6. `NtCreateProcessEx` 创建进程
+7. 写入 PEB 参数
+8. 创建主线程
+
+**特点**：**近似不落地**（内核层监控仍可见写文件行为）；同样享受内核自动重定位/导入表；进程异常特征同 Doppelganging。
+
+> Windows 删除文件两种方式（原文脚注 [1][2]）：`FILE_DELETE_ON_CLOSE` 创建时指定、或句柄设置 `FILE_DISPOSITION_INFORMATION`。`DeleteFileW` 最终调用后者。
+
+### Process Herpaderping
+
+原文 1.4 节略过，实为 **Doppelganging/Ghosting 变体**：创建 Section 后、创建进程前，覆写/截断源文件内容，使磁盘文件与内存镜像不一致。核心利用点相同：**IMAGE Section 创建瞬间锁定镜像内容，后续文件变更不影响已创建 Section**。
 
 ---
 
-## 交叉引用与延伸阅读
+## 三、镂空傀儡进程技术（Process Hollowing / Transacted Hollowing）
 
-- [[memory-scanning-tools-evasion-techniques]] —— 内存扫描工具全景与 UDRL 对抗技术谱系
-- [[cobalt-strike-4.7-bof-internals]] —— Cobalt Strike 4.7 BOF 加载器内部实现，关联 Beacon 交互模型
-- [[cobalt-strike-external-c2-smb-beacon]] —— SMB Beacon 与 External C2 通信模型，横向移动视角
-- [[phantom-dll-hollowing-technique]] —— Phantom DLL Hollowing 内存注入隐藏技术，模块伪装替代方案
-- [[pe-manual-mapping-loader-implementation]] —— PE 手动映射加载器全流程，导入表修复/重定位/模块隐藏细节
-- [[windows-kernel-callback-injection-defense]] —— 内核回调拦截注入防御视角，蓝队对抗参考
+### Process Hollowing（经典镂空）
+
+**流程**（原文 1.1 节）：
+1. `CREATE_SUSPENDED` 创建傀儡进程
+2. （可选）`NtUnmapViewOfSection` 卸载原镜像
+3. 写入 Payload PE 头
+4. 按节区写入并展开（手动做 Section Alignment → File Alignment 转换）
+5. **手动处理重定位表**（因主线程未运行，系统 Loader 尚未处理）
+6. 修改 PEB `ImageBaseAddress`
+8. 修改主线程 Context `RIP/EIP` → OEP
+9. `NtResumeThread` 恢复执行
+
+**核心洞察**（原文 2.1 节）：**系统 Loader 处理导入表、重定位发生在主线程恢复之后**（挂起进程仅加载自身 + ntdll），故镂空时**必须手动重定位，但无需处理导入表**——恢复后由系统完成。
+
+> 推测机制：APC 或进程挂靠机制延迟执行 Loader 收尾工作。
+
+### Transacted Hollowing（混合最优解）
+
+**流程**（原文 1.5 节）：
+1. TxF 事务内创建文件、写 Payload
+2. 文件句柄创建 IMAGE Section
+3. 关闭句柄、回滚事务
+4. 创建挂起傀儡进程
+5. `NtMapViewOfSection` 将 IMAGE Section 映射入傀儡进程
+6. 修改 PEB `ImageBaseAddress`
+7. 修改主线程 OEP
+8. 恢复主线程
+
+**优势融合**（原文 2.5 节表格）：
+
+| 维度 | Process Hollowing | Process Doppelganging | Transacted Hollowing |
+|------|-------------------|-----------------------|----------------------|
+| 重定位 | 手动 | **内核自动**（映射 IMAGE Section 触发） | **内核自动** |
+| PEB 处理 | 仅改 ImageBase | 需重建 ProcessParameters/Environment | 仅改 ImageBase |
+| 内存属性 | `MEM_PRIVATE` | `MEM_IMAGE` | **`MEM_IMAGE`** |
+| 进程外观 | 正常傀儡进程 | **异常**（名字/路径不符） | **正常傀儡进程** |
+| 落地性 | 无 | 真不落地 | 真不落地 |
+
+**关键机制**：`NtMapViewOfSection` 映射 IMAGE Section 时尝试按 `ImageBase` 映射，失败返回 `STATUS_IMAGE_NOT_AT_BASE` 并标记，**主线程恢复后内核自动重定位**；且映射内存为 `MEM_IMAGE`，规避 `MEM_PRIVATE` 可执行内存检测。
 
 ---
 
-## 参考资料（文中引用锚点）
+## 四、Sysmon Event ID 25 (Process Tampering) 检测对抗现状
 
-1. AceLdr: https://github.com/kyleavery/AceLdr  
-2. Hunt-Sleeping-Beacons: https://github.com/thefLink/Hunt-Sleeping-Beacons  
-3. checkCallstack: https://github.com/thefLink/Hunt-Sleeping-Beacons/blob/main/Hunt-Sleeping-Beacons.c#L58  
-4. checkLandDiff: https://github.com/thefLink/Hunt-Sleeping-Beacons/blob/main/Hunt-Sleeping-Beacons.c#L305  
-5. checkInlineHooks: https://github.com/thefLink/Hunt-Sleeping-Beacons/blob/main/Hunt-Sleeping-Beacons.c#L396  
-6. BeaconHunter: https://github.com/3lp4tr0n/BeaconHunter  
-7. BeaconEye: https://github.com/CCob/BeaconEye  
-8. patriot: https://github.com/joe-desimone/patriot  
-9. FindSuspiciousContext: https://github.com/joe-desimone/patriot/blob/main/patriot.cpp#L54  
-10. Ekko: https://github.com/Cracked5pider/Ekko  
-11. NightHawk's Attempt At Obfuscate and Sleep: https://suspicious.actor/2022/05/05/mdsec-nighthawk-study.html  
-12. EnumerateMemory: https://github.com/joe-desimone/patriot/blob/main/patriot.cpp#L157  
-13. ValidateIntegrity: https://github.com/joe-desimone/patriot/blob/main/pefile.cpp#L231  
-14. ParseHeader: https://github.com/joe-desimone/patriot/blob/main/pefile.cpp#L36  
-15. moneta: https://github.com/forrest-orr/moneta  
-16. Masking Malicious Memory Artifacts – Part II: https://www.forrest-orr.net/post/masking-malicious-memory-artifacts-part-ii-insights-from-moneta  
-17. pe-sieve: https://github.com/hasherezade/pe-sieve  
-18. scanModules: https://github.com/hasherezade/pe-sieve/blob/master/scanners/scanner.cpp#L314  
-19. scanModuleIATs: https://github.com/hasherezade/pe-sieve/blob/master/scanners/scanner.cpp#L402  
-20. scanThreads: https://github.com/hasherezade/pe-sieve/blob/master/scanners/scanner.cpp#L449  
-21. thread_scanner: https://github.com/hasherezade/pe-sieve/blob/master/scanners/thread_scanner.cpp  
-22. MalMemDetect: https://github.com/waldo-irc/MalMemDetect/  
-23. HookedInternetConnectW: https://github.com/waldo-irc/MalMemDetect/blob/main/MalMemDetect/Source.cpp#L204  
-24. DetectHollowingAndHooks: https://github.com/waldo-irc/MalMemDetect/blob/main/MalMemDetect/Hollow.h#L2  
-25. Sleep_Hook: https://github.com/kyleavery/AceLdr/blob/main/src/hooks/delay.c#L468  
-26. FOLIAGE: https://github.com/SecIdiot/FOLIAGE  
-27. Spoof: https://github.com/kyleavery/AceLdr/blob/main/src/hooks/spoof.c  
-28. x64 return address spoofing: https://www.unknowncheats.me/forum/anti-cheat-bypass/268039-x64-return-address-spoofing-source-explanation.html
+原文 2.6 节实测结论：
+
+- **检测覆盖**：Process Hollowing、Doppelganging、Ghosting、Herpaderping 均被检出
+- **盲区**：**Transacted Hollowing 目前无法检测**
+
+**Sysmon 官方定义两类检测**：
+1. `Image is locked for access` —— 文件被锁定无法读取哈希
+2. `Image is replaced` —— 内存镜像与磁盘文件不一致
+
+**为何 Transacted Hollowing 逃逸**：TxF 回滚后磁盘**根本不存在源文件**，无“替换”可言；傀儡进程本身合法，内存镜像来自事务内 Section，与磁盘无可比对对象。属**高可用规避技术**。
+
+> 防御视角参考：[[windows-kernel-callback-injection-defense]] 利用 `ObRegisterCallbacks` 拦截进程句柄创建/复制，从内核层面阻断镂空操作。
+
+---
+
+## 五、技术谱系总结与选型建议
+
+| 需求场景 | 推荐技术 | 核心理由 |
+|----------|----------|----------|
+| **纯内存执行 Shellcode/Beacon，无进程创建** | **sRDI / Donut / pe2shc** | 无进程树异常、无线程注入、配合 UDRL（AceLdr/Ekko/FOLIAGE）做睡眠混淆、堆加密、调用栈欺骗 |
+| **需落地可执行文件伪装（签名、路径、进程名）** | **Transacted Hollowing** | 真不落地 + `MEM_IMAGE` + 正常傀儡进程外观 + 免手动重定位/导入表 + 绕过 Sysmon Event ID 25 |
+| **需利用合法签名二进制（Living-off-the-land）** | **Process Hollowing** | 成熟稳定、工具链丰富（Cobalt Strike `spawnto`、Sliver `hollow`），但需手动重定位、内存为 `MEM_PRIVATE` |
+| **.NET Assembly / 非传统语言产物内存执行** | **Donut** | 内置 CLR Hosting、支持 AMSI/ETW 绕过、输出纯 Shellcode 可接 UDRL |
+| **红队武器化二次开发（C/Rust/Go 编译产物 Shellcode 化）** | **pe2shc** | 保留导出表/资源、支持压缩加密、直接产出位置无关 Shellcode |
+
+---
+
+## 六、交叉引用与延伸阅读
+
+- [[aceldr-technical-analysis]] —— AceLdr 四大核心规避技术（Sleep_Hook/Heap_Hook/Return Address Spoofing/动态内存加密）实测对抗 moneta/pe-sieve
+- [[memory-scanning-tools-evasion-techniques]] —— 七大主流内存扫描工具检测原理全景与 UDRL 对抗技术谱系
+- [[pe-manual-mapping-loader-implementation]] —— PE 手动映射加载器全流程实现（导入表/重定位/延迟导入/API Set Schema/MEM_IMAGE 伪装）
+- [[process-injection-tampering-techniques]] —— Process Hollowing/Doppelganging/Ghosting/Herpaderping/Transacted Hollowing 五大技术原理对比与 Sysmon Event ID 25 检测规避
+- [[phantom-dll-hollowing-technique]] —— Phantom DLL Hollowing 合法模块内存劫持隐藏技术，替代方案参考
+- [[cobalt-strike-external-c2-smb-beacon]] —— SMB Beacon 与 External C2 通信模型，结合反射加载器实战落地
+- [[windows-kernel-callback-injection-defense]] —— 内核回调拦截进程注入/镂空的蓝队防御实现
+
+---
+
+## 七、参考资料（文中引用锚点）
+
+1. 原文：http://mp.weixin.qq.com/s?__biz=Mzg5MjU2NTc1Mg==&mid=2247483721&idx=1&sn=5ce84fc04adbedce1a40a348d28e7a10  
+2. Windows删除文件两种方法：https://www.osronline.com/article.cfm^article=245.htm  
+3. ReactOS DeleteFileW 实现：https://doxygen.reactos.org/dd/db0/dll_2win32_2kernel32_2client_2file_2delete_8c.html#a6ef6fb74f843f5a3a7ce135d57411806  
+4. Transacted Hollowing 结合双方优势：https://blog.malwarebytes.com/threat-analysis/2018/08/process-doppelganging-meets-process-hollowing_osiris/  
+5. Sysmon Event ID 25 Process Tampering：https://docs.microsoft.com/en-us/sysinternals/downloads/sysmon#event-id-25-processtampering-process-image-change  
+6. API Set Schema 解析：https://lucasg.github.io/2017/10/15/Api-set-resolution/  
+7. DarkLoadLibrary 回退搜索实现：https://github.com/bats3c/DarkLoadLibrary/blob/master/DarkLoadLibrary/src/pebutils.c#L413
 
 ## 来源
 
 - [0x4d5a-202103-202209_05](../sources/0x4d5a-202103-202209_05.md)
+- [0x4d5a-202103-202209_09](../sources/0x4d5a-202103-202209_09.md)

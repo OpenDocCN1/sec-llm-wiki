@@ -305,3 +305,4 @@
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_085 -> xd-security-incident-response-notes.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_086 -> xd-security-waf-bypass-techniques-day46-49.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_087 -> xd-security-python-security-development-notes.md
+## [2026-11-14] ingest | 0x00实验室-202108-202304_088 -> xd-security-vulnerability-discovery-notes-day42-45.md

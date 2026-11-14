@@ -1,7 +1,8 @@
 ---
 title: Java PreparedStatement 预编译机制防御 SQL 注入深度解析
 description: 系统梳理 Java PreparedStatement 预编译机制如何通过参数化查询从根本上防御 SQL 注入，涵盖 SQL 注入必要条件、预编译原理、类型约束验证、客户端转义与服务端真正预编译的区别、mysql-connector-java
-  转义源码细节、useServerPrepStmts 参数启用真正服务端预编译的抓包验证。
+  转义源码细节、useServerPrepStmts 参数启用真正服务端预编译的抓包验证。新增 WebGoat SQL Injection Mitigation
+  第 12 关 ORDER BY 注入实战案例，演示预编译无法参数化字段名的根因、手工二分法与 Burp Suite Intruder 双轨验证流程。
 category: program-analysis
 tags:
 - Java
@@ -13,13 +14,16 @@ tags:
 - 数据库安全
 - mysql-connector-java
 - useServerPrepStmts
+- WebGoat
+- ORDER BY注入
+- Burp Suite Intruder
 date: '2023-04-16'
 updated: '2026-11-14'
 ---
 
 ## 概述
 
-Java `PreparedStatement` 作为 JDBC 规范的核心接口，通过 **预编译** 与 **参数化查询** 机制，从根本上切断了 SQL 注入的核心攻击路径——「用户输入拼接进 SQL 语句并被数据库当作代码执行」。本页系统梳理 SQL 注入的必要条件、PreparedStatement 预编译原理、类型约束验证逻辑，并深入分析 **客户端模拟预编译（转义）** 与 **服务端真正预编译** 的本质区别、mysql-connector-java 转义源码实现细节、以及通过 `useServerPrepStmts=true` 启用服务端预编译的抓包验证方法。
+Java `PreparedStatement` 作为 JDBC 规范的核心接口，通过 **预编译** 与 **参数化查询** 机制，从根本上切断了 SQL 注入的核心攻击路径——「用户输入拼接进 SQL 语句并被数据库当作代码执行」。本页系统梳理 SQL 注入的必要条件、PreparedStatement 预编译原理、类型约束验证逻辑，并深入分析 **客户端模拟预编译（转义）** 与 **服务端真正预编译** 的本质区别、mysql-connector-java 转义源码实现细节、以及通过 `useServerPrepStmts=true` 启用服务端预编译的抓包验证方法。同时新增 **WebGoat SQL Injection Mitigation 第 12 关 ORDER BY 注入实战案例**，演示预编译无法参数化字段名的根因、手工二分法与 Burp Suite Intruder 双轨验证流程。
 
 ## SQL 注入的必要条件
 
@@ -97,6 +101,113 @@ ps.setDate(3, sqlDate);  // 日期类型强约束
 - `?` 占位符 **不是字符串拼接点**，而是 **参数标记**。
 - JDBC 规范禁止在 `prepareStatement(sql)` 之后再修改 `sql` 字符串。
 - 代码层面无法通过 `+`、`String.format` 等方式注入结构性片段。
+
+## 预编译无法参数化的场景：ORDER BY 等标识符位置
+
+### 根因分析
+
+**本质限制**：凡是 **字符串但又不能加引号** 的位置都不能参数化。典型场景包括：
+
+- `ORDER BY` 后的字段名（字段名若加引号变成字符串字面量，导致语法错误）
+- `LIKE` 后的模式串（需动态拼接 `%` 通配符，无法直接占位）
+- 表名、库名、函数名、SQL 关键字等 **标识符/结构性片段**
+
+```sql
+-- 正确：ORDER BY username（标识符，无引号）
+-- 错误：ORDER BY 'username'（字符串字面量，语义变为按常量排序）
+
+-- PreparedStatement 无法处理：
+String sql = "SELECT * FROM users ORDER BY ?";  // 驱动会报错或当作字符串处理
+ps.setString(1, "username");  // 实际执行：ORDER BY 'username' → 逻辑错误
+```
+
+> **核心原因**：预编译阶段数据库需解析 SQL 结构生成执行计划，标识符（列名、表名）必须在解析期确定，无法作为运行时参数延迟绑定。
+
+### 实战案例：WebGoat SQL Injection Mitigation 第 12 关 ORDER BY 注入
+
+#### 靶场环境与目标
+
+- **平台**：WebGoat 8.2.1
+- **关卡**：SQL Injection (Mitigation) 第 12 关
+- **目标**：找出服务器 IP 的前三位（如 `104`）
+- **提示**：明确提示使用 `ORDER BY` 进行注入
+
+#### 漏洞发现与验证流程
+
+**1. 功能侦察**  
+点击页面上的 `hostname`、`ip`、`mac` 等列标题，观察记录排序顺序变化，推测存在「按字段名排序」功能。
+
+**2. 抓包分析**  
+使用 Burp Suite 拦截请求，发现参数 `column` 直接传入字段名：
+
+```
+POST /SqlInjection/attack12 HTTP/1.1
+...
+column=ip
+```
+
+**3. 单引号测试触发报错**  
+将参数修改为 `ip'`，返回数据库报错信息，确认存在注入点：
+
+```
+You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''ip''' at line 1
+```
+
+**4. 布尔盲注验证**  
+利用 `ORDER BY` 条件排序特性构造 Payload，通过页面排序结果的真/假差异确认注入：
+
+```sql
+-- 真条件：按 ip 升序（正常排序）
+ip' AND 1=1 -- 
+
+-- 假条件：按 ip 降序（排序反转，页面顺序变化）
+ip' AND 1=2 -- 
+```
+
+观察返回列表顺序是否发生翻转，即可判断注入条件真假，确认 **布尔盲注** 可行。
+
+#### 双轨验证流程：手工二分法 + Burp Suite Intruder
+
+##### 方法一：手工二分法（适合小范围枚举）
+
+由于仅需爆破 IP 前三位（0-255），手工二分法效率可接受。核心 Payload 模板：
+
+```sql
+ip' AND (SELECT SUBSTRING(ip,1,3) FROM servers LIMIT 1) > '100' -- 
+```
+
+- 根据页面排序顺序判断条件真假
+- 二分法快速逼近：`100` → `150` → `125` → `112` → `106` → `104` ✅
+- 最终确定前三位为 `104`
+
+> **技巧**：利用 `SUBSTRING` 截取 IP 字符串前缀，配合字符串比较实现逐位枚举。
+
+##### 方法二：Burp Suite Intruder 自动化爆破（标准化复现）
+
+**配置步骤**：
+
+1. **设置爆破点**：在 `column` 参数处添加两个爆破位置（`§` 标记）  
+   `ip' AND (SELECT SUBSTRING(ip,1,3) FROM servers LIMIT 1) = '§num1§§num2§' -- `
+2. **Payload Sets 设置**：
+   - **Payload Set 1**（百位）：`Numbers` 类型，范围 `1-3`（IP 首位通常 1-3）
+   - **Payload Set 2**（十位+个位）：`Numbers` 类型，范围 `0-99`，步长 1，补零宽度 2
+3. **Attack Type**：选择 **Cluster Bomb**（笛卡尔积组合，两位独立遍历）
+4. **Grep - Match 标记特征**：在响应中搜索 `hostname` 列标题出现的位置/顺序特征，或对比正常排序响应的 `Content-Length` 差异
+
+**结果分析**：  
+Intruder 结果表中，`num1=1, num2=04`（即 `104`）对应的响应与正常 `hostname` 排序一致，标记为命中。最终确认服务器 IP 前三位为 **104**。
+
+> **对比优势**：Intruder 可批量验证、留存证据、支持复杂 Payload 编码（URL/双重编码），适合 CTF 比赛与渗透测试标准化复现。
+
+#### 防御启示
+
+| 场景 | 风险等级 | 修复方案 |
+|------|----------|----------|
+| `ORDER BY` 直接拼接用户输入字段名 | **高** | **白名单校验**：`if (allowedColumns.contains(userInput)) sql += " ORDER BY " + userInput;` |
+| `LIKE` 模糊查询拼接 `%` | **中** | 参数化值 + 代码层拼接通配符：`ps.setString(1, "%" + keyword + "%")` |
+| 动态表名/库名 | **高** | 白名单映射：`Map<String, String> tableMap = ...; String realTable = tableMap.get(userInput);` |
+
+> **铁律**：**所有无法使用 `?` 占位符的位置，必须在应用层做严格白名单校验，绝不能直接拼接。**
 
 ## 客户端转义 vs 服务端真正预编译：本质区别与抓包验证
 
@@ -263,6 +374,26 @@ try (PreparedStatement ps = conn.prepareStatement(sql.toString())) {
 }
 ```
 
+### ✅ 推荐：ORDER BY 等标识符白名单校验
+
+```java
+// 白名单枚举
+private static final Set<String> ALLOWED_SORT_COLUMNS = Set.of("id", "username", "email", "created_at");
+private static final Set<String> ALLOWED_SORT_ORDERS = Set.of("ASC", "DESC");
+
+public List<User> queryUsers(String sortColumn, String sortOrder) {
+    // 严格白名单校验，不在列表中抛异常或默认值
+    String safeColumn = ALLOWED_SORT_COLUMNS.contains(sortColumn) ? sortColumn : "id";
+    String safeOrder = ALLOWED_SORT_ORDERS.contains(sortOrder.toUpperCase()) ? sortOrder : "ASC";
+    
+    // 校验通过后，标识符直接拼接（安全，因为已确认来自白名单）
+    String sql = "SELECT * FROM users ORDER BY " + safeColumn + " " + safeOrder;
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        return executeQuery(ps);
+    }
+}
+```
+
 ### ❌ 反模式：拼接标识符/子句
 
 ```java
@@ -294,8 +425,9 @@ String sql = "SELECT * FROM " + tableName + " ORDER BY " + orderBy + " LIMIT ?";
 | **验证方法** | 1. 代码审计搜索 `Statement`/`createStatement`/字符串拼接 SQL<br>2. 单元测试注入载荷验证无回显<br>3. **抓包确认 `COM_STMT_PREPARE` / `COM_STMT_EXECUTE` 协议** |
 | **客户端转义局限** | 依赖驱动实现正确性、字符集一致性，协议层面仍是文本拼接 |
 | **服务端预编译优势** | 协议层面二进制参数传输、执行计划复用、免疫转义缺陷与宽字节注入 |
+| **ORDER BY 实战教训** | 字段名不可参数化，**必须白名单校验**；WebGoat 第 12 关演示布尔盲注 + Intruder 双轨验证全流程 |
 
-> **一句话记忆**：**PreparedStatement 让数据库「只认模板、不认拼接」，配合 `useServerPrepStmts=true` 从协议原理层面消灭了 SQL 注入的生存空间。**
+> **一句话记忆**：**PreparedStatement 让数据库「只认模板、不认拼接」，配合 `useServerPrepStmts=true` 从协议原理层面消灭了 SQL 注入的生存空间；标识符位置靠白名单，参数位置靠预编译。**
 
 ## 相关页面
 
@@ -304,8 +436,10 @@ String sql = "SELECT * FROM " + tableName + " ORDER BY " + orderBy + " LIMIT ?";
 - [[vulnhub-hard-socnet2-writeup]] — 实战案例：文件上传 + SQL 注入 + 二进制漏洞组合链
 - [[edu-src-penetration-test-case-study]] — 教育行业 SRC 渗透测试全链路（含弱口令、XSS、文件上传）
 - [[cybersecurity-interview-guide-2022]] — 网络安全面试题库（含 SQL 注入、预编译原理高频考点）
+- [[burpsuite-basics-tutorial]] — Burp Suite Intruder 四大爆破模式原理与实战（本案例使用 Cluster Bomb 模式）
 
 ## 来源
 
 - [0x00实验室-202108-202304_043](../sources/0x00实验室-202108-202304_043.md)
 - [0x00实验室-202108-202304_047](../sources/0x00实验室-202108-202304_047.md)
+- [0x00实验室-202108-202304_090](../sources/0x00实验室-202108-202304_090.md)

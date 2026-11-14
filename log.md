@@ -307,3 +307,4 @@
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_087 -> xd-security-python-security-development-notes.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_088 -> xd-security-vulnerability-discovery-notes-day42-45.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_089 -> xd-security-deserialization-xxe-notes-day37-39.md, php伪协议与反序列化利用.md, xxe-xml-dtd-fundamentals.md
+## [2026-11-14] ingest | 0x00实验室-202108-202304_090 -> jwt漏洞原理与实战利用.md, java-preparedstatement-sql-injection-defense.md

@@ -346,3 +346,4 @@
 ## [2026-11-15] ingest | 0x4d5a-202103-202209_13 -> inceptor-av-edr-evasion-framework.md, memory-scanning-tools-evasion-techniques.md
 ## [2026-11-15] ingest | 0x4d5a-202103-202209_14 -> mimikatz-sekurlsa-pth-internals.md, mimikatz-source-code-architecture-golden-ticket-audit.md
 ## [2026-11-15] ingest | 0x4d5a-202103-202209_15 -> aiiod-awd-framework-analysis.md
+## [2026-11-15] ingest | 0x4d5a-202103-202209_16 -> wechat-format-highlightjs-code-highlighting.md

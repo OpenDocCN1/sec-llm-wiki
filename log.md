@@ -330,3 +330,4 @@
 ## [2026-11-15] ingest | 0x00实验室-202108-202304_110 -> xd-security-privilege-escalation-notes-day58-64.md
 ## [2026-11-15] ingest | 0x00实验室-202108-202304_111 -> threat-attribution-tracing-techniques.md, xd-security-incident-response-notes.md
 ## [2026-11-15] ingest | 0x00实验室-202108-202304_112 -> wechat-personal-reflection-20210805.md
+## [2026-11-15] ingest | 0x4d5a-202103-202209_00 -> 0x4d5a-wechat-archive-202103-202209.md

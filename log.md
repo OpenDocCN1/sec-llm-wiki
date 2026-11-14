@@ -281,3 +281,4 @@
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_061 -> ettercap-arp-mitm-practical-guide.md, 0w1club-week2-wifi-hijacking-arp-spoofing.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_062 -> frp内网渗透应用.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_063 -> websocket-vulnerabilities-analysis.md
+## [2026-11-14] ingest | 0x00实验室-202108-202304_064 -> network-fundamentals-penetration-testing.md

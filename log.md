@@ -334,3 +334,4 @@
 ## [2026-11-15] ingest | 0x4d5a-202103-202209_01 -> rust-proc-macro-win32-dynamic-import.md
 ## [2026-11-15] ingest | 0x4d5a-202103-202209_02 -> windows-kernel-callback-injection-defense.md
 ## [2026-11-15] ingest | 0x4d5a-202103-202209_03 -> zig-cc-cross-compilation-guide.md
+## [2026-11-15] ingest | 0x4d5a-202103-202209_04 -> cobalt-strike-4.7-bof-internals.md

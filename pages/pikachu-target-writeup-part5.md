@@ -1,7 +1,7 @@
 ---
 title: Pikachu靶场实战系列第五篇：目录遍历、信息泄露、PHP反序列化、XXE、不安全重定向、SSRF六大漏洞完整复现与利用链分析
 description: 基于无名安全团队归档文章，系统复现 Pikachu 靶场第 5 篇实战内容，涵盖目录遍历、敏感信息泄露、PHP 反序列化、XXE 外部实体注入、不安全
-  URL 跳转、SSRF 服务端请求伪造六大漏洞的原理、Payload 构造、利用链分析及防御思路，交叉引用现有知识库相关技术详解页面。
+  URL 跳转、SSRF 服务端请求伪造六大漏洞的原理、Payload 构造、利用链分析及防御思路，交叉引用现有知识库相关技术详解页面，并补充指向第 4 部分（RCE、文件包含、文件上传、越权）的导航链路。
 category: program-analysis
 tags:
 - Pikachu靶场
@@ -20,6 +20,11 @@ updated: '2026-11-14'
 ## 概述
 
 本页面整理自无名安全团队微信归档文章《pikachu靶场&目录遍历&信息泄露&反序列化&XXE&重定向&SSRF(五)》，系统复现 Pikachu 靶场第 5 篇实战内容。文章覆盖 **目录遍历**、**敏感信息泄露**、**PHP 反序列化**、**XXE (XML External Entity Injection)**、**不安全 URL 跳转**、**SSRF (Server-Side Request Forgery)** 六大漏洞类型，从原理讲解、源码审计、Payload 构造到实战复现形成完整攻击链分析。
+
+> **系列导航**：
+> - 上一篇：[[pikachu-target-writeup-part4]] —— RCE（Ping/Eval）、文件包含（本地/远程）、文件下载、文件上传多层绕过（前端校验/MIME/getimagesize）、水平/垂直越权
+> - 本篇：目录遍历、信息泄露、PHP 反序列化、XXE、不安全重定向、SSRF
+> - 相关技术专题：[[php伪协议与反序列化利用]]、[[xxe-xml-dtd-fundamentals]]、[[ssrf-bypass-techniques]]、[[ssrf-ctf-exploitation-guide]]
 
 > 原文链接：http://mp.weixin.qq.com/s?__biz=Mzg5MDY2MTUyMA==&mid=2247486443&idx=5&sn=e7d24e42ee833787b1bcf8f3561ce73d
 > 作者：无名安全团队成员 - Geek_韧
@@ -44,6 +49,7 @@ updated: '2026-11-14'
 
 - [[ssrf-ctf-exploitation-guide]] —— SSRF 场景下常结合 `file://` 协议实现本地文件读取，与目录遍历利用思路相通
 - [[vulnhub-infosecprep-oscp-writeup]] —— VulnHub 靶机实战中通过目录遍历获取 Base64 编码 SSH 私钥
+- [[pikachu-target-writeup-part4]] —— 第 4 部分「文件下载漏洞」同样利用 `../../../1.txt` 实现任意文件下载，属于同类路径遍历利用
 
 ---
 
@@ -69,6 +75,7 @@ updated: '2026-11-14'
 
 - [[ctfshow-web-info-gathering-brute-force]] —— CTFshow 信息收集关卡系统梳理源码泄露、版本控制残留、编辑器缓存、Cookie/域名/邮箱信息利用等技巧
 - [[attack-defense-world-master-advanced-writeup]] —— 攻防世界靶场中 Git 源码泄露、phpinfo 探针等信息收集实战
+- [[pikachu-target-writeup-part4]] —— 第 4 部分「越权漏洞」中垂直越权利用 Session 固定/凭证复用，亦属信息泄露后的权限滥用延伸
 
 ---
 
@@ -125,6 +132,7 @@ __toString()    // 对象被当作字符串使用时触发
 - [[php伪协议与反序列化利用]] —— 深度解析 `__wakeup` 绕过（对象计数不匹配）、正则过滤数字绕过（+ 前缀）、base64 编码差异利用细节，结合赣网杯2020、攻防世界 unserialize3 实战
 - [[attack-defense-world-master-advanced-writeup]] —— 攻防世界高手进阶区 PHP 反序列化题目完整解题报告
 - [[php-webshell-fundamentals-chopper-analysis]] —— PHP 一句话木马基于 `eval()` 执行原理，蚁剑连接流程与数据包解析
+- [[pikachu-target-writeup-part4]] —— 第 4 部分「RCE-EVAL」展示 `eval()` 直接执行代码，与反序列化魔术方法 `__destruct`/`__wakeup` 触发代码执行同属「危险函数/魔术方法可控」攻击面
 
 ---
 
@@ -191,6 +199,7 @@ __toString()    // 对象被当作字符串使用时触发
 - [[xxe-xml-dtd-fundamentals]] —— 系统梳理 XXE 核心基础：XML 语法树、DTD 声明类型、实体引用分类、PCDATA 与 CDATA 差异、外部实体通过 file/http 协议实现任意文件读取原理
 - [[php伪协议与反序列化利用]] —— `php://filter` 伪协议在 XXE 与 SSRF 中的综合利用技巧
 - [[ssrf-ctf-exploitation-guide]] —— CTFHUB 靶场 SSRF 关卡中 XXE 结合 Gopher/FastCGI/Redis 多协议利用链
+- [[pikachu-target-writeup-part4]] —— 第 4 部分「远程文件包含」通过 `http://attacker.com/shell.txt` 引入外部代码，与 XXE 引用外部实体 `SYSTEM "http://..."` 同属「外部资源引入」攻击面
 
 ---
 
@@ -214,6 +223,11 @@ __toString()    // 对象被当作字符串使用时触发
 - 维护跳转白名单，仅允许跳转至受信域名
 - 跳转前提示用户确认目标域名
 - 使用相对路径或内部路由标识，避免直接拼接用户输入
+
+### 交叉引用
+
+- [[phishing-website-creation-tutorial]] —— 社会工程学钓鱼网站制作实战，含 SET 自动化克隆、手动 PHP 表单劫持、Docker 一键部署
+- [[pikachu-target-writeup-part4]] —— 第 4 部分「文件上传前端校验绕过」同样属于前端可控参数未后端二次校验的典型案例
 
 ---
 
@@ -259,6 +273,7 @@ __toString()    // 对象被当作字符串使用时触发
 - [[php伪协议与反序列化利用]] —— SSRF 场景下 `gopher://` 发送原始 TCP 数据包攻击 FastCGI/Redis、双重 URL 编码绕过解析机制
 - [[gkctf-2021-web-writeup]] —— GKCTF 2021 CheckBot 题目 SSRF/XSS 组合窃取 Flag 实战
 - [[internal-network-pivoting-techniques]] —— SSRF 作为内网穿透/横向移动的切入点，结合 frp、Venom、Cobalt Strike SMB Beacon 等工具建立代理通道
+- [[pikachu-target-writeup-part4]] —— 第 4 部分「文件包含-远程文件包含」通过 `http://attacker.com/shell.txt` 让服务端请求外部资源，本质同属 SSRF 攻击面；「文件上传-getimagesize 绕过」结合文件包含实现 RCE，亦是 SSRF 结合本地文件包含的变体利用链
 
 ---
 
@@ -266,14 +281,14 @@ __toString()    // 对象被当作字符串使用时触发
 
 ### 漏洞关联性分析
 
-| 漏洞类型 | 核心成因 | 典型利用链延伸 |
-|----------|----------|----------------|
-| 目录遍历 | 文件路径参数未校验 | 读取配置文件 → 获取数据库凭证/密钥 → 进一步渗透 |
-| 信息泄露 | 错误处理不当/源码硬编码 | 泄露版本/路径/凭证 → 定向攻击/凭证填充 |
-| PHP 反序列化 | 用户可控数据进入 `unserialize()` + 魔术方法 | POP 链构造 → 任意文件读写/RCE → 服务器沦陷 |
-| XXE | XML 解析器开启外部实体 | 任意文件读取/SSRF/DoS → 内网探测/RCE |
-| 不安全跳转 | 跳转目标参数未校验 | 钓鱼/水坑攻击 → 凭证窃取/恶意软件分发 |
-| SSRF | 服务端请求目标可控 | 内网扫描/云元数据窃取/协议攻击 (Redis/FastCGI/RMI) → 横向移动 |
+| 漏洞类型 | 核心成因 | 典型利用链延伸 | 关联第 4 部分漏洞 |
+|----------|----------|----------------|-------------------|
+| 目录遍历 | 文件路径参数未校验 | 读取配置文件 → 获取数据库凭证/密钥 → 进一步渗透 | 文件下载漏洞（同类路径遍历） |
+| 信息泄露 | 错误处理不当/源码硬编码 | 泄露版本/路径/凭证 → 定向攻击/凭证填充 | 越权漏洞（凭证泄露后复用） |
+| PHP 反序列化 | 用户可控数据进入 `unserialize()` + 魔术方法 | POP 链构造 → 任意文件读写/RCE → 服务器沦陷 | RCE-EVAL（危险函数可控） |
+| XXE | XML 解析器开启外部实体 | 任意文件读取/SSRF/DoS → 内网探测/RCE | 远程文件包含（外部资源引入） |
+| 不安全跳转 | 跳转目标参数未校验 | 钓鱼/水坑攻击 → 凭证窃取/恶意软件分发 | 文件上传前端校验绕过（前端可控未后端校验） |
+| SSRF | 服务端请求目标可控 | 内网扫描/云元数据窃取/协议攻击 → 横向移动 | 远程文件包含、文件上传+包含 RCE 链 |
 
 ### 统一防御原则
 
@@ -293,6 +308,7 @@ __toString()    // 对象被当作字符串使用时触发
 
 | 页面 | 关联漏洞/技术点 |
 |------|-----------------|
+| [[pikachu-target-writeup-part4]] | **系列上篇**：RCE、文件包含、文件下载、文件上传绕过、越权漏洞完整复现 |
 | [[php伪协议与反序列化利用]] | PHP 反序列化、XXE、SSRF 中的伪协议综合利用 |
 | [[xxe-xml-dtd-fundamentals]] | XXE 核心基础原理与实体引用分类 |
 | [[ssrf-bypass-techniques]] | SSRF 五大绕过技巧与多协议利用链 |
@@ -302,6 +318,7 @@ __toString()    // 对象被当作字符串使用时触发
 | [[vulnhub-infosecprep-oscp-writeup]] | 目录遍历获取 SSH 私钥实战 |
 | [[gkctf-2021-web-writeup]] | SSRF/XSS 组合、Java 反序列化、Node.js 原型链污染 |
 | [[internal-network-pivoting-techniques]] | SSRF 为入口的内网穿透与横向移动技术体系 |
+| [[phishing-website-creation-tutorial]] | 不安全跳转衍生的钓鱼攻击实战与防御 |
 
 ---
 
@@ -315,4 +332,4 @@ __toString()    // 对象被当作字符串使用时触发
 
 ## 来源
 
-- [0x00实验室-202108-202304_075](../sources/0x00实验室-202108-202304_075.md)
+- [0x00实验室-202108-202304_076](../sources/0x00实验室-202108-202304_076.md)

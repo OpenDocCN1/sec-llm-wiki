@@ -300,3 +300,4 @@
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_080 -> buuctf-web-writeup-collection.md, php伪协议与反序列化利用.md, ctfshow-web-sql-injection-bypass-basics.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_081 -> attack-defense-world-beginner-web-writeup.md, burpsuite-basics-tutorial.md, php-webshell-fundamentals-chopper-analysis.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_082 -> 0x00lab-wechat-archive-202108-202304.md, xd-security-pentest-course-curriculum.md
+## [2026-11-14] ingest | 0x00实验室-202108-202304_083 -> xd-security-pentest-course-curriculum.md, 0x00lab-wechat-archive-202108-202304.md

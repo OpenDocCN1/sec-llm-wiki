@@ -24,11 +24,13 @@ updated: '2026-11-15'
 
 本页面记录在 **PPL (Protected Process Light)** 级别进程中进行 Shellcode 注入并上线 Cobalt Strike Beacon 后，因 `CreateProcess` 调用失败（错误码 87 `ERROR_INVALID_PARAMETER`）导致无法执行 `shell`、`execute`、`execute-assembly` 等需要创建子进程的操作的根因分析、Beacon 默认管道输出机制与 PPL 限制的冲突细节，以及基于 **BOF (Beacon Object Files)** 的文件落地输出替代方案的设计与实现。同时涵盖注入 `WinTcb-Light` 级别关键系统进程（`wininit.exe`、`MsMpEng.exe`）以规避 `Antimalware-Light` 级别安全产品内存扫描的实战复现步骤。
 
+**背景**：该问题最早于 2023 年 4 月在微信公众号文章《Windows PPL机制的绕过与利用》（基于 @itm4n 的 PPLDump 项目实战）中被观测到：作者成功将 Shellcode 注入 `services.exe` (WinTcb-Light)、`wininit.exe` (WinTcb-Light) 及 `MsMpEng.exe` (Antimalware-Light) 并上线 Beacon，但发现所有创建子进程的操作均返回 **Error 87 (Invalid Parameters)**，且当时未明确根因。本页面补充了该根因的完整技术分析与工程化修复方案。
+
 ## 问题现象
 
-- **注入目标**：`services.exe`（PPL 级别为 `WinTcb-Light`），成功上线 CS Beacon。
-- **症状**：Beacon 中一切需要启动新进程的操作（`shell`、`execute`、`execute-assembly` 等）均失败，返回 **Error Code 87 (Invalid Parameters)**；不需要创建进程的操作（文件系统访问、进程注入）正常。
-- **环境**：Windows 系统，目标进程为 PPL 保护进程，子进程（如 `cmd.exe`）为非 PPL 进程。
+- **注入目标**：`services.exe`（PPL 级别为 `WinTcb-Light`，通过 PPLDump 利用链获得上下文）、`wininit.exe`、`MsMpEng.exe`，成功上线 CS Beacon。
+- **症状**：Beacon 中一切需要启动新进程的操作（`shell`、`execute`、`execute-assembly` 等）均失败，返回 **Error Code 87 (Invalid Parameters)**；不需要创建进程的操作（文件系统访问、进程注入、令牌操作）正常。
+- **环境**：Windows 10 21H1+，目标进程为 PPL 保护进程，子进程（如 `cmd.exe`）为普通非 PPL 进程。
 
 ## 根因分析：MSDN 文档与 `bInheritHandles` 限制
 
@@ -39,7 +41,7 @@ updated: '2026-11-15'
 > **一个 PPL 进程中启动非 PPL 进程时，不能要求子进程继承句柄。**  
 > 即：当父进程为 PPL、子进程为非 PPL 时，`bInheritHandles` **必须设置为 `FALSE`**，否则直接返回 `ERROR_INVALID_PARAMETER (87)`。
 
-由于 `services.exe` 属于 `WinTcb-Light` 级别 PPL，而 `cmd.exe` 为普通非 PPL 进程，Beacon 在调用 `CreateProcess` 时若传入 `bInheritHandles=TRUE` 便会触发该错误。
+由于 `services.exe`、`wininit.exe` 属于 `WinTcb-Light` 级别 PPL，`MsMpEng.exe` 属于 `Antimalware-Light` 级别 PPL，而 `cmd.exe` 等常用命令行解释器为普通非 PPL 进程，Beacon 在调用 `CreateProcess` 时若传入 `bInheritHandles=TRUE` 便会触发该错误。
 
 ### Beacon 默认行为冲突
 
@@ -52,7 +54,7 @@ Beacon 所有创建进程的操作默认将 `bInheritHandles` 设为 `TRUE`，�
 
 **冲突点**：PPL 父进程无法将可继承句柄传递给非 PPL 子进程，导致整个管道输出链路在 PPL 注入场景下失效。
 
-> 相关代码片段参考：`PrintSpoofer` 项目中 `CreateProcessWithOutput` 函数实现（见原文链接）。
+> 相关代码片段参考：`PrintSpoofer` 项目中 `CreateProcessWithOutput` 函数实现。
 
 ## 解决方案对比
 
@@ -101,23 +103,25 @@ Beacon 所有创建进程的操作默认将 `bInheritHandles` 设为 `TRUE`，�
 
 | PPL 级别 | 典型进程 | 可被打开访问的最低 PPL 级别 |
 |----------|----------|-----------------------------|
-| `WinTcb-Light` | `wininit.exe`、`services.exe`、`csrss.exe` | `WinTcb-Light` 及以上 |
-| `Antimalware-Light` | `MsMpEng.exe` (Windows Defender)、腾讯管家等 AV 服务进程 | `Antimalware-Light` 及以上 |
+| `WinTcb-Light` (0x61) | `wininit.exe`、`services.exe`、`csrss.exe` | `WinTcb-Light` 及以上 |
+| `Antimalware-Light` (0x31) | `MsMpEng.exe` (Windows Defender)、腾讯管家等 AV 服务进程 | `Antimalware-Light` 及以上 |
 
-**规则**：低 PPL 级别进程**无法**打开高 PPL 级别进程句柄（`OpenProcess` 失败，`ERROR_ACCESS_DENIED`）。
+**规则**：低 PPL 级别进程**无法**打开高 PPL 级别进程句柄（`OpenProcess` 失败，`ERROR_ACCESS_DENIED`）。PP (Protected Process) 始终高于 PPL；同类型下比较 Signer 级别。
 
 ### 攻击链
 
-1. 利用 PPLDump 或类似工具，在 `services.exe` (WinTcb-Light) 中执行 Shellcode 注入，上线 Beacon。
-2. 使用 Beacon `inject` / `shinject` 将 Beacon 迁移至 **`wininit.exe` (WinTcb-Light)** 或 **`MsMpEng.exe` (Antimalware-Light)**。
-   - 迁移至 `wininit.exe`：处于最高 PPL 等级，**所有 Antimalware-Light 级别的 AV/EDR 服务进程均无法打开其句柄进行内存扫描**，实现 **反内存扫描**。
-   - 迁移至 `MsMpEng.exe`：直接寄生于 Windows Defender 自身进程，隐蔽性极强。
-3. 在目标 PPL 进程中使用 **BOF `tshell`** 执行命令，绕过 `bInheritHandles` 限制，正常获取输出。
+1. **初始立足**：利用 PPLDump（基于 `DefineDosDevice` + KnownDLLs 劫持漏洞，详见 [[ppldump-userland-ppl-bypass-evasion]]）在 `services.exe` (WinTcb-Light) 中执行 Shellcode 注入，上线 Beacon。
+   - PPLDump 利用链：提权至 SYSTEM -> 创建伪造 `\\GLOBAL??\\KnownDlls` 目录 -> 创建符号链接劫持目标 DLL -> 降权并创建 `GLOBALROOT` 符号链接 -> 调用 `DefineDosDevice` 触发 CSRSS 在 SYSTEM 上下文中修改真实 KnownDLLs -> 启动 `services.exe` 加载恶意 DLL。
+2. **权限维持与隐匿**：使用 Beacon `inject` / `shinject` 将 Beacon 迁移至更核心的 **`wininit.exe` (WinTcb-Light)** 或直接寄生于 **`MsMpEng.exe` (Antimalware-Light)**。
+   - 迁移至 `wininit.exe`：处于 Ring3 最高 PPL 等级，**所有 Antimalware-Light 级别的 AV/EDR 服务进程均无法打开其句柄进行内存扫描**，实现 **反内存扫描**。
+   - 迁移至 `MsMpEng.exe`：直接寄生于 Windows Defender 自身进程，隐蔽性极强，同理规避同级扫描。
+3. **交互恢复**：在目标 PPL 进程中使用 **BOF `tshell`** 执行命令，绕过 `bInheritHandles` 限制，正常获取输出。
 
-### 复现截图要点
+### 复现验证要点
 
-- **注入 `wininit.exe`**：Beacon 上下文显示 PID 对应 `wininit.exe`，`tshell whoami` 正常返回输出。
+- **注入 `wininit.exe`**：Beacon 上下文显示 PID 对应 `wininit.exe`，`tshell whoami` 正常返回 `nt authority\system` 输出。
 - **注入 `MsMpEng.exe`**：Beacon 上下文显示 PID 对应 `MsMpEng.exe`，同理命令执行正常。
+- **内存扫描对抗**：运行 Hunt-Sleeping-Beacons、BeaconHunter、patriot、moneta 等工具扫描目标 PID，因无法 `OpenProcess` (PPL 保护) 导致扫描失败或跳过。
 
 > 内存扫描对抗技术体系详见 [[memory-scanning-tools-evasion-techniques]]、[[windows-token-nerfing-pplguard-trusted-labels]]。
 
@@ -205,6 +209,7 @@ void go(char *args, int len) {
 - [[process-injection-tampering-techniques]] — Process Hollowing、Doppelganging、Ghosting、Herpaderping、Transacted Hollowing 五大镂空/篡改技术原理对比与 Sysmon Event ID 25 检测规避。
 - [[argument-spoofing-edr-evasion]] — EDR 进程创建监控回调 `PsSetCreateProcessNotifyRoutineEx`、Sysmon Event ID 1 字段、命令行混淆绕过、PEB `RTL_USER_PROCESS_PARAMETERS` 利用、Cobalt Strike `argue` 命令增强实现。
 - [[pe-manual-mapping-loader-implementation]] — PE 手动映射加载器全流程：导入表修复、重定位修正、导出表解析、模块隐藏、MEM_IMAGE 内存分配、延迟导入表与 API Set Schema 处理，供 Shellcode/BOF 落地执行参考。
+- [[ppldump-userland-ppl-bypass-evasion]] — PPLDump 利用 DefineDosDevice/KnownDLLs 漏洞绕过 PPL 转储 LSASS 及注入 PPL 进程的完整利用链原理与实战。
 
 ## 小结
 
@@ -217,8 +222,8 @@ void go(char *args, int len) {
 | **后续优化** | 临时文件落地可被文件监控发现，后续可替换为命名管道、共享内存或套接字等无文件 IPC 机制。 |
 
 ---
-*页面基于微信公众号文章《解决PPL注入技术的bug》整理，归档日期 2023-04-16。*
+*页面基于微信公众号文章《Windows PPL机制的绕过与利用》（2023-04-16）整理，补充了根因分析与 BOF 修复方案。*
 
 ## 来源
 
-- [0x4d5a-202103-202209_10](../sources/0x4d5a-202103-202209_10.md)
+- [0x4d5a-202103-202209_11](../sources/0x4d5a-202103-202209_11.md)

@@ -292,3 +292,4 @@
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_072 -> buuctf-pwn-writeup-collection.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_073 -> jwt漏洞原理与实战利用.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_074 -> vulnhub-admx-new-writeup.md, vulnhub-platform-resource-index.md
+## [2026-11-14] ingest | 0x00实验室-202108-202304_075 -> pikachu-target-writeup-part5.md, php伪协议与反序列化利用.md, ssrf-ctf-exploitation-guide.md

@@ -2,7 +2,9 @@
 title: Windows PPL 进程令牌弱化攻击与 Trusted Labels 缓解机制分析
 description: 深度解析 Windows Token Nerfing 攻击原理：利用 PPL 进程令牌保护缺口，通过 SeDebugPrivilege 获取
   TOKEN_ALL_ACCESS 后移除权限并降低完整性级别使反恶意软件进程失效；详细阐述 Elastic 安全团队提出的 PPLGuard 缓解方案，基于未文档化的
-  Trusted Labels (SACL) 机制保护 AntiMalware PPL 进程令牌免遭篡改。
+  Trusted Labels (SACL) 机制保护 AntiMalware PPL 进程令牌免遭篡改。补充 PPL 注入场景下 CreateProcess 因
+  bInheritHandles=TRUE 导致 ERROR_INVALID_PARAMETER (87) 的根因分析，及通过 BOF 实现无句柄继承创建进程、文件落地输出绕过的完整利用链，关联
+  WinTcb-Light 级别进程注入规避内存扫描的实战案例。
 category: program-analysis
 tags:
 - Windows Internals
@@ -20,6 +22,11 @@ tags:
 - AntiMalware
 - SeDebugPrivilege
 - Integrity Level
+- CreateProcess
+- BOF
+- Beacon Object Files
+- Memory Scanning Evasion
+- WinTcb-Light
 date: 2023-04-16
 updated: '2026-11-15'
 ---
@@ -155,6 +162,127 @@ SetSecurityInfo(
 - 仅允许 **AntiMalware-Light** 等级的 PPL 进程拥有令牌的 `TOKEN_READ` 权限
 - 非受信进程（包括拥有 `SeDebugPrivilege` 的管理员进程）无法再以 `TOKEN_ALL_ACCESS` 打开令牌，从而无法实施令牌弱化攻击
 
+## PPL 注入场景下的 CreateProcess 句柄继承限制与 BOF 绕过方案
+
+### 问题背景
+
+在实战中利用 **PPLDump** 将 Cobalt Strike Beacon 注入至 **WinTcb-Light** 级别的 PPL 进程（如 `services.exe`、`wininit.exe`）后，Beacon 无法正常执行需要创建子进程的操作（`shell`、`execute`、`execute-assembly` 等），均返回 **Error Code 87 (ERROR_INVALID_PARAMETER)**。但不依赖创建进程的操作（文件系统访问、进程注入等）均正常工作。
+
+### 根因分析：PPL 进程创建非 PPL 子进程的句柄继承限制
+
+根据 MSDN 文档，`kernel32!CreateProcess` 的参数 `bInheritHandles` 明确规定：
+
+> **一个 PPL 进程在启动非 PPL 进程时，不能要求子进程继承句柄。**
+
+由于注入载体 `services.exe` 属于 **WinTcb-Light** 级 PPL，而目标子进程 `cmd.exe` 为普通非 PPL 进程，若 `bInheritHandles=TRUE` 将直接导致 `CreateProcess` 失败并返回 87。
+
+### Beacon 默认行为与匿名管道输出机制
+
+Cobalt Strike Beacon 所有创建进程的操作均将 `bInheritHandles` 设置为 `TRUE`，核心原因是为了通过 **匿名管道** 获取命令执行输出：
+
+1. 父进程调用 `CreatePipe` 创建匿名管道，`SECURITY_ATTRIBUTES.bInheritHandle = TRUE`
+2. 将子进程的 `STARTUPINFO.hStdOutput` / `hStdError` 指向管道写端
+3. 父进程从管道读端读取子进程输出
+4. **前提条件**：子进程必须继承管道句柄，即 `bInheritHandles=TRUE`
+
+参考实现片段（来自 `PrintSpoofer` 项目）：
+
+```cpp
+SECURITY_ATTRIBUTES sa = { 0 };
+sa.bInheritHandle = TRUE;
+sa.nLength = sizeof(sa);
+sa.lpSecurityDescriptor = NULL;
+
+CreatePipe(&hReadPipe, &hWritePipe, &sa, 0);
+
+si.hStdError = hWritePipe;
+si.hStdOutput = hWritePipe;
+si.dwFlags = STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;
+
+CreateProcessWithTokenW(hToken, LOGON_WITH_PROFILE, NULL, command, 0, NULL, 
+                        pwszCurrentDirectory, &si, &pi);  // bInheritHandles 隐式为 TRUE
+```
+
+### 解决方案对比
+
+| 方案 | 优点 | 缺点 |
+|------|------|------|
+| **魔改 CS 客户端/Beacon 源码** | 根治 | 需重新编译、签名，维护成本高，影响所有 `shell` 类命令输出获取 |
+| **BOF (Beacon Object Files) 实现无句柄继承创建进程** | 无需修改 CS 核心，运行在当前进程上下文，完美兼容 PPL 限制 | 需另行实现输出回传机制 |
+
+### BOF 实现细节：文件落地替代匿名管道
+
+由于 PPL 限制导致匿名管道句柄无法继承，BOF 采用 **临时文件落地** 方式回传输出：
+
+1. BOF 入口函数 `go(char* args, int len)` 解析命令行参数
+2. 生成随机临时文件路径（如 `C:\Windows\Temp\~output_XXXXXX.tmp`）
+3. 调用 `CreateProcessW` 创建子进程，**显式设置 `bInheritHandles = FALSE`**
+4. 子进程标准输出/错误重定向至临时文件（`STARTUPINFO.hStdOutput = hFile`）
+5. 父进程 `WaitForSingleObject` 等待子进程结束
+6. 读取临时文件内容，通过 `BeaconOutput` 回传至 Team Server
+7. 删除临时文件，清理痕迹
+
+关键代码逻辑：
+
+```c
+// BOF 伪代码核心流程
+void go(char* args, int len) {
+    // 1. 解析命令
+    // 2. 创建临时文件
+    HANDLE hOutFile = CreateFileW(tmpPath, GENERIC_WRITE, FILE_SHARE_READ, 
+                                  &sa, CREATE_ALWAYS, FILE_ATTRIBUTE_TEMPORARY, NULL);
+    
+    // 3. 配置 STARTUPINFO - 关键：bInheritHandles = FALSE
+    STARTUPINFOW si = {0};
+    si.cb = sizeof(si);
+    si.hStdOutput = hOutFile;
+    si.hStdError = hOutFile;
+    si.dwFlags = STARTF_USESTDHANDLES;
+    
+    PROCESS_INFORMATION pi = {0};
+    BOOL ok = CreateProcessW(
+        NULL, cmdLine, NULL, NULL, 
+        FALSE,           // <--- 关键：不继承句柄
+        CREATE_NO_WINDOW, NULL, NULL, &si, &pi
+    );
+    
+    // 4. 等待并读取输出文件
+    WaitForSingleObject(pi.hProcess, INFINITE);
+    ReadFile(hOutFile, buffer, size, &read, NULL);
+    BeaconOutput(CALLBACK_OUTPUT, buffer, read);
+    
+    // 5. 清理
+    DeleteFileW(tmpPath);
+}
+```
+
+### 实战验证：注入 WinTcb-Light 进程规避内存扫描
+
+该技术已验证可在以下高 PPL 级别进程中稳定上线并执行命令：
+
+| 注入目标进程 | PPL 级别 | 规避效果 |
+|--------------|----------|----------|
+| `wininit.exe` | `WinTcb-Light` | Windows Defender (`MsMpEng.exe`, `AntiMalware-Light`) 无法打开句柄进行内存扫描 |
+| `MsMpEng.exe` (Windows Defender 自身) | `AntiMalware-Light` | 直接寄生于 AV 进程，隐蔽性极强 |
+
+**核心优势**：Windows 内核强制执行 PPL 访问控制，**低等级 PPL / 非 PPL 进程无法对高等级 PPL 进程获取 `PROCESS_VM_READ` 等扫描所需权限**。因此，EDR/AV 的用户态内存扫描组件（如 `Hunt-Sleeping-Beacons`、`BeaconHunter`、`pe-sieve` 等工具依赖的 `OpenProcess`/`ReadProcessMemory`）将直接失败。
+
+> 详细内存扫描工具对抗技术见 [[memory-scanning-tools-evasion-techniques]]。
+
+注入 `wininit.exe` 效果演示：
+![注入 wininit.exe](../Images/9275b982883c31e4a881a07c22d514ed.png)
+
+注入 `MsMpEng.exe` 效果演示：
+![注入 MsMpEng.exe](../Images/cd41484a63fbe73bc87402d8d8869f11.png)
+
+### 关联技术生态
+
+- **PPLDump**：提供 WinTcb-Light 级别代码执行原语，本文 BOF 依赖其注入能力
+- **Cobalt Strike 4.7 BOF 改进**：动态函数槽位、Relocation 处理优化，提升 BOF 兼容性，见 [[cobalt-strike-4.7-bof-internals]]
+- **Argument Spoofing**：同属进程创建对抗技术，可结合使用进一步混淆命令行，见 [[argument-spoofing-edr-evasion]]
+- **Phantom DLL Hollowing**：另一种内存注入隐藏技术，可作为备选注入手法，见 [[phantom-dll-hollowing-technique]]
+- **AceLdr 反射加载器**：用户态无文件执行框架，Sleep Hook/Heap Hook 等规避技术可迁移至 BOF，见 [[aceldr-technical-analysis]]
+
 ## 相关工具与项目
 
 | 项目 | 描述 | 链接 |
@@ -183,7 +311,10 @@ SetSecurityInfo(
    <https://github.com/elastic/PPLGuard>
 4. **Retrieving an Object's SACL** — Microsoft Learn  
    <https://docs.microsoft.com/en-us/windows/win32/ad/retrieving-an-objectampaposs-sacl>
+5. **解决 PPL 注入技术的 bug** — 微信公众号归档文章  
+   介绍 PPL 注入场景下 `bInheritHandles=TRUE` 导致 `ERROR_INVALID_PARAMETER (87)` 的根因及 BOF 文件落地输出绕过完整利用链
 
 ## 来源
 
 - [0x4d5a-202103-202209_08](../sources/0x4d5a-202103-202209_08.md)
+- [0x4d5a-202103-202209_10](../sources/0x4d5a-202103-202209_10.md)

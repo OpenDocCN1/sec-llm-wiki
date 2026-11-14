@@ -296,3 +296,4 @@
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_076 -> pikachu-target-writeup-part4.md, pikachu-target-writeup-part5.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_077 -> pikachu-target-writeup-part3.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_078 -> pikachu-target-writeup-part2-xss.md
+## [2026-11-14] ingest | 0x00实验室-202108-202304_079 -> pikachu-target-writeup-part1-setup-brute-force.md

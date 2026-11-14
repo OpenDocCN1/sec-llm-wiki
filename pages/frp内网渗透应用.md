@@ -1,8 +1,8 @@
 ---
 title: frp内网渗透应用
-description: 详细记录 frp 在内网渗透中的四大典型应用场景：Socks5 隧道搭建、多级隧道串联、代理本地 Metasploit 反弹、以及 RDP
-  等服务的远程端口转发，并补充 CTFd-Whale 动态靶机场景下的集成配置用法，附完整配置示例与拓扑说明。
-category: ai-security
+description: 详细记录 frp 在内网渗透中的基础原理、入门实战及四大典型应用场景：Socks5 隧道搭建、多级隧道串联、代理本地 Metasploit
+  反弹、以及 RDP 等服务的远程端口转发，并补充 CTFd-Whale 动态靶机场景下的集成配置用法，附完整配置示例与拓扑说明。
+category: program-analysis
 tags:
 - frp
 - 内网穿透
@@ -15,15 +15,96 @@ tags:
 - CTF
 - 动态靶机
 - Docker Swarm
+- 反向代理
+- 正向代理
 date: 2025-06-15
 updated: '2026-11-14'
 ---
 
 ## 概述
 
-**frp (Fast Reverse Proxy)** 是一款专注于内网穿透的高性能反向代理工具，支持 TCP、UDP、HTTP、HTTPS 等协议，采用 **服务端 + 客户端** 架构。在内网渗透中，frp 常被用于**建立隐蔽通信通道、跨网段横向移动、代理攻击框架流量**等场景。本页系统整理四种实战常见用法，均基于 **frps (公网 VPS) + frpc (内网节点)** 的组合拓扑。
+**frp (Fast Reverse Proxy)** 是一款专注于内网穿透的高性能反向代理工具，支持 TCP、UDP、HTTP、HTTPS 等协议，采用 **服务端 + 客户端** 架构。在内网渗透中，frp 常被用于**建立隐蔽通信通道、跨网段横向移动、代理攻击框架流量**等场景。本页系统整理基础原理、入门实战及四种实战常见用法，均基于 **frps (公网 VPS) + frpc (内网节点)** 的组合拓扑。
 
 > 官方仓库：https://github.com/fatedier/frp
+
+---
+
+## 基础原理与入门实战
+
+### 内外网概念
+
+- **内网（私网）**：如企业、家庭局域网，IP 地址为私有地址（10.0.0.0/8、172.16.0.0/12、192.168.0.0/16），无法直接在互联网路由。
+- **外网（公网）**：拥有公网 IP，可直接在互联网通信。
+- **网关/NAT**：内网主机通过网关的 NAT（网络地址转换）访问外网，外网无法主动发起连接到内网主机。
+
+### 正向代理与反向代理
+
+| 代理类型 | 发起方 | 典型场景 | frp 定位 |
+|---|---|---|---|
+| **正向代理** | 客户端 | 客户端访问外部资源（如科学上网） | ❌ |
+| **反向代理** | 服务端 | 将内网服务暴露到公网，客户端无感知 | ✅ |
+
+**frp 即反向代理工具**：内网主机（frpc）主动连接公网服务端（frps），建立长连接隧道，公网流量经 frps → frpc → 内网目标服务。
+
+### 实验环境与拓扑
+
+| 角色 | IP | 说明 |
+|---|---|---|
+| 内网 Web 服务器（目标） | 192.168.168.250 | 运行 Web 服务，部署 frpc |
+| 公网 VPS（跳板） | 121.5.14.5 | 部署 frps，等待 frpc 连接 |
+| 攻击机 | 任意公网 IP | 通过 VPS 访问内网 Web |
+
+### 关键配置与步骤
+
+#### 公网 VPS 配置 frps（服务端）
+
+```ini
+# frps.ini
+[common]
+bind_port = 7000
+token = shadowtest
+```
+
+启动：
+```bash
+./frps -c frps.ini
+```
+
+#### 内网服务器配置 frpc（客户端）
+
+```ini
+# frpc.ini
+[common]
+server_addr = 121.5.14.5   # VPS 公网 IP
+server_port = 7000
+token = shadowtest
+
+[web_tcp]
+type = tcp
+local_ip = 127.0.0.1
+local_port = 80            # 内网 Web 服务端口
+remote_port = 8080         # 映射到 VPS 的 8080 端口
+use_encryption = true
+```
+
+启动：
+```bash
+frpc.exe -c frpc.ini
+```
+
+#### 验证
+
+- VPS 日志显示 `start proxy success`。
+- 攻击机浏览器访问 `http://121.5.14.5:8080` 即可访问内网 Web 服务。
+
+### 流程解析
+
+1. **frpc 启动** → 向 frps 发送 `login()` 请求，建立控制长连接（心跳维持）。
+2. **frps 接受注册** → 监听 `remote_port`（如 8080），等待外部连接。
+3. **攻击机访问 VPS:8080** → frps 接收连接，通过控制连接通知 frpc 建立工作连接。
+4. **frpc 连接本地服务** → 将工作连接与本地 `local_port`（80）桥接，完成全链路转发。
+
+> 详细交互序列图见原文（无名安全团队-Lem0n 微信公众号文章）。
 
 ---
 
@@ -361,11 +442,6 @@ admin_port = 7400
 | frpc Admin API 返回 Connection Refused | `admin_addr`/`admin_port` 配置错误 | 核对 `frpc.ini` 与 `frps.ini` 的 `admin_addr=172.1.0.3, admin_port=7400` |
 | 多容器题目（内网渗透链）网络不通 | Overlay 网络 `ctfd_frp-containers` 未正确创建或子网冲突 | 确保 `docker-compose.yml` 中 `frp-containers` driver=overlay, subnet=172.2.0.0/16 且与宿主机网段无冲突 |
 
-### 扩展阅读
-- [[docker-container-security-fundamentals]] —— Docker 容器安全基础与逃逸防范
-- [[内网穿透技术对比]] —— frp/nps/ngrok/Cloudflare Tunnel 横向对比
-- [[横向移动凭证导出与利用]] —— 隧道建立后的后渗透动作
-
 ---
 
 ## 通用最佳实践与避坑指南
@@ -398,6 +474,10 @@ admin_port = 7400
 - [[Metasploit 免杀与流量隐藏]]（结合 frp 加密传输规避流量检测）
 - [[横向移动凭证导出与利用]]（隧道建立后的后续渗透动作）
 - [[docker-container-security-fundamentals]]（Docker 容器安全核心机制与加固）
+- [[c2-redirectors-malleable-c2-profiles]]（C2 重定向器与流量混淆，隧道技术的另一种视角）
+- [[smb-named-pipe-c2-communication]]（基于 SMB 命名管道的 C2 通信，内网隧道的替代方案）
+- [[cobalt-strike-external-c2-smb-beacon]]（Cobalt Strike External C2 与 SMB Beacon 实战）
+- [[covenant-c2-framework-analysis]]（Covenant C2 框架的 P2P 网状通信机制）
 
 ---
 
@@ -406,8 +486,8 @@ admin_port = 7400
 |---|---|---|
 | 2025-06-15 | 1.0 | 初始版本，整理四大核心场景配置与拓扑 |
 | 2026-11-12 | 1.1 | 新增场景五：CTFd-Whale 动态靶机场景集成配置详解 |
+| 2026-11-14 | 1.2 | 新增基础原理与入门实战章节，补充内外网概念、正向/反向代理区别、TCP代理模式搭建全流程 |
 
 ## 来源
 
-- [007攻防实验室-202007-202010_1](../sources/007攻防实验室-202007-202010_1.md)
-- [0x00实验室-202108-202304_012](../sources/0x00实验室-202108-202304_012.md)
+- [0x00实验室-202108-202304_062](../sources/0x00实验室-202108-202304_062.md)

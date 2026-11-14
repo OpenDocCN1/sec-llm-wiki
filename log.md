@@ -277,3 +277,4 @@
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_057 -> ctf-show-php-command-execution-bypass-techniques.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_058 -> security-engineer-recruitment-requirements.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_059 -> ctf-show-php-command-execution-bypass-techniques.md, ctfshow-web-sql-injection-bypass-basics.md
+## [2026-11-14] ingest | 0x00实验室-202108-202304_060 -> ctfshow-web-info-gathering-brute-force.md

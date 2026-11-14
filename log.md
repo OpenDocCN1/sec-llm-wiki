@@ -338,3 +338,4 @@
 ## [2026-11-15] ingest | 0x4d5a-202103-202209_05 -> memory-scanning-tools-evasion-techniques.md, aceldr-technical-analysis.md
 ## [2026-11-15] ingest | 0x4d5a-202103-202209_06 -> macos-memory-execution-macho-loader-m1-mitigations.md
 ## [2026-11-15] ingest | 0x4d5a-202103-202209_07 -> argument-spoofing-edr-evasion.md
+## [2026-11-15] ingest | 0x4d5a-202103-202209_08 -> windows-token-nerfing-pplguard-trusted-labels.md

@@ -286,3 +286,4 @@
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_066 -> vulnhub-boredhackerblog-social-network-writeup.md, docker-container-security-fundamentals.md, internal-network-pivoting-techniques.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_067 -> gkctf-2021-web-writeup.md, mongodb-nosql-injection-guide.md, internal-network-pivoting-techniques.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_068 -> security-engineer-recruitment-requirements.md
+## [2026-11-14] ingest | 0x00实验室-202108-202304_069 -> ssrf-ctf-exploitation-guide.md, ssrf-bypass-techniques.md, php伪协议与反序列化利用.md

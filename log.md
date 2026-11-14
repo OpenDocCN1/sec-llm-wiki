@@ -289,3 +289,4 @@
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_069 -> ssrf-ctf-exploitation-guide.md, ssrf-bypass-techniques.md, php伪协议与反序列化利用.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_070 -> xxe-xml-dtd-fundamentals.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_071 -> xss-haozi-lab-walkthrough.md
+## [2026-11-14] ingest | 0x00实验室-202108-202304_072 -> buuctf-pwn-writeup-collection.md

@@ -236,3 +236,4 @@
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_016 -> vulnhub-infosecprep-oscp-writeup.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_017 -> recruitment-go-h5-development-chengdu.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_018 -> security-engineer-recruitment-requirements.md
+## [2026-11-14] ingest | 0x00实验室-202108-202304_019 -> security-engineer-recruitment-requirements.md

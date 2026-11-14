@@ -315,3 +315,4 @@
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_095 -> xd-security-awd-competition-strategies.md, xd-security-blue-team-defense.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_096 -> xd-security-src-vulnerability-hunting-notes-day86-88.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_097 -> xd-security-ctf-flag-notes-day83-85.md, python-ssti-multi-engine-bypass.md, php伪协议与反序列化利用.md
+## [2026-11-15] ingest | 0x00实验室-202108-202304_098 -> proftpd-133c-backdoor-exploitation.md, metasploit-framework-basics-tutorial.md

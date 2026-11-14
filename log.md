@@ -325,3 +325,4 @@
 ## [2026-11-15] ingest | 0x00实验室-202108-202304_105 -> xd-security-internal-network-penetration-notes-day69-70.md
 ## [2026-11-15] ingest | 0x00实验室-202108-202304_106 -> xd-security-internal-network-penetration-notes-day67-68.md
 ## [2026-11-15] ingest | 0x00实验室-202108-202304_107 -> xd-security-internal-network-penetration-notes-day65-66.md, xd-security-internal-network-penetration-notes-day67-68.md
+## [2026-11-15] ingest | 0x00实验室-202108-202304_108 -> pocsuite3-vulnerability-testing-framework.md

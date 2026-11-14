@@ -332,3 +332,4 @@
 ## [2026-11-15] ingest | 0x00实验室-202108-202304_112 -> wechat-personal-reflection-20210805.md
 ## [2026-11-15] ingest | 0x4d5a-202103-202209_00 -> 0x4d5a-wechat-archive-202103-202209.md
 ## [2026-11-15] ingest | 0x4d5a-202103-202209_01 -> rust-proc-macro-win32-dynamic-import.md
+## [2026-11-15] ingest | 0x4d5a-202103-202209_02 -> windows-kernel-callback-injection-defense.md

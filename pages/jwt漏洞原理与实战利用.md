@@ -1,8 +1,9 @@
 ---
 title: JWT漏洞原理与实战利用
 description: 系统梳理 JWT 结构、常见漏洞（算法混淆、密钥爆破、None Algorithm、信息泄露）及利用工具，结合 DDCTF 与 0w1Club
-  CTF 实战复现垂直越权、盐值离线爆破、SQL 注入绕过全过程。
-category: ai-security
+  CTF 实战复现垂直越权、盐值离线爆破、SQL 注入绕过全过程。深度解析 JWT 在 CSRF 防御中的 Token 生成与验证实现细节，结合 Java JWT
+  库源码分析完善防御视角内容。
+category: program-analysis
 tags:
 - JWT
 - 漏洞利用
@@ -16,6 +17,9 @@ tags:
 - None Algorithm
 - SQL注入
 - 信息泄露
+- CSRF防御
+- Java JWT
+- 源码分析
 date: '2023-04-16'
 updated: '2026-11-14'
 ---
@@ -71,6 +75,257 @@ HMACSHA256(
 
 标准 Base64 可能出现 `+`、`/`、`=`，不适合 URL 传参。Base64URL 将 `+`→`-`、`/`→`_`、去掉末尾 `=`。
 
+## JWT 在 CSRF 防御中的 Token 生成与验证实现
+
+### CSRF 防御流程概述
+
+CSRF（跨站请求伪造）漏洞的防御策略之一是在页面中引入 Token，其核心流程为：
+
+1. **将 CSRF Token 输出到页面中**
+   - 用户打开页面时，服务器生成一个 Token，该 Token 通过加密算法对数据进行加密，一般包含随机字符串和时间戳的组合
+   - 将 Token 放在 Session 中
+
+2. **页面提交的请求携带这个 Token**
+
+3. **服务器验证 Token 是否正确**
+
+以 JSON Web Token (JWT) 为例进行深度分析。
+
+### Java JWT 库源码分析（com.auth0:java-jwt:3.11.0）
+
+#### 依赖配置
+
+```xml
+<dependency>
+    <groupId>com.auth0</groupId>
+    <artifactId>java-jwt</artifactId>
+    <version>3.11.0</version>
+</dependency>
+```
+
+#### 密钥与过期时间设置
+
+```java
+// 密钥
+public static final String SECRET = "sdjhakdhajdklsl;o653632";
+// 过期时间: 秒
+public static final int EXPIRE = 5;
+```
+
+#### Token 生成流程源码解析
+
+```java
+public static String createToken(String userId, String userName) throws Exception {
+    Calendar nowTime = Calendar.getInstance();
+    nowTime.add(Calendar.SECOND, EXPIRE);          // 过期时间
+    Date expireDate = nowTime.getTime();
+    
+    Map<String, Object> map = new HashMap<>();     // header头 设置token类型以及加密算法
+    map.put("alg", "HS256");
+    map.put("typ", "JWT");
+    
+    String token = JWT.create()
+        .withHeader(map)                           // 头
+        .withClaim("userId", userId)
+        .withClaim("userName", userName)
+        .withSubject("测试")                        // 主题
+        .withIssuedAt(new Date())                  // 签名时间
+        .withExpiresAt(expireDate)                 // 过期时间
+        .sign(Algorithm.HMAC256(SECRET));          // 签名
+    return token;
+}
+```
+
+**详细源码追踪**：
+
+1. **`JWT.create()` 初始化 Builder**
+   ```java
+   public static JWTCreator.Builder create() {
+       return JWTCreator.init();
+   }
+   
+   static JWTCreator.Builder init() {
+       return new Builder();
+   }
+   ```
+
+2. **Builder 内部维护 Header 与 Payload 两个 Map**
+   ```java
+   private final Map<String, Object> payloadClaims;
+   private final Map<String, Object> headerClaims;
+   
+   Builder() {
+       this.payloadClaims = new HashMap<>();
+       this.headerClaims = new HashMap<>();
+   }
+   ```
+
+3. **`withHeader()` 填充 Header Claims**
+   ```java
+   public Builder withHeader(Map<String, Object> headerClaims) {
+       if (headerClaims == null) return this;
+       for (Map.Entry<String, Object> entry : headerClaims.entrySet()) {
+           if (entry.getValue() == null) {
+               this.headerClaims.remove(entry.getKey());
+           } else {
+               this.headerClaims.put(entry.getKey(), entry.getValue());
+           }
+       }
+       return this;
+   }
+   ```
+
+4. **`withClaim()` 系列方法填充 Payload**
+   ```java
+   public Builder withClaim(String name, String value) throws IllegalArgumentException {
+       assertNonNull(name);
+       addClaim(name, value);
+       return this;
+   }
+   
+   private void addClaim(String name, Object value) {
+       if (value == null) {
+           payloadClaims.remove(name);
+           return;
+       }
+       payloadClaims.put(name, value);
+   }
+   ```
+   `withSubject()`、`withIssuedAt()`、`withExpiresAt()` 内部均调用 `addClaim()`。
+
+5. **`sign()` 最终生成 Token**
+   ```java
+   public String sign(Algorithm algorithm) throws IllegalArgumentException, JWTCreationException {
+       if (algorithm == null) throw new IllegalArgumentException("The Algorithm cannot be null.");
+       
+       // 自动补全 alg 与 typ
+       headerClaims.put(PublicClaims.ALGORITHM, algorithm.getName());
+       if (!headerClaims.containsKey(PublicClaims.TYPE)) {
+           headerClaims.put(PublicClaims.TYPE, "JWT");
+       }
+       
+       String signingKeyId = algorithm.getSigningKeyId();
+       if (signingKeyId != null) withKeyId(signingKeyId);
+       
+       return new JWTCreator(algorithm, headerClaims, payloadClaims).sign();
+   }
+   ```
+
+   `PublicClaims` 接口定义了标准字段常量：
+   ```java
+   public interface PublicClaims {
+       // Header
+       String ALGORITHM = "alg";
+       String CONTENT_TYPE = "cty";
+       String TYPE = "typ";
+       String KEY_ID = "kid";
+       // Payload
+       String ISSUER = "iss";
+       String SUBJECT = "sub";
+       String EXPIRES_AT = "exp";
+       String NOT_BEFORE = "nbf";
+       String ISSUED_AT = "iat";
+       String JWT_ID = "jti";
+       String AUDIENCE = "aud";
+   }
+   ```
+
+6. **`JWTCreator` 内部将 Map 序列化为 JSON**
+   ```java
+   private JWTCreator(Algorithm algorithm, Map<String, Object> headerClaims, Map<String, Object> payloadClaims) throws JWTCreationException {
+       this.algorithm = algorithm;
+       try {
+           ObjectMapper mapper = new ObjectMapper();
+           SimpleModule module = new SimpleModule();
+           module.addSerializer(ClaimsHolder.class, new PayloadSerializer());
+           mapper.registerModule(module);
+           mapper.configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true);
+           headerJson = mapper.writeValueAsString(headerClaims);
+           payloadJson = mapper.writeValueAsString(new ClaimsHolder(payloadClaims));
+       } catch (JsonProcessingException e) {
+           throw new JWTCreationException("Some of the Claims couldn't be converted to a valid JSON format.", e);
+       }
+   }
+   ```
+
+7. **核心签名生成逻辑**
+   ```java
+   private String sign() throws SignatureGenerationException {
+       String header = Base64.encodeBase64URLSafeString(headerJson.getBytes(StandardCharsets.UTF_8));
+       String payload = Base64.encodeBase64URLSafeString(payloadJson.getBytes(StandardCharsets.UTF_8));
+       byte[] signatureBytes = algorithm.sign(header.getBytes(StandardCharsets.UTF_8), payload.getBytes(StandardCharsets.UTF_8));
+       String signature = Base64.encodeBase64URLSafeString(signatureBytes);
+       return String.format("%s.%s.%s", header, payload, signature);
+   }
+   ```
+   - Header 与 Payload 分别 Base64URL 编码
+   - 使用 HS256 算法对 `header.payload` 进行 HMAC 签名
+   - 签名结果再次 Base64URL 编码
+   - 三部分用 `.` 连接形成最终 Token
+
+#### Token 验证流程源码解析
+
+**验证核心逻辑**：重新生成 Signature，与 Token 中携带的 Signature 对比是否一致。
+
+```java
+// 创建验证器，绑定算法与密钥
+JWTVerifier verifier = JWT.require(Algorithm.HMAC256(SECRET)).build();
+
+// 验证 Token
+DecodedJWT jwt = verifier.verify(token);
+```
+
+1. **`JWT.require()` 创建 Verification Builder**
+   ```java
+   public static Verification require(Algorithm algorithm) {
+       return JWTVerifier.init(algorithm);
+   }
+   ```
+
+2. **`verifier.verify(token)` 解析并验证**
+   ```java
+   // 1. 解析 Token 三段
+   DecodedJWT jwt = new JWTDecoder(parser, token);
+   
+   JWTDecoder(JWTParser converter, String jwt) throws JWTDecodeException {
+       parts = TokenUtils.splitToken(jwt);  // 按 '.' 分割
+       headerJson = StringUtils.newStringUtf8(Base64.decodeBase64(parts[0]));
+       payloadJson = StringUtils.newStringUtf8(Base64.decodeBase64(parts[1]));
+       header = converter.parseHeader(headerJson);
+       payload = converter.parsePayload(payloadJson);
+   }
+   ```
+
+3. **验证流程**
+   ```java
+   public DecodedJWT verify(DecodedJWT jwt) throws JWTVerificationException {
+       verifyAlgorithm(jwt, algorithm);    // 验证加密算法是否一致
+       algorithm.verify(jwt);              // 验证 Signature
+       verifyClaims(jwt, claims);          // 验证过期时间等 Claims
+       return jwt;
+   }
+   ```
+
+4. **HMAC 签名验证核心实现**
+   ```java
+   public void verify(DecodedJWT jwt) throws SignatureVerificationException {
+       byte[] signatureBytes = Base64.decodeBase64(jwt.getSignature());  // 解码 Token 中的签名
+       try {
+           // 使用本地密钥、Token 中的 Header 与 Payload 重新计算签名并对比
+           boolean valid = crypto.verifySignatureFor(getDescription(), secret, jwt.getHeader(), jwt.getPayload(), signatureBytes);
+           if (!valid) {
+               throw new SignatureVerificationException(this);
+           }
+       } catch (IllegalStateException | InvalidKeyException | NoSuchAlgorithmException e) {
+           throw new SignatureVerificationException(this, e);
+       }
+   }
+   ```
+   - 解码 Token 携带的 Signature
+   - 使用相同算法、密钥、Header、Payload 重新计算签名
+   - 恒时比较防止时序攻击
+   - 验证通过后再检查 `exp`、`nbf` 等时间类 Claims
+
 ## JWT 使用方式
 
 - 客户端登录成功后获取 JWT，存储于 Cookie / localStorage。
@@ -85,6 +340,8 @@ HMACSHA256(
 2. **密钥保密**：签名密钥一旦泄露，攻击者可伪造任意 Token。
 3. **无状态不可撤销**：签发后无法主动失效，建议设置较短 `exp` 并配合黑名单机制。
 4. **传输加密**：必须使用 HTTPS 防止中间人窃取。
+5. **算法白名单**：服务端必须显式校验 `alg` 字段，仅允许预期算法（HS256/RS256），拒绝 `none` 算法。
+6. **密钥强度**：HS256 密钥熵需足够高，避免字典爆破。
 
 ## DDCTF 实战复现：垂直越权漏洞利用
 
@@ -255,8 +512,7 @@ Token:     eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIn0.eyJ1c2VybmFtZSI6ImFkbWluJyBVUklPT
 
 - [[0w1club-ctf-web-writeup-jwt-sqli-brute]] — 0w1Club CTF Web 方向完整 Writeup，含 Base64+Brainfuck 签到、.htpasswd 信息泄露、验证码绕过暴力破解等题目
 - [[0w1club-ctf-web-writeup-hash-extension-rsa]] — 同源 CTF Web 题解，涵盖哈希长度扩展攻击、PHP 弱类型比较、RSA 解密等技术
-- [[burpsuite-basics-tutorial]] — Burp Suite 入门教程，含 Intruder 爆破、Repeater 改包实战
-- [[java-urlconnection-ssrf-protocol-bypass]] — Java SSRF 绕过技巧，可结合 JWT 场景下的协议处理缺陷理解
+- [[java-preparedstatement-sql-injection-defense]] — Java PreparedStatement 预编译机制防御 SQL 注入，与 JWT 场景下的参数化查询防御同属一类
 - [[spring-boot-devtools-deserialization-rce]] — Spring Boot DevTools 弱默认密钥导致反序列化 RCE，与 JWT 密钥管理不当同属“默认/弱密钥”风险类
 
 ## 参考资源
@@ -265,9 +521,8 @@ Token:     eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIn0.eyJ1c2VybmFtZSI6ImFkbWluJyBVUklPT
 - 0w1Club 微信归档索引：[[0w1club-wechat-archive-201908-202207]]
 - 作者 GitHub（DDCTF 复现脚本）：<https://github.com/ShadowFlow123/>
 - 博客园对应文章：<https://www.cnblogs.com/jinbuqi/p/10361698.html>
+- CSRF Token 防御原文：[无名安全团队文章](http://mp.weixin.qq.com/s?__biz=Mzg5MDY2MTUyMA==&mid=2247486542&idx=1&sn=3828e2d41f13049dd4f974394272d568)
 
 ## 来源
 
-- [007攻防实验室-202007-202010_3](../sources/007攻防实验室-202007-202010_3.md)
-- [0w1Club微信归档-201908-202207](../sources/0w1Club微信归档-201908-202207.md)
-- [0w1网络安全俱乐部-201707-201903_22](../sources/0w1网络安全俱乐部-201707-201903_22.md)
+- [0x00实验室-202108-202304_073](../sources/0x00实验室-202108-202304_073.md)

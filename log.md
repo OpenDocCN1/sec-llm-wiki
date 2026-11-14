@@ -321,3 +321,4 @@
 ## [2026-11-15] ingest | 0x00实验室-202108-202304_101 -> xd-security-csrf-ssrf-rce-notes-day29-30.md, xd-security-pentest-course-curriculum.md, ssrf-bypass-techniques.md
 ## [2026-11-15] ingest | 0x00实验室-202108-202304_102 -> xd-security-pentest-course-curriculum.md, security-study-group-methodology.md
 ## [2026-11-15] ingest | 0x00实验室-202108-202304_103 -> xd-security-pentest-course-curriculum.md, 0x00lab-wechat-archive-202108-202304.md
+## [2026-11-15] ingest | 0x00实验室-202108-202304_104 -> xd-security-internal-network-penetration-notes-day71-72.md, internal-network-pivoting-techniques.md, xd-security-incident-response-notes.md

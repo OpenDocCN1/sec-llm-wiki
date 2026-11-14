@@ -350,3 +350,4 @@
 ## [2026-11-15] ingest | 0x4d5a-202103-202209_17 -> tdi-kernel-mode-networking.md, ppldump-userland-ppl-bypass-evasion.md
 ## [2026-11-15] ingest | 0x536d72-202112-202205_0 -> 0x536d72-wechat-archive-202112-202205.md
 ## [2026-11-15] ingest | 0x536d72-202112-202205_1 -> osint-social-engineering-scam-investigation-case-study.md
+## [2026-11-15] ingest | 0x536d72-202112-202205_2 -> supply-chain-attack-fundamentals.md, social-engineering-attack-techniques.md

@@ -2,7 +2,7 @@
 title: XD安全渗透测试课程 Day71-75：内网渗透隧道技术、C2联动与应急响应全流程实战
 description: 系统梳理 XD安全渗透测试课程第71-75天学习笔记：Day71 网络层/传输层/应用层隧道技术（ICMP/端口转发/Netcat/DNS隧道）实战；Day72
   Cobalt Strike 与 Metasploit 双向会话移交、Web攻击应急响应溯源实战（日志定位篡改时间、Webshell查杀、进程/网络/文件执行记录分析）；Day73-75
-  应急响应标准流程、Windows/Linux/数据库日志分析、暴力破解溯源、后门木马排查、勒索病毒处置、漏洞自查工具链及自动化应急工具箱。
+  应急响应标准流程、Windows/Linux/数据库日志分析、暴力破解溯源、后门木马排查、勒索病毒处置、漏洞自查工具链及自动化应急工具箱。深度融合IP反查、邮件溯源、恶意样本分析、主机入侵痕迹排查、流量包分析等攻击溯源方法论，完善蓝队溯源取证知识体系。
 category: program-analysis
 tags:
 - XD安全
@@ -27,6 +27,10 @@ tags:
 - LogonTracer
 - GScan
 - ir-rescue
+- 攻击溯源
+- 威胁情报
+- 恶意样本分析
+- 数字取证
 date: 2024-01-15
 updated: '2026-11-15'
 ---
@@ -34,7 +38,7 @@ updated: '2026-11-15'
 
 ## 概述
 
-本页面整理自 XD安全渗透测试课程第 71-75 天学习笔记，系统覆盖**内网隧道技术**、**C2 框架联动**、**应急响应标准流程**、**操作系统与第三方应用入侵排查实战**、**日志分析核心技术**、**自动化工具链落地**六大板块。内容衔接 [[xd-security-pentest-basic-stage-notes]] 基础阶段 Web 攻防与 [[xd-security-pentest-course-curriculum]] 完整课程体系，形成从“漏洞利用→内网横向→事后溯源修复”的闭环知识图谱。
+本页面整理自 XD安全渗透测试课程第 71-75 天学习笔记，系统覆盖**内网隧道技术**、**C2 框架联动**、**应急响应标准流程**、**操作系统与第三方应用入侵排查实战**、**日志分析核心技术**、**自动化工具链落地**六大板块。内容衔接 [[xd-security-pentest-basic-stage-notes]] 基础阶段 Web 攻防与 [[xd-security-pentest-course-curriculum]] 完整课程体系，并融合《渗透测试中的溯源手法》等实战方法论，形成从“漏洞利用→内网横向→事后溯源修复→威胁归因”的闭环知识图谱。
 
 ---
 
@@ -113,6 +117,26 @@ updated: '2026-11-15'
 
 ## 二、Day72：C2 框架联动与 Web 攻击应急响应溯源实战
 
+### 攻击溯源方法论体系（融合实战手法）
+
+渗透测试与应急响应中的攻击溯源遵循**“由果溯因、由表及里、多源印证”**原则，核心维度如下：
+
+| 溯源维度 | 核心手法 | 关键工具/平台 | 交叉引用 |
+|----------|----------|---------------|----------|
+| **IP定位与归属分析** | IDC/CDN/运营商 IP 识别、IP 反查域名、历史解析记录、威胁情报碰撞 | OpenGPS、站长之家 Whois、微步在线、奇安信威胁情报、SecurityTrails、VirusTotal | [[threat-attribution-tracing-techniques]] |
+| **钓鱼邮件反查** | 附件 MD5/恶意 URL 威胁情报查杀、沙箱动态分析、邮件头溯源发件人基础设施 | 奇安信/微步/卡巴斯基/安恒沙箱、PhishTool、Email Header Analyzer | [[threat-attribution-tracing-techniques]]、[[phishing-website-creation-tutorial]] |
+| **恶意样本分析** | 静态特征提取(字符串/导入表/加壳识别)、动态沙箱行为监控、流量包分析反连 C2、代码相似度比对 | IDA Pro/Ghidra、PEiD/Detect It Easy、Cuckoo/ViCheck、Wireshark/Zeek、BinDiff | [[android-shelling-unshelling-techniques]]、[[pe-import-table-internals]]、[[phantom-dll-hollowing-technique]] |
+| **攻击者ID画像与社工碰撞** | 手机号/邮箱/社交账号/昵称/支付宝账户收集、社工库/威胁情报库/多平台指纹关联 | Social-Analyzer、Sherlock、社工库查询、威胁情报平台关联分析 | [[threat-attribution-tracing-techniques]]、[[cybersecurity-interview-guide-2022]] |
+| **VPS/跳板机渗透溯源** | Web 应用指纹识别、漏洞挖掘获取权限、蜜罐甄别、基础设施关联分析 | FOFA/ZoomEye/Quake、Nmap/Nuclei、Metasploit、Cobalt Strike | [[internal-network-pivoting-techniques]]、[[cobalt-strike-external-c2-smb-beacon]] |
+| **主机入侵痕迹排查** | Windows/Linux 易失性/非易失性数据采集、日志时间线重建、持久化机制枚举、制品解析 | LastActivityView、Event Viewer、RegRipper、MFTECmd、AmcacheParser、LinEnum、linux-exploit-suggester | [[xd-security-incident-response-notes]] (本页面 Day73-75)、[[named-pipe-smb-detection-sysmon]] |
+| **网络流量回溯** | 全量流量包捕获/存储、会话重组、异常协议/隧道识别、C2 通信特征提取、横向移动流量还原 | Wireshark/Zeek/Suricata、Moloch/Arkime、NetworkMiner、PCAP 分析脚本 | [[c2-redirectors-malleable-c2-profiles]]、[[smb-named-pipe-c2-communication]] |
+
+> **溯源实战原则**：
+> 1. **证据保全优先**：镜像磁盘、导出内存、导出日志、哈希固证，符合电子数据取证规范。
+> 2. **时间线为轴**：以文件修改时间、日志时间戳、MFT/USN Journal 为主轴串联离散事件。
+> 3. **ATT&CK 映射**：将观测到的 TTPs 映射至 MITRE ATT&CK 矩阵，推断攻击者意图与后续动作。
+> 4. **归因分级**：技术归因(工具/基础设施/代码复用) → 组织归因(行动模式/目标/受害者画像) → 实体归因(自然人/机构)，严谨区分置信度。
+
 ### Cobalt Strike 与 Metasploit 双向会话移交
 
 #### CS → MSF (Spawn 到 MSF)
@@ -151,41 +175,43 @@ updated: '2026-11-15'
 - **现象**：客户反馈网站首页被篡改，挂马/黑页/SEO 植入
 - **目标**：定位入侵时间、攻击路径、Webshell 位置、攻击者行为轨迹
 
-#### 溯源三步走策略
+#### 溯源三步走策略（增强版）
 
 | 步骤 | 核心动作 | 关键工具/命令 | 产出物 |
 |------|----------|---------------|--------|
-| **1. 定位篡改时间** | 对比首页文件修改时间、Web 日志访问记录、数据库修改时间 | `stat index.php`、IIS/Nginx/Apache 访问日志 `grep "index" access.log`、MySQL `general_log` | 精确到分钟的入侵时间窗口 |
-| **2. Webshell 查杀与定位** | 敏感函数扫描、YARA 规则匹配、文件熵值分析、工具指纹识别 | `find /var/www -name "*.php" -exec grep -l "eval\|assert\|system\|passthru" {} \;`、河马/深信服/D 盾/WebshellKill 脚本、[[php-webshell-obfuscation-av-evasion]] 混淆对抗 | Webshell 绝对路径、密码、连接工具 (菜刀/蚁剑/Godzilla/Behinder) |
-| **3. 进程/网络/文件执行记录分析** | 还原攻击者交互行为、横向移动痕迹、持久化手段 | 任务管理器/Process Explorer/Process Hacker、`netstat -ano`/`ss -antlp`、`Get-FileHash`、Prefetch/Amcache/Shimcache/USN Journal、Sysmon 全事件审计 | 完整攻击链时间线、C2 服务器 IP、横向目标、持久化机制 |
+| **1. 定位篡改时间 & 入口** | 对比首页文件修改时间、Web 日志访问记录、数据库修改时间、WAF/IDS 告警日志 | `stat index.php`、IIS/Nginx/Apache 访问日志 `grep "index" access.log`、MySQL `general_log`、WAF 日志导出 | 精确到分钟的入侵时间窗口、疑似攻击入口 URL/参数 |
+| **2. Webshell 多维查杀与定位** | 敏感函数扫描、YARA 规则匹配、文件熵值分析、工具指纹识别、流量侧写关联 | `find /var/www -name "*.php" -exec grep -l "eval\|assert\|system\|passthru" {} \;`、河马/深信服/D 盾/WebshellKill、[[php-webshell-obfuscation-av-evasion]] 混淆对抗、Zeek/Suricata 流量规则 | Webshell 绝对路径、密码、连接工具 (菜刀/蚁剑/Godzilla/Behinder)、关联攻击者 IP |
+| **3. 进程/网络/文件执行记录 & 基础设施关联分析** | 还原攻击者交互行为、横向移动痕迹、持久化手段、溯源攻击者真实 IP/跳板/域名/邮箱/样本 | 任务管理器/Process Explorer/Process Hacker、`netstat -ano`/`ss -antlp`、`Get-FileHash`、Prefetch/Amcache/Shimcache/USN Journal、Sysmon 全事件审计、威胁情报平台反查 | 完整攻击链时间线、C2 服务器 IP/域名、横向目标、持久化机制、攻击者基础设施画像 |
 
 #### 实战操作详解
 
-##### 步骤 1：日志定位篡改时间
+##### 步骤 1：日志定位篡改时间与入口
 - **Web 服务器日志路径**：
   - IIS：`%SystemDrive%\inetpub\logs\LogFiles\W3SVC<SiteID>\u_ex<YYMMDD>.log`
   - Apache：`/var/log/apache2/access.log` 或 `/var/log/httpd/access_log`
   - Nginx：`/var/log/nginx/access.log` (宝塔面板：网站→设置→日志→下载)
 - **关键字搜索**：
   ```bash
-  # 疑似 Webshell 访问
+  # 疑似 Webshell 访问 (结合 [[php-webshell-fundamentals-chopper-analysis]] 特征)
   grep -E "x\.php|shell|cmd|eval|assert|passthru|system|base64" access.log
   # 文件上传漏洞利用
   grep -E "upload|file.*\.php|\.jsp|\.asp|\.aspx" access.log
   # 篡改首页前后的 POST 请求
   awk -F'"' '$6 ~ /POST/ && $2 ~ /index/' access.log
+  # ThinkPHP/Struts2 等框架 RCE 特征 (参考 [[xd-security-pentest-basic-stage-notes]])
+  grep -E "think\b|struts|ognl|class\.module" access.log
   ```
 - **时间窗口确认**：结合 `stat index.html` 修改时间，锁定攻击发生在 `2024-01-15 14:32:10` 前后
 
-##### 步骤 2：Webshell 多维查杀
-| 检测维度 | 方法 | 典型特征 |
-|----------|------|----------|
-| **静态特征** | 敏感函数 `eval/assert/system/passthru/shell_exec/proc_open/popen/curl_exec`、Base64/十六进制/混淆编码高熵值 | `<?php @eval($_POST['x']);?>`、`assert(base64_decode(...))`、`$_GET[0]($_POST[1])` |
-| **工具指纹** | 菜刀 `Content-Type: application/x-www-form-urlencoded`、蚁剑 `Accept: */*; q=0.01`、Godzilla `Key: <UUID>`、Behinder `X-Requested-With: XMLHttpRequest` | 结合 [[php-webshell-fundamentals-chopper-analysis]] 流量特征库识别 |
-| **动态行为** | RASP/IAST 监控 `execve`/`CreateProcess` 子进程、异常网络连接、文件落地 | 进程树异常：`httpd`/`nginx`/`php-fpm` 启动 `bash`/`powershell`/`cmd.exe` |
-| **文件完整性** | 核心目录定时哈希对比 (`md5deep`/`Tripwire`/`AIDE`)、`inotifywait` 实时监控新增/修改文件 | 首页 `index.php` 哈希值突变、出现 `x.php`/`shell.php`/`wp-admin/images/x.jpg` |
+##### 步骤 2：Webshell 多维查杀体系
+| 检测维度 | 方法 | 典型特征 | 对抗参考 |
+|----------|------|----------|----------|
+| **静态特征** | 敏感函数 `eval/assert/system/passthru/shell_exec/proc_open/popen/curl_exec`、Base64/十六进制/混淆编码高熵值 | `<?php @eval($_POST['x']);?>`、`assert(base64_decode(...))`、`$_GET[0]($_POST[1])` | [[php-webshell-obfuscation-av-evasion]] 算术表达式拆分、XOR 混淆 |
+| **工具指纹** | 菜刀 `Content-Type: application/x-www-form-urlencoded`、蚁剑 `Accept: */*; q=0.01`、Godzilla `Key: <UUID>`、Behinder `X-Requested-With: XMLHttpRequest` | 结合 [[php-webshell-fundamentals-chopper-analysis]] 流量特征库识别 | WAF/日志审计匹配指纹 |
+| **动态行为** | RASP/IAST 监控 `execve`/`CreateProcess` 子进程、异常网络连接、文件落地 | 进程树异常：`httpd`/`nginx`/`php-fpm` 启动 `bash`/`powershell`/`cmd.exe` | [[phantom-dll-hollowing-technique]] 内存注入无文件落地对抗 |
+| **文件完整性** | 核心目录定时哈希对比 (`md5deep`/`Tripwire`/`AIDE`)、`inotifywait` 实时监控新增/修改文件 | 首页 `index.php` 哈希值突变、出现 `x.php`/`shell.php`/`wp-admin/images/x.jpg` | — |
 
-> **工具推荐**：河马 Webshell 查杀 (Linux/Win)、D 盾 Web 查杀 (Win)、深信服 Webshell 检测、开源 `WebshellDetect`/`YARA-Rules`/`malware-scan`
+> **工具推荐**：河马 Webshell 查杀 (Linux/Win)、D 盾 Web 查杀 (Win)、深信服 Webshell 检测、开源 `WebshellDetect`/`YARA-Rules`/`malware-scan`、[[pocsuite3-vulnerability-testing-framework]] 批量验证
 
 ##### 步骤 3：进程、网络连接、文件执行记录深度分析
 
@@ -201,7 +227,8 @@ netstat -ano | findstr ESTABLISHED
 # 关联 PID 到进程
 tasklist | findstr <PID>
 ```
-- **发现**：PID 2844 (httpd.exe) 建立 TCP 连接至 `203.0.113.45:443` (C2 服务器)，心跳间隔 60s，User-Agent 为 `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36` (伪造 Chrome)
+- **发现**：PID 2844 (httpd.exe) 建立 TCP 连接至 `203.0.113.45:443` (C2 服务器)，心跳间隔 60s，User-Agent 伪造 Chrome
+- **流量包分析**：导出 PCAP，Wireshark 追踪流还原 HTTP/DNS/SMB 交互，识别 [[c2-redirectors-malleable-c2-profiles]] Malleable Profile 特征、[[smb-named-pipe-c2-communication]] 命名管道通信
 
 **文件执行记录/制品分析**
 | 制品类型 | 位置 | 解析工具 | 提取信息 |
@@ -211,6 +238,7 @@ tasklist | findstr <PID>
 | **Shimcache** | `HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\AppCompatCache` | `AppCompatCacheParser.exe` | 程序执行历史 (含已删除文件) |
 | **USN Journal** | `$Extend\$UsnJrnl:$J` | `USNParser.exe` / `MFTECmd.exe` | 文件创建/修改/删除/重命名精确时间戳 |
 | **SRUM** | `C:\Windows\System32\sru\SRUDB.dat` | `SrumECmd.exe` | 进程网络流量统计、CPU/内存使用、用户上下文 |
+| **MFT** | `$MFT` | `MFTECmd.exe` / `AnalyzeMFT` | 全量文件元数据、驻留文件内容、时间戳 |
 
 - **案例关联**：通过 USN Journal 发现 `x.php` 创建于 `2024-01-15 14:31:58`，Amcache 显示 `cmd.exe` 在 `14:32:05` 被 `httpd.exe` 启动，Prefetch 确认 `powershell.exe` 运行次数激增，完整还原攻击链。
 
@@ -232,18 +260,20 @@ tasklist | findstr <PID>
 | 14:32:10 | 篡改 index.php 写入恶意代码 | stat index.php 修改时间 + access.log POST |
 | 14:35:00 | 建立 C2 反向连接 203.0.113.45:443 | netstat/Sysmon Event ID 3 网络连接 |
 
-### 攻击路径
-1. 利用 ThinkPHP 5.0.24 RCE (CVE-2019-9082) 执行任意命令
-2. 写入 Webshell x.php (蚁剑连接特征)
-3. 执行系统侦察命令，尝试横向扫描内网
-4. 篡改首页植入 SEO 恶意链接
-5. 下载 Cobalt Strike Beacon (DNS 隧道) 建立持久化
+### 攻击路径与溯源延伸
+1. 利用 ThinkPHP 5.0.24 RCE (CVE-2019-9082) 执行任意命令 (入口确认)
+2. 写入 Webshell x.php (蚁剑连接特征确认)
+3. 执行系统侦察命令，尝试横向扫描内网 (进程/网络证据)
+4. 篡改首页植入 SEO 恶意链接 (文件修改证据)
+5. 下载 Cobalt Strike Beacon (DNS 隧道) 建立持久化 (流量/制品证据)
+6. **溯源延伸**：C2 IP `203.0.113.45` 经威胁情报关联至 APT-C-XX 组织；域名 `cs.xiaodi8.com` 注册邮箱 `attacker@protonmail.com` 经社工库碰撞关联真实身份；样本 `beacon.bin` 代码相似度匹配该组织历史武器库。
 
 ### 处置建议
 - 立即隔离主机、备份现场、清理 Webshell 及关联文件
 - 修复 ThinkPHP 漏洞 (升级/补丁/WAF 虚拟补丁)
 - 重置服务器账号密码、检查计划任务/启动项/服务持久化
 - 部署 RASP/EDR、开启 Sysmon 全审计、配置日志集中采集
+- 威胁情报入库、封禁关联 IOC、开展全网排查
 ```
 
 ### 交叉引用导航
@@ -252,6 +282,7 @@ tasklist | findstr <PID>
 - C2 通信隐匿与检测：[[c2-redirectors-malleable-c2-profiles]]、[[cobalt-strike-external-c2-smb-beacon]]、[[smb-named-pipe-c2-communication]]、[[named-pipe-smb-detection-sysmon]]
 - Windows 制品解析与溯源：[[internal-network-pivoting-techniques]] 应急响应章节、[[cybersecurity-interview-guide-2022]] 应急响应面试题库
 - 实战靶场复现：[[gkctf-2021-web-writeup]] babycat/easynode (Webshell Getshell)、[[vulnhub-boredhackerblog-social-network-writeup]] (代码注入→Webshell→横向)
+- 溯源方法论总览：[[threat-attribution-tracing-techniques]] (威胁溯源/攻击归因/应急响应/数字取证/IP定位/钓鱼邮件分析/恶意样本分析/主机入侵排查/流量回溯)
 
 ---
 
@@ -262,10 +293,10 @@ tasklist | findstr <PID>
 | 阶段 | 核心目标 | 关键动作 | 产出物 |
 |------|----------|----------|--------|
 | **保护** | 固化现场、防止扩散 | 物理/逻辑隔离（断网/快照/镜像）、易失性数据优先采集（内存/网络连接/进程/登录会话/计划任务/启动项） | 取证镜像、易失性数据包、现场照片/记录 |
-| **分析** | 还原攻击链 | 指纹库比对、日志时间线重建、后门/Rootkit 深度排查、漏洞利用痕迹研判、ATT&CK 技术映射 | 攻击链复现报告、IOC 清单 (IP/域名/Hash/文件路径/注册表/用户名) |
+| **分析** | 还原攻击链 | 指纹库比对、日志时间线重建、后门/Rootkit 深度排查、漏洞利用痕迹研判、ATT&CK 技术映射、威胁情报关联归因 | 攻击链复现报告、IOC 清单 (IP/域名/Hash/文件路径/注册表/用户名)、归因分析研判 |
 | **复现** | 验证攻击路径 | 搭建同版本环境、按攻击者 TTPs 复现、定位入口与横向移动路径、验证修复有效性 | 复现视频/步骤文档、漏洞 PoC/EXP |
 | **修复** | 根因消除 | 补丁修补、弱口令整改、后门清理、账号体系梳理、权限最小化、WAF/RASP 虚拟补丁、配置基线加固 | 修复记录、加固清单、验收报告 |
-| **建议** | 体系加固 | 安全基线配置、日志审计完善、EDR/态势感知部署、应急预案演练、红蓝对抗常态化、安全运营体系建设 | 策略文档、预案更新、培训计划、工具采购建议 |
+| **建议** | 体系加固 | 安全基线配置、日志审计完善、EDR/态势感知部署、应急预案演练、红蓝对抗常态化、安全运营体系建设、威胁狩猎常态化 | 策略文档、预案更新、培训计划、工具采购建议 |
 
 > **实战提示**：受害方提供“明确信息”（时间点、被改文件、Webshell 路径、工具指纹）可大幅缩小排查面；若无明确信息，需按 **Web漏洞→中间件→第三方应用→操作系统→口令/后门** 全维度排查。
 
@@ -468,20 +499,28 @@ graph TD
     A --> C[Day73 应急响应流程]
     B --> D[CS<->MSF 会话移交]
     B --> E[Web攻击溯源实战]
-    C --> F[Day74 OS入侵排查]
-    C --> G[Day75 第三方应用与自查]
-    D --> H[[internal-network-pivoting-techniques]]
-    D --> I[[cobalt-strike-external-c2-smb-beacon]]
-    E --> J[[php-webshell-fundamentals-chopper-analysis]]
-    E --> K[[php-webshell-obfuscation-av-evasion]]
-    E --> L[[named-pipe-smb-detection-sysmon]]
-    F --> M[暴力破解溯源 RDP/SSH]
-    F --> N[后门排查 Webshell/PC木马/CrossC2]
-    F --> O[勒索病毒处置 WannaCry]
-    G --> P[LogonTracer 图谱溯源]
-    G --> Q[数据库审计 MySQL/MSSQL/Oracle]
-    G --> R[漏洞自查 WindowsVulnScan/LES/LinEnum]
-    G --> S[应急工具箱 ir-rescue]
+    B --> F[攻击溯源方法论体系]
+    C --> G[Day74 OS入侵排查]
+    C --> H[Day75 第三方应用与自查]
+    D --> I[[internal-network-pivoting-techniques]]
+    D --> J[[cobalt-strike-external-c2-smb-beacon]]
+    E --> K[[php-webshell-fundamentals-chopper-analysis]]
+    E --> L[[php-webshell-obfuscation-av-evasion]]
+    E --> M[[named-pipe-smb-detection-sysmon]]
+    F --> N[[threat-attribution-tracing-techniques]]
+    F --> O[[phishing-website-creation-tutorial]]
+    F --> P[[android-shelling-unshelling-techniques]]
+    F --> Q[[pe-import-table-internals]]
+    F --> R[[phantom-dll-hollowing-technique]]
+    F --> S[[c2-redirectors-malleable-c2-profiles]]
+    F --> T[[smb-named-pipe-c2-communication]]
+    G --> U[暴力破解溯源 RDP/SSH]
+    G --> V[后门排查 Webshell/PC木马/CrossC2]
+    G --> W[勒索病毒处置 WannaCry]
+    H --> X[LogonTracer 图谱溯源]
+    H --> Y[数据库审计 MySQL/MSSQL/Oracle]
+    H --> Z[漏洞自查 WindowsVulnScan/LES/LinEnum]
+    H --> AA[应急工具箱 ir-rescue]
 ```
 
 ### 核心技术页面索引
@@ -497,6 +536,7 @@ graph TD
 | **CTF 实战库** | [[buuctf-pwn-writeup-collection]]、[[mtctf-2021-pwn-writeup]]、[[xihulunjian-2020-iot-pwn3-ezarmpwn-writeup]]、[[d3ctf-2021-d3dev-qemu-escape-writeup]]、[[google-ctf-2021-full-chain-v8-exploitation]] | PWN、IoT、VM Escape、V8 JIT、浏览器利用链 |
 | **硬件与无线** | [[0w1club-hardware-atlas]]、[[badusb-hid-attack-arduino-leonardo]]、[[0w1club-week2-wifi-hijacking-arp-spoofing]]、[[ettercap-arp-mitm-practical-guide]] | Proxmark3、Ubertooth、BadUSB、ARP欺骗、中间人攻击 |
 | **密码学与编码** | [[crypto-basics-xor-stream-cipher-tutorial]]、[[jwt漏洞原理与实战利用]]、[[0w1club-training-shellshock-cgi-exploitation]] | XOR/流密码、JWT算法混淆、Shellshock、Dirty COW |
+| **溯源取证专题** | [[threat-attribution-tracing-techniques]]、[[xd-security-blue-team-defense]]、[[xd-security-awd-competition-strategies]] | 威胁溯源、攻击归因、数字取证、蓝队防御、AWD实战 |
 
 ---
 
@@ -536,6 +576,9 @@ POST.*\.php.*eval|POST.*\.jsp.*Runtime\.getRuntime|POST.*\.asp.*execute|POST.*\.
 
 # 横向移动
 psexec|wmic|winrs|winrm|sc create|schtasks /create|at \\\\|reg add HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run|Invoke-Command|Enter-PSSession|New-PSSession|Copy-Item -ToSession|smbexec|wmiexec|atexec|dcomexec
+
+# 溯源关键词 (IP/域名/邮箱/样本哈希)
+\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b|[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}|[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}|[a-fA-F0-9]{32}|[a-fA-F0-9]{40}|[a-fA-F0-9]{64}
 ```
 
 ---
@@ -549,8 +592,8 @@ psexec|wmic|winrs|winrm|sc create|schtasks /create|at \\\\|reg add HKLM\\SOFTWAR
 
 ---
 
-> **页面定位**：本页面作为 XD安全渗透测试课程 **内网渗透与应急响应模块** 的结构化知识沉淀，兼顾“流程标准化”、“技术细节落地”、“工具链工程化”三个维度，配合全站 100+ 技术页面形成可检索、可复用、可进化的安全知识库。
+> **页面定位**：本页面作为 XD安全渗透测试课程 **内网渗透与应急响应模块** 的结构化知识沉淀，兼顾“流程标准化”、“技术细节落地”、“工具链工程化”、“溯源归因方法论”四个维度，配合全站 100+ 技术页面形成可检索、可复用、可进化的安全知识库。
 
 ## 来源
 
-- [0x00实验室-202108-202304_104](../sources/0x00实验室-202108-202304_104.md)
+- [0x00实验室-202108-202304_111](../sources/0x00实验室-202108-202304_111.md)

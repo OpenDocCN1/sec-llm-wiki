@@ -253,3 +253,4 @@
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_033 -> cobalt-strike-external-c2-smb-beacon.md, c2-redirectors-malleable-c2-profiles.md, covenant-c2-framework-analysis.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_034 -> heap-overflow-principles-unlink-exploitation.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_035 -> php-webshell-obfuscation-av-evasion.md
+## [2026-11-14] ingest | 0x00实验室-202108-202304_036 -> sqlmap-api-automation.md

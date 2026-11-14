@@ -283,3 +283,4 @@
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_063 -> websocket-vulnerabilities-analysis.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_064 -> network-fundamentals-penetration-testing.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_065 -> attack-defense-world-master-advanced-writeup.md, php伪协议与反序列化利用.md, python-ssti-multi-engine-bypass.md
+## [2026-11-14] ingest | 0x00实验室-202108-202304_066 -> vulnhub-boredhackerblog-social-network-writeup.md, docker-container-security-fundamentals.md, internal-network-pivoting-techniques.md

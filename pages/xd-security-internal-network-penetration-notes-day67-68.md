@@ -33,7 +33,7 @@ updated: '2026-11-15'
 
 本页面整理自 XD安全渗透测试课程 Day67-68 的学习笔记，重点记录**域环境下的横向移动技术**与**Kerberos 认证体系下的凭证复用攻击**。Day67 侧重于利用 SMB 与 WMI 服务进行明文或 NTLM Hash 传递的实战操作；Day68 系统讲解 PTH/PTK/PTT 三大票据传递技术的原理差异、适用场景及工具化利用流程，并补充国产内网扫描工具 Ladon 的基础用法。内容贯穿“凭证获取 → 横向移动 → 权限维持”的内网渗透核心链路，适合红队实战与 OSCP 风格备考参考。
 
-> **前置知识**：建议先阅读 [[xd-security-internal-network-penetration-notes-day69-70]]（域横向移动实战与 Cobalt Strike 隧道技术）、[[xd-security-internal-network-penetration-notes-day71-72]]（隧道技术与会话移交）、[[mimikatz-source-code-architecture-golden-ticket-audit]]（Mimikatz 黄金票据源码解析）、[[lm-ntlm-hash-generation-analysis]]（LM/NTLM Hash 生成算法深度解析）。
+> **前置知识**：建议先阅读 [[xd-security-internal-network-penetration-notes-day65-66]]（域环境信息收集与 at/schtasks/impacket 横向移动）、[[xd-security-internal-network-penetration-notes-day69-70]]（域横向移动实战与 Cobalt Strike 隧道技术）、[[mimikatz-source-code-architecture-golden-ticket-audit]]（Mimikatz 黄金票据源码解析）、[[lm-ntlm-hash-generation-analysis]]（LM/NTLM Hash 生成算法深度解析）。
 
 ---
 
@@ -298,7 +298,7 @@ Ladon.exe -f portscan.txt WMI -u admin -p "pass" -c "whoami" -o wmi_exec.txt
 
 ## 交叉引用导航
 
-- **前序笔记**：[[xd-security-internal-network-penetration-notes-day69-70]]（域横向实战与 Cobalt Strike 隧道）、[[xd-security-internal-network-penetration-notes-day71-72]]（ICMP/DNS 隧道与会话移交）  
+- **前序笔记**：[[xd-security-internal-network-penetration-notes-day65-66]]（域环境信息收集与 at/schtasks/impacket 横向移动）、[[xd-security-internal-network-penetration-notes-day69-70]]（域横向实战与 Cobalt Strike 隧道）、[[xd-security-internal-network-penetration-notes-day71-72]]（ICMP/DNS 隧道与会话移交）  
 - **工具深度解析**：[[mimikatz-source-code-architecture-golden-ticket-audit]]、[[lm-ntlm-hash-generation-analysis]]、[[named-pipe-smb-detection-sysmon]]、[[smb-named-pipe-c2-communication]]、[[cobalt-strike-external-c2-smb-beacon]]  
 - **红队基础设施**：[[internal-network-pivoting-techniques]]（Venom/Frp/SSH/SMB Beacon 代理对比）、[[c2-redirectors-malleable-c2-profiles]]（流量混淆）  
 - **蓝队防御体系**：[[xd-security-blue-team-defense]]（ATT&CK 映射、蜜罐、NIDS/HIDS、检测规则编写）  
@@ -318,4 +318,4 @@ Day67-68 笔记串联了**从凭证获取到横向移动、再到票据级持久
 
 ## 来源
 
-- [0x00实验室-202108-202304_106](../sources/0x00实验室-202108-202304_106.md)
+- [0x00实验室-202108-202304_107](../sources/0x00实验室-202108-202304_107.md)

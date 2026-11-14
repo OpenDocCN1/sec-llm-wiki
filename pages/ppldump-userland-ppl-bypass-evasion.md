@@ -1,177 +1,291 @@
 ---
-title: PPLDump用户态绕过PPL保护与对抗内存扫描技术详解
-description: 深度解析PPLDump利用DefineDosDevice/KnownDLLs漏洞绕过PPL保护转储LSASS，以及将恶意代码注入Antimalware/WinTcb级PPL进程对抗内存扫描的实战技术链
+title: SassyKitdi：内核态 TDI 反向 Shell 与 LSASS 转储技术详解
+description: 深度解析 SassyKitdi 内核态载荷：利用 TDI (Transport Driver Interface) 建立反向 TCP 连接，通过
+  KeStackAttachProcess 附加至 LSASS 进程上下文，配合 ZwQueryVirtualMemory 遍历虚拟内存区域，通过 PEB->Ldr.InLoadOrderLinks
+  枚举已加载模块，生成 Mimikatz 可解析的 minidump 三大流，实现无文件凭据窃取。
 category: program-analysis
 tags:
-- PPL
-- Protected Process Light
-- PPLDump
-- DefineDosDevice
-- KnownDLLs
+- TDI
+- Transport Driver Interface
+- Kernel Mode
+- Reverse Shell
+- TCP Socket
 - LSASS Dump
-- Memory Scanning Evasion
-- Antimalware
-- WinTcb
-- Userland Exploit
+- KeStackAttachProcess
+- ZwQueryVirtualMemory
+- MEMORY_BASIC_INFORMATION
+- PEB
+- LDR_DATA_TABLE_ENTRY
+- Minidump
+- Mimikatz
+- Rust
+- Shellcode
+- Rootkit
+- EternalBlue
+- BlueKeep
+- SMBGhost
 - Red Teaming
 - Windows Internals
-date: 2021-04-22
+- Credential Theft
+date: 2020-08-01
 updated: '2026-11-15'
 ---
 ## 概述
 
-本页面系统梳理 **PPLDump** 项目实现的两大核心攻击场景：
+**SassyKitdi** 是一个 Windows NT 内核模式载荷，整合了 **TDI 反向 TCP 连接**、**内核态 LSASS 内存转储** 与 **Rust 编写的位置无关 Shellcode** 三大核心能力。该载荷可通过远程内核漏洞（如 EternalBlue、BlueKeep、SMBGhost）或本地内核漏洞（易受攻击驱动）部署，覆盖 Windows 2000 至 Windows 10 全版本，且不依赖特定 DKOM 偏移。
 
-1. **绕过 PPL 保护**：利用 `DefineDosDevice` 在用户态劫持 `KnownDLLs` 目录，将恶意 DLL 注入受保护进程（如 `services.exe`），从而在该进程上下文中打开并转储开启 `RunAsPPL` 的 LSASS 进程内存。
-2. **利用 PPL 对抗内存扫描**：将 Shellcode 注入 `MsMpEng.exe` (Antimalware-Light) 或 `wininit.exe` (WinTcb-Light) 等高签名等级 PPL 进程，利用内核拒绝非同级或更高级进程访问的特性，躲避 AV/EDR 的用户态内存扫描。
+核心创新点：
+1. **用户态不落地**：全流程在 Ring 0 完成，无需用户态进程交互，天然规避用户态 AV/EDR 对 LSASS 的保护（如 RunAsPPL、PPL）。
+2. **TDI 网终栈**：复用古老但稳定的 Transport Driver Interface（`tdi.sys`），建立反向 TCP 连接传输凭据数据。
+3. **三大流生成**：按 Mimikatz minidump 格式产出 System Information、Memory Ranges、Module List 三大流，直接兼容 `sekurlsa::minidump` 解析。
+4. **Rust 零开销抽象**：利用 `no_std`、RAII、`Result` 等高级特性编写高质量 PIC Shellcode，体积约 3300 字节。
 
-两种手法均基于 **@itm4n** 的 [PPLDump](https://github.com/itm4n/PPLdump) 项目，漏洞细节参考其博客 [Bypassing LSA Protection in Userland](https://blog.scrt.ch/2021/04/22/bypassing-lsa-protection-in-userland/)。
-
----
-
-## PPL 机制核心原理
-
-### 保护类型与签名等级
-
-Windows 8.1+ 引入 **Protected Process Light (PPL)**，在 `EPROCESS` 中通过 `Protection` 字段记录：
-
-| 字段 | 含义 |
-|------|------|
-| `PsProtectedType` | `None (0)` / `ProtectedLight (1)` / `Protected (2)` |
-| `PsProtectedSigner` | `None (0)` `Authenticode (1)` `CodeGen (2)` `Antimalware (3)` `Lsa (4)` `Windows (5)` `WinTcb (6)` `WinSystem (7)` `App (8)` |
-
-常见组合十六进制值：
-- `PS_PROTECTED_SYSTEM` = `0x72` (WinSystem, PP)
-- `PS_PROTECTED_WINTCB` = `0x62` (WinTcb, PP)
-- `PS_PROTECTED_WINTCB_LIGHT` = `0x61` (WinTcb, PPL) —— **Ring3 最高**
-- `PS_PROTECTED_WINDOWS` = `0x52`
-- `PS_PROTECTED_WINDOWS_LIGHT` = `0x51`
-- `PS_PROTECTED_LSA_LIGHT` = `0x41` (LSASS RunAsPPL)
-- `PS_PROTECTED_ANTIMALWARE_LIGHT` = `0x31` (Windows Defender `MsMpEng.exe`)
-
-### 访问规则
-
-1. **PP 始终高于 PPL**：受保护进程 (PP) 可访问 PPL，反之不可。
-2. **同类型比较 Signer**：`Signer` 等级高或相等的进程可打开低等级进程句柄（需 `SeDebugPrivilege`）。
-3. **无保护进程无法访问 PP/PPL**：普通管理员进程无法以 `PROCESS_VM_READ | PROCESS_QUERY_INFORMATION` 打开 LSASS (Lsa-Light)。
-
-> 这就是为何 `procdump` / `mimikatz` 在 `RunAsPPL=1` 时返回 `Access Denied`。
+> 原文来源：[@zerosum0x0's blog](https://zerosum0x0.blogspot.com/2020/08/sassykitdi-kernel-mode-tcp-sockets.html) | [PoC 仓库](https://github.com/zerosum0x0/SassyKitdi)
 
 ---
 
-## 绕过 PPL：PPLDump 漏洞利用链
+## TDI 内核态网络通信
 
-### 攻击面：`DefineDosDevice` + `KnownDLLs` 劫持
+### 设备对象打开与地址绑定
 
-`KnownDLLs` 目录 (`\KnownDlls`) 存储 **Section 对象**，系统加载 DLL 时优先查找此目录。若能在此植入恶意 Section，后续启动的受保护进程会映射攻击者控制的镜像。
+TDI 通过 `ZwCreateFile` 打开 `\Device\Tcp` 设备对象，利用 **File Extended Attributes (FEA)** 传递配置：
 
-PPLDump 利用 **CSRSS 处理 `DefineDosDevice` RPC 时未正确 Impersonate** 的逻辑缺陷，在 SYSTEM 上下文中创建伪造 `\GLOBAL??\KnownDlls` 目录及符号链接。
+| FEA 名称 | 用途 | 关键结构体 |
+|----------|------|------------|
+| `TransportAddress` | 创建传输句柄，绑定本地 IP/端口 | `TRANSPORT_ADDRESS` (含 `TA_ADDRESS`、`TDI_ADDRESS_IP`) |
+| `ConnectionContext` | 创建连接句柄，关联上下文 | 自定义 `PVOID` (示例置 NULL) |
 
-### 利用步骤 (Exploit Flow)
-
-1. **提升至 SYSTEM** (如 `GetSystem` / Token 窃取)，以便在 `\GLOBAL??` 创建对象。
-2. **创建伪造目录** `\GLOBAL??\KnownDlls` 及符号链接 `\GLOBAL??\KnownDlls\FOO.dll` → 指向恶意 DLL 的 Section。
-3. **降权回管理员上下文**。
-4. **在当前用户 DOS 设备目录创建符号链接** `GLOBALROOT` → `\GLOBAL??` (必须非 SYSTEM，否则落入真实 `\GLOBAL??\GLOBALROOT`)。
-5. **调用 `DefineDosDevice(..., "GLOBALROOT\KnownDlls\FOO.dll", <恶意DLL路径>)`**  
-   - CSRSS (SYSTEM) 解析路径：`\??\GLOBALROOT\KnownDlls\FOO.dll` → `\GLOBAL??\GLOBALROOT\KnownDlls\FOO.dll` → `\KnownDlls\FOO.dll`  
-   - 因未 Impersonate，实际在 SYSTEM 上下文操作真实 `\KnownDlls`，完成劫持。
-6. **触发受保护进程加载** (如启动 `services.exe` / `WinTcb-Light`)，其映射劫持后的 `EventAggregation.dll` 等 KnownDLL。
-7. **在受保护进程上下文执行代码**，继而以同等级权限 `OpenProcess` 目标 PPL (如 LSASS) 并 `ReadProcessMemory` 转储内存。
-
-### 关键点图解
-
-```text
-攻击者 (Admin)                          CSRSS (SYSTEM)
-    │                                      │
-    ├── Create \GLOBAL??\KnownDlls         │
-    ├── Create \GLOBAL??\KnownDlls\FOO.dll │
-    │                                      │
-    ├── RevertToSelf()                     │
-    ├── Create \??\GLOBALROOT -> \GLOBAL?? │
-    │                                      │
-    └── DefineDosDevice("GLOBALROOT\KnownDlls\FOO.dll", malicious.dll)
-                                           │
-                                           ├── 解析 \??\GLOBALROOT\KnownDlls\FOO.dll
-                                           │     → \GLOBAL??\GLOBALROOT\KnownDlls\FOO.dll
-                                           │     → \KnownDlls\FOO.dll  (真实目录!)
-                                           │
-                                           └── 以 SYSTEM 写入真实 \KnownDlls 劫持成功
+```c
+// 绑定 0.0.0.0:0，由内核分配临时源端口
+TRANSPORT_ADDRESS ta = { .TAAddressCount = 1 };
+ta.Address[0].AddressType = TDI_ADDRESS_TYPE_IP;
+ta.Address[0].AddressLength = sizeof(TDI_ADDRESS_IP);
+((TDI_ADDRESS_IP*)ta.Address[0].Address)->sin_port = 0;
+((TDI_ADDRESS_IP*)ta.Address[0].Address)->in_addr = 0;
 ```
 
-> **无文件落地变体**：结合 [Process Doppelgänging / Ghosting]([[process-injection-tampering-techniques]]) 技术，通过 `TxF` 事务 + `NtCreateSection` 在内存中构建恶意 Section，避免 DLL 落盘。
+### 连接建立与数据发送
+
+所有后续操作通过 `IRP_MJ_INTERNAL_DEVICE_CONTROL` 分发 TDI IOCTL：
+
+| MinorFunction (Opcode) | 说明 | 参数结构体 |
+|------------------------|------|------------|
+| `TDI_CONNECT` | 主动连接远端 | `TRANSPORT_ADDRESS` (目标 IP/端口，大端序) |
+| `TDI_SEND` | 发送数据 | `TDI_REQUEST_SEND` + MDL 描述缓冲区 |
+| `TDI_DISCONNECT` | 断开连接 | `TDI_REQUEST_DISCONNECT` |
+
+**发送流程**：
+1. `ExAllocatePool` 分配缓冲区 → `RtlCopyMemory` 填充数据
+2. `IoAllocateMdl` 构造 MDL → `MmProbeAndLockPages` 锁定物理页
+3. `IoBuildDeviceIoControlRequest` 构造 IRP → `IofCallDriver` 分发
+4. 完成后 `MmUnlockPages`、`IoFreeMdl`、`ExFreePool` 释放资源
+
+> 完整 IRP 构造、分发、等待模式参考 [[tdi-kernel-mode-networking]] 的 “TDI 反向 Shell 实战流程” 一节。
 
 ---
 
-## 利用 PPL 对抗内存扫描：高签名进程注入
+## 内核态 LSASS 转储核心流程
 
-### 核心思路
+### 进程上下文附加：`KeStackAttachProcess`
 
-AV/EDR 常通过用户态 API (`OpenProcess` + `ReadProcessMemory` / `VirtualQueryEx` / `EnumProcessModulesEx`) 扫描可疑内存区域。内核拒绝**低签名等级**进程打开**高签名 PPL** 句柄，因此将 Shellcode 注入 `Antimalware-Light` 或 `WinTcb-Light` 进程可天然规避用户态扫描器。
+内核通过 `KeStackAttachProcess(PEPROCESS TargetProcess, PKAPC_STATE ApcState)` 将当前线程内核栈附加到目标进程（LSASS）地址空间，使后续 `ZwQueryVirtualMemory` 等系统调用在 LSASS 上下文执行。**附加后必须配对 `KeUnstackDetachProcess` 还原**。
 
-| 目标进程 | PPL 等级 | 签名等级 | 典型用途 |
-|----------|----------|----------|----------|
-| `MsMpEng.exe` | `Antimalware-Light (0x31)` | 3 | Windows Defender 核心服务 |
-| `wininit.exe` | `WinTcb-Light (0x61)` | 6 (Ring3 最高) | 关键系统初始化进程 |
+```c
+KAPC_STATE apcState;
+KeStackAttachProcess(lsassProcess, &apcState);
+// 此时当前线程可见 LSASS 的用户态虚拟地址空间
+// ... 遍历内存、枚举模块 ...
+KeUnstackDetachProcess(&apcState);
+```
 
-### 实战注入流程 (PPLDump 实现)
+> 该技术亦可用于用户态注入（如 [[ppldump-userland-ppl-bypass-evasion]] 利用 KnownDLLs 劫持进入 PPL 上下文），但内核态附加无需任何用户态句柄权限，完全绕过 `OpenProcess` 访问检查。
 
-1. 利用上述 **KnownDLLs 劫持** 将恶意 DLL 注入 `services.exe` (WinTcb-Light)。
-2. 在 `services.exe` 上下文中 `OpenProcess` 目标 PPL (`MsMpEng.exe` / `wininit.exe`) 获取 `PROCESS_ALL_ACCESS`。
-3. 分配 RWX 内存 (`VirtualAllocEx`)、写入 Shellcode (`WriteProcessMemory`)、创建远程线程 (`CreateRemoteThread` / `NtCreateThreadEx`) 执行。
+### 虚拟内存区域遍历：`ZwQueryVirtualMemory`
 
-### 实测限制与绕过
+在附加上下文中，以 `ProcessHandle = (HANDLE)-1`（当前进程伪句柄）和 `BaseAddress = 0` 起始，循环调用：
 
-| 场景 | 现象 | 原因分析 | 绕过方案 |
-|------|------|----------|----------|
-| Shellcode 中调用 `CreateProcess` | 返回 `ERROR_INVALID_PARAMETER (87)` | PPL 进程创建子进程需 `bInheritHandles=FALSE`，Cobalt Strike Beacon 默认 `TRUE` 导致管道继承冲突 | 使用 **BOF** 替代 Beacon 内置 `CreateProcess`，显式设置 `bInheritHandles=FALSE` 或改用文件落地输出 [[ppl-injection-createprocess-bof-fix]] |
-| 内存扫描器枚举模块/线程 | 仍可被内核回调/ETW 发现 | 用户态隐匿不代表内核不可见 | 结合 [UDRL]([[aceldr-technical-analysis]]) / [FOLIAGE]([[memory-scanning-tools-evasion-techniques]]) / [Ekko]([[memory-scanning-tools-evasion-techniques]]) 等内存加密/隐藏技术 |
+```c
+MEMORY_BASIC_INFORMATION mbi;
+SIZE_T returnLength;
+NTSTATUS status = ZwQueryVirtualMemory(
+    (HANDLE)-1, baseAddress, MemoryBasicInformation, &mbi, sizeof(mbi), &returnLength
+);
+```
 
-> **注**：Win10 21H1 实测 `MsMpEng.exe` 与 `wininit.exe` 均可成功注入 Shellcode 并执行文件系统操作，但原生 Beacon 命令 (需 `CreateProcess`) 受限于上述 `bInheritHandles` 问题。
+**关键字段**：
+
+| 字段 | 用途 |
+|------|------|
+| `BaseAddress` | 区域起始地址 |
+| `RegionSize` | 区域大小（下次迭代 `baseAddress += RegionSize`） |
+| `State` | `MEM_COMMIT` 表示已提交，需转储 |
+| `Protect` | 页保护属性（如 `PAGE_READWRITE`、`PAGE_EXECUTE_READ`） |
+| `Type` | `MEM_PRIVATE`/`MEM_IMAGE`/`MEM_MAPPED` 区分映射类型 |
+
+仅收集 `State == MEM_COMMIT` 且 `Protect` 非 `PAGE_NOACCESS` 的区域，写入 **Memory Ranges 流**。
+
+### 模块列表枚举：`PEB->Ldr.InLoadOrderLinks`
+
+获取 PEB 两种路径：
+1. `ZwQueryInformationProcess(ProcessHandle, ProcessBasicInformation, ...)` 返回 `PROCESS_BASIC_INFORMATION.PebBaseAddress`
+2. 直接读段寄存器：x64 `gs:[0x60]`、x86 `fs:[0x30]`（更常用于 Shellcode）
+
+遍历双向链表 `PEB->Ldr->InLoadOrderModuleList`，每个节点为 `LDR_DATA_TABLE_ENTRY`：
+
+```c
+typedef struct _LDR_DATA_TABLE_ENTRY {
+    LIST_ENTRY InLoadOrderLinks;
+    LIST_ENTRY InMemoryOrderLinks;
+    LIST_ENTRY InInitializationOrderLinks;
+    PVOID DllBase;
+    PVOID EntryPoint;
+    ULONG SizeOfImage;
+    UNICODE_STRING FullDllName;
+    UNICODE_STRING BaseDllName;
+    // ...
+} LDR_DATA_TABLE_ENTRY, *PLDR_DATA_TABLE_ENTRY;
+```
+
+提取 `FullDllName`、`DllBase`、`SizeOfImage` 写入 **Module List 流**。
+
+> 该枚举逻辑与用户态工具（如 [[mimikatz-sekurlsa-pth-internals]]、[[pe-manual-mapping-loader-implementation]]）一致，仅运行环境从 Ring3 移至 Ring0。
 
 ---
 
-## 关联技术与交叉引用
+## Minidump 三大流构造与 Mimikatz 兼容
+
+| 流类型 | Stream Type | 核心内容 | 生成来源 |
+|--------|-------------|----------|----------|
+| **System Information** | `SystemInfoStream` (7) | `OSVERSIONINFOEX` (Major/Minor/Build)、CPU 架构 | `RtlGetVersion` (导出函数) |
+| **Memory Ranges** | `MemoryListStream` (5) | `MINIDUMP_MEMORY_LIST` + 连续 `MINIDUMP_MEMORY_DESCRIPTOR64` 数组 | `ZwQueryVirtualMemory` 遍历结果 |
+| **Module List** | `ModuleListStream` (4) | `MINIDUMP_MODULE_LIST` + `MINIDUMP_MODULE64` 数组 | `PEB->Ldr.InLoadOrderLinks` 枚举结果 |
+
+**传输格式**：载荷按顺序发送三个流的原始二进制块，攻击者接收端拼接为标准 minidump 文件（添加 `MINIDUMP_HEADER`、目录索引、流目录），即可直接拖入 Mimikatz：
+
+```bash
+mimikatz # sekurlsa::minidump sassykitdi.dmp
+mimikatz # sekurlsa::logonpasswords
+```
+
+> 详细 minidump 结构定义参考 Windows SDK `dbghelp.h` 与 [[mimikatz-source-code-architecture-golden-ticket-audit]] 中的 “黄金票据生成与序列化” 部分（同属 BER/结构化二进制编码范畴）。
+
+---
+
+## Rust Shellcode 工程化实践
+
+### 编译工具链与目标
+
+```toml
+# Cargo.toml
+[profile.release]
+opt-level = 'z'      # 优化体积
+lto = true           # 链接时优化
+codegen-units = 1    # 单代码单元最大化内联
+panic = 'abort'      # 无 panic 运行时
+```
+
+交叉编译目标：`x86_64-pc-windows-gnu` (MinGW) 或 `x86_64-pc-windows-msvc` (MSVC，推荐用于原生 API 兼容性)。产物为 DLL，提取 `_DllMainCRTStartup` 至 `malloc` 间代码作为 PIC Shellcode。
+
+### 核心抽象与零开销优势
+
+| Rust 特性 | Shellcode 场景应用 | 开销 |
+|-----------|-------------------|------|
+| `no_std` + `core` | 无运行时、无标准库，仅用 `core::ptr`、`core::mem` | 零 |
+| `Result<T, NTSTATUS>` + `?` | 系统调用错误传播，避免冗长 `if !NT_SUCCESS` | 双字宽返回值，等同手写 C |
+| RAII (`Drop` trait) | `HANDLE`、`MDL`、内核池自动释放，防止泄漏 | 编译期内联，无运行时 |
+| `stacklstr` 栈上宽字符串 | `UNICODE_STRING` 无堆分配构造 | 栈内存，无池分配 |
+| `ntdef` 类型定义库 | 纯类型定义，无静态数据段 | 纯编译期 |
+
+**示例：安全封装 `ZwQueryVirtualMemory`**
+
+```rust
+fn query_virtual_memory(base: *mut c_void) -> Result<MEMORY_BASIC_INFORMATION, NTSTATUS> {
+    let mut mbi = MEMORY_BASIC_INFORMATION::default();
+    let mut ret_len = 0;
+    let status = unsafe {
+        ZwQueryVirtualMemory(
+            -1isize as HANDLE, base, MemoryBasicInformation,
+            &mut mbi as *mut _ as _, size_of::<MEMORY_BASIC_INFORMATION>() as u32, &mut ret_len
+        )
+    };
+    if status >= 0 { Ok(mbi) } else { Err(status) }
+}
+```
+
+> 更多 Rust Shellcode 模式参考 [[rust-proc-macro-win32-dynamic-import]]（动态导入 Win32 API）、[[aceldr-technical-analysis]]（反射式加载器 Rust 实现）。
+
+---
+
+## 部署场景与攻击链集成
+
+| 部署向量 | 前置条件 | 典型利用链 |
+|----------|----------|------------|
+| **远程内核漏洞** | EternalBlue (MS17-010)、BlueKeep (CVE-2019-0708)、SMBGhost (CVE-2020-0796) | 漏洞触发 → Ring0 代码执行 → 降低 IRQL 至 `PASSIVE_LEVEL` → 部署 SassyKitdi |
+| **本地内核漏洞** | 易受攻击驱动 (CVE-2020-XXXX、Bring Your Own Vulnerable Driver) | 驱动加载 → `DeviceIoControl` 触发 → Ring0 执行 → 部署 SassyKitdi |
+| **后渗透持久化** | 已获 SYSTEM/内核执行 | 修补内核回调 (`PsSetCreateProcessNotifyRoutine`)、注册过滤驱动、计划任务加载签名驱动 |
+
+**Stage 0 预处理**：远程漏洞通常在 `DISPATCH_LEVEL` 触发，必须先通过 `KeLowerIrql(PASSIVE_LEVEL)` 或工作项 (`IoQueueWorkItem`) 降级，再执行 TDI/内存操作（均要求 `PASSIVE_LEVEL`）。
+
+**扩展性**：初始 Shellcode (~1.5 KB 压缩后) 可下载更大二阶段内核模块（反射式驱动加载，参考 [[aceldr-technical-analysis]] “反射式加载器”），实现令牌窃取、文件系统访问、网络隧道等完整后渗透框架。
+
+---
+
+## 交叉引用与关联技术谱系
 
 | 技术领域 | 相关页面 | 关联点 |
 |----------|----------|--------|
-| PPL 注入与 CreateProcess 绕过 | [[ppl-injection-createprocess-bof-fix]] | `bInheritHandles=FALSE`、BOF 文件落地输出、WinTcb-Light 注入实战 |
-| Token Nerfing 与 PPLGuard | [[windows-token-nerfing-pplguard-trusted-labels]] | PPL 令牌保护缺口、Trusted Labels (SACL) 缓解、同源 CreateProcess 87 错误分析 |
-| 内存扫描对抗工具体系 | [[memory-scanning-tools-evasion-techniques]] | Hunt-Sleeping-Beacons / BeaconHunter / patriot / moneta / pe-sieve / MalMemDetect 检测原理与 UDRL 对抗 |
-| Cobalt Strike BOF 内部实现 | [[cobalt-strike-4.7-bof-internals]] | BOF 加载器、Relocation 处理、Sleep Kit、PPL 场景下的句柄继承问题 |
-| 进程注入/篡改技术谱系 | [[process-injection-tampering-techniques]] | Hollowing / Doppelgänging / Ghosting / Herpaderping / Transacted Hollowing 对比 |
-| PE 手工映射与不落地执行 | [[aceldr-technical-analysis]]、[[pe-manual-mapping-loader-implementation]] | 反射式加载、Section 构造、KnownDLLs 劫持的无文件变体实现基础 |
-| 命令行欺骗与参数分离 | [[argument-spoofing-edr-evasion]] | 同属 EDR 规避维度，可结合 PPL 注入隐藏命令行特征 |
+| **TDI 内核网络完整实现** | [[tdi-kernel-mode-networking]] | `ZwCreateFile` 打开 `\Device\Tcp`、IRP 构造、`TDI_CONNECT`/`TDI_SEND`、MDL 管理、反向 Shell 完整代码 |
+| **Mimikatz LSASS 补丁与凭据提取** | [[mimikatz-sekurlsa-pth-internals]] | `sekurlsa::minidump` 解析流程、LogonSessionList 定位、LSA Protect 密钥提取 |
+| **Mimikatz 模块架构与序列化** | [[mimikatz-source-code-architecture-golden-ticket-audit]] | KUHL_M 分发、BER 编码、PAC 构造、minidump 文件格式兼容性 |
+| **PE 手工映射与不落地执行** | [[pe-manual-mapping-loader-implementation]]、[[aceldr-technical-analysis]] | 反射式 DLL 注入、Section 构造、导入表修复、二阶段内核模块加载基础 |
+| **进程注入/篡改技术对比** | [[process-injection-tampering-techniques]] | Hollowing/Doppelgänging/Ghosting 等用户态技术与内核态附加的对比 |
+| **Windows 系统调用内部机制** | [[windows-syscall-internals-sysenter-kifastcallentry]] | `ZwQueryVirtualMemory` 等系统调用从用户态到内核态的完整分发路径 |
+| **内核回调防御与绕过** | [[windows-kernel-callback-injection-defense]] | `ObRegisterCallbacks` 拦截句柄创建、内核态载荷对抗策略 |
+| **EDR 规避综合框架** | [[inceptor-av-edr-evasion-framework]]、[[memory-scanning-tools-evasion-techniques]] | AMSI/ETW/WDLP 绕过、Full Unhooking、Direct Syscalls、内存加密隐藏 |
+| **PPL 绕过与用户态 LSASS 转储** | [[ppldump-userland-ppl-bypass-evasion]]、[[ppl-injection-createprocess-bof-fix]] | 用户态 KnownDLLs 劫持 vs 内核态直接附加的互补关系 |
+| **参数欺骗与命令行隐藏** | [[argument-spoofing-edr-evasion]] | 同属红队规避维度，可结合内核态载荷隐藏命令行特征 |
+| **幽灵 DLL 空洞化** | [[phantom-dll-hollowing-technique]] | 合法模块内存劫持技术，可作为二阶段内核模块落地伪装 |
 
 ---
 
 ## 检测与缓解建议
 
-1. **KnownDLLs 完整性监控**  
-   - 内核回调监控 `\KnownDlls` 目录对象创建/修改 (需签名驱动)。
-   - 审计 `DefineDosDevice` 调用 (ETW `Microsoft-Windows-Kernel-Object` / Sysmon Event ID 12/13)。
+1. **内核驱动签名策略 (HVCI/VBS)**  
+   - 强制启用 **Hypervisor-Protected Code Integrity (HVCI)**，禁止未签名/恶意驱动加载，从源头阻断内核载荷部署。
 
-2. **PPL 进程异常模块/线程告警**  
-   - 定期枚举 `Antimalware-Light` / `WinTcb-Light` 进程的 `PPEB->Ldr` 与线程列表，对比已知基线。
-   - 结合 **内核回调** (`PsSetCreateThreadNotifyRoutine` / `PsSetLoadImageNotifyRoutine`) 捕获非法注入。
+2. **TDI 设备对象访问审计**  
+   - 监控 `ZwCreateFile` 打开 `\Device\Tcp`、`\Device\Udp` 等传输设备（ETW `Microsoft-Windows-Kernel-File` / Sysmon Event ID 12/13）。
+   - 审计 `IRP_MJ_INTERNAL_DEVICE_CONTROL` 分发至 `tdi.sys` 的异常调用栈。
 
-3. **启用 PPLGuard / Trusted Labels** (Win11 22H2+)  
-   - 通过 SACL 保护 AntiMalware PPL 令牌防篡改 [[windows-token-nerfing-pplguard-trusted-labels]]。
+3. **内核线程附加异常检测**  
+   - 部署内核回调 `PsSetCreateThreadNotifyRoutineEx` / `PsSetLoadImageNotifyRoutine`，检测非系统线程调用 `KeStackAttachProcess` 附加至 `lsass.exe`/`csrss.exe` 等关键进程。
+   - 定期扫描 `ETHREAD.TrapFrame` 与 `KAPC_STATE` 异常，发现未授权上下文切换。
 
-4. **内存扫描器部署**  
-   - 部署 [patriot]([[memory-scanning-tools-evasion-techniques]]) / [Moneta]([[memory-scanning-tools-evasion-techniques]]) 等内核/用户态混合扫描器，检测 RWX、非签名镜像、PE 结构异常。
+4. **内存完整性与 minidump 特征扫描**  
+   - 网络层：识别异常 TCP 连接中传输的 minidump 结构特征（`MDMP` 魔数、流目录签名）。
+   - 主机层：使用 [patriot]([[memory-scanning-tools-evasion-techniques]]) / [Moneta]([[memory-scanning-tools-evasion-techniques]]) 等工具扫描内核池异常分配、非签名代码段、RWX 页面。
+
+5. **漏洞修补与攻击面收缩**  
+   - 及时修补 EternalBlue/BlueKeep/SMBGhost 等远程内核漏洞。
+   - 禁用 SMBv1、限制 RDP 暴露、部署带外补丁（如 0patch）。
 
 ---
 
 ## 参考资料
 
-1. **PPLDump** - https://github.com/itm4n/PPLdump  
-2. **Bypassing LSA Protection in Userland** - https://blog.scrt.ch/2021/04/22/bypassing-lsa-protection-in-userland/  
-3. **Microsoft Docs: Protected Processes** - https://learn.microsoft.com/windows/win32/procthread/protected-processes  
-4. **Elastic Security: PPLGuard - Protecting AntiMalware PPLs** - https://www.elastic.co/security-labs/pplguard-protecting-antimalware-ppls  
-5. **Cobalt Strike 4.7 BOF Internals** - [[cobalt-strike-4.7-bof-internals]]  
-6. **PPL Injection CreateProcess BOF Fix** - [[ppl-injection-createprocess-bof-fix]]
+1. **SassyKitdi PoC** - https://github.com/zerosum0x0/SassyKitdi  
+2. **原文博客** - https://zerosum0x0.blogspot.com/2020/08/sassykitdi-kernel-mode-tcp-sockets.html  
+3. **TDI 参考书籍** - *Professional Rootkits* (Vieler, 2007) / *Rootkits: Subverting the Windows Kernel* (Hoglund & Butler, 2009)  
+4. **Microsoft Docs: TDI** - https://learn.microsoft.com/windows-hardware/drivers/network/transport-driver-interface  
+5. **Microsoft Docs: MDL** - https://learn.microsoft.com/windows-hardware/drivers/kernel/using-mdls  
+6. **MmProbeAndLockPages** - https://learn.microsoft.com/windows-hardware/drivers/ddi/wdm/nf-wdm-mmprobeandlockpages  
+7. **min-sized-rust** - https://github.com/johnthagen/min-sized-rust  
+8. **stacklstr** - https://github.com/jmage-rs/stacklstr  
+9. **memexec (用户态模块枚举参考)** - https://github.com/eddieivan01/memexec  
+
+---
 
 ## 来源
 
 - [0x4d5a-202103-202209_11](../sources/0x4d5a-202103-202209_11.md)
+- [0x4d5a-202103-202209_17](../sources/0x4d5a-202103-202209_17.md)

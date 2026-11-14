@@ -317,3 +317,4 @@
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_097 -> xd-security-ctf-flag-notes-day83-85.md, python-ssti-multi-engine-bypass.md, php伪协议与反序列化利用.md
 ## [2026-11-15] ingest | 0x00实验室-202108-202304_098 -> proftpd-133c-backdoor-exploitation.md, metasploit-framework-basics-tutorial.md
 ## [2026-11-15] ingest | 0x00实验室-202108-202304_099 -> vulnhub-chronos-writeup.md
+## [2026-11-15] ingest | 0x00实验室-202108-202304_100 -> xd-security-xss-vulnerability-notes-day25-28.md

@@ -258,3 +258,4 @@
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_038 -> security-engineer-recruitment-requirements.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_039 -> cybersecurity-interview-guide-2022.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_040 -> security-engineer-recruitment-requirements.md
+## [2026-11-14] ingest | 0x00实验室-202108-202304_041 -> vulnhub-darkhole2-writeup.md, vulnhub-platform-resource-index.md

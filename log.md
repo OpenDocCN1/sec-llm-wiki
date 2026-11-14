@@ -241,3 +241,4 @@
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_021 -> vulnhub-hard-socnet2-writeup.md, peda-buffer-overflow-analysis-guide.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_022 -> vulnhub-platform-resource-index.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_023 -> vulnhub-dawn2-writeup.md
+## [2026-11-14] ingest | 0x00实验室-202108-202304_024 -> vulnhub-sar-writeup.md

@@ -294,3 +294,4 @@
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_074 -> vulnhub-admx-new-writeup.md, vulnhub-platform-resource-index.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_075 -> pikachu-target-writeup-part5.md, php伪协议与反序列化利用.md, ssrf-ctf-exploitation-guide.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_076 -> pikachu-target-writeup-part4.md, pikachu-target-writeup-part5.md
+## [2026-11-14] ingest | 0x00实验室-202108-202304_077 -> pikachu-target-writeup-part3.md

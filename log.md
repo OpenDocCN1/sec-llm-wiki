@@ -342,3 +342,4 @@
 ## [2026-11-15] ingest | 0x4d5a-202103-202209_09 -> process-injection-tampering-techniques.md, pe-manual-mapping-loader-implementation.md, aceldr-technical-analysis.md
 ## [2026-11-15] ingest | 0x4d5a-202103-202209_10 -> windows-token-nerfing-pplguard-trusted-labels.md, ppl-injection-createprocess-bof-fix.md, cobalt-strike-4.7-bof-internals.md
 ## [2026-11-15] ingest | 0x4d5a-202103-202209_11 -> ppldump-userland-ppl-bypass-evasion.md, ppl-injection-createprocess-bof-fix.md
+## [2026-11-15] ingest | 0x4d5a-202103-202209_12 -> iox-proxy-protocol-evasion.md, internal-network-pivoting-techniques.md

@@ -1,8 +1,9 @@
 ---
 title: 0w1Club 萌新培养第二周教程：基于 ARP 欺骗的 WiFi 劫持与中间人攻击实战入门
 description: 整合 0w1Club 微信公众号「萌新培养」系列第二周教程（2019）、第六期萌新培养分享会预告（W6，2018）及 ARP 攻击分享会记录（2018-10-13），系统讲解
-  ARP 协议原理、ARP 欺骗攻击流程（探测、毒化、开启 IP 转发）、常用工具（netdiscover、arpspoof、Wireshark、ettercap、bettercap）及后续利用思路，串联培训序列上下文，适合网络安全初学者快速上手中间人攻击实战。
-category: ai-security
+  ARP 协议原理、ARP 欺骗攻击流程（探测、毒化、开启 IP 转发）、常用工具（netdiscover、arpspoof、Wireshark、ettercap、bettercap）及后续利用思路，串联培训序列上下文，适合网络安全初学者快速上手中间人攻击实战。新增交叉引用指向
+  ettercap 图形化实战全流程复现页面，补全工具实操维度。
+category: program-analysis
 tags:
 - 0w1Club
 - ARP欺骗
@@ -14,10 +15,11 @@ tags:
 - Wireshark
 - netdiscover
 - arpspoof
+- ettercap
 - 萌新培养
 - 分享会预告
 date: 2019-09-13
-updated: '2026-11-13'
+updated: '2026-11-14'
 ---
 
 ## 概述
@@ -116,7 +118,7 @@ updated: '2026-11-13'
 
 | 角色 | 推荐环境 | 核心工具 | 备选工具 |
 |------|----------|----------|----------|
-| 攻击机 | Kali Linux / Ubuntu | `netdiscover`、`arpspoof` (dsniff 套件)、`Wireshark` | `ettercap`、[[bettercap]] |
+| 攻击机 | Kali Linux / Ubuntu | `netdiscover`、`arpspoof` (dsniff 套件)、`Wireshark` | `ettercap`（详见 [[ettercap-arp-mitm-practical-guide]]）、[[bettercap]] |
 | 受害机 | 任意连接同一 WiFi/局域网的设备 | — | — |
 | 网关 | 无线路由器 / 上层网关 | — | — |
 
@@ -124,14 +126,14 @@ updated: '2026-11-13'
 ```bash
 # Ubuntu / Debian 系
 sudo apt-get update
-sudo apt-get install netdiscover dsniff wireshark
+sudo apt-get install netdiscover dsniff wireshark ettercap-graphical
 # Kali 默认预装上述工具
 ```
-> `arpspoof` 隶属于 `dsniff` 包；`bettercap` 为 Go 编写的现代化替代品，功能更丰富（支持 BLE、WiFi、HID 等），可参考 [[ar-drone-2.0-penetration-testing]] 中的实战用法。
+> `arpspoof` 隶属于 `dsniff` 包；`bettercap` 为 Go 编写的现代化替代品，功能更丰富（支持 BLE、WiFi、HID 等），可参考 [[ar-drone-2.0-penetration-testing]] 中的实战用法。`ettercap` 提供图形化界面（GTK）与文本界面（ncurses），适合可视化操作与插件化扩展，完整图形化实战流程请参考 [[ettercap-arp-mitm-practical-guide]]。
 
 ---
 
-## 实战步骤详解
+## 实战步骤详解（命令行工具链）
 
 ### 第一阶段：网络探测（发现目标与网关）
 ```bash
@@ -175,6 +177,19 @@ sysctl -w net.ipv4.ip_forward=1
 
 ---
 
+## Ettercap 图形化实战替代方案
+
+本教程主线采用 `netdiscover` + `arpspoof` + `Wireshark` 命令行工具链，便于理解底层协议交互细节。若希望使用 **一体化图形化界面** 完成「主机扫描 → ARP 投毒 → IP 转发开启 → 凭证嗅探 → 插件扩展」全流程，请参考知识库页面 **[[ettercap-arp-mitm-practical-guide]]**，该页面记录了无名安全团队使用 Ettercap GTK 界面完成 ARP 中间人攻击的完整复现步骤，包含：
+
+- 统一界面下的目标主机发现与双向 ARP 投毒配置
+- 内置 `ip_forward` 自动开启与插件化凭证捕获（`remote_browser`、`find_ip` 等）
+- 实时连接列表可视化、数据包注入插件演示
+- 与 Wireshark 联动抓包验证的完整截图流程
+
+> 两种工具链互补：命令行适合教学原理剖析，Ettercap GUI 适合实战快速部署与插件化扩展。
+
+---
+
 ## 后续利用与拓展攻击面
 
 一旦稳居中间人位置，可衍生出多种攻击手法（教程因法律与篇幅限制仅列举，分享会同步演示了 DNS 劫持思路）：
@@ -183,7 +198,7 @@ sysctl -w net.ipv4.ip_forward=1
 |----------|----------|---------------|
 | **DNS 欺骗** | 伪造 DNS 应答，将域名解析到恶意服务器 | `ettercap` 插件 `dns_spoof`、Bettercap `dns.spoof` |
 | **HTTP 注入/钓鱼** | 篡改 HTTP 响应注入恶意 JS/iframe，或重定向至钓鱼页面 | Bettercap `http.proxy`、`inject` 模块 |
-| **凭证窃取** | 解析 HTTP Basic Auth、POST 表单、Cookie、Session ID | Wireshark 导出对象、Bettercap `net.sniff` |
+| **凭证窃取** | 解析 HTTP Basic Auth、POST 表单、Cookie、Session ID | Wireshark 导出对象、Bettercap `net.sniff`、`ettercap` 內建嗅探器 |
 | **SSL/TLS 剥离** | 降级 HTTPS 为 HTTP，配合 HSTS 绕过 | `sslstrip`、`bettercap` `https.proxy` |
 | **会话劫持** | 窃取 Session Cookie 直接复用登录态 | 配合 [[burpsuite-basics-tutorial]] 中 Repeater 复现请求 |
 | **内网横向** | 结合 [[frp内网渗透应用]]、[[metasploit-framework-basics-tutorial]] 进一步渗透内网 | `msfconsole`、`proxychains`、Socks5 隧道 |
@@ -201,6 +216,7 @@ sysctl -w net.ipv4.ip_forward=1
 | 受害机断网 | 未开启 IP 转发 | 执行 4.3 节开启转发 |
 | Wireshark 抓不到受害机流量 | 抓包接口错误 / 未勾选混杂模式 | 选择正确接口，`Capture Options` 勾选 `Promiscuous mode` |
 | Kali 虚拟机网络不通 | VMware 网络模式设置错误 | 参考拓展阅读 1：VMware Tools 安装与网络模式配置（NAT/桥接） |
+| Ettercap GTK 启动报错 `cannot open display` | 无图形环境或 X11 转发未配置 | 使用 `ettercap -T` 文本模式，或配置 X11/Wayland 转发 |
 
 ---
 
@@ -216,8 +232,9 @@ sysctl -w net.ipv4.ip_forward=1
    https://blog.csdn.net/xinyuan510214/article/details/80108216
 4. **ARP 攻击骚操作之窥你屏** —— 进阶利用案例（屏幕流劫持等）  
    https://blog.csdn.net/sinat_35930259/article/details/52422915
-5. **高度集成化局域网工具 ettercap 实战** —— 图形化/脚本化中间人套件  
-   https://blog.csdn.net/ysynhtt/article/details/39996933
+5. **高度集成化局域网工具 ettercap 实战** —— 图形化/脚本化中间人套件（CSDN 存档）  
+   https://blog.csdn.net/ysynhtt/article/details/39996933  
+   👉 **知识库深度版**：[[ettercap-arp-mitm-practical-guide]]（含完整 GUI 操作截图、插件用法、Wireshark 联动验证）
 6. **星辰大海** —— Bing 搜索入口，鼓励自主探索  
    https://cn.bing.com/
 
@@ -228,7 +245,8 @@ sysctl -w net.ipv4.ip_forward=1
 - [[metasploit-framework-basics-tutorial]] —— 后渗透框架基础，结合 ARP 劫持建立 Socks 隧道横向移动
 - [[frp内网渗透应用]] —— 内网穿透技术，可将受控主机端口映射至公网 VPS
 - [[knob-bluetooth-bredr-key-negotiation-vulnerability]] —— 蓝牙协议层面的中间人强制降级攻击（KNOB），原理对比参考
-- [[bettercap]]（若存在） —— 现代化中间人瑞士军刀，支持 WiFi、BLE、HID、Ethernet 多协议
+- [[ettercap-arp-mitm-practical-guide]] —— **Ettercap 图形化界面 ARP 中间人攻击全流程复现**（无名安全团队实战记录），补全本页面工具实操维度
+- [[bettercap]] —— 现代化中间人瑞士军刀，支持 WiFi、BLE、HID、Ethernet 多协议
 
 ---
 
@@ -236,7 +254,9 @@ sysctl -w net.ipv4.ip_forward=1
 
 > “分享会只能交个大概，功夫在平时呀。” —— 0w1Club 夜晓
 
-本教程以 **最小可行性实验** 为核心，覆盖了从协议原理、工具链部署、攻击执行到流量分析的完整闭环，并串联了 **预告（W6） → 分享会实况（2018-10-13） → 沉淀教程（2019-W2）** 的培训序列上下文。建议初学者在 **合法授权环境**（如自建靶场、CTF 平台、家庭实验网络）中完整复现一次，并尝试：
+本教程以 **最小可行性实验** 为核心，覆盖了从协议原理、工具链部署、攻击执行到流量分析的完整闭环，并串联了 **预告（W6） → 分享会实况（2018-10-13） → 沉淀教程（2019-W2）** 的培训序列上下文。新增交叉引用 **[[ettercap-arp-mitm-practical-guide]]** 补全了图形化工具实操维度，形成「命令行原理剖析 + GUI 一体化实战」双轨并行的学习路径。
+
+建议初学者在 **合法授权环境**（如自建靶场、CTF 平台、家庭实验网络）中完整复现一次，并尝试：
 1. 使用 `ettercap` / `bettercap` 替代 `arpspoof` 实现自动化插件化攻击；
 2. 结合 [[burpsuite-basics-tutorial]] 对捕获的 HTTP/HTTPS 流量做主动漏洞扫描；
 3. 探索 IPv6 环境下的 NDP 欺骗（`ndp-spoof`）、VLAN 跨段 ARP 欺骗等进阶场景。
@@ -251,4 +271,4 @@ sysctl -w net.ipv4.ip_forward=1
 
 ## 来源
 
-- [0w1网络安全俱乐部-201707-201903_14](../sources/0w1网络安全俱乐部-201707-201903_14.md)
+- [0x00实验室-202108-202304_061](../sources/0x00实验室-202108-202304_061.md)

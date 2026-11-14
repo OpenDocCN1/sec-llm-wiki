@@ -249,3 +249,4 @@
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_029 -> vulnhub-chronos-writeup.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_030 -> dotnet-clr-usage-log-tampering-edr-evasion.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_031 -> vulnhub-boredhackerblog-social-network-writeup.md
+## [2026-11-14] ingest | 0x00实验室-202108-202304_032 -> smb-named-pipe-c2-communication.md, cobalt-strike-external-c2-smb-beacon.md, named-pipe-smb-detection-sysmon.md

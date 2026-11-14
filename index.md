@@ -276,6 +276,7 @@
 - [[xihulunjian-2020-iot-pwn3-ezarmpwn-writeup]] `CTF` `Pwn` `ARM` `Stack Overflow` `UAF` `Double Free` `Chunk Overlap` `ROP` `Libc Leak` `Xihu Argument Sword` `IoT Security` `glibc 2.30` — 详细分析西湖论剑 2020 IoT 闯关赛 pwn3 ezarmpwn 题目，涵盖 32 位 ARM 程序的栈溢出、UAF、Off-by-null 等漏洞，以及基于栈上 libc 地址泄露的 ROP 利用、Double Free 与 Chunk Overlap 两种堆利用方式的完整复现。
 - [[xss-haozi-lab-walkthrough]] `XSS` `CTF` `Web安全` `靶场通关` `过滤绕过` `HTML实体编码` `上下文逃逸` `反射型XSS` `无名安全团队` — 系统梳理XSS HaoZi靶场19关（0x00-0x12）的完整通关过程，涵盖反射型XSS基础、标签属性逃逸、过滤绕过、编码转义、上下文注入、HTML实体编码、长S字符绕过、原型链污染/堆叠注入等核心XSS绕过技术，适合Web安全入门与CTF实战巩固。
 - [[xxe-xml-dtd-fundamentals]] `XXE` `XML` `DTD` `实体引用` `外部实体` `任意文件读取` `漏洞原理` `Web安全` `Blind XXE` `带外数据外带` `UTF-16BE` `协议绕过` `XXEinjiector` `自动化扫描` — 系统梳理 XXE 漏洞利用核心基础与进阶技术：XML 语法树结构、DTD 声明类型、实体引用分类（内部/外部/参数实体）、PCDATA 与 CDATA 差异，及外部实体通过 file/http 等协议实现任意文件读取的攻击原理。深度覆盖外部 DTD 引入自定义攻击、Blind XXE 带外数据外带（日志/文件写入）、UTF-16BE 编码绕过关键字过滤、HTTP 协议禁用时的替代协议绕过、XXE 自动化扫描工具 XXEinjiector 等进阶利用链。
+- [[zig-cc-cross-compilation-guide]] `Zig` `Cross-Compilation` `Go` `CGO` `Build-System` `HackBrowserData` `sqlite3` `Musl` `MinGW` — 详解如何使用 zig cc 替代传统 GCC/Clang 工具链，实现无需安装多套交叉编译器即可完成 Go CGO 项目的多平台构建，以 HackBrowserData 为例演示 Linux/Windows/macOS 及多架构交叉编译全流程。
 
 ## uncategorized
 

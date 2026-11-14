@@ -297,3 +297,4 @@
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_077 -> pikachu-target-writeup-part3.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_078 -> pikachu-target-writeup-part2-xss.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_079 -> pikachu-target-writeup-part1-setup-brute-force.md
+## [2026-11-14] ingest | 0x00实验室-202108-202304_080 -> buuctf-web-writeup-collection.md, php伪协议与反序列化利用.md, ctfshow-web-sql-injection-bypass-basics.md

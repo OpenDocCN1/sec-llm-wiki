@@ -275,3 +275,4 @@
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_055 -> 0x00lab-wechat-archive-202108-202304.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_056 -> 0x00lab-wechat-archive-202108-202304.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_057 -> ctf-show-php-command-execution-bypass-techniques.md
+## [2026-11-14] ingest | 0x00实验室-202108-202304_058 -> security-engineer-recruitment-requirements.md

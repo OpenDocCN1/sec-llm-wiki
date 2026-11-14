@@ -62,6 +62,7 @@ updated: '2026-11-14'
 | **BBS Cute 102** | 中等 | CuteNews 2.1.2 RCE、GIF89 头绕过上传、PHP 反弹 Shell、提权思路 | [[vulnhub-bbs-cute-102-writeup]] |
 | **Hard Socnet2** | 高难 | 文件上传、SQL 注入、XML-RPC 暴破、CVE-2021-3493 内核提权、add_record 缓冲区溢出（PEDA/GDB/ROP） | [[vulnhub-hard-socnet2-writeup]] |
 | **Infosecprep: OSCP** | 入门/中等 | WordPress 枚举、目录遍历、Base64 解码 SSH 私钥、SUID bash 提权（`bash -p`） | [[vulnhub-infosecprep-oscp-writeup]] |
+| **DOUBLETROUBLE** | 中等 | Shellshock (CVE-2014-6271) CGI-BIN 利用、Dirty COW (CVE-2016-5195) 本地提权 | [[vulnhub-doubletrouble-writeup]] |
 
 > **关联技术文档**：  
 > - [[peda-buffer-overflow-analysis-guide]] 以 `hard-socnet2` 的 `add_record` 二进制为实战案例，详细演示 PEDA 插件在 Linux 缓冲区溢出分析中的完整流程（偏移定位、ROP 链构造、提权）。  
@@ -90,4 +91,4 @@ updated: '2026-11-14'
 
 ## 来源
 
-- [0x00实验室-202108-202304_022](../sources/0x00实验室-202108-202304_022.md)
+- [0x00实验室-202108-202304_025](../sources/0x00实验室-202108-202304_025.md)

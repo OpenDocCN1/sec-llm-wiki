@@ -1,7 +1,8 @@
 ---
 title: PE 手动映射加载器完整实现详解
 description: 从零构建 Windows PE 手动映射加载器：涵盖文件解析、内存映射、节区拉伸、导入表修复、重定位修正、导出表解析与自定义 GetProcAddress、PE
-  头抹除、模块隐藏技术对比、DEP 绕过与 Shellcode 提取难点、入口点执行的全流程 C++ 代码实现与原理剖析。
+  头抹除、模块隐藏技术对比、DEP 绕过与 Shellcode 提取难点、入口点执行的全流程 C++ 代码实现与原理剖析。补充延迟导入表处理、API Set Schema
+  解析避免转发循环、MEM_IMAGE 内存分配降低疑似度三大关键细节。
 category: program-analysis
 tags:
 - PE 格式
@@ -18,8 +19,12 @@ tags:
 - 模块隐藏
 - DEP 绕过
 - Shellcode
+- 延迟导入表
+- API Set Schema
+- MEM_IMAGE
+- 内存属性伪装
 date: '2024-01-15'
-updated: '2026-11-14'
+updated: '2026-11-15'
 ---
 
 ## 概述
@@ -265,6 +270,180 @@ bool CPE::ErasurePEHeader() {
 
 ---
 
+## PE Loader 三大关键实现细节补充
+
+本节基于归档文章《关于PE不落地执行技术的思考》补充，针对生产级/对抗级 PE Loader 必须处理的三个易被忽视的工程细节。
+
+### 延迟导入表处理
+
+**问题**：主流开源 Loader（如 `MemoryModule`）常忽略 `IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT`，导致依赖延迟加载 DLL 的程序（典型案例：**`cmd.exe` 依赖 `cmdext.dll`**）在映射执行时崩溃或功能缺失。
+
+**机制**：
+- 延迟导入表结构 `ImgDelayDescr` 包含：目标 DLL 名、延迟导入 IAT (`pIAT`)、延迟导入 INT (`pINT`)、绑定时间戳、属性标志、处理程序指针 (`pfnDelayLoadHelper`)。
+- 系统加载器首次调用该函数时，通过 `__delayLoadHelper2` 触发：`LoadLibrary` → `GetProcAddress` → 回填 IAT → 跳转目标函数。
+
+**手动映射实现要点**：
+1. 解析 `OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT]` 定位描述符数组。
+2. 遍历每个 `ImgDelayDescr`：
+   - 获取 DLL 名（`rvaDLLName` → `LoadLibrary`）。
+   - 遍历 `rvaINT`/`rvaIAT` 平行数组，按名称/序号解析函数地址。
+   - 直接回填 `rvaIAT` 对应项，**无需保留 Helper 桩代码**。
+3. 若目标 PE 自带 `pfnDelayLoadHelper`，可选择调用它（需确保其依赖的 CRT 初始化已完成），但**完全手动回填更稳健、无依赖**。
+
+**伪代码片段**：
+
+```cpp
+BOOL CPE::ProcessDelayImportTable() {
+    auto& delayDir = pOperationHeader->DataDirectory[IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT];
+    if (!delayDir.VirtualAddress) return TRUE;
+
+    PImgDelayDescr pDelayDesc = (PImgDelayDescr)(pMemData + delayDir.VirtualAddress);
+    while (pDelayDesc->rvaDLLName) {
+        LPCSTR szDllName = (LPCSTR)(pMemData + pDelayDesc->rvaDLLName);
+        HMODULE hMod = GetModuleHandleA(szDllName) ?: LoadLibraryA(szDllName);
+        if (!hMod) return FALSE; // 或记录错误继续
+
+        PIMAGE_THUNK_DATA pINT = (PIMAGE_THUNK_DATA)(pMemData + pDelayDesc->rvaINT);
+        PIMAGE_THUNK_DATA pIAT = (PIMAGE_THUNK_DATA)(pMemData + pDelayDesc->rvaIAT);
+
+        for (; pINT->u1.AddressOfData; ++pINT, ++pIAT) {
+            FARPROC pFunc = nullptr;
+            if (pINT->u1.Ordinal & IMAGE_ORDINAL_FLAG) {
+                pFunc = GetProcAddress(hMod, (LPCSTR)IMAGE_ORDINAL(pINT->u1.Ordinal));
+            } else {
+                PIMAGE_IMPORT_BY_NAME pName = (PIMAGE_IMPORT_BY_NAME)(pMemData + pINT->u1.AddressOfData);
+                pFunc = GetProcAddress(hMod, (LPCSTR)pName->Name);
+            }
+            if (!pFunc) return FALSE;
+            pIAT->u1.Function = (ULONG_PTR)pFunc;
+        }
+        pDelayDesc++;
+    }
+    return TRUE;
+}
+```
+
+> **调用时机**：在 `CallEntry` 中，**导入表修复之后、重定位修正之前/之后均可**，但必须在入口点执行前完成。
+
+---
+
+### API Set Schema 解析避免转发循环
+
+**问题**：自实现 `GetProcAddress`/`LoadLibrary` 时，遇到 `api-ms-win-*-l1-*-*` 类虚拟 DLL 会陷入**转发循环**。
+典型案例：`kernel32!InitializeProcThreadAttributeList` → Forwarder `api-ms-win-core-processthreads-l1-1-0!InitializeProcThreadAttributeList` → `LoadLibrary("api-ms-win-core-processthreads-l1-1-0")` → 该虚拟 DLL 导出表再次 Forward 回 `kernel32` → 无限递归。
+
+**根因**：API Set Contract (`api-ms-win-*`) 是**虚拟 DLL**，真实实现宿主通常在 `kernelbase.dll`（或 `kernel32.dll`、`ntdll.dll`）。Windows 加载器内部维护 **API Set Schema 映射表**（存储于 `api-ms-win-core-apiquery-l1-1-0.dll` 资源中，进程启动时映射至 `PEB->ApiSetMap`），实现 Contract Name → Host DLL 的重定向。
+
+**解决方案对比**：
+
+| 方案 | 原理 | 优点 | 缺点 |
+|------|------|------|------|
+| **方案 A：解析 API Set Schema（正统）** | 1. 从 `PEB->ApiSetMap` (PVOID) 定位 `API_SET_NAMESPACE` 结构<br>2. 遍历 `API_SET_NAMESPACE_ENTRY` 数组，按 `Name` (Counted Unicode String) 匹配 Contract<br>3. 取 `API_SET_VALUE_ENTRY` 中 `Value` (Host DLL 名，如 `kernelbase.dll`)<br>4. 递归在 Host DLL 中查找导出 | 完美兼容系统行为，支持所有版本 Win10/11、Server | 实现复杂，结构未文档化（需逆向 `apiset.h` / `ntdll`），跨版本兼容性需测试 |
+| **方案 B：启发式 Fallback（DarkLoadLibrary 风格）** | 1. 检测 DLL 名以 `api-ms-win-` 或 `ext-ms-win-` 开头<br>2. 依次尝试 `LoadLibrary/GetProcAddress` 于 `kernelbase.dll` → `kernel32.dll` → `ntdll.dll`<br>3. 均失败则回退 `LdrGetProcedureAddress` (ntdll 导出) | 代码极简，无需解析未公开结构，覆盖 99% 常见 ApiSet | 极少数转发链较长或宿主非三大核心 DLL 时失效（如 `dbghelp!MiniDumpWriteDump`） |
+| **方案 C：混合策略（推荐）** | 优先方案 B 快速命中；失败则方案 A 精确解析；最终回退 `LdrGetProcedureAddress` | 兼顾性能、兼容性、鲁棒性 | 代码量最大 |
+
+**方案 B 核心逻辑（参考 `DarkLoadLibrary::GetProcAddressEx`）**：
+
+```cpp
+// 伪代码：启发式解析 ApiSet 转发
+FARPROC ResolveApiSetForwarder(LPCSTR lpDllName, LPCSTR lpProcName) {
+    if (strncmp(lpDllName, "api-ms-win-", 11) != 0 && strncmp(lpDllName, "ext-ms-win-", 11) != 0)
+        return nullptr; // 非 ApiSet 虚拟 DLL
+
+    static const CHAR* s_coreDlls[] = { "kernelbase.dll", "kernel32.dll", "ntdll.dll" };
+    for (const CHAR* core : s_coreDlls) {
+        HMODULE hMod = GetModuleHandleA(core) ?: LoadLibraryA(core);
+        if (hMod) {
+            FARPROC pFunc = GetProcAddress(hMod, lpProcName);
+            if (pFunc) return pFunc;
+        }
+    }
+    // 最终兜底：系统加载器入口（需确保 ntdll 已映射）
+    typedef NTSTATUS(NTAPI* pLdrGetProcedureAddress)(HMODULE, PANSI_STRING, WORD, PVOID*);
+    static pLdrGetProcedureAddress LdrGetProcAddr = (pLdrGetProcedureAddress)
+        GetProcAddress(GetModuleHandleA("ntdll.dll"), "LdrGetProcedureAddress");
+    if (LdrGetProcAddr) {
+        ANSI_STRING procName; RtlInitAnsiString(&procName, lpProcName);
+        PVOID pFunc = nullptr;
+        if (NT_SUCCESS(LdrGetProcAddr(GetModuleHandleA("ntdll.dll"), &procName, 0, &pFunc)))
+            return (FARPROC)pFunc;
+    }
+    return nullptr;
+}
+```
+
+> **集成点**：在自定义 `MyGetProcAddress` 遇到 Forwarder 字符串形如 `api-ms-win-*.dll.Function` 时，调用上述解析器提取宿主 DLL 与函数名，递归查找。
+
+---
+
+### 将 PE Image 分配至 MEM_IMAGE 内存降低疑似度
+
+**问题**：常规 `VirtualAlloc(..., MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE)` 分配的内存，**VAD 节点类型为 `MEM_PRIVATE`**。携带 `RWX` 权限的 `MEM_PRIVATE` 区域是内存扫描器（Moneta、pe-sieve、MalMemDetect、EDR 内存扫描）的**高优先级检测目标**，极易被标记为 Shellcode/注入载荷。
+
+**目标**：使映射后的 PE 镜像在 VAD 中呈现为 **`MEM_IMAGE`** 类型，模拟合法模块加载的内存特征。
+
+**实现路径**：
+
+#### 路径 A：Section 对象映射（标准方式）
+1. `NtCreateSection(&hSection, SECTION_ALL_ACCESS, NULL, &maxSize, PAGE_READONLY, SEC_IMAGE, hFile)`
+   - `hFile`：合法 PE 文件句柄（磁盘文件或 **TxF 事务文件** 实现无文件落地）。
+   - `SEC_IMAGE`：标记为镜像节区，内存管理器将按节区属性建立 VAD，类型为 `MEM_IMAGE`。
+2. `NtMapViewOfSection(hSection, NtCurrentProcess(), &pBase, 0, 0, NULL, &viewSize, ViewShare, 0, PAGE_READWRITE)`
+   - 映射至当前进程，获得基址 `pBase`。
+3. **后续流程**：在 `pBase` 基础上做重定位修正（若基址冲突）、IAT 修复、TLS 回调、入口点执行。
+   - **注意**：`SEC_IMAGE` 映射要求文件为有效 PE，且映射基址倾向于 `ImageBase`。若冲突，`NtMapViewOfSection` 返回 `STATUS_IMAGE_NOT_AT_BASE`，需手动重定位（同用户态重定位逻辑）。
+
+#### 路径 B：Transacted Hollowing 复用（文件落地）
+利用 [[process-injection-tampering-techniques]] 中 `Transacted Hollowing` 技巧：
+1. 创建 TxF 事务 → 写入 PE Payload → 创建 Image Section → 回滚事务（文件消失，Section 存活）。
+2. `NtMapViewOfSection` 将该 Section 映射到**当前进程**（而非傀儡进程）。
+3. 此时内存为 `MEM_IMAGE`，且无磁盘文件对应，**完美规避磁盘扫描与 `MEM_PRIVATE` RWX 检测**。
+
+#### 路径 C：手动伪装 VAD（极高难度，不推荐）
+尝试通过内核驱动修改 VAD 节点 `u.VadFlags.PrivateMemory=0, ImageMap=1`，但需绕过 PatchGuard，且极易导致系统崩溃，**工程上不可行**。
+
+**代码骨架（路径 A + 磁盘文件示例）**：
+
+```cpp
+PBYTE CPE::MapAsMemImage(LPCWSTR wszPePath) {
+    HANDLE hFile = CreateFileW(wszPePath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
+    if (hFile == INVALID_HANDLE_VALUE) return nullptr;
+
+    HANDLE hSection = NULL;
+    LARGE_INTEGER maxSize = {0};
+    NTSTATUS status = NtCreateSection(&hSection, SECTION_MAP_READ | SECTION_MAP_WRITE | SECTION_MAP_EXECUTE,
+                                      NULL, &maxSize, PAGE_READONLY, SEC_IMAGE, hFile);
+    CloseHandle(hFile);
+    if (!NT_SUCCESS(status)) return nullptr;
+
+    PVOID pBase = nullptr;
+    SIZE_T viewSize = 0;
+    status = NtMapViewOfSection(hSection, NtCurrentProcess(), &pBase, 0, 0, NULL, &viewSize, ViewShare, 0, PAGE_READWRITE);
+    NtClose(hSection);
+    if (!NT_SUCCESS(status)) return nullptr;
+
+    // 此时 pBase 为 MEM_IMAGE 映射基址，后续可直接按本文前文流程做重定位/IAT/TLS/EntryPoint
+    // 注意：若 pBase != ImageBase，需手动处理重定位表（同 RelocationTable 逻辑）
+    return (PBYTE)pBase;
+}
+```
+
+**对抗效果对比**：
+
+| 内存属性 | `VirtualAlloc` (RWX) | `SEC_IMAGE` Mapping |
+|----------|----------------------|---------------------|
+| **VAD Type** | `MEM_PRIVATE` | `MEM_IMAGE` |
+| **权限粒度** | 整块 RWX | 按节区 `Characteristics` 自动分页 (RX/RW/RO) |
+| **Moneta/pe-sieve 扫描** | **高危告警** | 视为合法模块，**通常跳过** 或仅做签名校验 |
+| **磁盘文件关联** | 无 | 有（除非 TxF） |
+| **实现复杂度** | 低 | 中（需文件句柄/Section 管理） |
+
+> **权衡建议**：
+> - **纯用户态、追求极简、无文件落地**：继续用 `VirtualAlloc` + 精细 `VirtualProtect` 设置节区权限（RX/RW），配合 PE 头抹除、不挂 PEB 链表，对抗用户态扫描。
+> - **追求最高隐蔽性、可接受文件落地或 TxF 复杂度**：**强烈建议 `SEC_IMAGE` 映射**，配合 TxF 实现真正 `MEM_IMAGE` 无文件加载，结合 [[process-injection-tampering-techniques]] 中 Transacted Hollowing 技巧。
+
+---
+
 ## 模块隐藏技术对比：链表摘除 vs 手动映射
 
 文章《PE结构 | 导出表详解》通过双机调试（Win7 + Windbg）对比了两种隐藏模块的手段：
@@ -330,6 +509,7 @@ VirtualProtect(shellcodeBuf, shellcodeSize, oldProtect, &oldProtect); // 恢复�
 bool CPE::CallEntry() {
     PBYTE ExeEntry = pMemData + pNtHeader->OptionalHeader.AddressOfEntryPoint;
     if (!ImportTable()) return FALSE;
+    if (!ProcessDelayImportTable()) return FALSE; // 新增：延迟导入处理
     if (!RelocationTable()) return FALSE;
     ErasurePEHeader();
 
@@ -341,7 +521,7 @@ bool CPE::CallEntry() {
 }
 ```
 
-- **执行顺序**：必须先修复 IAT/重定位，**再**抹除头，最后跳转。
+- **执行顺序**：必须先修复 IAT/延迟导入/重定位，**再**抹除头，最后跳转。
 - **内联汇编** 仅适用于 x86；x64 需用 `((void(*)())ExeEntry)()` 或汇编桩。
 - **控制台程序**入口通常为 `mainCRTStartup` → 初始化 CRT → 调用 `main`。
 
@@ -380,12 +560,13 @@ int main() {
 |------|--------|----------|
 | **节区权限精细化** | 解析 `Characteristics` 调用 `VirtualProtect` 设置 `PAGE_READONLY`/`PAGE_EXECUTE_READ` 等 | [[windows-syscall-internals-sysenter-kifastcallentry]] 中内存保护机制 |
 | **TLS 回调支持** | 处理 `IMAGE_DIRECTORY_ENTRY_TLS`，在入口点前执行 `TLSCallback` | 逆向分析加壳存根常见 |
-| **延迟加载导入** | 解析 `IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT`，实现 `__delayLoadHelper2` 逻辑 |  |
+| **延迟加载导入** | 解析 `IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT`，实现 `__delayLoadHelper2` 逻辑 | **本页已补充详细实现** |
 | **异常处理/SEH** | 注册 `RtlAddFunctionTable` (x64) 或构建 `EXCEPTION_REGISTRATION_RECORD` (x86) |  |
-| **无依赖加载器** | 移除 `GetModuleHandle`/`LoadLibrary`/`GetProcAddress`，改用 PEB 遍历 + 导出表解析 | [[reverse-engineering-beginner-learning-path]] 进阶篇、[[pe-export-table-internals]] |
+| **无依赖加载器** | 移除 `GetModuleHandle`/`LoadLibrary`/`GetProcAddress`，改用 PEB 遍历 + 导出表解析 + **API Set Schema 解析** | [[reverse-engineering-beginner-learning-path]] 进阶篇、[[pe-export-table-internals]] |
 | **x64 适配** | `IMAGE_NT_HEADERS64`、`RIP` 相对寻址、`DIR64` 重定位、栈对齐、调用约定 |  |
 | **反调试/反注入** | 在 `CallEntry` 前插入 `NtGlobalFlag`、`BeingDebugged` 检查、时间检测 |  |
 | **导出表构建/转发** | 为映射模块构建导出表，支持外部 `GetProcAddress`、转发导出 | [[pe-export-table-internals]] |
+| **MEM_IMAGE 映射** | 使用 `SEC_IMAGE` Section 映射替代 `VirtualAlloc`，实现 `MEM_IMAGE` VAD 类型 | **本页已补充详细路径**、[[process-injection-tampering-techniques]] |
 
 ---
 
@@ -400,6 +581,9 @@ int main() {
 | 依赖 DLL 版本不匹配 | `LoadLibrary` 加载了系统目录不同版本 | 使用 `LoadLibraryEx` + `LOAD_WITH_ALTERED_SEARCH_PATH` 指定目录 |
 | Shellcode 执行崩溃 | DEP 开启 / 函数边界不全 / 绝对地址未重定位 | `VirtualProtect` + 完整 CFG 边界提取 + 重定位感知 |
 | 导出函数外部调用失败 | 导出表未映射 / 名称表未排序 / 转发导出未处理 | 严格按规范构建三表、实现 `MyGetProcAddress` 测试 |
+| `cmd.exe` 等程序启动崩溃 | **未处理延迟导入表** (cmdext.dll) | 补充 `ProcessDelayImportTable` 调用 |
+| 自定义 GetProcAddress 死循环/栈溢出 | **ApiSet 转发循环** (api-ms-win-* -> kernel32 -> api-ms-win-*) | 接入 **API Set Schema 解析** 或 **启发式 Fallback** |
+| 内存扫描器报警 "RWX MEM_PRIVATE" | 使用 `VirtualAlloc` + `PAGE_EXECUTE_READWRITE` | 改用 **`SEC_IMAGE` 映射** 获得 `MEM_IMAGE`，或精细 `VirtualProtect` 分节区权限 |
 
 ---
 
@@ -411,26 +595,29 @@ int main() {
 - [[ida-pro-tips-plugins-python]] — IDA Pro 技巧：利用 FLIRT 签名识别静态库函数、Findcrypt-Yara 识别加密常量、Keypatch 修补二进制，辅助分析加载器壳代码。
 - [[binary-ninja-ollvm-deobfuscation]] — Binary Ninja 去混淆：若加载器本身被 OLLVM 平坦化，可用 IL 分析还原控制流。
 - [[pe-export-table-internals]] — PE 导出表深度解析：数据结构、三表寻址、手动解析流程、EXE 导出表、模块隐藏关联技术。
+- [[process-injection-tampering-techniques]] — 进程注入篡改技术对比：Process Hollowing/Doppelganging/Ghosting/Herpaderping/Transacted Hollowing 原理与 Sysmon Event ID 25 检测对抗，含 `SEC_IMAGE` Section 映射实战细节。
+- [[memory-scanning-tools-evasion-techniques]] — 内存扫描工具与规避技术：Moneta、pe-sieve、patriot、BeaconHunter 等检测原理，及 UDRL (FOLIAGE/Ekko/AceLdr) 对抗实测。
 
 ---
 
 ## 结语
 
-本页完整还原了一个 **教学级 PE 手动映射加载器** 的核心逻辑与代码实现，并结合「二进制安全」导出表文章补充了：
+本页完整还原了一个 **教学级 PE 手动映射加载器** 的核心逻辑与代码实现，并结合归档文章《关于PE不落地执行技术的思考》补充了生产级/对抗级 Loader 必须攻克的三大关键细节：
 
-1. **导出表解析与自定义 `GetProcAddress`** —— 实现无 API 依赖的符号解析、支持 Reflective DLL 导出。
-2. **模块隐藏技术对比** —— 实测对比“链表摘除”留存 VAD 痕迹 vs “手动映射”仅留私有内存，量化隐蔽性差异。
-3. **DEP 绕过与 Shellcode 提取难点** —— `VirtualProtect` 权限控制、多出口/跳转表/重定位感知提取的工程挑战。
+1. **延迟导入表处理** — 解决 `cmd.exe` 等依赖 Delay Load DLL 程序的加载失败问题。
+2. **API Set Schema 解析避免转发循环** — 实现健壮的无 API `GetProcAddress`，攻克 `api-ms-win-*` 虚拟 DLL 转发死循环难题。
+3. **将 PE Image 分配至 MEM_IMAGE 内存** — 通过 `SEC_IMAGE` Section 映射（可结合 TxF 实现无文件），从 VAD 层面消除 `MEM_PRIVATE` RWX 高危特征，大幅降低内存扫描疑似度。
 
 掌握该流程可助你：
 
 - **阅读/编写** 任意自定义加载器（加壳器、Shellcode Runner、C2 Stager）
 - **动态脱壳**：在 `CallEntry` 前下断点，内存镜像即为解密后原始 PE
-- **对抗分析**：理解抹除 PE 头、不挂载 PEB 链表、手动修复 IAT/重定位/导出表如何绕过静态/动态检测
-- **工程权衡**：在“提取单函数 Shellcode”与“整体映射 PE”之间根据载荷大小、稳定性、隐蔽性做取舍
+- **对抗分析**：理解抹除 PE 头、不挂载 PEB 链表、手动修复 IAT/重定位/延迟导入/导出表、API Set 解析、MEM_IMAGE 映射如何协同绕过静态/动态/内存多层检测
+- **工程权衡**：在“提取单函数 Shellcode”与“整体映射 PE”、`VirtualAlloc` 与 `SEC_IMAGE` 映射之间根据载荷大小、稳定性、隐蔽性、文件落地约束做取舍
 
 > **合规提示**：本技术仅用于安全研究、CTF 竞赛、恶意样本分析及防御规则编写，请遵守所在法律法规与道德规范。
 
 ## 来源
 
 - [0x00实验室-202108-202304_006](../sources/0x00实验室-202108-202304_006.md)
+- [0x4d5a-202103-202209_09](../sources/0x4d5a-202103-202209_09.md)

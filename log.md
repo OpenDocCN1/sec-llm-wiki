@@ -247,3 +247,4 @@
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_027 -> lm-ntlm-hash-generation-analysis.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_028 -> mimikatz-source-code-architecture-golden-ticket-audit.md, kerberos-golden-ticket-attack-mimikatz-implementation.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_029 -> vulnhub-chronos-writeup.md
+## [2026-11-14] ingest | 0x00实验室-202108-202304_030 -> dotnet-clr-usage-log-tampering-edr-evasion.md

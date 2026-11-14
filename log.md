@@ -254,3 +254,4 @@
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_034 -> heap-overflow-principles-unlink-exploitation.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_035 -> php-webshell-obfuscation-av-evasion.md
 ## [2026-11-14] ingest | 0x00实验室-202108-202304_036 -> sqlmap-api-automation.md
+## [2026-11-14] ingest | 0x00实验室-202108-202304_037 -> security-engineer-recruitment-requirements.md

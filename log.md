@@ -427,3 +427,4 @@
 ## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_10 -> hec-cup-2021-crypto-writeup.md
 ## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_11 -> heap-off-by-one-null-exploitation.md, heap-overflow-principles-unlink-exploitation.md
 ## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_12 -> info-gathering-tools-collection.md
+## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_13 -> fafu01-ciscn-online-writeup.md, 0xfafu-security-team-wechat-archive-202010-202112.md

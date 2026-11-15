@@ -1,6 +1,7 @@
 ---
 title: 0xfafu攻防实验室微信公众号文章归档索引（2020年10月-2021年12月）
-description: 0xfafu攻防实验室微信公众号在2020年10月至2021年12月期间发布文章的汇总索引页面，涵盖AI安全、网络安全攻防实战、CTF竞赛、漏洞分析等技术内容。
+description: 0xfafu攻防实验室微信公众号在2020年10月至2021年12月期间发布文章的汇总索引页面，涵盖AI安全、网络安全攻防实战、CTF竞赛、漏洞分析等技术内容。新增
+  FAFU01 战队 CISCN 2021 线上赛详细 Writeup 条目。
 category: ai-security
 tags:
 - 0xfafu
@@ -28,7 +29,7 @@ updated: '2026-11-15'
 
 ## 按月份浏览
 
-### 年
+### 2020年
 
 #### 2020-10
 - *待补充文章条目*
@@ -39,7 +40,7 @@ updated: '2026-11-15'
 #### 2020-12
 - *待补充文章条目*
 
-### 年
+### 2021年
 
 #### 2021-01
 - *待补充文章条目*
@@ -57,7 +58,7 @@ updated: '2026-11-15'
 - *待补充文章条目*
 
 #### 2021-06
-- *待补充文章条目*
+- [[fafu01-ciscn-online-writeup]] **FAFU01-CISCN线上赛部分WP** — FAFU01战队在CISCN 2021 线上赛中的五道题目完整复现：SQL注入绕过information_schema过滤（无列名注入）、PHP源码泄露利用ReflectionMethod读取类注释、Session Upload Progress LFI Getshell、堆UAF结合Tcache Poisoning劫持malloc_hook、RSA三重攻击（低加密指数攻击/共模攻击/Coppersmith部分已知p攻击）。供稿人：FAFU01，编辑：A1andNS。
 
 #### 2021-07
 - *待补充文章条目*
@@ -84,7 +85,7 @@ updated: '2026-11-15'
 | 专题方向 | 典型关键词 | 关联页面示例 |
 |----------|------------|--------------|
 | **AI 安全 / 对抗样本** | 对抗攻击、模型窃取、数据投毒、鲁棒性评估 | — |
-| **CTF 竞赛 Writeup** | Crypto、Reverse、Pwn、Web、Misc | [[0w1club-ctf-crypto-writeup-easyrsa-t9]], [[mtctf-2021-crypto-writeup]] |
+| **CTF 竞赛 Writeup** | Crypto、Reverse、Pwn、Web、Misc | [[fafu01-ciscn-online-writeup]], [[0w1club-ctf-crypto-writeup-easyrsa-t9]], [[mtctf-2021-crypto-writeup]] |
 | **漏洞复现与分析** | RCE、SQLi、SSRF、反序列化、0day | [[cve-2022-23131-zabbix-saml-auth-bypass]], [[spring-boot-actuator配置不当rce利用]] |
 | **红蓝对抗 / HVV** | 免杀、C2、横向移动、域渗透 | [[hvv-2021-vulnerability-collection]], [[kerberos-golden-ticket-attack-mimikatz-implementation]] |
 | **代码审计 / CMS 漏洞** | ThinkPHP、Spring Boot、ECShop、zzzphp | [[ecshop-414-sql-injection-analysis]], [[zzzphp-cve-2021-32605-rce]] |
@@ -115,7 +116,7 @@ updated: '2026-11-15'
    在摘要后追加 `#标签`，便于后续自动聚合生成专题页。
 
 3. **交叉引用关联页**  
-   文中涉及的漏洞、工具、赛事若已有独立页面，请用 `[[wikilink]]` リンク。
+   文中涉及的漏洞、工具、赛事若已有独立页面，请用 `[[wikilink]]` 链接。
 
 ---
 
@@ -125,6 +126,7 @@ updated: '2026-11-15'
 - [[0x4d5a-wechat-archive-202103-202209]] — 2021 年起同期安全团队归档
 - [[hvv-2021-vulnerability-collection]] — 2021 年 HVV 期间高危漏洞聚合，便于对照团队复现进度
 - [[daily-security-digest-20200102]] — 每日安全看点系列，可作为同期外部威胁情报参考
+- [[fafu01-ciscn-online-writeup]] — FAFU01 战队 CISCN 2021 线上赛详细 Writeup 独立页面
 
 ---
 
@@ -133,4 +135,4 @@ updated: '2026-11-15'
 
 ## 来源
 
-- [0xfafu攻防实验室-202010-202112_00](../sources/0xfafu攻防实验室-202010-202112_00.md)
+- [0xfafu攻防实验室-202010-202112_13](../sources/0xfafu攻防实验室-202010-202112_13.md)

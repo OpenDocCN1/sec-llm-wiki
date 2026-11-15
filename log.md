@@ -502,3 +502,4 @@
 ## [2026-11-16] ingest | 301在路上-201508-202208_002 -> vulnerability-rating-disputes-bug-bounty.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_003 -> zhongan-tianxia-cheetah-mobile-enterprise-security-dialogue.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_004 -> 301-zai-lushang-wechat-archive-201508-202208.md, xiaoyang-whitehat-practitioner-profile.md
+## [2026-11-16] ingest | 301在路上-201508-202208_005 -> 0x6270-security-team-wechat-archive-202203-202304.md

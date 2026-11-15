@@ -544,3 +544,4 @@
 ## [2026-11-16] ingest | 301在路上-201508-202208_044 -> 301-zai-lushang-wechat-archive-201508-202208.md, social-engineering-attack-techniques.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_045 -> 301-zai-lushang-wechat-archive-201508-202208.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_046 -> honeytoken-data-leak-detection-technique.md, 301-zai-lushang-wechat-archive-201508-202208.md
+## [2026-11-16] ingest | 301在路上-201508-202208_047 -> apt-detection-deployment-strategy.md

@@ -450,3 +450,4 @@
 ## [2026-11-15] ingest | 102网络攻防实验室-202102-202203_6 -> cve-monitoring-dingtalk-script.md
 ## [2026-11-15] ingest | 102网络攻防实验室-202102-202203_7 -> cisp-pte-penetration-testing-exam-guide.md
 ## [2026-11-15] ingest | 226安全团队-201805-202103_00 -> 226-security-team-wechat-archive-201805-202103.md
+## [2026-11-15] ingest | 226安全团队-201805-202103_01 -> hvv-blue-team-recruitment-standards.md

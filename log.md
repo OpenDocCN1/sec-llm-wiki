@@ -442,3 +442,5 @@
 ## [2026-11-15] ingest | 1024安全团队-202204-202209_5 -> can-bus-reverse-engineering-icsim-tutorial.md
 ## [2026-11-15] ingest | 1024安全团队-202204-202209_6 -> usb-hid-traffic-forensics.md, automotive-protocol-analysis-uart-ble.md, cicv-2022-crypto-forensics-writeup.md
 ## [2026-11-15] ingest | 102网络攻防实验室-202102-202203_0 -> 102-network-security-lab-wechat-archive-202102-202203.md
+## [2026-11-15] ingest | 102网络攻防实验室-202102-202203_1 -> php-webshell-obfuscation-av-evasion.md
+## [2026-11-15] ingest | 102网络攻防实验室-202102-202203_2 -> codetest-visual-poc-exploitation-tool.md

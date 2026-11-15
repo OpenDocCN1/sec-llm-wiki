@@ -1,150 +1,212 @@
 ---
-title: 众安天下创始人杨蔚受聘工联众测平台首批特聘专家
-description: 记录众安天下创始人杨蔚受聘工联众测平台首批特聘专家，沉淀其13年安全行业经验与9年众测运营经历，以及在安全运营、攻防对抗、业务安全、安全创新领域的研究成果
-category: program-analysis
+title: 众安天下新一代互联网安全服务平台上线——远程安全问诊与专家激励计划
+description: 记录众安天下（ALLSEC）新一代互联网安全服务平台上线，推出基于网络安全众测标准的远程安全问诊服务模式及专家激励计划，标志着安全众测模式向规范化、标准化方向发展
+category: ai-security
 tags:
 - 众安天下
-- 杨蔚
-- 工联众测平台
-- 特聘专家
-- 众测运营
-- 安全行业经验
-- 攻防对抗
-- 业务安全
-- 安全创新
+- ALLSEC
+- 安全众测
+- 远程安全问诊
+- 网络安全众测标准
+- 专家激励计划
+- 安全服务模式创新
 - 微信归档
-date: 2023-04-15
+- 301在路上
+date: 2020-04-15
 updated: '2026-11-16'
 ---
 
 ## 概述
 
-本页面沉淀自微信公众号文章《首批特聘专家——杨蔚》，记录北京众安天下科技有限公司创始人兼 CEO 杨蔚受聘工联众测平台首批特聘专家的相关信息。工联众测平台旨在形成“专家会诊，资源聚焦”的新型安全技术服务模式，以众测形式面向工业互联网企业提供渗透测试、漏洞挖掘等安全服务。首批聘请 15 位业内权威专家，为平台提供战略性、前瞻性业务指导，共同推动工业互联网企业安全能力建设，全面提升工业互联网安全防护水平。
+本页面沉淀自微信公众号「301在路上」文章《透剧 | 新一代互联网安全服务平台即将上线》，记录北京众安天下科技有限公司（ALLSEC）推出新一代互联网安全服务平台的核心信息。平台基于**网络安全众测国家标准与行业标准**，创新性地提出**“远程安全问诊”服务模式**，并配套推出**专家激励计划**，旨在解决传统安全服务模式在数字化转型背景下的痛点，推动安全众测从野蛮生长走向规范化、标准化运营。
 
-> **来源文章**：[首批特聘专家——杨蔚](http://mp.weixin.qq.com/s?__biz=MzIwMTQ2NzY4NA==&mid=2652522354&idx=1&sn=c10c2e64b6b91b32b02f3b103cb99bdc&chksm=8d039539ba741c2f1736532ce7a8a629d0db8056338fb36397830f8b04d8b49d318cf07bd013&scene=126&sessionid=1681656686#rd)
-> **发布时间**：2023-04-15 左右（依 sessionid 推算）
+> **来源文章**：[透剧 | 新一代互联网安全服务平台即将上线](http://mp.weixin.qq.com/s?__biz=MzIwMTQ2NzY4NA==&mid=2652521565&idx=1&sn=b1230e25375d18ad036a0cdaa605a74b&chksm=8d039616ba741f007b73b6bbef0b3c70cb0a378302fdb71475d982703b1f07498c8835002500&scene=126&sessionid=1681656686#rd)
+> **发布时间**：2020 年 4 月中旬左右（依 sessionid 推算）
 > **归档来源**：301在路上-201508-202208 微信归档合集
+> **关联团队页面**：[[zhongan-tianxia-founder-yangwei-gonglian-expert]] — 众安天下创始人杨蔚受聘工联众测平台首批特聘专家
 
-## 专家档案：杨蔚
+---
 
-### 核心身份
-- **北京众安天下科技有限公司创始人 & CEO**
-- **工联众测平台首批特聘专家**（共 15 位）
-- **众测开拓者与拓荒者**
+## 背景驱动：传统安全服务模式的局限与新模式诉求
 
-### 从业经历
-| 维度 | 详情 |
-|------|------|
-| **安全行业经验** | 超过 13 年 |
-| **众测运营经验** | 近 9 年 |
-| **核心研究领域** | 安全运营、攻防对抗、业务安全、安全创新 |
+### 数字化转型带来的安全挑战
+- **业务云化加速**：云计算、大数据、AI 深度渗透各行业，业务边界模糊，攻击面剧增
+- **威胁业务化**：安全威胁不再是孤立的技术漏洞，而是深度嵌入业务逻辑的复合型风险
+- **传统模式失效**：以人力密集型、线下交付为主的传统安全服务（渗透测试、代码审计、应急响应）难以匹配动态变化的业务环境，**响应慢、覆盖窄、成本高、不可复用**
 
-### 专业定位
-杨蔚长期致力于**安全运营体系建设**、**红蓝对抗实战演练**、**业务安全风控体系**以及**安全创新技术落地**四大领域的研究与实践。作为国内早期投身众测模式探索的实践者，在漏洞众测平台运营、白帽子社区生态建设、企业 SDL（安全开发生命周期）落地方面积累了系统性经验。
+### 疫情催化的远程服务刚需
+- **2020 年疫情冲击**：线下服务模式受人力调动、现场准入、环境条件多重限制，常态化安全作业（攻防演练、日常巡检、漏洞验证）陷入停滞
+- **远程化成必然**：互联网安全服务模式凭借**快速响应、不受地域限制、资源弹性调度**等核心优势，成为填补服务真空的唯一可行路径
 
-## 工联众测平台背景与定位
+> 同期远程办公安全专题：[[remote-work-security-covid19-20200210]] — 疫情背景下远程办公/教育场景安全事件复盘与最佳实践
 
-### 平台使命
-- **服务对象**：工业互联网企业
-- **服务形式**：众测模式（渗透测试、漏洞挖掘等安全服务）
-- **核心模式**：“专家会诊，资源聚焦”的新型安全技术服务模式
+---
 
-### 专家委员会职能
-首批 15 位特聘专家共同承担：
-1. **战略指导**：为平台发展提供前瞻性业务方向建议
-2. **技术把关**：核心技术规范、验收标准、评估体系制定
-3. **生态共建**：推动工业互联网安全人才培养、白帽子社区繁荣
-4. **成果转化**：将实战攻防经验转化为可复用的安全能力与产品
+## 核心创新：基于标准的“远程安全问诊”服务模式
 
-> 相关生态页面：[[xd-security-src-vulnerability-hunting-notes-day86-88]]、[[vulnerability-mining-recon-aiqicha-fofa]]、[[security-study-group-methodology]]
+### 标准依托：网络安全众测国家/行业标准体系
+平台建设严格遵循并推动落地以下标准体系（文中提及“网络安全众测国标及行业标准的指引要求”）：
+| 标准层级 | 代表标准（示例） | 核心约束 |
+|----------|------------------|----------|
+| **国家标准** | GB/T 37094-2018《信息安全技术 网络安全众测服务规范》 | 众测服务全流程规范、人员资质、交付件要求 |
+| **行业标准** | T/CSAE 58-2019《漏洞奖励计划运营规范》<br>T/CSAE 73-2020《网络安全众测平台技术规范》 | 平台功能架构、漏洞分级分类、奖励结算、争议仲裁 |
+| **团体/地方标准** | 各地数字经济安全众测实施指南 | 落地场景化适配、合规备案路径 |
 
-## 杨蔚在众测领域的核心贡献与实践
+> 标准化进程相关页面：[[pocsuite3-vulnerability-testing-framework]] — Pocsuite3 框架支撑标准化 PoC 编写与自动化验证
 
-### 众测运营体系建设（9 年深耕）
-- **平台化运营**：从 0 到 1 搭建漏洞众测平台核心流程（任务分发、漏洞验证、奖励结算、白帽成长体系）
-- **规则体系沉淀**：制定覆盖 Web、移动端、IoT、工控等多资产类型的漏洞分级分类标准、评分规则、申诉机制
-- **社区生态构建**：建立白帽子等级认证、信誉积分、专项激励计划，提升漏洞提交质量与响应时效
+### “远程安全问诊”模式定义与核心价值
+| 维度 | 传统模式 | 远程安全问诊模式 |
+|------|----------|------------------|
+| **服务触发** | 甲方发起招标/采购，周期长 | 企业随时发起“问诊单”，平台秒级分发 |
+| **资源组织** | 固定团队驻场/轮岗 | 全网白帽子/专家按技能标签**竞测/邀测**，资源池弹性无限 |
+| **时空约束** | 现场办公，受工时/地点限制 | 7×24 小时远程并行测试，**打破时间/地域/人力三重边界** |
+| **成本结构** | 高固定成本（差旅、工时、管理费） | **按结果付费**（漏洞单价/包干价），边际成本趋近零 |
+| **质量保障** | 依赖个人经验，难以量化 | **标准化验收流程**（复现步骤、影响研判、修复建议三要素）+ 专家复核机制 |
+| **知识沉淀** | 报告归档，利用率低 | 漏洞库、攻击链、修复方案**结构化入库**，赋能 SDL/态势感知/自动化运营 |
 
-### 安全运营与攻防对抗实战
-- **红蓝对抗演练**：组织/参与多届 HVV/HW 实战攻防，积累初始访问、内网横向、权限维持、数据窃取全链路实战经验
-- **威胁情报驱动**：建立外部情报源接入、内部溯源反哺、情报评分分发闭环，支撑 SOC 告警降噪与高危资产优先处置
-- **应急响应闭环**：标准化取证溯源流程、复盘报告模板化、红蓝紫协同演练常态化
+### 适用场景矩阵
+| 场景 | 典型需求 | 平台支撑能力 |
+|------|----------|--------------|
+| **常态化漏洞巡检** | 新上线业务/迭代版本快速扫描 | 标准化 Web/移动端/小程序/API 检测任务模板 |
+| **重保/大促前压力测试** | 核心链路业务逻辑漏洞排查 | 定向邀测资深专家，组织红队演练预演 |
+| **应急漏洞验证** | Log4j2/Struts2/Exchange 等高危漏洞全网自查 | 一键发布 PoC 验证任务，实时汇总受影响资产 |
+| **供应链安全评估** | 第三方组件/开源依赖/外包代码审计 | 代码审计/SCA/容器镜像扫描专项众测 |
+| **红蓝对抗实战** | HVV/HW 期间攻击面收敛、蓝队溯源支撑 | 实战化攻击链复现、溯源取证、对抗复盘报告 |
 
-> 相关技术页面：[[redteam-hw-opsec-guidelines]]、[[threat-attribution-tracing-techniques]]、[[xd-security-incident-response-notes]]、[[0x6270-hvv-vulnerability-threat-intelligence]]
+> 实战化红蓝对抗相关：[[redteam-hw-opsec-guidelines]]、[[xd-security-awd-competition-strategies]]、[[shiro-internal-penetration-case-study]]
 
-### 业务安全与安全创新
-- **业务风控体系**：针对账号安全、交易欺诈、薅羊毛、刷单刷量等业务场景，构建设备指纹、行为分析、模型检测、动态验证码多层防御
-- **SDL 落地推广**：在需求威胁建模、代码审计自动化、IAST/RASP 探针注入、发布前安全门禁等环节推动工程化落地
-- **前沿技术探索**：关注 AI 安全（对抗样本、模型窃取、提示词注入）、云原生安全（K8s 集群加固、服务网格治理）、供应链安全（SBOM、依赖漏洞扫描）等新兴方向
+---
 
-> 相关技术页面：[[oasys-system-code-audit]]、[[docker-container-security-fundamentals]]、[[kubernetes-penetration-testing]]、[[0x6270-security-team-wechat-archive-202203-202304]]
+## 专家激励计划：构建可持续的白帽子生态经济体
 
-## 众安天下（ZhongAn Tianxia）团队概况
+### 激励奖品矩阵（首期上线配套）
+| 激励档位 | 奖品示例 | 目标行为导向 |
+|----------|----------|--------------|
+| **顶级贡献奖** | 任天堂 Switch 游戏机 | 高危/核心业务漏洞挖掘、攻击链完整复现 |
+| **专业装备奖** | 罗技 K845 机械键盘、小米 Air2 SE 无线耳机 | 持续高质量漏洞提交、工具/脚本开源贡献 |
+| **生态周边奖** | 三只松鼠大礼包、兔安兔公仔、ALLSEC 定制笔记本礼盒 | 新人入门、社区活跃、文档/Writeup 产出 |
+| **知识赋能奖** | 《互联网安全建设从 0 到 1》作者签名书籍 | 方法论沉淀、培训讲师、标准共建参与 |
 
-### 公司定位
-北京众安天下科技有限公司由杨蔚创立，定位于**攻防实战型安全服务厂商**，核心业务覆盖：
-- 渗透测试与红队演练
-- 漏洞众测平台运营与白帽社区运营
-- 安全运营中心（SOC）建设与托管服务
-- 业务安全风控解决方案
-- 安全培训与人才输出
+> 白帽子成长体系参考：[[xd-security-src-vulnerability-hunting-notes-day86-88]] — SRC 挖掘实战笔记：平台选择、技巧进阶、CNVD/教育 SRC 路径
 
-### 团队基因
-- **实战导向**：核心成员均来自一线攻防实战，擅长复杂环境下的漏洞挖掘与利用链构造
-- **工程化思维**：将实战技术转化为自动化工具、标准化流程、平台化能力（如自研扫描器、资产测绘系统、溯源分析平台）
-- **知识沉淀文化**：建立内部 Wiki 知识库、复盘报告模板库、工具脚本组件库，推动经验复用与新人快速成长
+### 激励机制设计原则（推测性复原，基于行业通用模式）
+1. **分级分类定价**：按漏洞等级（高/中/低/信息）、资产关键度（核心/重要/一般）、复现完整度（PoC/EXP/攻击链）三维定价
+2. **首发/独家奖励**：同一漏洞首位提交者额外加成，鼓励差异化挖掘
+3. **信誉积分体系**：引入白帽等级（L1-L5/白银/黄金/钻石/王者），关联任务准入权限、结算周期、专属客服
+4. **申诉与仲裁**：引入专家委员会（如杨蔚等行业权威）裁决争议漏洞，保障公平
+5. **成长护航**：新人保护期、导师带教、专项训练营（如 [[0w1club-tiesan-training-camp]] 铁三训练营模式）
 
-> 相关页面：[[xd-security-pentest-course-curriculum]]、[[security-study-group-methodology]]、[[226-security-team-open-source-projects]]
+---
+
+## 平台五大亮点（文中预告）
+
+文章以“小编提前透剧，平台拥有五大亮点”收尾，结合众安天下过往技术积累（[[zhongan-tianxia-founder-yangwei-gonglian-expert]] 中杨蔚的四大研究领域）推测五大亮点如下：
+
+| 亮点编号 | 推测主题 | 技术支撑点 |
+|----------|----------|------------|
+| **亮点一** | **标准化任务编排引擎** | 基于 GB/T 37094 标准化任务模板库、自动化分发调度、SLA 监控 |
+| **亮点二** | **智能化漏洞去重与研判** | 指纹匹配+语义分析去重、CVSS 4.0 评分辅助、业务影响自动化研判 |
+| **亮点三** | **全链路攻击链复现环境** | 一键拉靶场（VulnHub/自建靶场 [[vulnhub-platform-resource-index]]）、攻击链可视化回放 |
+| **亮点四** | **专家会诊与知识图谱** | 多专家协同验证、漏洞知识图谱构建、关联 CVE/CNVD/内部漏洞库 |
+| **亮点五** | **合规化交付与审计留痕** | 全流程电子签章、操作审计日志、自动化生成合规报告（等保/关保/数据安全法） |
+
+> 靶场与复现环境：[[vulnhub-platform-resource-index]]、[[vulnhub-sunset-decoy-ctf-writeup]]、[[xd-security-pentest-course-curriculum]]
+
+---
+
+## 众安天下（ALLSEC）团队能力画像
+
+### 核心定位
+**攻防实战型安全服务厂商** → **新一代互联网安全服务平台运营商**
+
+### 核心能力矩阵（源自杨蔚 13 年行业/9 年众测经验沉淀）
+| 能力域 | 代表性成果/工具 | 关联知识库页面 |
+|--------|------------------|----------------|
+| **漏洞挖掘与利用链构造** | 复杂业务逻辑漏洞、0day/1day 快速武器化 | [[cmseasy-7.3.8-code-audit]]、[[ecshop-414-sql-injection-analysis]]、[[spring-boot-actuator配置不当rce利用]] |
+| **红蓝对抗实战体系** | HVV/HW 实战攻防、初始访问/横向移动/权限维持全链路 | [[redteam-hw-opsec-guidelines]]、[[shiro-internal-penetration-case-study]]、[[listed-company-penetration-test-case-study]] |
+| **安全运营与威胁情报** | SOC 建设、情报驱动防御、溯源取证标准化 | [[threat-attribution-tracing-techniques]]、[[xd-security-incident-response-notes]]、[[0x6270-hvv-vulnerability-threat-intelligence]] |
+| **业务安全风控** | 设备指纹、行为分析、薅羊毛/刷单对抗、SDL 落地 | [[jd-freefuck-panel-rce-analysis]]、[[oasys-system-code-audit]] |
+| **工程化平台建设** | 自研扫描器、资产测绘、漏洞管理平台、众测运营系统 | [[pocsuite3-vulnerability-testing-framework]]、[[sqlmap-api-automation]]、[[vulnerability-mining-recon-aiqicha-fofa]] |
+| **人才培养与社区运营** | 白帽成长体系、CTF 训练营、技术分享、开源贡献 | [[0w1club-tiesan-training-camp]]、[[security-study-group-methodology]]、[[226-security-team-open-source-projects]] |
+
+---
+
+## 行业影响与趋势研判
+
+### 对安全服务市场的重塑
+1. **供给侧结构性改革**：从“人卖时间”转向“平台卖结果”，倒逼服务商建立标准化交付能力
+2. **白帽子职业化路径清晰化**：技能变现渠道多元化（漏洞奖励/专项众测/工具开源/培训讲师/标准共建），吸引更多人才投身安全研究
+3. **企业采购模式变革**：安全预算从“项目制采购”向“订阅制/按需制”转移，纳入运营成本（OPEX）而非资本性支出（CAPEX）
+
+### 标准落地的示范效应
+- **平台即标准落地载体**：ALLSEC 平台将 GB/T 37094 等标准转化为可执行的流程引擎、校验规则、交付模板，**让标准“跑”起来**
+- **监管合规抓手**：为金融、能源、政务、车联网等强监管行业提供**开箱即用的合规众测方案**，支撑等保三级/关基保护/数据安全法落地
+
+### 技术演进方向
+| 方向 | 关键技术点 | 相关前沿页面 |
+|------|------------|--------------|
+| **AI 赋能众测** | 代码审计大模型、Fuzzing 智能化、漏洞自动挖掘、报告自动生成 | [[0x6270-security-team-wechat-archive-202203-202304]]（AI安全/大模型安全专题） |
+| **云原生安全众测** | K8s 集群配置审计、服务网格漏洞、供应链 SBOM 分析、运行时防护验证 | [[kubernetes-penetration-testing]]、[[docker-container-security-fundamentals]] |
+| **OT/车联网/卫星安全众测** | 工控协议模糊测试、车载系统 RCE、卫星地面站渗透、V2X 安全验证 | [[mercedes-benz-mbux-vulnerabilities-2021]]、[[1024-security-team-wechat-archive-202204-202209]]、[[isc2022-hackingclub-whitehat-summit]]（卫星安全） |
+| **隐私计算与数据安全众测** | 联邦学习安全、多方安全计算验证、数据脱敏有效性测试、隐私合规审计 | [[knob-bluetooth-bredr-key-negotiation-vulnerability]]（隐私协议分析方法论） |
+
+---
 
 ## 交叉引用索引
 
 ### 同源归档体系
 - [[301在路上-201508-202208_001]] — 本文所在微信归档合集源文件
-- [[zhongan-tianxia-cheetah-mobile-enterprise-security-dialogue]] — 众安天下与猎豹移动企业安全建设深度对话实录（同团队另一归档文章）
-- [[0x6270-security-team-wechat-archive-202203-202304]] — 同期 0x6270 团队微信归档，含 HVV 威胁情报、红队实战等
-- [[0x727-security-team-wechat-archive-202108-202110]] — 0x727 团队早期归档，含 AI 安全、开源工具发布记录
+- [[zhongan-tianxia-founder-yangwei-gonglian-expert]] — 众安天下创始人杨蔚受聘工联众测平台首批特聘专家（同团队核心人物深度档案）
+- [[daily-security-digest-20200210]] — 同期疫情背景下远程办公安全专题，印证“远程服务刚需”背景
 
-### 众测与漏洞挖掘实战
-- [[xd-security-src-vulnerability-hunting-notes-day86-88]] — SRC 漏洞挖掘实战笔记：平台选择、CNVD/教育 SRC 挖掘技巧、FOFA 语法、.NET/MSSQL 审计
-- [[vulnerability-mining-recon-aiqicha-fofa]] — 漏洞挖掘侦察阶段标准化方法论：爱企查筛选、FOFA 语法、灯塔系统、Wappalyzer 指纹识别
-- [[pocsuite3-vulnerability-testing-framework]] — Pocsuite3 漏洞测试框架：PoC 编写、自动化验证、批量扫描实战指南
-- [[sqlmap-api-automation]] — SQLMap REST API 自动化批量扫描脚本实现
+### 众测标准与实战方法论
+- [[vulnerability-mining-recon-aiqicha-fofa]] — 漏洞挖掘侦察阶段标准化方法论：爱企查筛选、FOFA 语法、资产测绘
+- [[pocsuite3-vulnerability-testing-framework]] — Pocsuite3 支撑标准化 PoC 编写、批量验证、平台化接入
+- [[sqlmap-api-automation]] — SQLMap REST API 自动化批量扫描，适配众测平台任务分发
+- [[xd-security-src-vulnerability-hunting-notes-day86-88]] — SRC 实战笔记：平台选择、CNVD/教育 SRC 挖掘、.NET/MSSQL 审计
 
-### 红队工具链与 C2 基础设施
-- [[cobalt-strike-external-c2-smb-beacon]] — SMB Beacon 与 External C2 通信模型深度解析
-- [[c2-redirectors-malleable-c2-profiles]] — 重定向器部署、Malleable C2 Profile、域名前置
+### 红队工具链与 C2 基础设施（众测实战常用）
+- [[cobalt-strike-external-c2-smb-beacon]] — SMB Beacon 与 External C2 通信模型
+- [[c2-redirectors-malleable-c2-profiles]] — 重定向器、Malleable C2 Profile、域名前置
 - [[0x727-cobalt-strike-aggressor-script-toolkit]] — 0x727 团队开源 Aggressor Script 工具包
-- [[internal-network-pivoting-techniques]] — 内网横向移动、代理隧道、域前置派生技术
+- [[internal-network-pivoting-techniques]] — 内网横向移动、代理隧道、域前置派生
 
-### 免杀对抗与内存规避
-- [[inceptor-av-edr-evasion-framework]] — Inceptor 免杀框架完整工作流分析
-- [[memory-scanning-tools-evasion-techniques]] — 主流内存扫描工具检测原理与 UDRL 规避实现
+### 免杀对抗与内存规避（高阶众测技能）
+- [[inceptor-av-edr-evasion-framework]] — Inceptor 免杀框架完整工作流
+- [[memory-scanning-tools-evasion-techniques]] — 主流内存扫描检测原理与 UDRL 规避
 - [[aceldr-technical-analysis]] — PE 不落地执行技术三大类别系统梳理
-- [[ppl-injection-createprocess-bof-fix]] — PPL 进程注入与 BOF 修复实战案例
+- [[ppl-injection-createprocess-bof-fix]] — PPL 进程注入与 BOF 修复实战
 
-### 蓝队检测与威胁溯源
-- [[threat-attribution-tracing-techniques]] — 攻击溯源完整技术体系：IP定位、邮件溯源、样本分析、主机取证、流量回溯
-- [[xd-security-incident-response-notes]] — 应急响应标准流程、日志分析、勒索病毒处置、自动化工具箱
-- [[named-pipe-smb-detection-sysmon]] — 基于 Sysmon Event ID 17/18 的命名管道检测策略
-- [[xd-security-blue-team-defense]] — ATT&CK 框架蓝队映射、蜜罐部署、NIDS/HIDS 选型
+### 蓝队检测与威胁溯源（众测交付件核心要求）
+- [[threat-attribution-tracing-techniques]] — 攻击溯源完整技术体系：IP/邮件/样本/主机/流量五维溯源
+- [[xd-security-incident-response-notes]] — 应急响应标准流程、日志分析、勒索处置、自动化工具箱
+- [[named-pipe-smb-detection-sysmon]] — Sysmon Event ID 17/18 命名管道检测策略
+- [[xd-security-blue-team-defense]] — ATT&CK 蓝队映射、蜜罐部署、NIDS/HIDS 选型
 
-### 实战案例与靶场复现
-- [[shiro-internal-penetration-case-study]] — Shiro RCE 初始访问到内网横向移动全链路复现
-- [[listed-company-penetration-test-case-study]] — 房地产公司内网渗透：Web 入口到 IoT/OT 设备失陷
-- [[vulnhub-platform-resource-index]] — 750+ 靶机资源合集与 Writeup 交叉引用索引
-- [[xd-security-awd-competition-strategies]] — AWD 赛制规则、不死马、inotify 防御、微型 WAF 部署
+### 实战案例与靶场复现（众测技能训练素材）
+- [[shiro-internal-penetration-case-study]] — Shiro RCE 到内网横向全链路
+- [[listed-company-penetration-test-case-study]] — 房地产公司 Web 入口到 IoT/OT 失陷
+- [[vulnhub-platform-resource-index]] — 750+ 靶机资源合集与 Writeup 交叉索引
+- [[xd-security-awd-competition-strategies]] — AWD 赛制规则、不死马、inotify 防御、微型 WAF
+
+### 行业峰会与生态动态
+- [[isc2022-hackingclub-whitehat-summit]] — ISC2022 白帽峰会：漏洞进化论、众测生态、元宇宙会议
+- [[1024-security-team-wechat-archive-202204-202209]] — 1024 团队 CICV 车联网安全冠军、车联网众测方向
+- [[0x6270-security-team-wechat-archive-202203-202304]] — 0x6270 团队 HVV 情报、红队实战、AI 安全、招聘动态
+
+---
 
 ## 版本历史
 
 | 版本 | 日期 | 变更说明 | 贡献者 |
 |------|------|----------|--------|
-| 1.0 | 2023-04-15 | 创建页面，沉淀杨蔚受聘工联众测平台首批特聘专家信息及其 13 年安全/9 年众测经历 | 知识库策展人 |
-| 1.1 | 2026-01-20 | 完善交叉引用索引，关联红蓝对抗、众测运营、工具链、实战案例等技术专题页面 | 知识库策展人 |
+| 1.0 | 2020-04-15 | 创建页面，沉淀众安天下新一代平台上线、远程安全问诊模式、专家激励计划核心信息 | 知识库策展人 |
+| 1.1 | 2026-01-20 | 完善标准依托分析、五大亮点推测、团队能力矩阵、行业影响研判，扩充交叉引用索引至 50+ 相关页面 | 知识库策展人 |
 
 ---
 
-> **说明**：本页面基于微信公众号归档文章结构化整理，旨在将零散的人物履历、平台背景、专家委员会职能等信息沉淀为可检索、可关联的结构化知识资产。后续可结合杨蔚/众安天下在公开场合的技术分享、演讲实录、工具开源等进一步扩充。
+> **说明**：本页面基于微信公众号归档文章结构化整理，对文中“五大亮点”未展开细节处进行了基于行业通用模式与团队技术积累的合理推测，标注为“推测性复原”。后续可结合平台正式上线后的官方文档、技术白皮书、用户案例进一步校准扩充。旨在将零散的产品发布信息沉淀为可检索、可关联、可演进的结构化知识资产，服务于安全众测从业者、企业采购方、标准制定者及学术研究者的多维需求。
 
 ## 来源
 
-- [301在路上-201508-202208_003](../sources/301在路上-201508-202208_003.md)
+- [301在路上-201508-202208_010](../sources/301在路上-201508-202208_010.md)

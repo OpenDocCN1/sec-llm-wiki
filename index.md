@@ -151,6 +151,7 @@
 - [[vulnhub-sunset-decoy-ctf-writeup]] `VulnHub` `CTF` `渗透测试` `提权` `SSH绕过` `chkrootkit` `ZIP破解` `实战复现` — 从信息收集、ZIP 密码破解、SSH 受限 Shell 绕过、chkrootkit 0.49 本地提权到最终获取 Root 权限的全链路复现
 - [[wechat-pc-v8-rce-0day-analysis]] `WeChat` `0day` `RCE` `V8引擎` `Chromium` `CobaltStrike` `内网渗透` `社会工程学` `漏洞复现` `漏洞速报` — 深度解析微信 PC 版 3.2.1.141 及以下版本因内嵌 Chromium V8 引擎漏洞且沙箱默认关闭，导致点击恶意链接即触发 RCE，配合 CobaltStrike 实现内网横向渗透的完整攻击链复现与防护指南。补充 2023 年 4 月早期漏洞速报信息。
 - [[xmind-xss-to-rce-vulnerability]] `XMind` `Electron` `XSS` `RCE` `子进程注入` `钓鱼攻击` `Eclipse RCP` `漏洞复现` — 复现 XMind 思维导图软件最新版本中从 XSS 到命令执行的完整利用链，分析其触发条件、Electron 架构根因与钓鱼攻击可行性
+- [[zhongan-tianxia-cheetah-mobile-enterprise-security-dialogue]] `众安天下` `ALLSEC` `安全众测` `远程安全问诊` `网络安全众测标准` `专家激励计划` `安全服务模式创新` `微信归档` `301在路上` — 记录众安天下（ALLSEC）新一代互联网安全服务平台上线，推出基于网络安全众测标准的远程安全问诊服务模式及专家激励计划，标志着安全众测模式向规范化、标准化方向发展
 - [[zzzcms-v1.7.5-audit]] `zzzcms` `PHP` `CMS漏洞` `SSRF` `SQL注入` `信息泄露` `模板注入` `RCE` `代码审计` `利用链` — 深度审计 zzzcms PHP v1.7.5，挖掘并分析了 UEditor 插件 SSRF、短信插件前台 SQL 注入、WebUploader 配置文件后台路径泄露、模板引擎 parserIfLabel 过滤绕过导致的后台 RCE 完整利用链。
 - [[zzzphp-cve-2021-32605-rce]] `zzzphp` `CVE-2021-32605` `RCE` `模板注入` `eval注入` `前台无条件触发` `CMS漏洞` — zzzphp CMS <2.0.3 版本中模板渲染处理 if 标签时过滤不当，导致用户可控输入经 eval() 执行，前台搜索功能无需认证即可触发远程代码执行（CVE-2021-32605）
 - [[zzzphp-sql-injection-analysis]] `zzzphp` `SQL注入` `CMS漏洞` `代码审计` `PHP` `漏洞分析` — 深度分析zzzphp CMS中普遍存在的SQL注入漏洞，梳理漏洞触发点、利用方式及修复建议，关联zzzcms/zzzphp历史漏洞审计成果。
@@ -410,7 +411,6 @@
 - [[xss-haozi-lab-walkthrough]] `XSS` `CTF` `Web安全` `靶场通关` `过滤绕过` `HTML实体编码` `上下文逃逸` `反射型XSS` `无名安全团队` — 系统梳理XSS HaoZi靶场19关（0x00-0x12）的完整通关过程，涵盖反射型XSS基础、标签属性逃逸、过滤绕过、编码转义、上下文注入、HTML实体编码、长S字符绕过、原型链污染/堆叠注入等核心XSS绕过技术，适合Web安全入门与CTF实战巩固。
 - [[xxe-prevention-java-jaxp]] `Java` `JAXP` `XXE` `XML External Entity` `安全编码` `漏洞防御` `CVE-2018-20318` `DocumentBuilderFactory` `SAX` `DOM` — 系统梳理 Java JAXP API 中防御 XXE 漏洞的四种核心技术：禁止 DOCTYPE 声明、禁用外部实体声明（一般实体与参数实体）、启用安全处理特性、禁用实体引用扩展。结合 CVE-2018-20318 修复案例，对比各方法适用场景与局限性，提供配置代码示例与防御策略组合建议。
 - [[xxe-xml-dtd-fundamentals]] `XXE` `XML` `DTD` `实体引用` `外部实体` `任意文件读取` `漏洞原理` `Web安全` `Blind XXE` `带外数据外带` `UTF-16BE` `协议绕过` `XXEinjiector` `自动化扫描` — 系统梳理 XXE 漏洞利用核心基础与进阶技术：XML 语法树结构、DTD 声明类型、实体引用分类（内部/外部/参数实体）、PCDATA 与 CDATA 差异，及外部实体通过 file/http 等协议实现任意文件读取的攻击原理。深度覆盖外部 DTD 引入自定义攻击、Blind XXE 带外数据外带（日志/文件写入）、UTF-16BE 编码绕过关键字过滤、HTTP 协议禁用时的替代协议绕过、XXE 自动化扫描工具 XXEinjiector 等进阶利用链。
-- [[zhongan-tianxia-cheetah-mobile-enterprise-security-dialogue]] `众安天下` `杨蔚` `工联众测平台` `特聘专家` `众测运营` `安全行业经验` `攻防对抗` `业务安全` `安全创新` `微信归档` — 记录众安天下创始人杨蔚受聘工联众测平台首批特聘专家，沉淀其13年安全行业经验与9年众测运营经历，以及在安全运营、攻防对抗、业务安全、安全创新领域的研究成果
 - [[zig-cc-cross-compilation-guide]] `Zig` `Cross-Compilation` `Go` `CGO` `Build-System` `HackBrowserData` `sqlite3` `Musl` `MinGW` — 详解如何使用 zig cc 替代传统 GCC/Clang 工具链，实现无需安装多套交叉编译器即可完成 Go CGO 项目的多平台构建，以 HackBrowserData 为例演示 Linux/Windows/macOS 及多架构交叉编译全流程。
 
 ## uncategorized

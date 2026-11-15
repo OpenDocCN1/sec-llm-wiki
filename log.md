@@ -410,3 +410,4 @@
 ## [2026-11-15] ingest | 0x727开源安全团队-202108-202110_0 -> 0x727-security-team-wechat-archive-202108-202110.md
 ## [2026-11-15] ingest | 0x727开源安全团队-202108-202110_1 -> 0x727-bugreporter-automated-report-platform.md, 0x727-security-team-wechat-archive-202108-202110.md
 ## [2026-11-15] ingest | 0x727开源安全团队-202108-202110_2 -> schtask-persistence-tool.md, 0x727-security-team-wechat-archive-202108-202110.md, windows-scheduled-task-persistence-techniques.md
+## [2026-11-15] ingest | 0x727开源安全团队-202108-202110_3 -> observerward-0x727-web-fingerprint-tool.md

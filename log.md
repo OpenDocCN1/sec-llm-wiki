@@ -538,3 +538,4 @@
 ## [2026-11-16] ingest | 301在路上-201508-202208_038 -> 301-zai-lushang-wechat-archive-201508-202208.md, web-security-beginner-book-recommendations.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_039 -> security-practitioner-health-wellbeing.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_040 -> social-engineering-attack-techniques.md, 301-zai-lushang-wechat-archive-201508-202208.md
+## [2026-11-16] ingest | 301在路上-201508-202208_041 -> 301-zai-lushang-wechat-archive-201508-202208.md, social-engineering-attack-techniques.md

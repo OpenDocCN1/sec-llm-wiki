@@ -464,3 +464,4 @@
 ## [2026-11-15] ingest | 226安全团队-201805-202103_12 -> osint-social-engineering-scam-investigation-case-study.md
 ## [2026-11-15] ingest | 226安全团队-201805-202103_13 -> 360bugcloud-vulnerability-response-platform.md
 ## [2026-11-15] ingest | 226安全团队-201805-202103_14 -> fastjson-deserialization-gadgets-shiro-anteros.md
+## [2026-11-15] ingest | 226安全团队-201805-202103_15 -> vocational-skills-competition-2018-shandong-writeup.md, 007攻防实验室.md

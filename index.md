@@ -436,6 +436,7 @@
 - [[usb流量取证与隐写综合实战]] `CTF` `Misc` `USB取证` `流量分析` `隐写术` `PDF隐写` `视频隐写` `Steghide` `wbStego4open` `Base85` `赣网杯2020` — 基于赣网杯2020题目复现，系统梳理 USB 键盘流量按键码提取与 HID 映射还原明文、PDF 隐写工具 wbStego4open 解密、视频文件分离图片后结合 Steghide 爆破与 Base85 解码的完整实战链路。
 - [[vmware-ubuntu-security-lab-setup]] `VMware` `Ubuntu` `实验环境` `安全研究` `虚拟化` `教程` — 详细记录 VMware Workstation Pro 15 与 Ubuntu 18.04 虚拟机的下载、安装、配置全流程，面向网络安全研究、CTF 练习及渗透测试实验环境快速落地。
 - [[vocational-skills-competition-2018-shandong-writeup]] `CTF` `流量分析` `Wireshark` `中职技能大赛` `网络空间安全` `DVWA` `Writeup` `2018` — 2018年山东省中职生技能大赛网络空间安全赛项「数据分析与取证」任务完整 Writeup。基于 attack.pcapng 流量包，使用 Wireshark 还原黑客 SYN 扫描、DVWA 弱口令登录、一句话木马连接、文件下载全攻击链，提取 7 个 Flag。
+- [[vulnerability-rating-disputes-bug-bounty]] `漏洞评级` `白帽子` `Bug Bounty` `漏洞提交` `权益维护` `CNVD` `厂商沟通` `第三方裁决` — 分析漏洞评级争议的核心成因——缺乏统一标准、多方立场差异、主观判断介入，梳理白帽子在评级纠纷中可采取的沟通、第三方裁决、平台申诉等维权路径，并关联 CNVD 提交实战、WAF 绕过实战等相关案例页面。
 - [[waf-bypass-techniques-case-study-ruijie]] `XSS` `WAF绕过` `反射型XSS` `锐捷` `校园网` `WiseGrid` `HTML标签嵌套` `Data URI` `Base64编码` `注释填充绕过` — 记录从锐捷校园网自助服务系统反射型 XSS 入手，逐步绕过内置过滤、WAF-A 关键词拦截、WAF-B (WiseGrid) 深度检测的完整实战绕过链，涵盖 HTML 标签嵌套逃逸、Data URI Base64 编码绕过、超长注释填充触发检测超时/长度限制等通用 WAF 绕过技巧。
 - [[web-fundamentals-lamp-wordpress-setup]] `LAMP` `Apache` `MySQL` `PHP` `WordPress` `Ubuntu` `Web渗透测试` `HTTP分析` `环境搭建` — 系统梳理基于 Ubuntu 的 LAMP（Apache + MySQL + PHP）环境搭建流程，以及 WordPress CMS 的下载、配置、数据库关联与站点初始化全过程，为后续 HTTP 抓包分析与 Web 渗透测试奠定基础环境。
 - [[wechat-personal-reflection-20210805]] `微信归档` `个人成长` `职业规划` `自我修养` `五年计划` `励志随笔` — 收录某微信公众号 2021 年 8 月 5 日发布的个人励志随笔，记录作者以五年为期（至 2026 年 9 月）的职业规划与内外兼修的自我修养思考。

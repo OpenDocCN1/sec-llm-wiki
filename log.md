@@ -398,3 +398,4 @@
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_44 -> ghidra-listing-view-guide.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_45 -> ghidra-reverse-engineering-framework-introduction.md, 0x6270-knowledge-planet-team.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_46 -> log4j2-rce-reproduction.md, 0x6270-security-team-wechat-archive-202203-202304.md
+## [2026-11-15] ingest | 0x6270安全团队-202203-202304_47 -> openid-connect-acr-amr-2fa-bypass.md

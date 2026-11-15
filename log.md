@@ -500,3 +500,4 @@
 ## [2026-11-15] ingest | 301在路上-201508-202208_000 -> 301-zai-lushang-wechat-archive-201508-202208.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_001 -> zhongan-tianxia-cheetah-mobile-enterprise-security-dialogue.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_002 -> vulnerability-rating-disputes-bug-bounty.md
+## [2026-11-16] ingest | 301在路上-201508-202208_003 -> zhongan-tianxia-cheetah-mobile-enterprise-security-dialogue.md

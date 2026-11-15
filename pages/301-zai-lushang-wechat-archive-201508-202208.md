@@ -1,6 +1,6 @@
 ---
 title: 301在路上微信公众号文章归档索引（2015年8月-2022年8月）
-description: 301在路上微信公众号2015年8月至2022年8月期间发布文章的汇总索引页面，涵盖AI安全、网络安全攻防实战、漏洞分析、CTF竞赛、工具分享等技术内容。
+description: 301在路上微信公众号2015年8月至2022年8月期间发布文章的汇总索引页面，涵盖AI安全、网络安全攻防实战、漏洞分析、CTF竞赛、工具分享等技术内容。新增「不甘平庸，一个迷恋三尺讲台的白帽黑客」白帽黑客成长访谈条目。
 category: ai-security
 tags:
 - 301在路上
@@ -19,8 +19,11 @@ tags:
 - 2020年
 - 2021年
 - 2022年
+- 白帽黑客
+- 人物访谈
+- 安全培训
 date: 2022-08-31
-updated: '2026-11-15'
+updated: '2026-11-16'
 ---
 
 ## 概述
@@ -33,14 +36,14 @@ updated: '2026-11-15'
 
 ## 按年份检索
 
-### 年（创刊期）
+### 2015年（创刊期）
 - 08 月：公众号创立，发布首篇文章《安全研究者的成长路径》
 - 09 月：《浅谈 Web 安全入门学习路线》
 - 10 月：《从零开始搭建个人渗透测试实验室》
 - 11 月：《Burp Suite 实战技巧总结》
 - 12 月：《2015 年度安全技术盘点与展望》
 
-### 年（体系化建设期）
+### 2016年（体系化建设期）
 - 01 月：《SQL 注入从入门到精通系列（上）》
 - 02 月：《SQL 注入从入门到精通系列（下）》
 - 03 月：《XSS 跨站脚本攻击深度解析》
@@ -54,7 +57,7 @@ updated: '2026-11-15'
 - 11 月：《内网渗透基础：信息收集与横向移动》
 - 12 月：《2016 年度十大安全事件复盘》
 
-### 年（进阶与专题期）
+### 2017年（进阶与专题期）
 - 01 月：《Java 反序列化漏洞原理与利用链分析》 → 关联 [[java-deserialization-fundamentals]]
 - 02 月：《Fastjson 反序列化漏洞深度复现》
 - 03 月：《Shiro 反序列化漏洞利用与绕过》
@@ -68,7 +71,7 @@ updated: '2026-11-15'
 - 11 月：《PWN 入门：栈溢出原理与 ROP 链构造》 → 关联 [[0w1club-week7-stack-overflow-rop-training]]
 - 12 月：《2017 年度漏洞挖掘实战案例精选》
 
-### 年（AI安全与前沿探索期）
+### 2018年（AI安全与前沿探索期）
 - 01 月：《对抗样本攻击与防御：AI安全新战场》
 - 02 月：《深度学习模型窃取与推理攻击》
 - 03 月：《数据投毒攻击原理与检测对抗》
@@ -82,7 +85,7 @@ updated: '2026-11-15'
 - 11 月：《智能合约安全审计入门》
 - 12 月：《2018 年度 AI 安全前沿综述》
 
-### 年（红蓝对抗与实战复盘期）
+### 2019年（红蓝对抗与实战复盘期）
 - 01 月：《红队视角的初始访问技术总结》
 - 02 月：《Cobalt Strike 战后渗透实战手册》
 - 03 月：《域渗透核心技术：Kerberos 委派攻击》 → 关联 [[kerberos-golden-ticket-attack-mimikatz-implementation]]
@@ -96,43 +99,44 @@ updated: '2026-11-15'
 - 11 月：《供应链攻击案例深度剖析》
 - 12 月：《2019 年度红蓝对抗实战案例精选》 → 关联 [[hvv-2021-vulnerability-collection]]
 
-### 年（疫情期远程办公安全与漏洞复现高产期）
+### 2020年（疫情期远程办公安全与漏洞复现高产期）
 - 01 月：《远程办公安全最佳实践指南》 → 关联 [[remote-work-security-covid19-20200210]]
 - 02 月：《VPN/零信任架构安全配置审计》
 - 03 月：《WebLogic CVE-2020-2555 反序列化 RCE 复现》
 - 04 月：《Tomcat AJP 协议文件读取漏洞 (CVE-2020-1938)》
 - 05 月：《Fastjson 歷史漏洞利用链梳理与检测》
 - 06 月：《Shiro Padding Oracle 攻击实战》
-- 07 月 《Spring Boot Actuator 配置不当 RCE 利用链》 → 关联 [[spring-boot-actuator配置不当rce利用]]
+- 07 月：《Spring Boot Actuator 配置不当 RCE 利用链》 → 关联 [[spring-boot-actuator配置不当rce利用]]
 - 08 月：《Spring Cloud Config 目录穿越漏洞 (CVE-2020-5410)》 → 关联 [[spring-cloud-config目录穿越漏洞]]
 - 09 月：《Docker Registry 未授权访问与代码泄露》
 - 10 月：《Kubernetes API Server 未授权访问利用》
-- 11 月 《微信 PC 版 V8 引擎 0day RCE 分析》 → 关联 [[wechat-pc-v8-rce-0day-analysis]]
+- 11 月：《微信 PC 版 V8 引擎 0day RCE 分析》 → 关联 [[wechat-pc-v8-rce-0day-analysis]]
 - 12 月：《2020 年度高危漏洞复现 TOP 10 与防御对策》
 
-### 年（AI安全深化与车联网/物联网拓展期）
-- 01 月 《对抗机器学习：模型蒸馏与成员推理攻击》
-- 02 月 《联邦学习隐私推理攻击与防御机制》
-- 03 月 《自动驾驶感知算法鲁棒性测试方法论》
-- 04 月 《车联网 V2X 通信协议安全分析》 → 关联 [[1024-security-team-wechat-archive-202204-202209]]
-- 05 月 《Elastic Stack 多组件安全漏洞复现合集》 → 关联 [[elastic-stack-vulnerabilities-may2021]]
-- 06 月 《Mercedes-Benz MBUX 信息娱乐系统 RCE 漏洞分析》 → 关联 [[mercedes-benz-mbux-vulnerabilities-2021]]
-- 07 月 《AR Drone 2.0 无人机渗透测试实战》 → 关联 [[ar-drone-2.0-penetration-testing]]
-- 08 月 《IoT 设备固件逆向分析与漏洞挖掘流程》
-- 09 月 《蓝牙 KNOB 攻击原理与低熵密钥协商利用》 → 关联 [[knob-bluetooth-bredr-key-negotiation-vulnerability]]
-- 10 月 《APT-C-08 蔓灵花组织移动端攻击活动溯源》 → 关联 [[apt-c-08-mobile-attack-analysis]]
-- 11 月 《Log4j2 JNDI 注入漏洞 (CVE-2021-44228) 全链路复现》
-- 12 月 《2021 年度 AI 安全与物联网安全前沿回顾》
+### 2021年（AI安全深化与车联网/物联网拓展期）
+- 01 月：《对抗机器学习：模型蒸馏与成员推理攻击》
+- 02 月：《联邦学习隐私推理攻击与防御机制》
+- 03 月：《自动驾驶感知算法鲁棒性测试方法论》
+- 04 月：《车联网 V2X 通信协议安全分析》 → 关联 [[1024-security-team-wechat-archive-202204-202209]]
+- 05 月：《Elastic Stack 多组件安全漏洞复现合集》 → 关联 [[elastic-stack-vulnerabilities-may2021]]
+- 06 月：《Mercedes-Benz MBUX 信息娱乐系统 RCE 漏洞分析》 → 关联 [[mercedes-benz-mbux-vulnerabilities-2021]]
+- 07 月：《AR Drone 2.0 无人机渗透测试实战》 → 关联 [[ar-drone-2.0-penetration-testing]]
+- 08 月：《IoT 设备固件逆向分析与漏洞挖掘流程》
+- 09 月：《蓝牙 KNOB 攻击原理与低熵密钥协商利用》 → 关联 [[knob-bluetooth-bredr-key-negotiation-vulnerability]]
+- 10 月：《APT-C-08 蔓灵花组织移动端攻击活动溯源》 → 关联 [[apt-c-08-mobile-attack-analysis]]
+- 11 月：《Log4j2 JNDI 注入漏洞 (CVE-2021-44228) 全链路复现》
+- 12 月：《2021 年度 AI 安全与物联网安全前沿回顾》
 
-### 年（收官期：综合实战与生态建设）
-- 01 月 《Zabbix SAML SSO 认证绕过漏洞 (CVE-2022-23131) 复现》 → 关联 [[cve-2022-23131-zabbix-saml-auth-bypass]]
-- 02 月 《H2 Database JNDI 注入 RCE 利用链实战》 → 关联 [[h2-console-jndi注入rce利用]]
-- 03 月 《Spring Boot DevTools 弱默认密钥反序列化 RCE》 → 关联 [[spring-boot-devtools-deserialization-rce]]
-- 04 月 《XMind Electron 应用 XSS 到 RCE 利用链复现》 → 关联 [[xmind-xss-to-rce-vulnerability]]
-- 05 月 《JD-FreeFuck 京东薅羊毛面板默认口令 RCE 分析》 → 关联 [[jd-freefuck-panel-rce-analysis]]
-- 06 月 《ISC 2022 HackingClub 白帽峰会议题前瞻》 → 关联 [[isc2022-hackingclub-whitehat-summit]]
-- 07 月 《七年耕耘：301在路上技术演进与社区共建总结》
-- 08 月 《停更公告与知识库开源计划发布》
+### 2022年（收官期：综合实战与生态建设）
+- 01 月：《Zabbix SAML SSO 认证绕过漏洞 (CVE-2022-23131) 复现》 → 关联 [[cve-2022-23131-zabbix-saml-auth-bypass]]
+- 02 月：《H2 Database JNDI 注入 RCE 利用链实战》 → 关联 [[h2-console-jndi注入rce利用]]
+- 03 月：《Spring Boot DevTools 弱默认密钥反序列化 RCE》 → 关联 [[spring-boot-devtools-deserialization-rce]]
+- 04 月：《XMind Electron 应用 XSS 到 RCE 利用链复现》 → 关联 [[xmind-xss-to-rce-vulnerability]]
+- 05 月：《JD-FreeFuck 京东薅羊毛面板默认口令 RCE 分析》 → 关联 [[jd-freefuck-panel-rce-analysis]]
+- 06 月：《ISC 2022 HackingClub 白帽峰会议题前瞻》 → 关联 [[isc2022-hackingclub-whitehat-summit]]
+- 07 月：《七年耕耘：301在路上技术演进与社区共建总结》
+- **08 月：《不甘平庸，一个迷恋三尺讲台的白帽黑客》** — 记录白帽黑客小羊同学从高中辍学、自学成才，到获公安部十九大网络安全先进个人表彰、转型安全培训讲师的职业历程。文章详细讲述了其在安全集成公司售前岗位起步、跳槽至渗透测试团队、参与重大案件溯源、发现重大安全成果上报公安部、最终选择投身安全教育培训的完整成长轨迹，展现了一位非科班出身白帽子的破釜沉舟与坚守初心。
+- 08 月：《停更公告与知识库开源计划发布》
 
 ---
 
@@ -154,6 +158,11 @@ updated: '2026-11-15'
 | 对抗机器学习：模型蒸馏与成员推理攻击 | 2021-01 | 知识蒸馏攻击、隐私量化评估 |
 | 联邦学习隐私推理攻击与防御机制 | 2021-02 | 梯度反演、标签推理、同态加密 |
 | 自动驾驶感知算法鲁棒性测试方法论 | 2021-03 | 语义分割攻击、目标检测绕过、形式化验证 |
+
+### 白帽黑客成长与人物访谈专题
+| 文章标题 | 发布时间 | 核心看点 |
+|----------|----------|----------|
+| **不甘平庸，一个迷恋三尺讲台的白帽黑客** | **2022-08** | **非科班出身、自学成才、获公安部表彰、转型安全讲师、坚守教师梦想** |
 
 ### 漏洞复现与分析专题
 - Java 生态漏洞系列 → 关联 [[java-deserialization-fundamentals]]、[[spring-boot-actuator配置不当rce利用]]、[[spring-boot-devtools-deserialization-rce]]、[[spring-boot-spel表达式注入]]、[[spring-cloud-config目录穿越漏洞]]
@@ -183,7 +192,7 @@ updated: '2026-11-15'
 
 ## 高频标签云
 
-`Web安全` `二进制安全` `AI安全` `漏洞复现` `红蓝对抗` `CTF` `工具开发` `代码审计` `内网渗透` `域渗透` `应急响应` `威胁情报` `物联网安全` `车联网安全` `移动安全` `云原生安全` `容器安全` `区块链安全` `密码学` `逆向工程`
+`Web安全` `二进制安全` `AI安全` `漏洞复现` `红蓝对抗` `CTF` `工具开发` `代码审计` `内网渗透` `域渗透` `应急响应` `威胁情报` `物联网安全` `车联网安全` `移动安全` `云原生安全` `容器安全` `区块链安全` `密码学` `逆向工程` `白帽黑客` `人物访谈` `安全培训`
 
 ---
 
@@ -220,4 +229,4 @@ updated: '2026-11-15'
 
 ## 来源
 
-- [301在路上-201508-202208_000](../sources/301在路上-201508-202208_000.md)
+- [301在路上-201508-202208_004](../sources/301在路上-201508-202208_004.md)

@@ -375,3 +375,5 @@
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_21 -> kubernetes-penetration-testing.md, xd-security-privilege-escalation-notes-day58-64.md, docker-container-security-fundamentals.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_22 -> huoxian-security-wechat-archive-2023.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_23 -> 0x6270-security-team-wechat-archive-202203-202304.md
+## [2026-11-15] ingest | 0x6270安全团队-202203-202304_24 -> 0x6270-security-team-wechat-archive-202203-202304.md
+## [2026-11-15] ingest | 0x6270安全团队-202203-202304_25 -> (无沉淀)

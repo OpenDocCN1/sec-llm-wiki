@@ -468,3 +468,4 @@
 ## [2026-11-15] ingest | 226安全团队-201805-202103_16 -> php-basics-syntax-fundamentals.md
 ## [2026-11-15] ingest | 226安全团队-201805-202103_17 -> upload-labs-file-upload-bypass-writeup.md
 ## [2026-11-15] ingest | 226安全团队-201805-202103_18 -> discuz-x32-stored-dom-xss-bbcode-analysis.md
+## [2026-11-15] ingest | 226安全团队-201805-202103_19 -> thinkphp-field-method-sql-injection-bypass-360-safe3.md

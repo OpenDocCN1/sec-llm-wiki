@@ -419,3 +419,4 @@
 ## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_02 -> meituan-ctf-2021-crypto-writeup.md
 ## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_03 -> meituan-ctf-2021-crypto-writeup.md
 ## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_04 -> log4j2-rce-reproduction.md
+## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_05 -> cve-2021-43798-grafana-path-traversal.md

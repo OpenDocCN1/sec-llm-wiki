@@ -482,3 +482,4 @@
 ## [2026-11-15] ingest | 226安全团队-201805-202103_30 -> excel-4-macro-xlm-evasion.md
 ## [2026-11-15] ingest | 226安全团队-201805-202103_31 -> windows-arbitrary-file-read-vulnerability-reproduction.md
 ## [2026-11-15] ingest | 226安全团队-201805-202103_32 -> arbitrary-file-download-vulnerability-analysis.md
+## [2026-11-15] ingest | 226安全团队-201805-202103_33 -> arbitrary-file-download-vulnerability-analysis.md

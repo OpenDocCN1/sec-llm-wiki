@@ -404,3 +404,4 @@
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_50 -> 0x6270-security-team-wechat-archive-202203-202304.md, 0x6270-penetration-test-case-study-2023.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_51 -> web-cache-poisoning-techniques.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_52 -> cnvd-vulnerability-submission-certificate-case-study.md, auth-bypass-via-response-manipulation.md, vulnerability-mining-recon-aiqicha-fofa.md
+## [2026-11-15] ingest | 0x6270安全团队-202203-202304_53 -> card-game-platform-penetration-test-case-study.md

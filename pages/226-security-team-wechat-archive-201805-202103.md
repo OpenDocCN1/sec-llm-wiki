@@ -1,6 +1,7 @@
 ---
 title: 226安全团队微信公众号文章归档索引（201805-202103）
-description: 226安全团队微信公众号2018年5月至2021年3月期间发布文章的汇总索引页面，新增「回首我们做过的」总结文章条目，汇总团队十大开源项目与历年技术文章链接，涵盖安全研究、漏洞分析、CTF实战、工具分享等技术内容。
+description: 226安全团队微信公众号2018年5月至2021年3月期间发布文章的汇总索引页面，新增「回首我们做过的」总结文章条目，汇总团队十大开源项目与历年技术文章链接，涵盖安全研究、漏洞分析、CTF实战、工具分享等技术内容。新增
+  Webug 4.0 发布文章条目，记录漏洞覆盖范围（SQLi/XSS/上传/逻辑/SSRF等）、集成乌云知识库/MD5解密模块及团队招聘信息。
 category: program-analysis
 tags:
 - 226安全团队
@@ -15,6 +16,8 @@ tags:
 - 2019年
 - 2020年
 - 2021年
+- Webug
+- 靶场
 date: '2018-05-01'
 updated: '2026-11-15'
 ---
@@ -123,6 +126,11 @@ updated: '2026-11-15'
 | [Windows任意文件读取漏洞](http://mp.weixin.qq.com/s?__biz=MzI4MDE5ODExNQ==&mid=2652901485&idx=1&sn=ccf88a58759e6550789468f87c4b7dd7) | Windows漏洞、文件读取 | |
 | [Excel 4.0宏躲避杀软检测](http://mp.weixin.qq.com/s?__biz=MzI4MDE5ODExNQ==&mid=2652901499&idx=1&sn=3b91fc7033f66f7977a009be659beb93) | 免杀技术、宏病毒、红队工具 | [[inceptor-av-edr-evasion-framework]]、[[php-webshell-obfuscation-av-evasion]] |
 
+#### 【新增】Webug 4.0 发布与靶场体系建设 (2019-02)
+| 标题 | 关键技术点 | 关联知识库页面 |
+|------|-----------|---------------|
+| [[新年礼物]Webug4.0 基础是梦的基石](http://mp.weixin.qq.com/s?__biz=MzI4MDE5ODExNQ==&mid=2652901539&idx=1&sn=0192fb8e09d81d62a9c7704ac63d316f) | **靶场平台**、SQL注入(报错/布尔/延时/CSV/POST/XML/过滤)、XSS(反射/存储/DOM/链接/过滤绕过)、文件上传(前端拦截/解析漏洞/畸形文件/.htaccess/截断)、逻辑漏洞(越权/支付/邮箱轰炸)、SSRF/CSRF/命令执行/文件包含/URL跳转、乌云知识库集成、MD5解密模块、CMS/CTF/招聘模块规划 | [[ctf-training-platforms-collection]]、[[xd-security-pentest-basic-stage-notes]]、[[upload-labs-file-upload-bypass-writeup]]、[[xd-security-logic-vulnerability-notes-day33-36]]、[[ssrf-bypass-techniques]]、[[php-file-inclusion-vulnerability]] |
+
 #### 学员作品与教学系列
 | 标题 | 关键技术点 | 关联知识库页面 |
 |------|-----------|---------------|
@@ -158,6 +166,72 @@ updated: '2026-11-15'
 
 ---
 
+## Webug 4.0 核心漏洞覆盖矩阵
+
+基于发布文章整理的漏洞类型与绕过技术覆盖情况：
+
+### SQL注入 (7大类型)
+| 类型 | Flag标识 | 对应实战技术页 |
+|------|---------|---------------|
+| 报错注入 | ✅ | [[mysql-duplicate-entry-error-based-sqli]] |
+| 布尔盲注 | ✅ | [[xd-security-pentest-basic-stage-notes]] |
+| 延时盲注 | ✅ | [[xd-security-pentest-basic-stage-notes]] |
+| CSV注入 | ✅ | 数据导出场景注入 |
+| POST注入 | ✅ | [[xd-security-pentest-basic-stage-notes]] |
+| XML注入 | ✅ | XXE/XML注入变种 |
+| 注入过滤绕过 | ✅ | [[xd-security-waf-bypass-techniques-day46-49]] |
+
+### XSS跨站脚本 (5大类型)
+| 类型 | Flag标识 | 对应实战技术页 |
+|------|---------|---------------|
+| 反射型XSS | ✅ | [[xd-security-xss-vulnerability-notes-day25-28]]、[[pikachu-target-writeup-part2-xss]] |
+| 存储型XSS | ✅ | [[xd-security-xss-vulnerability-notes-day25-28]]、[[pikachu-target-writeup-part2-xss]] |
+| DOM型XSS | ✅ | [[xd-security-xss-vulnerability-notes-day25-28]]、[[discuz-x32-stored-dom-xss-bbcode-analysis]] |
+| 链接注入XSS | ✅ | href/src属性注入场景 |
+| 过滤绕过存储型XSS | ✅ | [[xd-security-xss-vulnerability-notes-day25-28]] |
+
+### 文件上传漏洞 (5大绕过技术)
+| 绕过方式 | Flag标识 | 对应实战技术页 |
+|---------|---------|---------------|
+| 前端JS拦截绕过 | ✅ | [[upload-labs-file-upload-bypass-writeup]]、[[pikachu-target-writeup-part4]] |
+| 解析漏洞利用 | ✅ | [[upload-labs-file-upload-bypass-writeup]]、[[pikachu-target-writeup-part4]] |
+| 畸形文件上传 | ✅ | 文件头/结构畸形绕过检测 |
+| .htaccess配置攻击 | ✅ | [[upload-labs-file-upload-bypass-writeup]]、[[pikachu-target-writeup-part4]] |
+| %00截断上传 | ✅ | [[upload-labs-file-upload-bypass-writeup]]、[[php-file-inclusion-vulnerability]] |
+
+### 逻辑漏洞 (4大场景)
+| 场景 | Flag标识 | 对应实战技术页 |
+|------|---------|---------------|
+| 越权修改密码 | ✅ | [[xd-security-logic-vulnerability-notes-day33-36]] |
+| 支付金额篡改 | ✅ | [[xd-security-logic-vulnerability-notes-day33-36]] |
+| 邮箱轰炸接口 | ⚠️ 需配置 | 业务接口滥用 |
+| 越权查看管理员信息 | ✅ | [[xd-security-logic-vulnerability-notes-day33-36]]、[[jwt漏洞原理与实战利用]] |
+
+### 其他高危漏洞类型
+| 漏洞类型 | 覆盖情况 | 对应实战技术页 |
+|---------|---------|---------------|
+| SSRF服务端请求伪造 | ✅ | [[ssrf-bypass-techniques]]、[[ssrf-ctf-exploitation-guide]] |
+| CSRF跨站请求伪造 | ✅ | [[xd-security-csrf-ssrf-rce-notes-day29-30]] |
+| 命令执行/RCE | ✅ | [[xd-security-csrf-ssrf-rce-notes-day29-30]]、[[attack-defense-world-beginner-web-writeup]] |
+| 文件包含(LFI/RFI) | ✅ | [[php-file-inclusion-vulnerability]]、[[xd-security-file-inclusion-notes]] |
+| URL跳转/重定向 | ✅ | 非授权跳转利用 |
+| 任意文件下载 | ✅ | [[oasys-system-code-audit]] |
+
+---
+
+## Webug 4.0 扩展模块规划
+
+| 模块名称 | 状态 | 说明 | 关联生态 |
+|---------|------|------|---------|
+| **乌云知识库** | ✅ 已集成 | 历史漏洞案例库离线镜像 | 乌云存档项目 |
+| **MD5解密平台** | ✅ 已集成 | 协作式彩虹表查询，计划上线独立版 | [[crypto-basics-xor-stream-cipher-tutorial]]、226md5开源项目 |
+| **CMS靶场模块** | 🚧 规划中 | 对比Webug 3.0优势，整理主流CMS漏洞环境 | [[oasys-system-code-audit]]、各类CMS漏洞复现页 |
+| **CTF竞技模块** | 🚧 规划中 | 社区贡献CTF题目环境与思路 | [[ctf-training-platforms-collection]]、[[attack-defense-world-beginner-web-writeup]] |
+| **招聘系统嵌入** | ✅ 已上线 | 嵌入 job.226safe.com 招聘门户 | 226job开源项目、团队招聘长期有效 |
+| **靶场难度分级** | ✅ 新增 | 简易/中级/高级三级选择机制 | 适配不同阶段学习者 |
+
+---
+
 ## 相关归档页面
 
 - [[0w1club-wechat-archive-201707-201903]] — 0w1Club微信归档索引（201707-201903）
@@ -189,4 +263,4 @@ updated: '2026-11-15'
 
 ## 来源
 
-- [226安全团队-201805-202103_02](../sources/226安全团队-201805-202103_02.md)
+- [226安全团队-201805-202103_26](../sources/226安全团队-201805-202103_26.md)

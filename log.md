@@ -408,3 +408,4 @@
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_54 -> cnvd-2021-49104-eoffice-v9-file-upload-rce.md, php-webshell-fundamentals-chopper-analysis.md, vulnerability-mining-recon-aiqicha-fofa.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_55 -> loan-company-penetration-test-case-study.md, vulnerability-mining-recon-aiqicha-fofa.md
 ## [2026-11-15] ingest | 0x727开源安全团队-202108-202110_0 -> 0x727-security-team-wechat-archive-202108-202110.md
+## [2026-11-15] ingest | 0x727开源安全团队-202108-202110_1 -> 0x727-bugreporter-automated-report-platform.md, 0x727-security-team-wechat-archive-202108-202110.md

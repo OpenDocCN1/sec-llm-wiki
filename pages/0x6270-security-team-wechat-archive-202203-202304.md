@@ -7,8 +7,9 @@ description: 0x6270安全团队微信公众号在2022年3月至2023年4月期间
   2023 年安全开发岗招聘文章（社招/校招/实习，base 成都，要求 Go/Java/Python、Web 安全、渗透测试、二进制研究、安全产品开发经验）。新增
   Shiro RCE 内网渗透测试实战案例文章条目，完善团队 2022-2023 期间实战攻防技术分享脉络，涵盖 Shiro RCE 初始访问、火绒 AV 免杀上线
   Cobalt Strike、NTLM 凭证导出、FTP 大规模横向移动、威胁溯源发现前置攻击者痕迹（frp、后门、qaxnb 文件夹）完整攻击链。新增学员就业见证文章，记录零基础学员通过小迪安全培训四个月入职安全厂商的就业案例。新增
-  Log4j2 RCE (CVE-2021-44228) 漏洞复现实战文章条目，记录环境搭建、DNSLog 验证、JNDI 注入反弹 Shell、权限维持添加用户完整复现流程。
-category: ai-security
+  Log4j2 RCE (CVE-2021-44228) 漏洞复现实战文章条目，记录环境搭建、DNSLog 验证、JNDI 注入反弹 Shell、权限维持添加用户完整复现流程。新增安服仔某渗透项目实战文章条目，记录
+  SQL 注入获取 DBA 权限、Cobalt Strike 上线、内网横向移动、弱口令爆破、IPC/WMI 组合利用、FTP 服务器失陷等完整渗透测试实战链路。
+category: program-analysis
 tags:
 - '0x6270'
 - 安全团队
@@ -93,13 +94,20 @@ tags:
 - 反弹Shell
 - 权限维持
 - 漏洞复现
+- SQL注入
+- DBA权限
+- IPC
+- WMI
+- 弱口令爆破
+- 安服
+- 渗透项目实战
 date: 2023-04-30
 updated: '2026-11-15'
 ---
 
 ## 概述
 
-本页面汇总 **0x6270安全团队** 微信公众号在 **2022年3月 至 2023年4月** 期间发布的全部文章，旨在为安全研究人员提供结构化的检索入口。团队聚焦 **AI安全（AI Security）** 领域，重点覆盖大语言模型（LLM）安全、对抗机器学习、模型部署风险、红队测试方法论以及 CTF 实战复盘等方向，同时持续输出经典漏洞分析研究成果，并关注软件供应链安全事件（如 Notepad++ 摄政字符事件）与团队建设招聘动态。新增记录团队在 HVV 护网行动期间（2022年七夕）发布的漏洞威胁情报汇总预告，展示团队行动期威胁情报分享机制及知识星球运营引流策略。新增记录 2023 年安全开发岗招聘信息（社招/校招/实习，base 成都），展示团队在安全工程化方向的人才需求画像。**新增记录 Shiro RCE 内网渗透测试实战案例，完善团队实战攻防技术分享脉络，涵盖从初始访问、免杀上线、凭证窃取、大规模横向移动到威胁溯源的完整红队攻击链。新增记录学员就业见证文章，展示零基础学员通过小迪安全培训四个月入职安全厂商的真实就业案例。新增记录 Log4j2 RCE (CVE-2021-44228) 漏洞复现实战文章，涵盖环境搭建、DNSLog 验证、JNDI 注入反弹 Shell、权限维持添加用户的完整复现流程。**
+本页面汇总 **0x6270安全团队** 微信公众号在 **2022年3月 至 2023年4月** 期间发布的全部文章，旨在为安全研究人员提供结构化的检索入口。团队聚焦 **AI安全（AI Security）** 领域，重点覆盖大语言模型（LLM）安全、对抗机器学习、模型部署风险、红队测试方法论以及 CTF 实战复盘等方向，同时持续输出经典漏洞分析研究成果，并关注软件供应链安全事件（如 Notepad++ 摄政字符事件）与团队建设招聘动态。新增记录团队在 HVV 护网行动期间（2022年七夕）发布的漏洞威胁情报汇总预告，展示团队行动期威胁情报分享机制及知识星球运营引流策略。新增记录 2023 年安全开发岗招聘信息（社招/校招/实习，base 成都），展示团队在安全工程化方向的人才需求画像。**新增记录 Shiro RCE 内网渗透测试实战案例，完善团队实战攻防技术分享脉络，涵盖从初始访问、免杀上线、凭证窃取、大规模横向移动到威胁溯源的完整红队攻击链。新增记录学员就业见证文章，展示零基础学员通过小迪安全培训四个月入职安全厂商的真实就业案例。新增记录 Log4j2 RCE (CVE-2021-44228) 漏洞复现实战文章，涵盖环境搭建、DNSLog 验证、JNDI 注入反弹 Shell、权限维持添加用户的完整复现流程。新增记录安服仔某渗透项目实战文章，记录 SQL 注入获取 DBA 权限、Cobalt Strike 上线、内网横向移动、弱口令爆破、IPC/WMI 组合利用、FTP 服务器失陷等完整渗透测试实战链路。**
 
 > 同类团队归档可参考：[[0th3rs-security-team-wechat-archive-201911-202204]]、[[0x4d5a-wechat-archive-202103-202209]]、[[0x536d72-wechat-archive-202112-202205]]、[[0w1club-wechat-archive-201707-201903]]、[[0w1club-wechat-archive-201908-202207]]。
 
@@ -118,6 +126,7 @@ updated: '2026-11-15'
 | 2023-04-13 | **某企业的Shiro内网渗透测试实战案例** | `Shiro RCE` `Cobalt Strike` `免杀` `NTLM` `横向移动` `FTP` `frp` `威胁溯源` `内网渗透` `红队实战` `火绒` | 完整复现某企业 Shiro RCE 初始访问、火绒AV免杀上线 Cobalt Strike、NTLM 凭证导出、FTP 大规模横向移动及发现前置攻击者痕迹（frp、后门、qaxnb 文件夹）的内网渗透实战全链路，涵盖 C2 基础设施对接、凭证复用、代理隧道、威胁溯源等核心红队技术环节。详见 [[shiro-internal-penetration-case-study]]。 |
 | 2023-04-13 | **安全之路——零基础学员四个月入职安全厂商就业见证** | `学员见证` `零基础入门` `安全培训` `就业案例` `小迪安全` `小黑` `CNVD` `EDU` `SRC` | 记录学员小黑（2002年生，非科班大专学历）于2021年2月加入小迪安全培训，零基础四个月学习后成功入职安全厂商的真实就业案例。文中展示其学习期间获得的多个CNVD漏洞证书、EDU邮箱认证证书及SRC漏洞赏金收益截图，分享其安全引路人建议、学习心得及迪总“技术菜不可怕，怕的是又菜又懒”的勉励。文末提供培训咨询微信（heiren534901）及公众号关注方式。 |
 | 2023-04-13 | **Log4j2 RCE 复现实战 (CVE-2021-44228)** | `Log4j2` `Log4Shell` `CVE-2021-44228` `RCE` `JNDI注入` `DNSLog` `反弹Shell` `权限维持` `漏洞复现` `渗透测试` | 详细记录 Log4j2 CVE-2021-44228 (Log4Shell) 远程代码执行漏洞的环境搭建、JNDI 注入利用链构造、DNSLog 验证、反弹 Shell 实战及权限维持（添加用户）完整复现流程。首发于火线Zone，作者小黑。详见 [[log4j2-rce-reproduction]]。 |
+| 2023-04-13 | **安服仔某渗透项目实战** | `SQL注入` `DBA权限` `Cobalt Strike` `内网横向移动` `弱口令爆破` `IPC` `WMI` `FTP服务器` `渗透测试` `实战案例` `安服` | 记录一次授权渗透测试项目全流程：通过 AWVS 发现 SQL 注入获取 DBA 权限，利用 xp_cmdshell 执行 PowerShell 上线 Cobalt Strike，通过弱口令爆破、IPC$ 共享配合 WMI 实现大规模横向移动拿下 40 余台主机，并发现 FTP 服务器弱口令失陷百余权限。涵盖从 Web 入口到内网纵深的完整渗透测试实战链路。 |
 | 2023-04-02 | 数据投毒攻击与防御综述：从标签翻转到后门植入 | `数据投毒` `后门攻击` `联邦学习` `鲁棒训练` | 对比清洗标签翻转、触发器植入、隐式后门三类投毒手法，评测 Spectral Signature、STRIP、Fine-tuning 等防御在不同威胁模型下的有效性。 |
 
 #### 2023年3月
@@ -247,6 +256,7 @@ updated: '2026-11-15'
 - [[0x6270-security-team-wechat-archive-202203-202304#2023年3月|春季赛模型反演与成员推理Writeup]]
 - [[0x6270-security-team-wechat-archive-202203-202304#2023年4月|Shiro RCE 内网渗透测试实战案例]] → [[shiro-internal-penetration-case-study]]
 - [[0x6270-security-team-wechat-archive-202203-202304#2023年4月|Log4j2 RCE 复现实战 (CVE-2021-44228)]] → [[log4j2-rce-reproduction]]
+- [[0x6270-security-team-wechat-archive-202203-202304#2023年4月|安服仔某渗透项目实战]] → 记录 SQL 注入获取 DBA 权限、Cobalt Strike 上线、内网横向移动、弱口令爆破、IPC/WMI 组合利用、FTP 服务器失陷完整渗透链路
 
 ### 经典漏洞分析研究
 - [[0x6270-security-team-wechat-archive-202203-202304#2023年3月|CVE-2023-21716 Word RTF 堆溢出漏洞分析]] → [[cve-2023-21716-word-rtf-heap-overflow-analysis]]
@@ -267,6 +277,64 @@ updated: '2026-11-15'
 - [[0x6270-security-team-wechat-archive-202203-202304#2022年5月|AI安全法规与标准解读]]
 - [[0x6270-security-team-wechat-archive-202203-202304#2023年2月|AI安全落地指南：全生命周期风险评估]]
 - [[0x6270-security-team-wechat-archive-202203-202304#2022年3月|机器学习安全入门环境搭建]]
+
+---
+
+## 安服仔某渗透项目实战深度解析
+
+**发布时间**：2023-04-13（基于微信文章 sessionid 时间戳 1681403335 推算）  
+**核心技术栈**：SQL注入、DBA权限、Cobalt Strike、xp_cmdshell、内网横向移动、弱口令爆破、IPC$共享、WMI、FTP服务器
+
+### 攻击链完整复现
+
+#### 初始访问：SQL注入获取 DBA 权限 → Cobalt Strike 上线
+- **漏洞发现**：通过 AWVS 扫描发现登录页面存在 SQL 注入漏洞（POST /xxx/xxxx/login.aspx）
+- **漏洞验证**：使用 Sqlmap 确认为 Microsoft SQL Server + Windows + ASP.NET 站点，且注入点为 DBA 权限
+- **命令执行**：利用 `xp_cmdshell` 执行 PowerShell 命令，成功上线 Cobalt Strike Beacon
+- **环境特征**：目标仅打了 5 个补丁，杀毒软件检测关闭，便于后续操作
+
+#### 权限提升与持久化
+- **提权**：直接进行提权操作（具体提权方式文中未详述，但已获取高权限）
+- **凭证获取**：目标为 Win2016 无法抓取明文密码，添加影子用户 `admin$/admin@123..`
+- **隐蔽连接**：通过目标网络直接远程连接（而非端口转发），保持隐蔽性
+- **内网扫描**：上传 fscan 至隐藏文件夹进行内网资产扫描
+
+#### 大规模横向移动：弱口令爆破 + IPC/WMI 组合利用
+- **RDP 弱口令爆破**：通过内网扫描工具爆破 RDP，弱口令均为 `administrator/123456`，拿下近 12 台主机
+- **IPC$ + WMI 组合横向**：
+  - **前提条件**：拥有账号密码、目标开启共享及 135 端口
+  - **绕过思路**：IPC 单独创建计划任务被 360 天擎拦截；WMI 单独用需上传后门到 Web 服务器易被发现
+  - **组合利用**：IPC 建立连接传马到 C 盘 → WMI 远程执行 C 盘木马，规避杀软拦截
+  - **命令示例**：
+    ```
+    net use \\ip\\ipc$ 密码 /user:用户名
+    copy 某盘符木马 \\ip\\c$
+    wmiexec ./administrator:admin!@#45@ip "cmd.exe /c c:/beacon.exe"
+    ```
+- **横向成果**：通过该组合技术大量主机上线 Cobalt Strike
+
+#### FTP 服务器失陷
+- **弱口令**：`admin/admin`
+- **影响范围**：文件预估 1 万以上，推测为核心 FTP 存储服务器，获取百余个 FTP 权限
+
+#### 实战总结
+- **权限收割**：主机权限 40 余台、FTP 权限上百个
+- **时间限制**：授权测试仅 2 天，未来得及拿下域控及进入工控网
+- **经验建议**：渗透测试实战时每个环境不同，建议记录语雀或保存报告，积累实战经验
+
+### 技术要点交叉引用索引
+
+| 技术环节 | 核心工具/技术 | 关联知识库页面 |
+|----------|---------------|----------------|
+| 漏洞发现 | AWVS、Sqlmap | [[sqlmap-api-automation]]、[[burpsuite-basics-tutorial]] |
+| SQL注入利用 | MSSQL xp_cmdshell、DBA权限 | [[mssql-xp-cmdshell-exploitation]]、[[sql-injection-dba-privilege]] |
+| C2 框架 | Cobalt Strike Beacon、PowerShell 上线 | [[cobalt-strike-4.7-bof-internals]]、[[cobalt-strike-external-c2-smb-beacon]] |
+| 内网扫描 | fscan | [[fscan-internal-network-scanner]] |
+| 弱口令爆破 | RDP、FTP、SMB 爆破 | [[rdp-brute-force]]、[[ftp-brute-force]]、[[smb-brute-force]] |
+| 横向移动 | IPC$ 共享、WMI (wmiexec)、计划任务 | [[ipc-lateral-movement]]、[[wmi-lateral-movement]]、[[scheduled-task-lateral]] |
+| 杀软对抗 | 360 天擎绕过、IPC+WMI 组合技巧 | [[av-evasion-techniques]]、[[edr-bypass-lateral]] |
+| 权限维持 | 影子用户、隐藏文件夹 | [[persistence-shadow-user]]、[[persistence-hidden-files]] |
+| 实战方法论 | 渗透测试报告编写、经验复盘 | [[pentest-report-writing]]、[[red-team-methodology]] |
 
 ---
 
@@ -553,7 +621,7 @@ updated: '2026-11-15'
 | Fuzzing/漏洞挖掘 | AFL++, libFuzzer, NEUZZ, ONNX Fuzzer | 部署漏洞挖掘 |
 | 调试分析 | Windbg, IDA Pro, Ghidra | 经典漏洞分析、CVE-2023-21716 复现 |
 | 代码编辑器 | Notepad++, Sublime Text, UltraEdit, Notepad3, Notepad-- | Notepad++摄政字符事件及替代方案推荐 |
-| **红队工具链** | **Cobalt Strike, Mimikatz, frp, NTLM工具, FTP客户端, JNDI注入工具, DNSLog平台** | **Shiro案例、Log4j2复现、HVV情报、内网渗透系列** |
+| **红队工具链** | **Cobalt Strike, Mimikatz, frp, NTLM工具, FTP客户端, JNDI注入工具, DNSLog平台, AWVS, Sqlmap, fscan, wmiexec** | **Shiro案例、Log4j2复现、HVV情报、内网渗透系列、安服渗透项目实战** |
 
 ---
 
@@ -578,9 +646,11 @@ updated: '2026-11-15'
 - **新增 Shiro 内网渗透案例条目，串联团队 2022-2023 期间 AI 安全理论研究与实战攻防技术输出的双轨并行脉络。**
 - **新增学员就业见证条目，记录零基础学员通过小迪安全培训四个月入职安全厂商的真实案例，展示团队培训体系与人才培养成果。**
 - **新增 Log4j2 RCE (CVE-2021-44228) 漏洞复现实战条目，记录经典漏洞复现全流程，补全团队漏洞研究与实战复现技术分享脉络。**
+- **新增安服仔某渗透项目实战条目，记录从 SQL 注入获取 DBA 权限到内网大规模横向移动、FTP 服务器失陷的完整授权渗透测试实战链路，展示团队实战渗透测试技术输出能力。**
 
 > 同期其他团队归档对照：[[0th3rs-security-team-wechat-archive-201911-202204]]（CTF/AWD侧重）、[[0x4d5a-wechat-archive-202103-202209]]（漏洞分析/红蓝对抗）、[[0w1club-wechat-archive-201707-201903]]（高校社团萌新培养/CTF）。
 
 ## 来源
 
 - [0x6270安全团队-202203-202304_46](../sources/0x6270安全团队-202203-202304_46.md)
+- [0x6270安全团队-202203-202304_50](../sources/0x6270安全团队-202203-202304_50.md)

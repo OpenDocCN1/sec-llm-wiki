@@ -432,3 +432,4 @@
 ## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_15 -> attack-defense-world-pwn-writeup.md
 ## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_16 -> redis-unauthorized-access-rce.md
 ## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_17 -> php-non-alphanumeric-webshell-construction.md, php-webshell-obfuscation-av-evasion.md
+## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_18 -> stack-overflow-fundamentals-tutorial.md

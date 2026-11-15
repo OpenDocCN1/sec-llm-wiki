@@ -480,3 +480,4 @@
 ## [2026-11-15] ingest | 226安全团队-201805-202103_28 -> iis-webdav-put-vulnerability-classic-exploitation.md
 ## [2026-11-15] ingest | 226安全团队-201805-202103_29 -> cve-2016-1897-ffmpeg-arbitrary-file-read.md
 ## [2026-11-15] ingest | 226安全团队-201805-202103_30 -> excel-4-macro-xlm-evasion.md
+## [2026-11-15] ingest | 226安全团队-201805-202103_31 -> windows-arbitrary-file-read-vulnerability-reproduction.md

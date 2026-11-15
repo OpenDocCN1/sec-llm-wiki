@@ -150,6 +150,7 @@
 - [[tctf-2021-worldcup-xss-go-ssti]] `TCTF` `XSS` `SSTI` `Go` `模板注入` `2021` — 复现 2021 TCTF worldcup 三关挑战：Level 1/2 利用反引号逃逸与 Unicode 编码绕过实现 XSS 窃取 Nonce，Level 3 结合 Go 模板注入（SSTI）泄露服务端变量从而精准押注拿 Flag
 - [[vulnhub-sunset-decoy-ctf-writeup]] `VulnHub` `CTF` `渗透测试` `提权` `SSH绕过` `chkrootkit` `ZIP破解` `实战复现` — 从信息收集、ZIP 密码破解、SSH 受限 Shell 绕过、chkrootkit 0.49 本地提权到最终获取 Root 权限的全链路复现
 - [[wechat-pc-v8-rce-0day-analysis]] `WeChat` `0day` `RCE` `V8引擎` `Chromium` `CobaltStrike` `内网渗透` `社会工程学` `漏洞复现` `漏洞速报` — 深度解析微信 PC 版 3.2.1.141 及以下版本因内嵌 Chromium V8 引擎漏洞且沙箱默认关闭，导致点击恶意链接即触发 RCE，配合 CobaltStrike 实现内网横向渗透的完整攻击链复现与防护指南。补充 2023 年 4 月早期漏洞速报信息。
+- [[xctf-nanjing-station-online-2017]] `XCTF联赛` `NJCTF` `CTF竞赛` `赛宁网安` `Nu1L战队` `网络空间安全攻防对抗赛` `实训平台` — 记录2017年3月举办的第三届XCTF联赛南京站NJCTF线上赛完整战况，涵盖参赛规模、战队排名、赛题分类、实训平台支撑及社区直播情况，Nu1L战队以30题解出、8010分夺冠。
 - [[xmind-xss-to-rce-vulnerability]] `XMind` `Electron` `XSS` `RCE` `子进程注入` `钓鱼攻击` `Eclipse RCP` `漏洞复现` — 复现 XMind 思维导图软件最新版本中从 XSS 到命令执行的完整利用链，分析其触发条件、Electron 架构根因与钓鱼攻击可行性
 - [[zhongan-tianxia-cheetah-mobile-enterprise-security-dialogue]] `众安天下` `ALLSEC` `安全众测` `远程安全问诊` `网络安全众测标准` `专家激励计划` `安全服务模式创新` `微信归档` `301在路上` — 记录众安天下（ALLSEC）新一代互联网安全服务平台上线，推出基于网络安全众测标准的远程安全问诊服务模式及专家激励计划，标志着安全众测模式向规范化、标准化方向发展
 - [[zzzcms-v1.7.5-audit]] `zzzcms` `PHP` `CMS漏洞` `SSRF` `SQL注入` `信息泄露` `模板注入` `RCE` `代码审计` `利用链` — 深度审计 zzzcms PHP v1.7.5，挖掘并分析了 UEditor 插件 SSRF、短信插件前台 SQL 注入、WebUploader 配置文件后台路径泄露、模板引擎 parserIfLabel 过滤绕过导致的后台 RCE 完整利用链。

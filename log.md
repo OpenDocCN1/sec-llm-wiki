@@ -437,3 +437,4 @@
 ## [2026-11-15] ingest | 1024安全团队-202204-202209_0 -> 1024-security-team-wechat-archive-202204-202209.md
 ## [2026-11-15] ingest | 1024安全团队-202204-202209_1 -> ble-packet-capture-comparison.md, nrf-sniffer-ble-setup-guide.md
 ## [2026-11-15] ingest | 1024安全团队-202204-202209_2 -> ble-smart-bracelet-protocol-analysis-attack.md, ble-packet-capture-comparison.md
+## [2026-11-15] ingest | 1024安全团队-202204-202209_3 -> ft232h-spi-flash-firmware-extraction.md, 1024-security-team-wechat-archive-202204-202209.md

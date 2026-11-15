@@ -444,3 +444,4 @@
 ## [2026-11-15] ingest | 102网络攻防实验室-202102-202203_0 -> 102-network-security-lab-wechat-archive-202102-202203.md
 ## [2026-11-15] ingest | 102网络攻防实验室-202102-202203_1 -> php-webshell-obfuscation-av-evasion.md
 ## [2026-11-15] ingest | 102网络攻防实验室-202102-202203_2 -> codetest-visual-poc-exploitation-tool.md
+## [2026-11-15] ingest | 102网络攻防实验室-202102-202203_3 -> firekylin-firedog-emergency-response-tool.md

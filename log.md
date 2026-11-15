@@ -478,3 +478,4 @@
 ## [2026-11-15] ingest | 226安全团队-201805-202103_26 -> 226-security-team-wechat-archive-201805-202103.md, 226-security-team-open-source-projects.md, ctf-training-platforms-collection.md
 ## [2026-11-15] ingest | 226安全团队-201805-202103_27 -> 226-security-team-open-source-projects.md
 ## [2026-11-15] ingest | 226安全团队-201805-202103_28 -> iis-webdav-put-vulnerability-classic-exploitation.md
+## [2026-11-15] ingest | 226安全团队-201805-202103_29 -> cve-2016-1897-ffmpeg-arbitrary-file-read.md

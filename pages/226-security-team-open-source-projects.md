@@ -20,7 +20,7 @@ updated: '2026-11-15'
 
 # 226安全团队开源项目全景
 
-> 来源：226安全团队微信公众号归档文章《[总结]回首我们做过的》（2021-03-15），汇总团队成立五年以来发布的十大开源项目及进行中项目。
+> 来源：226安全团队微信公众号归档文章《[总结]回首我们做过的》（2021-03-15），汇总团队成立五年以来发布的十大开源项目及进行中项目。本页在既有内容基础上，**大幅完善 Webug 4.0 靶场的漏洞覆盖清单、虚拟机环境特性、新增模块（乌云知识库、MD5 解密、计划中的 CMS/CTF 模块）等细节**，并补充团队 400 天间歇期的心路历程与招聘信息。
 
 ---
 
@@ -57,20 +57,116 @@ updated: '2026-11-15'
 - **定位**：代码审计辅助、事后取证、合规审计。
 - **地址**：`github.com/wangai3176/mysql_Monitor_tools_code`
 
-### Webug 靶场（v4.0）
+### Webug 靶场（v4.0）—— 重点完善
 
-> **“我们的漏洞”** —— 覆盖基础、中级、高级三层次的 Web 安全实战环境。
+> **“我们的漏洞”** —— 覆盖基础、中级、高级三层次的 Web 安全实战环境。v4.0 版本历经 400 余天打磨，代码全量重构，漏洞覆盖面大幅扩展，新增多个实战辅助模块。
 
-- **架构**：
-  - 基础环境：PHP + MySQL，纯净 Windows Server 2003 虚拟机镜像分发。
-  - 中/高级环境：真实 CVE/历史漏洞复现场景（Struts2、ThinkPHP、Fastjson、Shiro 等）。
-- **特色**：
-  - 一键部署，无需配置环境依赖。
-  - 配套视频教程（公众号历史消息「webug基础教程视频学习」）。
-- **地址**：`github.com/wangai3176/webug4.0`
+#### 架构与部署
+
+- **基础环境**：PHP + MySQL，纯净版 Windows Server 2003 虚拟机镜像分发（含中/高级环境所需的真实 CVE/历史漏洞复现场景：Struts2、ThinkPHP、Fastjson、Shiro 等）。
+- **部署方式**：一键导入虚拟机即用，无需额外配置环境依赖。
+- **配套教程**：公众号历史消息「webug基础教程视频学习」（B 站 35 集系统视频）。
 - **交叉引用**：
   - [[ctf-training-platforms-collection]] 已收录 Webug 4.0 为离线靶场合集核心成员。
   - [[pikachu-target-writeup-part1-setup-brute-force]]、[[pikachu-target-writeup-part2-xss]] 等 Pikachu 系列可作为同类靶场对比学习。
+
+#### 详细漏洞覆盖清单（v4.0 新增/完善）
+
+##### SQL 注入（7 大类，含 Flag 验证）
+
+| 编号 | 注入类型 | 说明 | Flag 验证 |
+|------|----------|------|-----------|
+| 1.1 | 报错注入 | 利用 `floor(rand(0)*2)`、`extractvalue`、`updatexml` 等函数触发报错回显 | ✅ |
+| 1.2 | 布尔注入 | 基于页面真/假响应差异的布尔盲注 | ✅ |
+| 1.3 | 延时注入 | 基于 `SLEEP()`/`BENCHMARK()` 等时间延迟的盲注 | ✅ |
+| 1.4 | CSV 注入 | 导出 CSV 文件时公式注入（`=cmd|' /C calc'!A0` 等） | — |
+| 1.5 | POST 注入 | HTTP POST 参数体中的注入点 | ✅ |
+| 1.6 | XML 注入 | XML 格式参数中的注入（如 SOAP、XML-RPC） | ✅ |
+| 1.7 | 注入过滤绕过 | 针对常见 WAF/过滤规则（空格、注释、关键字、大小写、编码）的绕过技巧 | ✅ |
+
+> 关联技术页：[[sqlmap-comprehensive-guide]]、[[ctfshow-web-sql-injection-bypass-basics]]、[[mysql-duplicate-entry-error-based-sqli]]、[[mysql-dnslog-injection-loadfile-unc]]
+
+##### XSS 跨站脚本攻击（5 大类，含 Flag 验证）
+
+| 编号 | XSS 类型 | 说明 | Flag 验证 |
+|------|----------|------|-----------|
+| 2.1 | 反射型 XSS | URL 参数直接回显未过滤，构造恶意链接触发 | ✅ |
+| 2.2 | 存储型 XSS | 恶意脚本存入数据库，后续访问页面触发 | ✅ |
+| 2.3 | DOM 型 XSS | 前端 JS 处理 `location.hash`/`document.referrer` 等导致 DOM 渲染时执行 | ✅ |
+| 2.4 | 链接注入 | `href`/`src` 等属性注入 `javascript:` 伪协议或 `data:` 协议 | — |
+| 2.5 | 基于过滤的存储型 XSS | 针对 `htmlspecialchars`、关键字过滤、标签白名单等防御的绕过技巧 | ✅ |
+
+> 关联技术页：[[pikachu-target-writeup-part2-xss]]、[[xss-haozi-lab-walkthrough]]、[[discuz-x32-stored-dom-xss-bbcode-analysis]]、[[websocket-vulnerabilities-analysis]]、[[cookie-security-fundamentals]]
+
+##### 任意文件下载（1 类）
+
+- 利用 `../` 目录穿越、绝对路径、编码绕过等手法下载服务器敏感文件（`/etc/passwd`、`web.config`、源码备份等）。
+
+##### 文件上传漏洞（5 大类，含 Flag 验证）
+
+| 编号 | 绕过类型 | 核心技术点 | Flag 验证 |
+|------|----------|------------|-----------|
+| 4.1 | 前端拦截绕过 | 禁用 JS、修改 `accept` 属性、Burp Suite 修改包绕过前端校验 | ✅ |
+| 4.2 | 解析漏洞利用 | IIS 6.0/7.5、Nginx `<=0.8.37`、Apache 多后缀解析漏洞 | ✅ |
+| 4.3 | 畸形文件上传 | 文件头伪造（GIF89a）、内容混淆、多文件上传数组绕过 | ✅ |
+| 4.4 | `.htaccess` 文件上传 | 上传 `.htaccess` 修改解析规则（`AddType application/x-httpd-php .jpg`） | ✅ |
+| 4.5 | 截断上传 | PHP `<5.3.4` `%00` 截断、长文件名截断、数组键名截断 | ✅ |
+
+> 关联技术页：[[upload-labs-file-upload-bypass-writeup]]、[[pikachu-target-writeup-part4]]、[[java-arbitrary-file-upload-mitigation]]、[[cnvd-2021-49104-eoffice-v9-file-upload-rce]]
+
+##### 逻辑漏洞（4 大类，含 Flag 验证）
+
+| 编号 | 逻辑漏洞类型 | 攻击场景 | Flag 验证 |
+|------|--------------|----------|-----------|
+| 5.1 | 越权修改密码 | 水平/垂直越权修改任意用户密码（IDOR、未校验当前用户权限） | — |
+| 5.2 | 支付漏洞 | 修改支付金额、订单状态、重复支付、绕过支付流程 | — |
+| 5.3 | 邮箱轰炸 | 短信/邮件接口无频率限制、无验证码、可批量发送 | — |
+| 5.4 | 越权信息查看 | 遍历 ID/参数查看他人订单、个人信息、后台管理员数据 | ✅ |
+
+> 关联技术页：[[xd-security-logic-vulnerability-notes-day33-36]]、[[wecenter-v334-phar-deserialization-sqli]]、[[leanote-markdown-xss-to-electron-rce-case-study]]
+
+##### 其他漏洞类型（6 类）
+
+| 编号 | 漏洞类型 | 核心利用点 |
+|------|----------|------------|
+| 6.1 | URL 跳转/重定向 | `Location` 头未校验域、JS `location.href` 可控、开放重定向链 |
+| 6.2 | 文件包含 (LFI/RFI) | `include/require` 动态参数未过滤、`php://filter` 读取源码、`data://` 协议执行代码 |
+| 6.3 | 命令执行 (RCE) | `system/exec/shell_exec/passthru/popen` 等函数参数可控、反引号、管道符注入 |
+| 6.5 | SSRF (服务端请求伪造) | `file_get_contents/curl/fopen` 访问内网服务、`file://` 读文件、`gopher://` 攻击 Redis/MySQL、`dict://` 探测端口 |
+| 6.8 | CSRF (跨站请求伪造) | 关键操作无 Token/Referer 校验、Token 固定/泄露、GET 型 CSRF |
+
+> 关联技术页：[[php-file-inclusion-vulnerability]]、[[ssrf-bypass-techniques]]、[[ssrf-ctf-exploitation-guide]]、[[xd-security-csrf-ssrf-rce-notes-day29-30]]、[[php-webshell-fundamentals-chopper-analysis]]
+
+#### 新增特色模块
+
+| 模块名称 | 状态 | 功能描述 |
+|----------|------|----------|
+| **乌云知识库** | 已上线 | 集成乌云漏洞平台历史漏洞库（Wooyun 已关闭），提供漏洞检索、详情查看、复现参考，辅助学习真实漏洞案例。 |
+| **MD5 解密** | 已上线 | 集成社区协作式 MD5 碰撞/字典解密接口（关联团队开源项目 [[226md5](https://github.com/wangai3176/226md5)]），后续计划上线自建解密集群。 |
+| **CMS 模块** | 规划中 | 对比 v3.0 优势，有序整理主流 CMS（DedeCMS、ThinkCMF、Phpcms、WordPress 等）漏洞复现环境，提供一键部署的 CMS 靶场矩阵。 |
+| **CTF 模块** | 规划中 | 面向 CTF 竞技训练，收录 Web/Misc/Crypto/Pwn/Reverse 多方向题目环境，支持动态 Flag、容器化部署、CTFd 集成。 |
+| **靶场分类/难度选择** | 已上线 | 新增按「简易度/难度」分类浏览靶场，便于新手按阶梯进阶。 |
+| **招聘模块** | 已上线 | 嵌入团队招聘官网 `http://job.226safe.com`，面向安全人才招聘（开发、运营、逆向、UI、大数据处理等）。 |
+
+#### 社区共建机制
+
+> **“如果小伙伴们有自己的环境，也可以发送给我们进行添加至 webug 中，请将环境搭建及环境利用过程以 word 格式发送至 3176184967@qq.com，我们将审核后带版权添加至环境中。”**
+
+- 接受外部贡献的漏洞环境、复现文档、利用脚本。
+- 审核通过后以贡献者署名形式纳入靶场，形成「官方维护 + 社区共建」的生态闭环。
+
+#### 下载与官网
+
+- **百度网盘下载**：`https://pan.baidu.com/s/1u_N58cb10rlDZ-FsH_BTSw`（含纯净 Win2003 虚拟机镜像 + 靶场源码 + 使用手册）
+- **Webug 官网**：`http://www.webug.org`
+
+#### 团队心声：400 天的间歇与坚持
+
+> 原文摘录：“曾几何时，说实话我放弃过 Webug 的更新，因为它对我来说并不盈利，而且是开源……最终让我决定更新的是他们：**猪哥（下辈子做头猪）、鑫哥、K师傅（K0r4dji）**，在他们的支持下完成了 Webug4.0 更新。”
+
+- **背景**：v3.0 发布后 400 余天未更新，团队曾因“非盈利、开源维护成本高、竞品涌现”考虑放弃。
+- **转折**：核心成员相互支持，坚持“为新手提供免费基础靶场”的初心，完成 v4.0 重构。
+- **定位**：不追求“大而全”，专注“基础扎实、部署简单、配套教程全”的入门级靶场，作为安全初学者踏上梦想道路的“稻草之一”。
 
 ### we-report 报告生成平台
 
@@ -91,7 +187,7 @@ updated: '2026-11-15'
 ### MD5 解密平台 (226md5)
 
 - **模式**：社区众包字典 + 去重存储，类似早期 somd5 / cmd5。
-- **现状**：代码开源，运营实例因精力停止维护。
+- **现状**：代码开源，运营实例因精力停止维护；Webug 4.0 集成该模块接口。
 - **地址**：`github.com/wangai3176/226md5`
 
 ### SecEssay — 安全知识碎片化收藏平台
@@ -158,6 +254,14 @@ updated: '2026-11-15'
 
 ---
 
+## 团队招聘信息（v4.0 发布同期）
+
+- **联系方式**：QQ 3176184967 / E-mail 3176184967@qq.com
+- **简历模板**：`http://t.cn/Ec2FDjn`
+- **需求方向**：开发、运营、逆向、UI、大数据处理等（“只要有一技之长，我们欢迎你”）
+
+---
+
 ## 关联知识库页面
 
 - [[226-security-team-wechat-archive-201805-202103]] — 226安全团队微信归档索引页（含本文来源）。
@@ -166,13 +270,19 @@ updated: '2026-11-15'
 - [[pocsuite3-vulnerability-testing-framework]] — PoC 编写/验证框架，可为 rcetool 提供插件来源。
 - [[struts2-memory-shell-injection]] — Struts2 内存马注入技术，关联 Struts2 利用工具后利用。
 - [[xd-security-pentest-course-curriculum]] — 小迪安全渗透测试课程，含报告撰写、靶场实战等配套教学。
+- [[sqlmap-comprehensive-guide]] — SQLMap 实战指南，可配合 Webug 注入关卡练习。
+- [[upload-labs-file-upload-bypass-writeup]] — 文件上传绕过全技法，对标 Webug 4.1-4.5 关卡。
+- [[pikachu-target-writeup-part2-xss]] / [[xss-haozi-lab-walkthrough]] — XSS 实战对比学习。
+- [[xd-security-logic-vulnerability-notes-day33-36]] — 逻辑漏洞系统化梳理，对标 Webug 5.1-5.4 关卡。
+- [[ssrf-bypass-techniques]] / [[ssrf-ctf-exploitation-guide]] — SSRF 绕过与利用链，对标 Webug 6.5 关卡。
 
 ---
 
 ## 结语
 
-226安全团队五年间以「实战需求驱动开源」为主线，产出覆盖 **漏洞利用、靶场建设、报告自动化、知识管理、插件化框架** 五大赛道的十余个项目。虽部分项目因人员变动停止维护，但其**工程化思路（模板化报告、插件化框架、众包字典）与实战沉淀（真实漏洞环境、乙方痛点）** 仍具参考价值。进行中的「下一代靶场」「自动化扫描」「rcetool 插件生态」若能落地，将进一步补全「从侦察到报告」的红队工程化链路。
+226安全团队五年间以「实战需求驱动开源」为主线，产出覆盖 **漏洞利用、靶场建设、报告自动化、知识管理、插件化框架** 五大赛道的十余个项目。虽部分项目因人员变动停止维护，但其**工程化思路（模板化报告、插件化框架、众包字典）与实战沉淀（真实漏洞环境、乙方痛点）** 仍具参考价值。Webug 4.0 作为团队旗舰级开源靶场，通过**代码全量重构、7 大类 SQLi / 5 类 XSS / 5 类上传 / 4 类逻辑漏洞的系统性覆盖、Win2003 虚拟机一键部署、乌云知识库/MD5 解密等辅助模块内置、社区共建机制引入**，显著降低了 Web 安全初学者的环境搭建与知识检索门槛。进行中的「下一代靶场」「自动化扫描」「rcetool 插件生态」若能落地，将进一步补全「从侦察到报告」的红队工程化链路。
 
 ## 来源
 
 - [226安全团队-201805-202103_02](../sources/226安全团队-201805-202103_02.md)
+- [226安全团队-201805-202103_26](../sources/226安全团队-201805-202103_26.md)

@@ -390,3 +390,4 @@
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_36 -> dotnet-objectdataprovider-deserialization-gadget.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_37 -> 0x6270-security-team-wechat-archive-202203-202304.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_38 -> listed-company-penetration-test-case-study.md, internal-network-pivoting-techniques.md
+## [2026-11-15] ingest | 0x6270安全团队-202203-202304_39 -> ghidra-program-tree-symbol-tree-guide.md, 0x6270-knowledge-planet-team.md

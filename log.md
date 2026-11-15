@@ -413,3 +413,4 @@
 ## [2026-11-15] ingest | 0x727开源安全团队-202108-202110_3 -> observerward-0x727-web-fingerprint-tool.md
 ## [2026-11-15] ingest | 0x727开源安全团队-202108-202110_4 -> metasploitcoop-collaboration-platform.md, 0x727-security-team-wechat-archive-202108-202110.md, metasploit-framework-basics-tutorial.md
 ## [2026-11-15] ingest | 0x727开源安全团队-202108-202110_5 -> shuiying-domain-enumeration-tool.md
+## [2026-11-15] ingest | 0x727开源安全团队-202108-202110_6 -> 0x727-cobalt-strike-aggressor-script-toolkit.md, cobalt-strike-external-c2-smb-beacon.md, internal-network-pivoting-techniques.md

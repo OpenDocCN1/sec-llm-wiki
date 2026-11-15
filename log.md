@@ -406,3 +406,4 @@
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_52 -> cnvd-vulnerability-submission-certificate-case-study.md, auth-bypass-via-response-manipulation.md, vulnerability-mining-recon-aiqicha-fofa.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_53 -> card-game-platform-penetration-test-case-study.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_54 -> cnvd-2021-49104-eoffice-v9-file-upload-rce.md, php-webshell-fundamentals-chopper-analysis.md, vulnerability-mining-recon-aiqicha-fofa.md
+## [2026-11-15] ingest | 0x6270安全团队-202203-202304_55 -> loan-company-penetration-test-case-study.md, vulnerability-mining-recon-aiqicha-fofa.md

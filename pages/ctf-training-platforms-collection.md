@@ -1,6 +1,7 @@
 ---
 title: CTF Web靶场离线打包合集与快速部署指南
-description: 汇总主流CTF Web靶场离线打包合集，含BWVS、Pikachu、Webug4.0、Sqlilabs、Uploadlabs、XXE、XSS七大平台，基于Win2003+phpStudy快速部署指南
+description: 汇总主流CTF Web靶场离线打包合集，含BWVS、Pikachu、Webug4.0、Sqlilabs、Uploadlabs、XXE、XSS七大平台，基于Win2003+phpStudy快速部署指南，新增Webug
+  4.0系统性视频教程目录（B站35集）及Docker部署指引
 category: program-analysis
 tags:
 - CTF
@@ -17,6 +18,8 @@ tags:
 - Win2003
 - 离线部署
 - 渗透测试练习
+- Docker
+- 视频教程
 date: 2024-01-15
 updated: '2026-11-15'
 ---
@@ -26,6 +29,8 @@ updated: '2026-11-15'
 本页面整理主流 CTF Web 靶场离线打包合集，包含 **7 个经典平台**，涵盖综合靶场与单项漏洞专项靶场两大类别。所有靶场均预配置在 **Windows Server 2003 + phpStudy** 环境中，下载解压后即可通过 phpStudy 一键启动，无需手动配置数据库、虚拟主机等繁琐步骤，极大降低初学者环境搭建门槛。
 
 > 来源：微信公众号归档文章《靶场合辑来了》，原文提供百度网盘下载链接（公众号回复“靶场”获取）。
+
+**新增内容**：本次更新补充 **Webug 4.0 系统性视频教程目录（B站 35 集）**、**Docker 部署指引** 及 **GitHub 源码地址**，完善靶场实战学习资源链路。
 
 ---
 
@@ -44,6 +49,27 @@ updated: '2026-11-15'
 
 > ⚠️ **注意**：Win2003 已停止安全更新，仅建议在**隔离网络/仅主机模式**下用于教学练习，切勿暴露在公网。
 
+### Webug 4.0 Docker 部署（新增替代方案）
+除传统虚拟机部署外，可使用 Docker 快速拉起 Webug 4.0 环境，适合 Linux/macOS/Windows (WSL2) 用户：
+
+```bash
+# 1. 克隆源码（含 Dockerfile）
+git clone https://github.com/wangai3176/webug4.0.git
+cd webug4.0
+
+# 2. 构建镜像
+docker build -t webug4.0 .
+
+# 3. 运行容器（映射 80 端口，后台运行）
+docker run -d -p 80:80 --name webug4 webug4.0
+
+# 4. 访问验证
+# 浏览器打开 http://localhost 或 http://<Docker_HOST_IP>
+```
+
+> 详细 Docker 搭建步骤参考：[Webug Docker 部署指引](https://linuz.me/2019/08/04/Webug-docker/)  
+> 源码仓库：[wangai3176/webug4.0](https://github.com/wangai3176/webug4.0)
+
 ---
 
 ## 靶场清单分类
@@ -54,7 +80,7 @@ updated: '2026-11-15'
 |----------|----------|----------|--------------|
 | **BWVS** (Broken Web Vulnerability Suite) | 涵盖 SQLi、XSS、文件上传、命令执行、文件包含等 20+ 漏洞模块，分级设计 | 入门→进阶系统练习 | — |
 | **Pikachu** | PHP 原生漏洞演示，含暴力破解、XSS、CSRF、SQLi、RCE、文件包含/上传、越权、反序列化、XXE、SSRF 等完整模块 | 入门→进阶系统练习 | [[pikachu-target-writeup-part1-setup-brute-force]], [[pikachu-target-writeup-part2-xss]], [[pikachu-target-writeup-part3]], [[pikachu-target-writeup-part4]], [[pikachu-target-writeup-part5]] |
-| **Webug 4.0** | 国内早期经典综合靶场，漏洞类型齐全，附带详细帮助文档 | 入门系统练习 | — |
+| **Webug 4.0** | 国内早期经典综合靶场，漏洞类型齐全，附带详细帮助文档，**现已补充 B站 35 集系统视频教程** | 入门系统练习 | [[webug-4.0-video-tutorial-catalog]] |
 
 > **Pikachu 靶场深度复现系列** 已在知识库建立 5 篇专题页面，覆盖从环境搭建到各漏洞模块的完整利用链分析，建议按顺序阅读。
 
@@ -71,20 +97,72 @@ updated: '2026-11-15'
 
 ---
 
+## Webug 4.0 系统性视频教程目录（B站 35 集） {#webug-4.0-video-tutorial-catalog}
+
+> 视频地址：[https://www.bilibili.com/video/av70249823/](https://www.bilibili.com/video/av70249823/)  
+> 由安全研究员录制，覆盖 Webug 4.0 全关卡解题思路，配合“补充知识”章节夯实原理，适合**零基础入门 → 系统通关**的学习路径。
+
+| 集数 | 标题 | 核心知识点 | 对应知识库深度页面 |
+|------|------|------------|-------------------|
+| 01 | webug介绍与4.0安装 | 靶场简介、环境部署 | 本页面部署指南 |
+| 02 | 补充知识之Mysql注入 | SQL 注入基础原理 | [[ctfshow-web-sql-injection-bypass-basics]] |
+| 03 | 第1关_显错注入 | 报错注入实战 | [[mysql-duplicate-entry-error-based-sqli]] |
+| 04 | 补充知识之布尔注入 | 布尔盲注原理 | [[ctfshow-web-sql-injection-bypass-basics]] |
+| 05 | 布尔盲注(上) | 手工逐位提取 | — |
+| 06 | 布尔盲注(下) | 脚本自动化提取 | — |
+| 07 | 延时注入 | 时间盲注、sleep() 利用 | [[ctfshow-web-sql-injection-bypass-basics]] |
+| 08 | POST注入 | POST 型注入、Burp 实战 | [[ctfshow-web-sql-injection-bypass-basics]] |
+| 09 | 过滤注入 | WAF 绕过、编码/注释技巧 | [[xd-security-waf-bypass-techniques-day46-49]] |
+| 10 | 补充知识之宽字节 | 宽字节注入原理（GBK） | [[ctfshow-web-sql-injection-bypass-basics]] |
+| 11 | 宽字节注入 | 实战绕过 `addslashes` | — |
+| 12 | 补充知识之XXE注入 | XXE 原理、实体声明 | [[xxe-xml-dtd-fundamentals]] |
+| 13 | xxe注入 | 文件读取、Blind XXE 外带 | [[xxe-xml-dtd-fundamentals]], [[xd-security-deserialization-xxe-notes-day37-39]] |
+| 14 | 补充知识之xss | XSS 分类、Payload 构造 | [[xss-haozi-lab-walkthrough]] |
+| 15 | 三种xss | 反射型/存储型/DOM 型 | [[pikachu-target-writeup-part2-xss]] |
+| 16 | 过滤xss | 过滤绕过、事件处理器 | [[xd-security-xss-vulnerability-notes-day25-28]] |
+| 17 | 万能密码登录 | SQL 注入绕过登录认证 | [[ctfshow-web-sql-injection-bypass-basics]] |
+| 18 | 链接注入 | 超链接参数注入 | — |
+| 19 | 补充知识之任意文件下载 | 目录遍历、路径拼接缺陷 | [[php-file-inclusion-vulnerability]] |
+| 20 | 任意文件下载 | 实战下载敏感文件 | — |
+| 21 | mysql配置文件下载 | 读取 `my.cnf`/`my.ini` 拿凭证 | — |
+| 22 | 补充知识之文件上传漏洞 | 上传绕过分类、解析漏洞 | [[php-file-inclusion-vulnerability]], [[xd-security-waf-bypass-techniques-day46-49]] |
+| 23 | 文件上传(前端拦截) | JS 校验绕过、Burp 改包 | — |
+| 24 | 文件上传(解析和截断) | 解析漏洞、%00 截断 | [[cnvd-2021-49104-eoffice-v9-file-upload-rce]] |
+| 25 | 文件上传(畸形文件) | 魔数绕过、图片马制作 | — |
+| 26 | 补充知识之htaccess | .htaccess 解析配置利用 | — |
+| 27 | 文件上传(htaccess) | 上传 .htaccess 解析 PHP | — |
+| 28 | 越权修改密码 | 水平/垂直越权、IDOR | [[xd-security-logic-vulnerability-notes-day33-36]] |
+| 29 | 支付漏洞 | 金额篡改、并发竞争 | [[xd-security-logic-vulnerability-notes-day33-36]] |
+| 30 | 邮箱轰炸 | 接口滥用、验证码绕过 | — |
+| 31 | 越权查看admin | 垂直越权、会话固定 | [[xd-security-logic-vulnerability-notes-day33-36]] |
+| 32 | URL跳转 | 开放重定向、钓鱼利用 | [[ssrf-bypass-techniques]] |
+| 33 | 文件包含漏洞 | LFI/RFI、伪协议利用 | [[php-file-inclusion-vulnerability]] |
+| 34 | webshell爆破 | 弱口令爆破、字典攻击 | [[ctfshow-web-info-gathering-brute-force]] |
+| 35 | 写到最后 | 学习心得、后续路线 | — |
+
+> **学习建议**：按集数顺序观看，**先看“补充知识”再做对应关卡**，遇到不懂的原理即跳转右侧知识库深度页面查阅，形成“视频实战 + 理论深挖 + 交叉引用”的闭环。
+
+---
+
 ## 学习路径建议
 
 ### 阶段 1：基础入门（1-2 周）
 1. 部署环境，熟悉 phpStudy、phpMyAdmin、Burp Suite 基础操作
 2. 从 **Pikachu** 的“暴力破解/验证码绕过”开始，掌握 Burp Intruder 四种模式 → [[pikachu-target-writeup-part1-setup-brute-force]]
 3. 系统过一遍 **Pikachu XSS** 全类型 → [[pikachu-target-writeup-part2-xss]] / [[xss-haozi-lab-walkthrough]]
+4. **新增**：跟随 **Webug 4.0 视频教程 01-03 集** 快速上手靶场环境与报错注入入门
 
 ### 阶段 2：核心漏洞深度（2-4 周）
 | 漏洞类型 | 推荐靶场 | 关键练习目标 |
 |----------|----------|--------------|
-| SQL 注入 | **Sqlilabs** Less-1 到 Less-65 依次通关 | 手工构造 Payload、盲注脚本编写、WAF 绕过思路 |
-| 文件上传 | **Uploadlabs** Pass-01 到 Pass-20 | 每种绕过方式至少手工成功一次，总结通用方法论 |
-| XXE | **XXE Lab** + 真实 CVE 复现 | 掌握 Blind XXE 带外数据外带、内网探测、Gopher 利用 MySQL/Redis |
+| SQL 注入 | **Sqlilabs** Less-1 到 Less-65 依次通关、**Webug 4.0 视频 02-11 集** | 手工构造 Payload、盲注脚本编写、WAF 绕过思路、宽字节注入实战 |
+| 文件上传 | **Uploadlabs** Pass-01 到 Pass-20、**Webug 4.0 视频 22-27 集** | 每种绕过方式至少手工成功一次，总结通用方法论 |
+| XXE | **XXE Lab** + 真实 CVE 复现、**Webug 4.0 视频 12-13 集** | 掌握 Blind XXE 带外数据外带、内网探测、Gopher 利用 MySQL/Redis |
+| XSS | **XSS Lab** + **Webug 4.0 视频 14-16 集** + **Pikachu XSS** | 反射/存储/DOM 三型通杀、过滤绕过、CSP 绕过、盲打实战 |
 | 命令/代码执行 | **Pikachu RCE** + **BWVS** | `system/exec/passthru/shell_exec` 绕过、`disable_functions` 绕过、Nginx 日志投毒 |
+| 逻辑漏洞/越权 | **Webug 4.0 视频 17-18, 28-32 集** + **Pikachu 越权** | 万能密码、链接注入、水平/垂直越权、支付漏洞、URL 跳转、邮箱轰炸 |
+| 文件包含/下载 | **Webug 4.0 视频 19-21, 33 集** | 任意文件下载、MySQL 配置文件泄露、LFI/RFI、伪协议利用 |
+| 后渗透/持久化 | **Webug 4.0 视频 34 集** | Webshell 爆破、密码字典构建 |
 
 ### 阶段 3：综合实战与 CTF 转化（持续）
 - 在 **BWVS / Webug 4.0** 中进行混合漏洞链演练（如：SQLi → 文件上传 → RCE → 提权）
@@ -102,6 +180,7 @@ updated: '2026-11-15'
 | 文件上传靶场提示 “上传目录不可写” | Windows 权限问题 | 右键上传目录 → 属性 → 安全 → 给 Everyone 完全控制权限 |
 | XXE/SSRF 靶场无法回连攻击机 | 虚拟机网络模式为“仅主机”，无法访问宿主机 | 改为“NAT”模式并配置端口转发，或在虚拟机内直接使用 `127.0.0.1` 回环测试 |
 | Sqlilabs Less-37 以后宽字节注入失败 | PHP 版本过高（>5.4）默认关闭 `magic_quotes_gpc` | 确认 phpStudy 使用 PHP 5.4.x 分支；或手工在 `php.ini` 开启 `magic_quotes_gpc = On` 重启 Apache |
+| Docker 容器启动后无法访问 | 端口映射冲突、防火墙拦截 | 检查宿主机 80 端口占用 `netstat -tlnp \| grep :80`；放行防火墙 `ufw allow 80` 或 `firewall-cmd --add-port=80/tcp` |
 
 ---
 
@@ -124,6 +203,7 @@ updated: '2026-11-15'
 - **反序列化**：[[xd-security-deserialization-xxe-notes-day37-39]], [[thinkphp5-deserialization-chain-analysis]], [[python-pickle-deserialization-rce]]
 - **SSRF**：[[ssrf-bypass-techniques]], [[ssrf-ctf-exploitation-guide]]
 - **命令执行/RCE**：[[ctf-show-php-command-execution-bypass-techniques]], [[php-non-alphanumeric-webshell-construction]]
+- **逻辑漏洞/越权**：[[xd-security-logic-vulnerability-notes-day33-36]]
 
 ### 实战渗透测试方法论
 - [[xd-security-pentest-basic-stage-notes]] —— 基础阶段 24 天知识清单
@@ -137,8 +217,18 @@ updated: '2026-11-15'
 
 这 7 个靶场覆盖了 **Web 安全入门到进阶 90% 以上的核心漏洞类型**。建议采用“靶场实战 + 技术页面深度阅读 + 编写利用脚本”三位一体的学习模式：先在离线环境通关，再回顾知识库对应页面夯实原理，最后尝试将手工利用转化为自动化 PoC/Exp，形成可复用的个人武器库。
 
+**本次更新亮点**：
+- 新增 **Webug 4.0 B站 35 集系统视频教程目录**，按“补充知识+实战关卡”交替编排，配合知识库交叉引用形成完整学习闭环
+- 提供 **Docker 部署方案**，打破 Win2003 虚拟机依赖，适配现代开发环境
+- 标注 **GitHub 源码地址**，便于二次开发、代码审计或离线归档
+
 > **获取方式**：关注原公众号回复“靶场”获取百度网盘下载链接（约 2-3 GB）。建议校验文件完整性（MD5/SHA256）后再导入虚拟机。
 
 ## 来源
 
 - [102网络攻防实验室-202102-202203_5](../sources/102网络攻防实验室-202102-202203_5.md)
+- 微信公众号归档文章《webug基础教程视频学习》
+- B站视频：[av70249823](https://www.bilibili.com/video/av70249823/)
+- Docker 部署指引：[linuz.me/2019/08/04/Webug-docker/](https://linuz.me/2019/08/04/Webug-docker/)
+- GitHub 仓库：[wangai3176/webug4.0](https://github.com/wangai3176/webug4.0)
+- [226安全团队-201805-202103_06](../sources/226安全团队-201805-202103_06.md)

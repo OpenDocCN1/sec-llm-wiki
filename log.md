@@ -455,3 +455,4 @@
 ## [2026-11-15] ingest | 226安全团队-201805-202103_03 -> redteam-hw-opsec-guidelines.md
 ## [2026-11-15] ingest | 226安全团队-201805-202103_04 -> cobalt-strike-ssl-keystore-evasion.md, c2-redirectors-malleable-c2-profiles.md
 ## [2026-11-15] ingest | 226安全团队-201805-202103_05 -> jumbo-internal-penetration-cheatsheet.md, xd-security-internal-network-penetration-notes-day67-68.md, xd-security-internal-network-penetration-notes-day69-70.md
+## [2026-11-15] ingest | 226安全团队-201805-202103_06 -> ctf-training-platforms-collection.md

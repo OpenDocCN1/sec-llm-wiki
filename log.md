@@ -547,3 +547,4 @@
 ## [2026-11-16] ingest | 301在路上-201508-202208_047 -> apt-detection-deployment-strategy.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_048 -> 301-zai-lushang-wechat-archive-201508-202208.md, social-engineering-attack-techniques.md, physical-social-engineering-case-study.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_049 -> security-practitioner-legal-compliance.md
+## [2026-11-16] ingest | 301在路上-201508-202208_050 -> 301-zai-lushang-wechat-archive-201508-202208.md

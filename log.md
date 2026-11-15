@@ -429,3 +429,4 @@
 ## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_12 -> info-gathering-tools-collection.md
 ## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_13 -> fafu01-ciscn-online-writeup.md, 0xfafu-security-team-wechat-archive-202010-202112.md
 ## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_14 -> python-pickle-deserialization-rce.md
+## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_15 -> attack-defense-world-pwn-writeup.md

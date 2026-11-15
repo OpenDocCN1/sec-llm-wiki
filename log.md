@@ -460,3 +460,4 @@
 ## [2026-11-15] ingest | 226安全团队-201805-202103_08 -> wecenter-v334-phar-deserialization-sqli.md
 ## [2026-11-15] ingest | 226安全团队-201805-202103_09 -> fastjson-deserialization-gadgets-shiro-anteros.md
 ## [2026-11-15] ingest | 226安全团队-201805-202103_10 -> backdoor-persistence-techniques.md, php-webshell-fundamentals-chopper-analysis.md
+## [2026-11-15] ingest | 226安全团队-201805-202103_11 -> leanote-markdown-xss-to-electron-rce-case-study.md

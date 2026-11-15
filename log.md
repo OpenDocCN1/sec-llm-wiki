@@ -371,3 +371,4 @@
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_17 -> cve-2021-21974-vmware-esxi-slp-heap-overflow.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_18 -> data-breach-45billion-chinese-platforms-analysis.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_19 -> cve-2023-25194-kafka-connect-jndi-rce.md
+## [2026-11-15] ingest | 0x6270安全团队-202203-202304_20 -> cve-2023-25194-kafka-connect-jndi-rce.md, cve-2023-23477-ibm-websphere-rce.md

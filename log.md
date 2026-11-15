@@ -435,3 +435,4 @@
 ## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_18 -> stack-overflow-fundamentals-tutorial.md
 ## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_19 -> kali-linux-fundamentals.md
 ## [2026-11-15] ingest | 1024安全团队-202204-202209_0 -> 1024-security-team-wechat-archive-202204-202209.md
+## [2026-11-15] ingest | 1024安全团队-202204-202209_1 -> ble-packet-capture-comparison.md, nrf-sniffer-ble-setup-guide.md

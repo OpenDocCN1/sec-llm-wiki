@@ -369,3 +369,4 @@
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_15 -> cve-2023-24055-keepass-plaintext-transmission.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_16 -> security-engineer-recruitment-requirements.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_17 -> cve-2021-21974-vmware-esxi-slp-heap-overflow.md
+## [2026-11-15] ingest | 0x6270安全团队-202203-202304_18 -> data-breach-45billion-chinese-platforms-analysis.md

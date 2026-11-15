@@ -315,6 +315,7 @@
 - [[ctf-misc入门与工具箱]] `CTF` `Misc` `隐写术` `流量分析` `内存取证` `文件修复` `工具箱` — 系统梳理 CTF Misc 方向常见考点：编码转换、隐写术、文件修复、流量/内存取证，以及核心工具链（binwalk、foremost、steghide、Volatility 等）速查表。
 - [[ctfd-whale-docker-swarm-frp-deployment]] `CTF` `CTFd` `CTFd-Whale` `Docker Swarm` `Frp` `动态靶机` `容器编排` `渗透测试环境` — 基于 CTFd-Whale 插件结合 Docker Swarm 与 Frp 实现 CTF 比赛动态靶机自动分发、端口映射及实例隔离的完整部署教程，含环境准备、核心组件配置、网络互联、插件参数调优、题目发放模式及常见报错排查。
 - [[cybersecurity-training-resources-guide]] `网络安全` `培训课程` `学习资源` `小迪安全` `暗月渗透` `避坑指南` `学习方法论` — 汇总主流网络安全培训课程（小迪安全、暗月渗透等）对比、免费/付费学习资源推荐、学习方法论、行业避坑指南及证书建议，助力零基础入门与进阶。
+- [[data-breach-45billion-chinese-platforms-analysis]] `数据泄露` `隐私保护` `社会工程学` `凭证填充` `OSINT` `网络安全事件分析` — 深度解析2023年曝光的45亿条用户隐私数据泄露事件，涉及京东、淘宝、美团等主流平台。本文梳理泄露数据来源、验证真实性、潜在攻击链路，并提供个人隐私保护的实操缓解措施。
 - [[osint-social-engineering-scam-investigation-case-study]] `OSINT` `社会工程学` `网络诈骗溯源` `Google Hacking` `支付宝交易分析` `手机号枚举` `实战案例` — 记录一次利用Google语法搜索、社交媒体分析、QQ钓鱼、支付宝交易记录枚举手机号等OSINT与社会工程学手法追踪网络诈骗分子的完整实战过程
 - [[qwb2019-随便注-sql注入复现]] `CTF` `SQL注入` `强网杯2019` `MariaDB` `堆叠查询` `WAF绕过` `预编译` `表重命名` — 强网杯2019随便注题目完整复现，涵盖报错注入、WAF绕过、堆叠查询、预编译绕过、表重命名等MySQL/MariaDB注入实战技巧
 - [[recruitment-go-h5-development-chengdu]] `Go` `H5` `招聘` `成都` `支付业务` `15-20K` — 成都地区支付业务方向的Go语言与H5开发岗位招聘信息，薪资15-20K，要求有项目经验可直接上手，非应届生。

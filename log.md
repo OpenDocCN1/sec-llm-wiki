@@ -494,3 +494,4 @@
 ## [2026-11-15] ingest | 226安全团队-201805-202103_42 -> feifei-cms-arbitrary-file-deletion.md
 ## [2026-11-15] ingest | 226安全团队-201805-202103_43 -> iwebshop-cms-arbitrary-file-deletion.md
 ## [2026-11-15] ingest | 226安全团队-201805-202103_44 -> xd-security-csrf-ssrf-rce-notes-day29-30.md, social-engineering-attack-techniques.md
+## [2026-11-15] ingest | 226安全团队-201805-202103_45 -> social-engineering-attack-techniques.md, domain-registrar-security-guide.md

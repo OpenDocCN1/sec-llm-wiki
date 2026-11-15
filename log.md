@@ -467,3 +467,4 @@
 ## [2026-11-15] ingest | 226安全团队-201805-202103_15 -> vocational-skills-competition-2018-shandong-writeup.md, 007攻防实验室.md
 ## [2026-11-15] ingest | 226安全团队-201805-202103_16 -> php-basics-syntax-fundamentals.md
 ## [2026-11-15] ingest | 226安全团队-201805-202103_17 -> upload-labs-file-upload-bypass-writeup.md
+## [2026-11-15] ingest | 226安全团队-201805-202103_18 -> discuz-x32-stored-dom-xss-bbcode-analysis.md

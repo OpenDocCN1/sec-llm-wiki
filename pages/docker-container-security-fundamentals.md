@@ -1,9 +1,8 @@
 ---
-title: Docker 容器安全基础机制详解
-description: 系统梳理 Docker 容器安全核心机制，涵盖架构组件、Namespace 隔离、Cgroup 资源限制、Linux Capability
-  权限模型及主流加固方案（AppArmor/SELinux 等），并补充 2019-12-16 每日安全看点收录的三篇 Docker 容器安全实战文章作为扩展阅读，新增基于
-  VulnHub Social Network 靶机的容器环境识别、内网横向移动、C2 代理通道建立等实战案例，丰富攻击审计视角。
-category: ai-security
+title: Docker 容器安全基础与 Kubernetes 集群攻防延伸
+description: 系统梳理 Docker 容器安全核心机制（Namespace、Cgroup、Capability、MAC 加固），并延伸至 Kubernetes
+  集群渗透测试全流程：从容器逃逸、脏牛提权、窃取集群管理员凭据、kubectl 集群探索到 Master 节点工作负载隔离机制的攻防实战分析。
+category: program-analysis
 tags:
 - Docker
 - 容器安全
@@ -12,15 +11,18 @@ tags:
 - Linux Capability
 - AppArmor
 - SELinux
-- 安全架构
+- Kubernetes
+- 渗透测试
 - 容器逃逸
+- 脏牛漏洞
+- 凭据窃取
+- Master节点隔离
 - 攻击审计
-- VulnHub
 - 内网渗透
 - C2框架
 - Venom
 date: '2023-04-14'
-updated: '2026-11-14'
+updated: '2026-11-15'
 ---
 
 ## Docker 架构与核心组件
@@ -121,7 +123,7 @@ Docker 仅默认启用 Capability，生产环境建议叠加以下 **强制访�
 - **链接**：<https://www.freebuf.com/articles/system/221319.html>
 - **核心看点**：
   - 系统性梳理容器安全威胁模型（镜像、运行时、编排、网络、宿主内核五大攻击面）
-  - 深度解析 Namespace 逃逸、Cgroup 逃逸、Capability 滥用、内核漏洞利用四大逃逸路径
+  - 深度解析 Namespace 逃逸、Cgroup 逃逸、 Capability 滥用、内核漏洞利用四大逃逸路径
   - 实战演示脏牛、waitid、shocker 等经典内核提权漏洞在容器环境下的利用条件与限制
   - 提供基于 AppArmor/SELinux/Seccomp 的纵深加固配置清单
 
@@ -239,14 +241,183 @@ Kali (工具) → proxychains (127.0.0.1:1080) → Venom Admin (SOCKS5) → Veno
 
 ---
 
+## Kubernetes 集群渗透测试：从容器逃逸到集群凭据窃取与 Master 节点隔离机制
+
+本节基于微信公众号文章《靶场测试之k8s集群》实战复现，展示从 **Web Getshell → 宿主机提权 (Dirty COW) → 窃取 Kubernetes 管理员凭据 → kubectl 集群探索 → Master 节点工作负载隔离机制验证** 的完整攻击链，延伸容器安全视角至编排层面。
+
+### 攻击链全景
+
+```mermaid
+graph LR
+    A[Web 应用弱口令 admin/password] --> B[文件上传 Getshell 冰蝎连接]
+    B --> C[容器内低权限 Shell]
+    C --> D[Dirty COW CVE-2016-5195 本地提权]
+    D --> E[宿主机 Root 权限]
+    E --> F[窃取 /etc/kubernetes/admin.conf 等管理员凭据]
+    F --> G[kubectl 集群探索: get nodes/pods/namespaces]
+    G --> H[验证 Master 节点工作负载隔离: 无法在 Master 创建 Pod]
+```
+
+### 阶段一：Web Getshell 与容器内立足点
+
+1. **弱口令登录后台**：`admin/password`
+2. **文件上传绕过**：上传 PHP/Webshell 文件，获取返回路径
+3. **冰蝎/蚁剑连接**：建立交互式 Webshell 会话
+4. **环境确认**：命令受限（`ls`、`cat` 可用，`wget`、`curl`、`python` 等受限），确认身处容器化环境
+
+> **关联技术**：[[php-webshell-fundamentals-chopper-analysis]]、[[php-webshell-obfuscation-av-evasion]]、[[xd-security-waf-bypass-techniques-day46-49]]
+
+### 阶段二：Dirty COW (CVE-2016-5195) 宿主机提权
+
+**漏洞原理**：Linux 内核 `>= 2.6.22` 至 2016-10-18 修复前，写时复制 (COW) 机制存在竞争条件，非特权进程可写入只读内存映射（如 `/etc/passwd`、`/etc/shadow`、`/usr/bin/passwd`）。
+
+**实战利用流程**：
+1. 在容器内下载/上传 Dirty COW Exp（如 `37292.c`、`dirtyc0w.c`、`pokecow.c`）
+2. 编译：`gcc -pthread dirty.c -o dirty -lcrypt`（容器需安装 gcc，或上传预编译二进制）
+3. 执行提权：`./dirty` → 修改 `/etc/passwd` 添加 root 权限用户，或直接提升当前进程权限
+4. 获取宿主机 Root Shell
+
+> **关联页面**：
+> - [[vulnhub-doubletrouble-writeup]] — 完整复现 Shellshock + Dirty COW 提权链
+> - [[xd-security-privilege-escalation-notes-day58-64]] — Dirty COW 在 Kubernetes 容器环境中的实战利用细节与编译执行流程
+> - [[kubernetes-penetration-testing]] — 记录 Kubernetes 集群渗透测试全流程，含 Dirty COW 提权与凭据窃取
+
+**容器环境下的利用约束**：
+- 需容器具备 `CAP_SYS_PTRACE` 或 `--cap-add=SYS_PTRACE`（默认未授予）
+- Seccomp 默认配置未阻塞 `ptrace`/`process_vm_writev`，但加固配置可拦截
+- `no-new-privileges=true` 可阻断 SUID 提权路径，但 Dirty COW 属于内核漏洞利用，不依赖 SUID，**需内核补丁修复**
+
+### 阶段三：窃取 Kubernetes 管理员凭据
+
+拿到宿主机 Root 后，直接读取集群管理员凭据文件：
+
+```bash
+# 典型凭据存储路径
+cat /etc/kubernetes/admin.conf
+cat /root/.kube/config
+cat /var/lib/kubelet/kubeconfig
+```
+
+**凭据内容结构**：
+```yaml
+apiVersion: v1
+kind: Config
+clusters:
+- cluster:
+    certificate-authority-data: <base64_ca_cert>
+    server: https://<master-ip>:6443
+  name: kubernetes
+users:
+- user:
+    client-certificate-data: <base64_client_cert>
+    client-key-data: <base64_client_key>
+  name: kubernetes-admin
+contexts:
+- context:
+    cluster: kubernetes
+    user: kubernetes-admin
+  name: kubernetes-admin@kubernetes
+current-context: kubernetes-admin@kubernetes
+```
+
+**凭据威力**：持有 `kubernetes-admin` 证书即拥有 **集群最高权限 (system:masters 组)**，可执行任意 `kubectl` 操作：创建/删除 Pod、读取 Secret、绑定 RoleBinding、部署 DaemonSet 等。
+
+> **关联页面**：
+> - [[kubernetes-penetration-testing]] — 详细记录凭据窃取、kubectl 探索、集群横向移动全流程
+> - [[internal-network-pivoting-techniques]] — 容器/集群环境下的内网穿透与横向移动技术体系（Venom、Frp、SOCKS 代理、Cobalt Strike SMB Beacon 等）
+
+### 阶段四：kubectl 集群探索与资源枚举
+
+将窃取的 `admin.conf` 保存为本地 `~/.kube/config` 或指定 `--kubeconfig`，开始集群侦察：
+
+| 探索目标 | 命令 | 关键信息 |
+|----------|------|----------|
+| **节点列表** | `kubectl get nodes -o wide` | Node 名称、角色、版本、内网 IP、操作系统、容器运行时 |
+| **所有命名空间 Pod** | `kubectl get pods --all-namespaces -o wide` | Pod IP、所在 Node、镜像、状态、命名空间 |
+| **敏感资源** | `kubectl get secrets,configmaps --all-namespaces` | ServiceAccount Token、数据库密码、TLS 证书、云厂商凭据 |
+| **权限体系** | `kubectl get rolebindings,clusterrolebindings --all-namespaces` | RBAC 绑定关系、特权账号识别 |
+| **工作负载** | `kubectl get deployments,daemonsets,statefulsets --all-namespaces` | 业务应用分布、副本数、镜像版本 |
+
+**实战输出示例**：
+```
+NAME           STATUS   ROLES           AGE   VERSION   INTERNAL-IP     OS-IMAGE             KERNEL-VERSION      CONTAINER-RUNTIME
+master-node    Ready    control-plane   30d   v1.24.0   192.168.0.113   Ubuntu 20.04.5 LTS   5.4.0-135-generic   docker://20.10.17
+worker-node-1  Ready    <none>          30d   v1.24.0   192.168.0.115   Ubuntu 20.04.5 LTS   5.4.0-135-generic   docker://20.10.17
+```
+
+> **关联技术**：[[internal-network-pivoting-techniques]] 中的 `kubectl` 代理隧道技术（`kubectl port-forward`、`kubectl proxy`、`kubectl exec` 反弹 Shell）
+
+### 阶段五：Master 节点工作负载隔离机制验证
+
+**核心发现**：尝试在 Master 节点创建 Pod 失败，提示 `0/1 nodes are available: 1 node(s) had taints that the pod didn't tolerate.`
+
+**机制原理**：Kubernetes 默认给 Master 节点（控制平面节点）打上 **污点**：
+
+```bash
+kubectl describe node master-node | grep Taints
+# 输出：
+# Taints: node-role.kubernetes.io/control-plane:NoSchedule
+#         node-role.kubernetes.io/master:NoSchedule (旧版本兼容)
+```
+
+**调度器行为**：
+- `NoSchedule`：新 Pod 不会被调度到该节点，**除非 Pod 显式容忍**
+- `PreferNoSchedule`：尽量不调度，资源紧张时可调度
+- `NoExecute`：现有 Pod 也会被驱逐（除非容忍）
+
+**验证测试**：
+```yaml
+# test-pod.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-master-pod
+spec:
+  tolerations:
+  - key: "node-role.kubernetes.io/control-plane"
+    operator: "Exists"
+    effect: "NoSchedule"
+  containers:
+  - name: nginx
+    image: nginx:alpine
+```
+```bash
+kubectl apply -f test-pod.yaml
+# 结果：Pod 成功调度至 Master 节点
+kubectl get pod test-master-pod -o wide
+# NAME             READY   STATUS    RESTARTS   AGE   IP           NODE
+# test-master-pod  1/1     Running   0          10s   10.244.0.5   master-node
+```
+
+**攻防启示**：
+| 视角 | 启示 |
+|------|------|
+| **攻击者** | 拿到 `kubernetes-admin` 后，可通过添加 `tolerations` 强制在 Master 运行 Pod，进而：<br>1. 读取控制平面证书（`/etc/kubernetes/pki/`）<br>2. 访问 etcd 数据（通过 sidecar 或 hostPath 挂载）<br>3. 部署恶意 DaemonSet 持久化控制全集群 |
+| **防御者** | 1. **严守凭据**：`admin.conf` 仅限离线备份、审计访问<br>2. **RBAC 最小权限**：避免直接分发 `cluster-admin`，使用 `Role`/`ClusterRole` 细粒度授权<br>3. **Master 隔离加固**：<br>   - 保持 `NoSchedule` 污点，禁止业务负载<br>   - 启用 `PodSecurityPolicy`/`Pod Security Admission` 限制 `hostPath`、`hostNetwork`、`privileged` 等高危字段<br>   - 审计 `tolerations` 使用情况，告警异常调度<br>4. **运行时保护**：Falco/Tracee 监控 `kubectl exec`、`kubectl apply` 含 `tolerations` 的可疑操作 |
+
+> **关联页面**：
+> - [[kubernetes-penetration-testing]] — Master 节点隔离机制与攻防延伸的完整记录
+> - [[process-injection-tampering-techniques]] — 容器逃逸后的进程注入与内存篡改技术对比
+> - [[memory-scanning-tools-evasion-techniques]] — 运行时内存扫描对抗与 UDRL 规避技术
+
+---
+
 ## 关联页面
 
 - [[daily-security-digest-20191216]] — 2019-12-16 每日安全看点原始归档，含本节引用的三篇 Docker 文章及其他安全资讯
 - [[cve-digest-20210420]] — 2021-04-20 漏洞聚合中包含容器安全相关 CVE 补充
 - [[frp内网渗透应用]] — 容器环境下内网穿透与横向移动的实战技术参考
+- [[kubernetes-penetration-testing]] — Kubernetes 集群渗透测试全流程详细记录
+- [[vulnhub-doubletrouble-writeup]] — Shellshock + Dirty COW 提权链完整复现
+- [[xd-security-privilege-escalation-notes-day58-64]] — Dirty COW 在 Kubernetes 容器环境中的实战利用细节
+- [[internal-network-pivoting-techniques]] — 内网穿透/横向移动核心技术体系（Venom、Frp、SOCKS 代理、Cobalt Strike 等）
+- [[process-injection-tampering-techniques]] — 进程镂空/篡改技术原理对比与 Sysmon 检测规避
+- [[memory-scanning-tools-evasion-techniques]] — 内存扫描工具检测原理与 UDRL 规避实现对抗效果
 
 ## 来源
 
 - [0th3rs安全团队-201911-202204_113](../sources/0th3rs安全团队-201911-202204_113.md)
 - 无名安全团队微信公众号：《Vulnhub靶机 - SOCIAL NETWORK实践》
 - [0x00实验室-202108-202304_066](../sources/0x00实验室-202108-202304_066.md)
+- 微信公众号文章：《靶场测试之k8s集群》
+- [0x6270安全团队-202203-202304_21](../sources/0x6270安全团队-202203-202304_21.md)

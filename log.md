@@ -372,3 +372,4 @@
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_18 -> data-breach-45billion-chinese-platforms-analysis.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_19 -> cve-2023-25194-kafka-connect-jndi-rce.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_20 -> cve-2023-25194-kafka-connect-jndi-rce.md, cve-2023-23477-ibm-websphere-rce.md
+## [2026-11-15] ingest | 0x6270安全团队-202203-202304_21 -> kubernetes-penetration-testing.md, xd-security-privilege-escalation-notes-day58-64.md, docker-container-security-fundamentals.md

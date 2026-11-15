@@ -421,3 +421,4 @@
 ## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_04 -> log4j2-rce-reproduction.md
 ## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_05 -> cve-2021-43798-grafana-path-traversal.md
 ## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_06 -> bailu-ctf-2023-writeup.md
+## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_07 -> thinkphp5-deserialization-chain-analysis.md

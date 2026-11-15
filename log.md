@@ -422,3 +422,4 @@
 ## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_05 -> cve-2021-43798-grafana-path-traversal.md
 ## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_06 -> bailu-ctf-2023-writeup.md
 ## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_07 -> thinkphp5-deserialization-chain-analysis.md
+## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_08 -> cobalt-strike-external-c2-smb-beacon.md, http-proxy-tunneling-goproxy-netsh.md, pystinger-socks4-proxy-webshell-pivoting.md

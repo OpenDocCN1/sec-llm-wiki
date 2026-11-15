@@ -1,7 +1,7 @@
 ---
 title: CTF Web靶场离线打包合集与快速部署指南
 description: 汇总主流CTF Web靶场离线打包合集，含BWVS、Pikachu、Webug4.0、Sqlilabs、Uploadlabs、XXE、XSS七大平台，基于Win2003+phpStudy快速部署指南，新增Webug
-  4.0系统性视频教程目录（B站35集）及Docker部署指引
+  4.0详细漏洞类型分类（报错/布尔/延时/CSV/POST/XML注入、反射/存储/DOM XSS、前端/解析/畸形/.htaccess/截断上传、越权/支付/邮箱轰炸逻辑漏洞、SSRF/CSRF/命令执行/文件包含/URL跳转）、系统性视频教程目录（B站35集）、Docker部署指引及官网下载地址
 category: program-analysis
 tags:
 - CTF
@@ -20,6 +20,12 @@ tags:
 - 渗透测试练习
 - Docker
 - 视频教程
+- SQL注入
+- XSS
+- 文件上传
+- 逻辑漏洞
+- SSRF
+- CSRF
 date: 2024-01-15
 updated: '2026-11-15'
 ---
@@ -30,7 +36,10 @@ updated: '2026-11-15'
 
 > 来源：微信公众号归档文章《靶场合辑来了》，原文提供百度网盘下载链接（公众号回复“靶场”获取）。
 
-**新增内容**：本次更新补充 **Webug 4.0 系统性视频教程目录（B站 35 集）**、**Docker 部署指引** 及 **GitHub 源码地址**，完善靶场实战学习资源链路。
+**本次更新亮点**：
+- **全面扩充 Webug 4.0 条目**：细化其 30+ 个漏洞子类型分类（SQL注入6类、XSS 5类、文件上传5类、逻辑漏洞4类、其他5类），并建立与知识库现有技术页面的交叉引用
+- **补充官方下载地址与官网链接**：百度网盘下载、Webug 官网、GitHub 源码仓库
+- **保留 Webug 4.0 系统性视频教程目录（B站 35 集）**、**Docker 部署指引** 及 **学习路径建议**，完善靶场实战学习资源链路
 
 ---
 
@@ -49,7 +58,14 @@ updated: '2026-11-15'
 
 > ⚠️ **注意**：Win2003 已停止安全更新，仅建议在**隔离网络/仅主机模式**下用于教学练习，切勿暴露在公网。
 
-### Webug 4.0 Docker 部署（新增替代方案）
+### Webug 4.0 官方资源链接
+| 资源类型 | 地址 | 备注 |
+|----------|------|------|
+| **官方下载 (百度网盘)** | https://pan.baidu.com/s/1u_N58cb10rlDZ-FsH_BTSw | 226安全团队官方发布，含 Win2003 虚拟机镜像 |
+| **Webug 官网** | http://www.webug.org | 靶场官方主页，含文档、更新日志 |
+| **GitHub 源码仓库** | https://github.com/wangai3176/webug4.0 | 源码、Dockerfile、Issue 追踪 |
+
+### Webug 4.0 Docker 部署（现代环境替代方案）
 除传统虚拟机部署外，可使用 Docker 快速拉起 Webug 4.0 环境，适合 Linux/macOS/Windows (WSL2) 用户：
 
 ```bash
@@ -80,7 +96,7 @@ docker run -d -p 80:80 --name webug4 webug4.0
 |----------|----------|----------|--------------|
 | **BWVS** (Broken Web Vulnerability Suite) | 涵盖 SQLi、XSS、文件上传、命令执行、文件包含等 20+ 漏洞模块，分级设计 | 入门→进阶系统练习 | — |
 | **Pikachu** | PHP 原生漏洞演示，含暴力破解、XSS、CSRF、SQLi、RCE、文件包含/上传、越权、反序列化、XXE、SSRF 等完整模块 | 入门→进阶系统练习 | [[pikachu-target-writeup-part1-setup-brute-force]], [[pikachu-target-writeup-part2-xss]], [[pikachu-target-writeup-part3]], [[pikachu-target-writeup-part4]], [[pikachu-target-writeup-part5]] |
-| **Webug 4.0** | 国内早期经典综合靶场，漏洞类型齐全，附带详细帮助文档，**现已补充 B站 35 集系统视频教程** | 入门系统练习 | [[webug-4.0-video-tutorial-catalog]] |
+| **Webug 4.0** | 国内早期经典综合靶场，**漏洞类型齐全（30+子类）**，附带详细帮助文档、乌云知识库、MD5解密模块，**现已补充 B站 35 集系统视频教程** | 入门系统练习 | [[webug-4.0-video-tutorial-catalog]], **下文详细漏洞分类表** |
 
 > **Pikachu 靶场深度复现系列** 已在知识库建立 5 篇专题页面，覆盖从环境搭建到各漏洞模块的完整利用链分析，建议按顺序阅读。
 
@@ -97,48 +113,123 @@ docker run -d -p 80:80 --name webug4 webug4.0
 
 ---
 
+## Webug 4.0 详细漏洞分类与对应知识库页面 {#webug-4.0-vulnerability-classification}
+
+> 基于 226安全团队官方发布文章《[新年礼物]Webug4.0 基础是梦的基石》整理，覆盖 **6 大类 30+ 子类** 漏洞场景。每项均标注是否含 Flag 验证机制，并映射至知识库现有深度技术页面，形成“靶场实战 → 原理深挖 → 交叉引用”闭环。
+
+### SQL 注入（7 子类）
+
+| 编号 | 漏洞子类型 | Flag验证 | 核心技术点 | 对应知识库深度页面 |
+|------|------------|:--------:|------------|-------------------|
+| 1.1 | **报错注入** | ✅ | `floor(rand(0)*2)` + `GROUP BY` 触发 Duplicate Entry 报错回显 | [[mysql-duplicate-entry-error-based-sqli]], [[ctfshow-web-sql-injection-bypass-basics]] |
+| 1.2 | **布尔盲注** | ✅ | 条件判断推断、逐位提取、脚本自动化 | [[ctfshow-web-sql-injection-bypass-basics]] |
+| 1.3 | **延时注入** | ✅ | `sleep()`/`benchmark()` 时间差推断、盲注脚本 | [[ctfshow-web-sql-injection-bypass-basics]] |
+| 1.4 | **CSV 注入** | ❌ | 公式注入导出 CSV、远程执行/数据外带 | — |
+| 1.5 | **POST 注入** | ✅ | HTTP Body 参数注入、Burp Suite 实战、Content-Type 处理 | [[ctfshow-web-sql-injection-bypass-basics]] |
+| 1.6 | **XML 注入** | ✅ | XML 实体注入、XXE 结合 SQLi、解析器差异 | [[xxe-xml-dtd-fundamentals]] |
+| 1.7 | **注入过滤绕过** | ✅ | WAF/关键字过滤绕过、编码/注释/大小写变形 | [[xd-security-waf-bypass-techniques-day46-49]], [[ctfshow-web-sql-injection-bypass-basics]] |
+
+> **宽字节注入** 原在 Webug 3.x 单独列出，4.0 融合至“注入过滤绕过”实战中，参考 [[ctfshow-web-sql-injection-bypass-basics]] 宽字节专节。
+
+---
+
+### XSS 跨站脚本攻击（5 子类）
+
+| 编号 | 漏洞子类型 | Flag验证 | 核心技术点 | 对应知识库深度页面 |
+|------|------------|:--------:|------------|-------------------|
+| 2.1 | **反射型 XSS** | ✅ | URL 参数直接回显、未过滤输出、钓鱼链接构造 | [[xss-haozi-lab-walkthrough]], [[pikachu-target-writeup-part2-xss]] |
+| 2.2 | **存储型 XSS** | ✅ | 恶意脚本持久化存储、后台/前台触发、蠕虫传播 | [[pikachu-target-writeup-part2-xss]], [[xd-security-xss-vulnerability-notes-day25-28]] |
+| 2.3 | **DOM 型 XSS** | ✅ | 前端 JS 动态渲染、source/sink 分析、无服务端交互 | [[pikachu-target-writeup-part2-xss]], [[discuz-x32-stored-dom-xss-bbcode-analysis]] |
+| 2.4 | **链接注入** | ❌ | `<a href>` 属性注入、伪协议 `javascript:`、`data:` 利用 | [[xss-haozi-lab-walkthrough]] |
+| 2.5 | **基于过滤的存储型 XSS** | ✅ | 过滤规则绕过、事件处理器、编码混淆、CSP 绕过 | [[xd-security-xss-vulnerability-notes-day25-28]], [[xss-haozi-lab-walkthrough]] |
+
+---
+
+### 任意文件下载（1 子类）
+
+| 编号 | 漏洞子类型 | Flag验证 | 核心技术点 | 对应知识库深度页面 |
+|------|------------|:--------:|------------|-------------------|
+| 3.1 | **任意文件下载** | ✅ | 目录遍历 `../`、路径拼接缺陷、敏感文件泄露（配置、源码、数据库） | [[php-file-inclusion-vulnerability]], [[xd-security-file-inclusion-notes]] |
+
+---
+
+### 文件上传漏洞（5 子类）
+
+| 编号 | 漏洞子类型 | Flag验证 | 核心技术点 | 对应知识库深度页面 |
+|------|------------|:--------:|------------|-------------------|
+| 4.1 | **前端拦截绕过** | ✅ | JS 校验失效、Burp Suite 改包、禁用 JS、修改 Content-Type | [[upload-labs-file-upload-bypass-writeup]], [[xd-security-waf-bypass-techniques-day46-49]] |
+| 4.2 | **解析漏洞利用** | ✅ | Apache/Nginx/IIS 解析规则、双后缀 `.php.jpg`、`.htaccess` 重写 | [[cnvd-2021-49104-eoffice-v9-file-upload-rce]], [[upload-labs-file-upload-bypass-writeup]] |
+| 4.3 | **畸形文件上传** | ✅ | 魔数绕过 `GIF89a`、图片马制作、二次渲染绕过、Exif 注入 | [[upload-labs-file-upload-bypass-writeup]], [[php-webshell-fundamentals-chopper-analysis]] |
+| 4.4 | **.htaccess 文件上传** | ✅ | 上传 `.htaccess` 修改解析配置、`AddType application/x-httpd-php .jpg` | [[upload-labs-file-upload-bypass-writeup]] |
+| 4.5 | **截断上传** | ✅ | `%00` 空字节截断、PHP < 5.3.4、文件名长度截断、`move_uploaded_file` 绕过 | [[upload-labs-file-upload-bypass-writeup]], [[php-file-inclusion-vulnerability]] |
+
+---
+
+### 逻辑漏洞（4 子类）
+
+| 编号 | 漏洞子类型 | Flag验证 | 核心技术点 | 对应知识库深度页面 |
+|------|------------|:--------:|------------|-------------------|
+| 5.1 | **越权修改密码** | ❌ | 水平越权/IDOR、用户 ID 可控、缺乏权限校验、密码重置链接泄露 | [[xd-security-logic-vulnerability-notes-day33-36]], [[pikachu-target-writeup-part4]] |
+| 5.2 | **支付漏洞** | ❌ | 金额篡改（负数、0、小数）、并发竞争、订单状态绕过、回调接口伪造 | [[xd-security-logic-vulnerability-notes-day33-36]] |
+| 5.3 | **邮箱轰炸** | ❌ | 接口无频率限制、验证码复用、批量发送、配置文件需填写发件邮箱 | — |
+| 5.4 | **越权信息查看** | ✅ | 垂直越权、低权限访问高权限数据、会话固定、越权查看 admin 后台 | [[xd-security-logic-vulnerability-notes-day33-36]], [[pikachu-target-writeup-part4]] |
+
+---
+
+### 其他漏洞类型（5 子类）
+
+| 编号 | 漏洞子类型 | Flag验证 | 核心技术点 | 对应知识库深度页面 |
+|------|------------|:--------:|------------|-------------------|
+| 6.1 | **URL 跳转/开放重定向** | ❌ | 302 跳转、Header Location、JS `location.href`、钓鱼利用、SSRF 结合 | [[ssrf-bypass-techniques]], [[xd-security-csrf-ssrf-rce-notes-day29-30]] |
+| 6.2 | **文件包含 (LFI/RFI)** | ❌ | `include/require` 动态包含、目录遍历、伪协议 `php://filter`、`php://input`、`data://`、日志包含 Getshell | [[php-file-inclusion-vulnerability]], [[xd-security-file-inclusion-notes]], [[php伪协议与反序列化利用]] |
+| 6.3 | **命令执行 (RCE)** | ❌ | `system/exec/passthru/shell_exec`、`backticks`、`proc_open`、管道符 `;` `|` `&` 绕过、`disable_functions` 绕过 | [[ctf-show-php-command-execution-bypass-techniques]], [[php-non-alphanumeric-webshell-construction]] |
+| 6.4 | **SSRF (服务端请求伪造)** | ❌ | `file_get_contents/curl` 任意 URL 访问、内网探测、协议利用 `file://` `gopher://` `dict://`、绕过技巧 | [[ssrf-bypass-techniques]], [[ssrf-ctf-exploitation-guide]], [[xd-security-csrf-ssrf-rce-notes-day29-30]] |
+| 6.5 | **CSRF (跨站请求伪造)** | ❌ | 无 Token 验证、Referer 校验缺失、SameSite Cookie 缺失、GET/POST 型 CSRF、构造 POC 自动提交 | [[xd-security-logic-vulnerability-notes-day33-36]], [[xd-security-csrf-ssrf-rce-notes-day29-30]], [[websocket-vulnerabilities-analysis]] |
+
+---
+
 ## Webug 4.0 系统性视频教程目录（B站 35 集） {#webug-4.0-video-tutorial-catalog}
 
 > 视频地址：[https://www.bilibili.com/video/av70249823/](https://www.bilibili.com/video/av70249823/)  
 > 由安全研究员录制，覆盖 Webug 4.0 全关卡解题思路，配合“补充知识”章节夯实原理，适合**零基础入门 → 系统通关**的学习路径。
 
-| 集数 | 标题 | 核心知识点 | 对应知识库深度页面 |
-|------|------|------------|-------------------|
-| 01 | webug介绍与4.0安装 | 靶场简介、环境部署 | 本页面部署指南 |
-| 02 | 补充知识之Mysql注入 | SQL 注入基础原理 | [[ctfshow-web-sql-injection-bypass-basics]] |
-| 03 | 第1关_显错注入 | 报错注入实战 | [[mysql-duplicate-entry-error-based-sqli]] |
-| 04 | 补充知识之布尔注入 | 布尔盲注原理 | [[ctfshow-web-sql-injection-bypass-basics]] |
-| 05 | 布尔盲注(上) | 手工逐位提取 | — |
-| 06 | 布尔盲注(下) | 脚本自动化提取 | — |
-| 07 | 延时注入 | 时间盲注、sleep() 利用 | [[ctfshow-web-sql-injection-bypass-basics]] |
-| 08 | POST注入 | POST 型注入、Burp 实战 | [[ctfshow-web-sql-injection-bypass-basics]] |
-| 09 | 过滤注入 | WAF 绕过、编码/注释技巧 | [[xd-security-waf-bypass-techniques-day46-49]] |
-| 10 | 补充知识之宽字节 | 宽字节注入原理（GBK） | [[ctfshow-web-sql-injection-bypass-basics]] |
-| 11 | 宽字节注入 | 实战绕过 `addslashes` | — |
-| 12 | 补充知识之XXE注入 | XXE 原理、实体声明 | [[xxe-xml-dtd-fundamentals]] |
-| 13 | xxe注入 | 文件读取、Blind XXE 外带 | [[xxe-xml-dtd-fundamentals]], [[xd-security-deserialization-xxe-notes-day37-39]] |
-| 14 | 补充知识之xss | XSS 分类、Payload 构造 | [[xss-haozi-lab-walkthrough]] |
-| 15 | 三种xss | 反射型/存储型/DOM 型 | [[pikachu-target-writeup-part2-xss]] |
-| 16 | 过滤xss | 过滤绕过、事件处理器 | [[xd-security-xss-vulnerability-notes-day25-28]] |
-| 17 | 万能密码登录 | SQL 注入绕过登录认证 | [[ctfshow-web-sql-injection-bypass-basics]] |
-| 18 | 链接注入 | 超链接参数注入 | — |
-| 19 | 补充知识之任意文件下载 | 目录遍历、路径拼接缺陷 | [[php-file-inclusion-vulnerability]] |
-| 20 | 任意文件下载 | 实战下载敏感文件 | — |
-| 21 | mysql配置文件下载 | 读取 `my.cnf`/`my.ini` 拿凭证 | — |
-| 22 | 补充知识之文件上传漏洞 | 上传绕过分类、解析漏洞 | [[php-file-inclusion-vulnerability]], [[xd-security-waf-bypass-techniques-day46-49]] |
-| 23 | 文件上传(前端拦截) | JS 校验绕过、Burp 改包 | — |
-| 24 | 文件上传(解析和截断) | 解析漏洞、%00 截断 | [[cnvd-2021-49104-eoffice-v9-file-upload-rce]] |
-| 25 | 文件上传(畸形文件) | 魔数绕过、图片马制作 | — |
-| 26 | 补充知识之htaccess | .htaccess 解析配置利用 | — |
-| 27 | 文件上传(htaccess) | 上传 .htaccess 解析 PHP | — |
-| 28 | 越权修改密码 | 水平/垂直越权、IDOR | [[xd-security-logic-vulnerability-notes-day33-36]] |
-| 29 | 支付漏洞 | 金额篡改、并发竞争 | [[xd-security-logic-vulnerability-notes-day33-36]] |
-| 30 | 邮箱轰炸 | 接口滥用、验证码绕过 | — |
-| 31 | 越权查看admin | 垂直越权、会话固定 | [[xd-security-logic-vulnerability-notes-day33-36]] |
-| 32 | URL跳转 | 开放重定向、钓鱼利用 | [[ssrf-bypass-techniques]] |
-| 33 | 文件包含漏洞 | LFI/RFI、伪协议利用 | [[php-file-inclusion-vulnerability]] |
-| 34 | webshell爆破 | 弱口令爆破、字典攻击 | [[ctfshow-web-info-gathering-brute-force]] |
-| 35 | 写到最后 | 学习心得、后续路线 | — |
+| 集数 | 标题 | 核心知识点 | 对应漏洞分类编号 | 对应知识库深度页面 |
+|------|------|------------|------------------|-------------------|
+| 01 | webug介绍与4.0安装 | 靶场简介、环境部署 | — | 本页面部署指南 |
+| 02 | 补充知识之Mysql注入 | SQL 注入基础原理 | 1.1-1.7 | [[ctfshow-web-sql-injection-bypass-basics]] |
+| 03 | 第1关_显错注入 | 报错注入实战 | 1.1 | [[mysql-duplicate-entry-error-based-sqli]] |
+| 04 | 补充知识之布尔注入 | 布尔盲注原理 | 1.2 | [[ctfshow-web-sql-injection-bypass-basics]] |
+| 05 | 布尔盲注(上) | 手工逐位提取 | 1.2 | — |
+| 06 | 布尔盲注(下) | 脚本自动化提取 | 1.2 | — |
+| 07 | 延时注入 | 时间盲注、sleep() 利用 | 1.3 | [[ctfshow-web-sql-injection-bypass-basics]] |
+| 08 | POST注入 | POST 型注入、Burp 实战 | 1.5 | [[ctfshow-web-sql-injection-bypass-basics]] |
+| 09 | 过滤注入 | WAF 绕过、编码/注释技巧 | 1.7 | [[xd-security-waf-bypass-techniques-day46-49]] |
+| 10 | 补充知识之宽字节 | 宽字节注入原理（GBK） | 1.7 | [[ctfshow-web-sql-injection-bypass-basics]] |
+| 11 | 宽字节注入 | 实战绕过 `addslashes` | 1.7 | — |
+| 12 | 补充知识之XXE注入 | XXE 原理、实体声明 | 1.6 | [[xxe-xml-dtd-fundamentals]] |
+| 13 | xxe注入 | 文件读取、Blind XXE 外带 | 1.6 | [[xxe-xml-dtd-fundamentals]], [[xd-security-deserialization-xxe-notes-day37-39]] |
+| 14 | 补充知识之xss | XSS 分类、Payload 构造 | 2.1-2.5 | [[xss-haozi-lab-walkthrough]] |
+| 15 | 三种xss | 反射型/存储型/DOM 型 | 2.1, 2.2, 2.3 | [[pikachu-target-writeup-part2-xss]] |
+| 16 | 过滤xss | 过滤绕过、事件处理器 | 2.5 | [[xd-security-xss-vulnerability-notes-day25-28]] |
+| 17 | 万能密码登录 | SQL 注入绕过登录认证 | 1.1/1.7 | [[ctfshow-web-sql-injection-bypass-basics]] |
+| 18 | 链接注入 | 超链接参数注入 | 2.4 | — |
+| 19 | 补充知识之任意文件下载 | 目录遍历、路径拼接缺陷 | 3.1 | [[php-file-inclusion-vulnerability]] |
+| 20 | 任意文件下载 | 实战下载敏感文件 | 3.1 | — |
+| 21 | mysql配置文件下载 | 读取 `my.cnf`/`my.ini` 拿凭证 | 3.1 | — |
+| 22 | 补充知识之文件上传漏洞 | 上传绕过分类、解析漏洞 | 4.1-4.5 | [[php-file-inclusion-vulnerability]], [[xd-security-waf-bypass-techniques-day46-49]] |
+| 23 | 文件上传(前端拦截) | JS 校验绕过、Burp 改包 | 4.1 | — |
+| 24 | 文件上传(解析和截断) | 解析漏洞、%00 截断 | 4.2, 4.5 | [[cnvd-2021-49104-eoffice-v9-file-upload-rce]] |
+| 25 | 文件上传(畸形文件) | 魔数绕过、图片马制作 | 4.3 | — |
+| 26 | 补充知识之htaccess | .htaccess 解析配置利用 | 4.4 | — |
+| 27 | 文件上传(htaccess) | 上传 .htaccess 解析 PHP | 4.4 | — |
+| 28 | 越权修改密码 | 水平/垂直越权、IDOR | 5.1 | [[xd-security-logic-vulnerability-notes-day33-36]] |
+| 29 | 支付漏洞 | 金额篡改、并发竞争 | 5.2 | [[xd-security-logic-vulnerability-notes-day33-36]] |
+| 30 | 邮箱轰炸 | 接口滥用、验证码绕过 | 5.3 | — |
+| 31 | 越权查看admin | 垂直越权、会话固定 | 5.4 | [[xd-security-logic-vulnerability-notes-day33-36]] |
+| 32 | URL跳转 | 开放重定向、钓鱼利用 | 6.1 | [[ssrf-bypass-techniques]] |
+| 33 | 文件包含漏洞 | LFI/RFI、伪协议利用 | 6.2 | [[php-file-inclusion-vulnerability]] |
+| 34 | webshell爆破 | 弱口令爆破、字典攻击 | — | [[ctfshow-web-info-gathering-brute-force]] |
+| 35 | 写到最后 | 学习心得、后续路线 | — | — |
 
 > **学习建议**：按集数顺序观看，**先看“补充知识”再做对应关卡**，遇到不懂的原理即跳转右侧知识库深度页面查阅，形成“视频实战 + 理论深挖 + 交叉引用”的闭环。
 
@@ -195,15 +286,13 @@ docker run -d -p 80:80 --name webug4 webug4.0
 - [[gkctf-2021-web-writeup]] —— GKCTF 2021 Web 五题深度复现
 - [[huxiangbei-willphp-file-inclusion-writeup]] —— 湖湘杯 WillPHP 文件包含链复现
 
-### 核心漏洞技术深度页面
-- **SQLi**：[[mysql-duplicate-entry-error-based-sqli]], [[mysql-dnslog-injection-loadfile-unc]], [[ctf-show-php-command-execution-bypass-techniques]]
-- **XSS**：[[xss-haozi-lab-walkthrough]], [[xd-security-xss-vulnerability-notes-day25-28]]
-- **XXE**：[[xxe-xml-dtd-fundamentals]], [[xxe-prevention-java-jaxp]]
-- **文件上传/包含**：[[php-file-inclusion-vulnerability]], [[cnvd-2021-49104-eoffice-v9-file-upload-rce]], [[xd-security-waf-bypass-techniques-day46-49]]
-- **反序列化**：[[xd-security-deserialization-xxe-notes-day37-39]], [[thinkphp5-deserialization-chain-analysis]], [[python-pickle-deserialization-rce]]
-- **SSRF**：[[ssrf-bypass-techniques]], [[ssrf-ctf-exploitation-guide]]
-- **命令执行/RCE**：[[ctf-show-php-command-execution-bypass-techniques]], [[php-non-alphanumeric-webshell-construction]]
-- **逻辑漏洞/越权**：[[xd-security-logic-vulnerability-notes-day33-36]]
+### 核心漏洞技术深度页面（按 Webug 4.0 分类映射）
+- **SQLi (1.1-1.7)**：[[mysql-duplicate-entry-error-based-sqli]], [[mysql-dnslog-injection-loadfile-unc]], [[ctf-show-php-command-execution-bypass-techniques]], [[xd-security-waf-bypass-techniques-day46-49]]
+- **XSS (2.1-2.5)**：[[xss-haozi-lab-walkthrough]], [[xd-security-xss-vulnerability-notes-day25-28]], [[discuz-x32-stored-dom-xss-bbcode-analysis]]
+- **文件下载 (3.1)**：[[php-file-inclusion-vulnerability]], [[xd-security-file-inclusion-notes]]
+- **文件上传 (4.1-4.5)**：[[php-file-inclusion-vulnerability]], [[cnvd-2021-49104-eoffice-v9-file-upload-rce]], [[xd-security-waf-bypass-techniques-day46-49]], [[upload-labs-file-upload-bypass-writeup]]
+- **逻辑漏洞 (5.1-5.4)**：[[xd-security-logic-vulnerability-notes-day33-36]], [[pikachu-target-writeup-part4]]
+- **其他 (6.1-6.5)**：[[ssrf-bypass-techniques]], [[ssrf-ctf-exploitation-guide]], [[php-file-inclusion-vulnerability]], [[ctf-show-php-command-execution-bypass-techniques]], [[xd-security-csrf-ssrf-rce-notes-day29-30]], [[websocket-vulnerabilities-analysis]]
 
 ### 实战渗透测试方法论
 - [[xd-security-pentest-basic-stage-notes]] —— 基础阶段 24 天知识清单
@@ -215,20 +304,24 @@ docker run -d -p 80:80 --name webug4 webug4.0
 
 ## 结语
 
-这 7 个靶场覆盖了 **Web 安全入门到进阶 90% 以上的核心漏洞类型**。建议采用“靶场实战 + 技术页面深度阅读 + 编写利用脚本”三位一体的学习模式：先在离线环境通关，再回顾知识库对应页面夯实原理，最后尝试将手工利用转化为自动化 PoC/Exp，形成可复用的个人武器库。
+这 7 个靶场覆盖了 **Web 安全入门到进阶 90% 以上的核心漏洞类型**。其中 **Webug 4.0** 凭借其系统性的漏洞分类（30+子类）、配套视频教程（35集）、官方文档与社区生态（乌云知识库、MD5解密、CMS/CTF模块规划），成为**零基础入门最完整的单一靶场**。
 
-**本次更新亮点**：
-- 新增 **Webug 4.0 B站 35 集系统视频教程目录**，按“补充知识+实战关卡”交替编排，配合知识库交叉引用形成完整学习闭环
-- 提供 **Docker 部署方案**，打破 Win2003 虚拟机依赖，适配现代开发环境
-- 标注 **GitHub 源码地址**，便于二次开发、代码审计或离线归档
+建议采用“靶场实战 + 技术页面深度阅读 + 编写利用脚本”三位一体的学习模式：先在离线环境通关，再回顾知识库对应页面夯实原理，最后尝试将手工利用转化为自动化 PoC/Exp，形成可复用的个人武器库。
 
-> **获取方式**：关注原公众号回复“靶场”获取百度网盘下载链接（约 2-3 GB）。建议校验文件完整性（MD5/SHA256）后再导入虚拟机。
+**本次更新亮点回顾**：
+- ✅ **Webug 4.0 漏洞分类全景图**：6大类 30+子类，逐项映射知识库深度页面
+- ✅ **官方资源三件套**：百度网盘下载、官网 http://www.webug.org、GitHub 源码
+- ✅ **视频教程与漏洞分类双向索引**：35集视频目录与漏洞编号对齐，便于定向学习
+- ✅ **Docker 部署方案**：打破 Win2003 虚拟机依赖，适配现代开发环境
+
+> **获取方式**：访问百度网盘链接 https://pan.baidu.com/s/1u_N58cb10rlDZ-FsH_BTSw 下载（约 2-3 GB）。建议校验文件完整性（MD5/SHA256）后再导入虚拟机。
 
 ## 来源
 
 - [102网络攻防实验室-202102-202203_5](../sources/102网络攻防实验室-202102-202203_5.md)
-- 微信公众号归档文章《webug基础教程视频学习》
+- 微信公众号归档文章《[新年礼物]Webug4.0 基础是梦的基石》（226安全团队，2019）
 - B站视频：[av70249823](https://www.bilibili.com/video/av70249823/)
 - Docker 部署指引：[linuz.me/2019/08/04/Webug-docker/](https://linuz.me/2019/08/04/Webug-docker/)
 - GitHub 仓库：[wangai3176/webug4.0](https://github.com/wangai3176/webug4.0)
 - [226安全团队-201805-202103_06](../sources/226安全团队-201805-202103_06.md)
+- [226安全团队-201805-202103_26](../sources/226安全团队-201805-202103_26.md)

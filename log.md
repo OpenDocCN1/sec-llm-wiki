@@ -475,3 +475,4 @@
 ## [2026-11-15] ingest | 226安全团队-201805-202103_23 -> java-xss-prevention-struts-esapi.md
 ## [2026-11-15] ingest | 226安全团队-201805-202103_24 -> java-arbitrary-file-upload-mitigation.md
 ## [2026-11-15] ingest | 226安全团队-201805-202103_25 -> cookie-security-fundamentals.md
+## [2026-11-15] ingest | 226安全团队-201805-202103_26 -> 226-security-team-wechat-archive-201805-202103.md, 226-security-team-open-source-projects.md, ctf-training-platforms-collection.md

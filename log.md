@@ -517,3 +517,4 @@
 ## [2026-11-16] ingest | 301在路上-201508-202208_017 -> xctf-nanjing-station-jiangsu-talent-forum.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_018 -> threat-attribution-tracing-techniques.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_019 -> xctf-nanjing-station-online-2017.md
+## [2026-11-16] ingest | 301在路上-201508-202208_020 -> security-news-fact-checking-case-study.md

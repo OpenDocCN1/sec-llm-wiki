@@ -356,3 +356,4 @@
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_02 -> 0x6270-security-team-wechat-archive-202203-202304.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_03 -> huawei-certification-training-reference.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_04 -> 0x6270-security-team-wechat-archive-202203-202304.md
+## [2026-11-15] ingest | 0x6270安全团队-202203-202304_05 -> cve-2023-28432-minio-information-disclosure.md

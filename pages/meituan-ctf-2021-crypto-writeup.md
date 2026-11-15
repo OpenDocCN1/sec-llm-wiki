@@ -1,7 +1,7 @@
 ---
 title: 2021美团CTF密码学方向Writeup：Symbol与hamburgerRSA完整解题过程
 description: 记录2021美团CTF密码学方向两道题目完整解题过程：Symbol LaTeX符号解码题与hamburgerRSA特殊拼接素数攻击题，包含LaTeX字符表查找、RSA特殊结构n与N的前后位数一致性分析、Sage脚本爆破恢复p/q、私钥计算解密全流程。
-category: program-analysis
+category: ai-security
 tags:
 - CTF
 - 密码学
@@ -207,4 +207,4 @@ b'flag{f8d8bfa5-6c7f-14cb-908b-abc1e96946c6}'
 
 ## 来源
 
-- [0xfafu攻防实验室-202010-202112_02](../sources/0xfafu攻防实验室-202010-202112_02.md)
+- [0xfafu攻防实验室-202010-202112_03](../sources/0xfafu攻防实验室-202010-202112_03.md)

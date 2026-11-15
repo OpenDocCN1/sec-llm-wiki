@@ -417,3 +417,4 @@
 ## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_00 -> 0xfafu-security-team-wechat-archive-202010-202112.md
 ## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_01 -> meituan-ctf-2021-crypto-writeup.md
 ## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_02 -> meituan-ctf-2021-crypto-writeup.md
+## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_03 -> meituan-ctf-2021-crypto-writeup.md

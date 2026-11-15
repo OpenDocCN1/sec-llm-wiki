@@ -1,6 +1,7 @@
 ---
 title: XD安全渗透测试课程 Day50-57 代码审计学习笔记
-description: 系统梳理PHP/Java代码审计方法论、关键字搜索策略、Fortify/FindBugs工具实战、Beescms/Ofcms/Jeesns等CMS实战案例、ThinkPHP5/Struts2/SpringBoot框架审计要点
+description: 系统梳理PHP/Java代码审计方法论、关键字搜索策略、Fortify/FindBugs工具实战、Beescms/Ofcms/Jeesns/某shop等CMS实战案例、ThinkPHP5/Struts2/SpringBoot框架审计要点，新增某shop
+  v4.0.7 存储型XSS完整审计链路分析
 category: program-analysis
 tags:
 - XD安全
@@ -16,13 +17,18 @@ tags:
 - Beescms
 - Ofcms
 - Jeesns
+- 某shop
+- ECShop
+- 存储型XSS
+- Referer头注入
+- 代码审计案例
 date: 2024-01-15
-updated: '2026-11-14'
+updated: '2026-11-15'
 ---
 
 ## 概述
 
-本页面整理自 XD安全渗透测试课程第 50-57 天代码审计阶段学习内容，涵盖 **PHP 与 Java 双语言代码审计方法论**、**关键字搜索策略**、**自动化审计工具（Fortify/FindBugs）实战**、多个 **CMS 实战案例**（Beescms、Ofcms、Jeesns）以及 **主流框架审计要点**（ThinkPHP5、Struts2、SpringBoot）。旨在构建从关键字定位、数据流追踪、断点调试到漏洞验证的完整审计闭环知识体系。
+本页面整理自 XD安全渗透测试课程第 50-57 天代码审计阶段学习内容，涵盖 **PHP 与 Java 双语言代码审计方法论**、**关键字搜索策略**、**自动化审计工具（Fortify/FindBugs）实战**、多个 **CMS 实战案例**（Beescms、FineCMS/Xhcms、**某shop v4.0.7**、Ofcms、Jeesns）以及 **主流框架审计要点**（ThinkPHP5、Struts2、SpringBoot）。旨在构建从关键字定位、数据流追踪、断点调试到漏洞验证的完整审计闭环知识体系。
 
 ---
 
@@ -96,6 +102,100 @@ flowchart TD
 2. **变量覆盖点**：`extract($_GET)` 或 `foreach($_POST as $k=>$v) $$k=$v` 导致 `$module` 等关键变量可控
 3. **组合利用**：覆盖 `$module=1.txt` 配合 `include $module` → 任意文件包含 → 结合 [[php-webshell-fundamentals-chopper-analysis]] 一句话木马 → Getshell
 4. **Payload 示例**：`/about/index.php?fmodele=7&module=php://filter/read=convert.base64-encode/resource=../config/database`
+
+### 案例三：某shop v4.0.7 存储型 XSS（Referer 头注入）★ 新增
+
+> 来源：[学员作品] 某shop存储xss（v4.0.7），基于 XD安全课程学员实战复现。
+
+#### 漏洞概况
+
+| 属性 | 详情 |
+|------|------|
+| **影响版本** | v4.0.7 |
+| **漏洞类型** | 存储型 XSS (Stored XSS) |
+| **入口文件** | `index.php` (任意包含 `includes/init.php` 的入口均可) |
+| **核心函数** | `visit_stats()` (位于 `includes/init.php`) |
+| **触发点** | 后台管理 `flow_stats.php` (第 277 行) |
+| **攻击向量** | HTTP `Referer` 头 |
+| **过滤绕过** | `safety.php` 过滤不全，利用 `<iframe src=javascript:alert`xss`>` 绕过 |
+| **前置条件** | Cookie 中无 `ecs_id` (清空 Cookie 即可) |
+| **后续利用** | 后台 Getshell、SQL 操作、添加管理员、篡改金额等 |
+
+#### 代码审计链路复现
+
+**1. 入口与初始化追踪**
+
+- 程序为多入口结构，以 `index.php` 为例，首行包含核心文件 `includes/init.php`。
+- 在 `init.php` 第 215 行发现调用 `visit_stats()` 函数，用于记录访问统计。
+
+**2. `visit_stats` 函数数据流分析 (`includes/init.php`)**
+
+```php
+// 伪代码还原逻辑
+function visit_stats() {
+    // ...
+    $referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
+    // 解析 domain: 取第9位后以 '/' 分割的第一段
+    $domain = substr($referer, 9); // 简化逻辑
+    $domain = explode('/', $domain)[0];
+    
+    // 解析 path: 取第9位后剩余部分
+    $path = substr($referer, 9 + strlen($domain) + 1); // 简化逻辑
+    
+    // 过滤处理
+    $domain = addslashes($domain); // 或类似转义
+    $path = addslashes($path);
+    
+    // 入库
+    $sql = "INSERT INTO stats (domain, path) VALUES ('$domain', '$path')";
+    // ...
+}
+```
+
+- **关键发现**：
+  - `domain` 和 `path` 直接来源于 `HTTP_REFERER` 头，用户可控。
+  - 仅使用 `addslashes` (或类似转义) 处理，未进行 HTML 实体编码或 XSS 专用过滤。
+  - 逻辑要求 Referer 以 `http://` 开头 (第9位开始解析)，末尾建议携带 `/` 以便 `path` 解析正常。
+
+**3. 过滤机制回溯 (`safety.php`)**
+
+- 代码库存在通用防御文件 `safety.php`，包含 XSS 过滤逻辑（黑名单替换 `script`, `alert` 等）。
+- **绕过分析**：黑名单机制不全，无法覆盖所有标签与事件处理器。
+- **成功 Payload 构造**：
+  ```
+  "><iframe src=javascript:alert`xss`>/
+  ```
+  - 利用 `iframe` 标签 + `src` 属性执行 `javascript:` 伪协议。
+  - 使用反引号 `` `xss` `` 替代括号 `('xss')` 绕过关键字过滤。
+  - 末尾 `/` 配合前文解析逻辑闭合路径。
+
+**4. 触发点验证 (`admin/flow_stats.php` 第 277 行)**
+
+```php
+// 后台流量统计页面读取数据库并直接输出
+while ($row = $db->fetchRow($res)) {
+    echo "<tr><td>" . $row['domain'] . "</td><td>" . $row['path'] . "</td></tr>";
+    // 无 htmlspecialchars / htmlentities 等输出编码
+}
+```
+- 管理员访问后台“流量统计”页面时，从数据库读取 `domain`、`path` 字段直接拼接进 HTML 响应，导致存储型 XSS 触发。
+
+#### 完整复现步骤
+
+1. **清理 Cookie**：删除浏览器中目标站点的 `ecs_id` Cookie (或使用无痕模式/新会话)。
+2. **发送恶意请求**：
+   - 目标：任意前台页面 (如 `index.php`)。
+   - 修改 HTTP 请求头 `Referer: http://evil.com/"><iframe src=javascript:alert`xss`>/`
+3. **验证入库**：检查数据库 `stats` 表，确认 `domain`/`path` 字段已存入 Payload。
+4. **触发执行**：以管理员身份登录后台，访问 `flow_stats.php` (流量统计页面)。
+5. **结果**：弹窗 `xss` 执行，确认存储型 XSS 成功。
+
+#### 后续利用拓展
+
+- 后台存在 **SQL 执行功能** (CMS 自带)，可直接执行任意 SQL → Getshell / 篡改数据。
+- 后台 **文件管理/模板编辑** 功能可写 Webshell。
+- 可 **添加超级管理员账号** 或 **修改商品价格/用户余额** 等业务逻辑攻击。
+- 结合 [[xd-security-incident-response-notes#webshell溯源]] 进行攻击溯源演练。
 
 ---
 
@@ -284,6 +384,8 @@ flowchart TD
 | **Java SQLi 防御** | [[java-preparedstatement-sql-injection-defense]] | 预编译原理、ORDER BY 注入案例 |
 | **SSRF/内网探测** | [[ssrf-bypass-techniques]]、[[ssrf-ctf-exploitation-guide]] | 协议绕过、Gopher/FastCGI/Redis 利用 |
 | **NoSQL 注入** | [[mongodb-nosql-injection-guide]] | MongoDB 注入手法、GKCTF 实战 |
+| **XSS 进阶绕过** | [[xd-security-xss-vulnerability-notes-day25-28]]、[[xss-haozi-lab-walkthrough]] | 存储型/反射型/DOM XSS、BeEF、过滤绕过 |
+| **Webshell 利用** | [[php-webshell-fundamentals-chopper-analysis]]、[[php-webshell-obfuscation-av-evasion]] | 菜刀/蚁剑/哥斯拉、流量加密、免杀 |
 | **内网横向/代理** | [[internal-network-pivoting-techniques]]、[[frp内网渗透应用]] | Getshell 后内网穿透、Socks5 代理 |
 | **应急响应** | [[xd-security-incident-response-notes]] | Webshell 溯源、日志分析、自动化工具箱 |
 
@@ -296,7 +398,7 @@ mindmap
   root((代码审计进阶路径))
     PHP审计
       关键字搜索 -> 断点调试 -> 绕过构造 -> 链式利用
-      CMS实战: Beescms/FineCms/Xhcms
+      CMS实战: Beescms/FineCms/Xhcms/某shop(ECShop)
       框架: ThinkPHP5/6/8 Laravel CodeIgniter
       工具: Seay/RIPS/PHPStan/Fortify
     Java审计
@@ -318,8 +420,8 @@ mindmap
 
 ---
 
-*页面维护者：无名安全团队 | 最后更新：2024-01-15 | 版本：v1.0*
+*页面维护者：无名安全团队 | 最后更新：2025-08-21 | 版本：v1.1 (新增某shop v4.0.7 存储型XSS案例)*
 
 ## 来源
 
-- [0x00实验室-202108-202304_093](../sources/0x00实验室-202108-202304_093.md)
+- [226安全团队-201805-202103_07](../sources/226安全团队-201805-202103_07.md)

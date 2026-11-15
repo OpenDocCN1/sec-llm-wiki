@@ -423,3 +423,4 @@
 ## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_06 -> bailu-ctf-2023-writeup.md
 ## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_07 -> thinkphp5-deserialization-chain-analysis.md
 ## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_08 -> cobalt-strike-external-c2-smb-beacon.md, http-proxy-tunneling-goproxy-netsh.md, pystinger-socks4-proxy-webshell-pivoting.md
+## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_09 -> hec-cup-2021-web-misc-writeup.md, ssrf-bypass-techniques.md, ctfshow-web-sql-injection-bypass-basics.md

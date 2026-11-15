@@ -386,3 +386,4 @@
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_32 -> cve-2022-30489-wavlink-wn535g3-post-xss-analysis.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_33 -> dotnet-objectdataprovider-deserialization-gadget.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_34 -> cve-2022-0847-dirty-pipe-linux-kernel-privilege-escalation.md
+## [2026-11-15] ingest | 0x6270安全团队-202203-202304_35 -> medical-system-internal-penetration-case-study.md

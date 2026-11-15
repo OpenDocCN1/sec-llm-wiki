@@ -426,3 +426,4 @@
 ## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_09 -> hec-cup-2021-web-misc-writeup.md, ssrf-bypass-techniques.md, ctfshow-web-sql-injection-bypass-basics.md
 ## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_10 -> hec-cup-2021-crypto-writeup.md
 ## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_11 -> heap-off-by-one-null-exploitation.md, heap-overflow-principles-unlink-exploitation.md
+## [2026-11-15] ingest | 0xfafu攻防实验室-202010-202112_12 -> info-gathering-tools-collection.md

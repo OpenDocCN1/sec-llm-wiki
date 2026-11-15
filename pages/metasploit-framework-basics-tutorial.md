@@ -24,7 +24,7 @@ updated: '2026-11-15'
 
 Metasploit Framework（简称 MSF）是一个模块化的渗透测试框架，集成了数百个已知漏洞利用模块、载荷、编码器、辅助模块及后渗透功能，号称“渗透测试全家桶”。本文基于 0th3rs 安全团队微信归档文章，整理了在 **Windows 10** 环境下的完整安装配置流程、数据库对接、木马生成与监听、以及会话建立后的常用后渗透操作，并补充 **ProFTPd 1.3.3c 后门漏洞（CVE-2010-4221）实战复现** 全流程，演示从服务枚举、模块检索、载荷选择到会话建立与提权的完整攻击链。
 
-> 💡 相关扩展阅读：[[frp内网渗透应用]] 中演示了如何结合 frp SOCKS5 隧道代理本地 Metasploit 进行内网反弹 Shell；[[proftpd-133c-backdoor-exploitation]] 提供该漏洞的独立详细复现页，含 Exploit-DB 源码分析与 nmap/scripts 搜索细节。
+> 💡 相关扩展阅读：[[frp内网渗透应用]] 中演示了如何结合 frp SOCKS5 隧道代理本地 Metasploit 进行内网反弹 Shell；[[proftpd-133c-backdoor-exploitation]] 提供该漏洞的独立详细复现页，含 Exploit-DB 源码分析与 nmap/scripts 搜索细节；[[metasploitcoop-collaboration-platform]] 作为进阶可视化协作方向的延伸阅读，提供基于 Metasploit Framework 的团队协作 C2 平台实现。
 
 ---
 
@@ -326,6 +326,7 @@ root
 - [[internal-network-pivoting-techniques]] — Meterpreter `autoroute`、`socks_proxy` 配合 Cobalt Strike/Venom/Frp 横向移动体系
 - [[peda-buffer-overflow-analysis-guide]] — Linux 下 PEDA 调试、ROP 链构造、TTY 优化技巧
 - [[linux-kernel-hardening-mechanisms]] — 内核缓解机制与提权漏洞适用性判断指南
+- [[metasploitcoop-collaboration-platform]] — 0x727 团队开源的基于 Metasploit Framework 可视化后渗透协作平台，支持团队协作、模块中文化、Docker 部署、原生 MSF 控制台，旨在作为 Cobalt Strike 替代品的进阶协作方向延伸阅读
 
 ---
 
@@ -342,4 +343,4 @@ Metasploit Framework 以模块化、自动化、生态完善著称，是渗透�
 
 ## 来源
 
-- [0x00实验室-202108-202304_098](../sources/0x00实验室-202108-202304_098.md)
+- [0x727开源安全团队-202108-202110_4](../sources/0x727开源安全团队-202108-202110_4.md)

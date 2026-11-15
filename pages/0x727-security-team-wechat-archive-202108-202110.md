@@ -1,7 +1,7 @@
 ---
 title: 0x727开源安全团队微信公众号2021年8月至10月文章归档索引
-description: 0x727开源安全团队微信公众号在2021年8月至10月期间发布文章的汇总索引页面，涵盖AI安全、对抗样本、模型安全、数据投毒、联邦学习安全、隐私计算等前沿技术内容，新增漏洞报告自动化平台开源工具发布条目。
-category: ai-security
+description: 0x727开源安全团队微信公众号在2021年8月至10月期间发布文章的汇总索引页面，涵盖AI安全、对抗样本、模型安全、数据投毒、联邦学习安全、隐私计算等前沿技术内容，新增SchTask计划任务持久化工具开源发布条目、漏洞报告自动化平台开源工具发布条目。
+category: program-analysis
 tags:
 - '0x727'
 - 开源安全团队
@@ -17,6 +17,15 @@ tags:
 - 2021年8月
 - 2021年9月
 - 2021年10月
+- SchTask
+- 计划任务
+- 持久化
+- 权限维持
+- C#
+- 红队工具
+- 免杀
+- Windows Internals
+- Task Scheduler
 - 漏洞报告自动化
 - 开源工具
 date: 2021-10-31
@@ -54,11 +63,73 @@ updated: '2026-11-15'
 
 | 日期 | 标题 | 核心标签 | 简介 |
 |------|------|----------|------|
+| 2021-08-05 | [SchTask-计划任务的进阶](http://mp.weixin.qq.com/s?__biz=MzkwNTI3MjIyOQ==&mid=2247483748&idx=1&sn=c4b1fb2229b2114c82962dabe901e6b3) | SchTask、计划任务、持久化、权限维持、C#、红队工具、免杀、Windows Internals、Task Scheduler | 0x727团队成员AnonySec开源发布SchTask工具，利用Windows API创建隐藏计划任务实现权限维持，支持随机进程名伪装、XML文件隐藏、定时触发持久化等核心功能，附技术原理详解与实战使用指南。 |
 | 2021-08-?? | [待补充] |  |  |
 | 2021-08-?? | [待补充] |  |  |
 | 2021-08-?? | [待补充] |  |  |
 | 2021-08-?? | [待补充] |  |  |
-| 2021-08-?? | [待补充] |  |  |
+
+---
+
+## 重点工具发布：SchTask 计划任务持久化工具
+
+### 项目定位
+0x727团队未来一段时间将陆续开源工具的第一款，专注于**权限维持**与**内存加载**场景，利用Windows计划任务机制实现隐蔽持久化，同时绕过安全软件阻断。
+
+### 核心技术原理
+
+#### 实现步骤
+1. **随机进程名伪装**：选择主机随机进程名作为计划任务程序文件名
+2. **文件投放路径**：将计划任务程序文件复制到 `%AppData%\Microsoft\Windows\Themes\` 目录
+3. **任务命名策略**：创建的计划任务名取同一随机进程名，融入系统合法任务中
+4. **触发器配置**：以分钟为单位设置无限期持续触发，保证持久化稳定性
+5. **XML文件隐藏**：更改 Index、删除 SD 的键值，隐藏计划任务对应的 XML 定义文件，规避取证分析
+6. **清理功能**：支持删除已添加的计划任务，便于撤离痕迹清理
+
+#### 技术参考文档
+更多技术细节请查看：[Windows计划任务的进阶](https://payloads.cn/2021/0805/advanced-windows-scheduled-tasks.html)
+
+### 工具特性
+- **语言**：C# (.NET Framework 2.0，兼容性强)
+- **依赖**：内嵌 `Microsoft.Win32.TaskScheduler.dll`，Release版本单文件无依赖运行
+- **隐蔽性**：随机命名、用户目录投放、XML元数据清理三重隐匿
+- **持久性**：分钟级触发器无限期运行，重启后自动生效
+
+### 使用方法
+
+#### 下载安装
+```bash
+# 直接下载 Release 版本快速使用
+# GitHub仓库：https://github.com/0x727/SchTask
+```
+
+#### 命令行用法
+```
+C:\>SchTask.exe
+Usage: SchTask.exe <File Path> <Minutes>
+Eg:  SchTask.exe C:\Windows\System32\cmd.exe 10
+```
+
+- **File Path**：要执行的程序路径（如载荷程序、反向Shell启动器等）
+- **Minutes**：触发间隔（分钟），设置为10即每10分钟执行一次
+
+#### 效果演示
+工具运行后将在计划任务库中创建伪装的隐藏任务，任务计划程序界面中不可见，需通过注册表或专用工具枚举发现。
+
+### 社区共建指引
+SchTask 是一个免费且开源的项目，我们欢迎任何人为其开发和进步贡献力量。
+
+- 问题反馈：提交 Issues
+- Bug修复：PR 至 dev 分支
+- 新功能：先创建 Issue 讨论设计方案
+- 文档改进：欢迎 PR 完善说明文档（特别是英文文档）
+- 稳定版发布：master 分支仅用于发布稳定可用版本
+- 其他合作：发送邮件至 0x727Team@gmail.com
+
+> 提醒：和项目相关的问题最好在 issues 中反馈，这样方便其他有类似问题的人可以快速查找解决方法，并且也避免了我们重复回答一些问题。
+
+### 项目地址
+🔗 **GitHub开源仓库**：https://github.com/0x727/SchTask
 
 ---
 
@@ -177,6 +248,10 @@ if (!-e $request_filename) { rewrite ^(.*)$ $1.php last; }
 - 待补充：天池、DataCastle、Kaggle等平台AI安全赛题Writeup
 - 待补充：强网杯、西湖论剑等国内顶级赛事AI安全方向复盘
 
+### 红队工具开发系列
+- [[schtask-persistence-tool]] — SchTask计划任务持久化工具技术详解（C#、Task Scheduler、XML隐藏、免杀对抗）
+- [[0x727-bugreporter-automated-report-platform]] — 0x727漏洞报告自动化编写平台（Python/PHP、项目协同、模板化报告、Nginx加固）
+
 ---
 
 ## 相关资源与工具链接
@@ -184,6 +259,7 @@ if (!-e $request_filename) { rewrite ^(.*)$ $1.php last; }
 | 资源类型 | 名称 | 链接/备注 |
 |----------|------|-----------|
 | 团队主页 | 0x727开源安全团队 GitHub | https://github.com/0x727 |
+| 持久化工具 | SchTask | https://github.com/0x727/SchTask |
 | 漏洞报告工具 | BugRepoter_0x727 | https://github.com/0x727/BugRepoter_0x727 |
 | 论文复现 | Adversarial Robustness Toolbox (ART) | IBM开源对抗鲁棒性工具箱 |
 | 论文复现 | CleverHans | Google开源对抗样本库 |
@@ -201,6 +277,10 @@ if (!-e $request_filename) { rewrite ^(.*)$ $1.php last; }
 - [[apt-c-08-mobile-attack-analysis]] — APT-C-08移动端攻击分析（涉及AI驱动的恶意样本分析）
 - [[mtctf-2021-crypto-writeup]] / [[mtctf-2021-web-writeup]] — MTCTF 2021竞赛题解（可能包含AI安全相关挑战）
 - [[tctf-2021-1linephp-zip-include]] / [[tctf-2021-worldcup-xss-go-ssti]] — TCTF 2021竞赛题解
+- [[schtask-persistence-tool]] — SchTask计划任务持久化工具深度技术解析页
+- [[0x727-bugreporter-automated-report-platform]] — 0x727漏洞报告自动化编写平台深度技术解析页
+- [[process-injection-tampering-techniques]] — 进程注入与篡改技术体系（含计划任务持久化相关的进程镂空技术对比）
+- [[internal-network-pivoting-techniques]] — 内网穿透与横向移动技术体系（持久化作为立足点的后续利用阶段）
 
 ---
 
@@ -210,12 +290,12 @@ if (!-e $request_filename) { rewrite ^(.*)$ $1.php last; }
 |------|------|----------|--------|
 | 1.0 | 2021-10-31 | 初始化页面框架，建立月度索引表结构 | 知识库策展人 |
 | 1.1 | 2021-10-?? | 新增0x727漏洞报告自动化编写平台开源发布文章详细条目 | 知识库策展人 |
-| 1.2 | 待定 | 填充2021年8-9月具体文章标题、链接、标签与摘要 | 知识库策展人 |
+| 1.2 | 2026-11-15 | 新增SchTask计划任务持久化工具开源发布条目（2021-08-05），完善团队工具生态脉络，新增红队工具开发系列专题索引，补充关联知识页面交叉引用 | 知识库策展人 |
 
 ---
 
-> **说明**：本页面为索引框架，2021年10月已补全漏洞报告自动化平台开源工具发布条目。8-9月具体文章条目待后续根据公众号历史消息列表逐条补全。如您掌握该时间段内0x727团队发布的具体文章信息，欢迎通过PR或Issue补充完善。
+> **说明**：本页面为索引框架，2021年10月已补全漏洞报告自动化平台开源工具发布条目，2021年8月新增SchTask计划任务持久化工具开源发布条目。8-9月其他具体文章条目待后续根据公众号历史消息列表逐条补全。如您掌握该时间段内0x727团队发布的具体文章信息，欢迎通过PR或Issue补充完善。
 
 ## 来源
 
-- [0x727开源安全团队-202108-202110_1](../sources/0x727开源安全团队-202108-202110_1.md)
+- [0x727开源安全团队-202108-202110_2](../sources/0x727开源安全团队-202108-202110_2.md)

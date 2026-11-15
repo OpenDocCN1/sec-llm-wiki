@@ -448,3 +448,4 @@
 ## [2026-11-15] ingest | 102网络攻防实验室-202102-202203_4 -> security-tool-update-202104.md
 ## [2026-11-15] ingest | 102网络攻防实验室-202102-202203_5 -> ctf-training-platforms-collection.md
 ## [2026-11-15] ingest | 102网络攻防实验室-202102-202203_6 -> cve-monitoring-dingtalk-script.md
+## [2026-11-15] ingest | 102网络攻防实验室-202102-202203_7 -> cisp-pte-penetration-testing-exam-guide.md

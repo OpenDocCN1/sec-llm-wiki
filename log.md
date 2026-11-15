@@ -471,3 +471,4 @@
 ## [2026-11-15] ingest | 226安全团队-201805-202103_19 -> thinkphp-field-method-sql-injection-bypass-360-safe3.md
 ## [2026-11-15] ingest | 226安全团队-201805-202103_20 -> sqlmap-comprehensive-guide.md
 ## [2026-11-15] ingest | 226安全团队-201805-202103_21 -> web-app-security-review-checklist.md
+## [2026-11-15] ingest | 226安全团队-201805-202103_22 -> gambling-site-penetration-test-case-study.md

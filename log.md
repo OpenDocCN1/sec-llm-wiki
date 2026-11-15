@@ -485,3 +485,4 @@
 ## [2026-11-15] ingest | 226安全团队-201805-202103_33 -> arbitrary-file-download-vulnerability-analysis.md
 ## [2026-11-15] ingest | 226安全团队-201805-202103_34 -> nodemcu-esp8266-firmware-lua-tutorial.md
 ## [2026-11-15] ingest | 226安全团队-201805-202103_35 -> metinfo-612-sql-injection-analysis.md
+## [2026-11-15] ingest | 226安全团队-201805-202103_36 -> qq-sso-local-endpoint-credential-theft.md

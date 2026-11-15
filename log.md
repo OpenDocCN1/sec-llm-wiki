@@ -521,3 +521,4 @@
 ## [2026-11-16] ingest | 301在路上-201508-202208_021 -> medical-data-security-breaches.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_022 -> notable-hackers-us-cybersecurity-history.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_023 -> cia-vault7-leak-analysis.md
+## [2026-11-16] ingest | 301在路上-201508-202208_024 -> mps-major-personal-info-theft-case.md

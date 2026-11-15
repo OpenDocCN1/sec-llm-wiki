@@ -458,3 +458,4 @@
 ## [2026-11-15] ingest | 226安全团队-201805-202103_06 -> ctf-training-platforms-collection.md
 ## [2026-11-15] ingest | 226安全团队-201805-202103_07 -> xd-security-code-audit-notes-day50-57.md, xd-security-xss-vulnerability-notes-day25-28.md
 ## [2026-11-15] ingest | 226安全团队-201805-202103_08 -> wecenter-v334-phar-deserialization-sqli.md
+## [2026-11-15] ingest | 226安全团队-201805-202103_09 -> fastjson-deserialization-gadgets-shiro-anteros.md

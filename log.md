@@ -496,3 +496,4 @@
 ## [2026-11-15] ingest | 226安全团队-201805-202103_44 -> xd-security-csrf-ssrf-rce-notes-day29-30.md, social-engineering-attack-techniques.md
 ## [2026-11-15] ingest | 226安全团队-201805-202103_45 -> social-engineering-attack-techniques.md, domain-registrar-security-guide.md
 ## [2026-11-15] ingest | 226安全团队-201805-202103_46 -> catfish-cms-stored-xss-analysis.md
+## [2026-11-15] ingest | 226安全团队-201805-202103_47 -> catfish-cms-arbitrary-image-deletion.md

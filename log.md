@@ -360,3 +360,5 @@
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_06 -> 0x6270-knowledge-planet-team.md, 0x6270-security-team-wechat-archive-202203-202304.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_07 -> oasys-system-code-audit.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_08 -> 0x6270-knowledge-planet-team.md
+## [2026-11-15] ingest | 0x6270安全团队-202203-202304_09 -> xxe-prevention-java-jaxp.md
+## [2026-11-15] ingest | 0x6270安全团队-202203-202304_10 -> 0x6270-knowledge-planet-team.md

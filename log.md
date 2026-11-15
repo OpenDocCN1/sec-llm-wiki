@@ -381,3 +381,4 @@
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_27 -> 0x6270-security-team-wechat-archive-202203-202304.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_28 -> isc2022-hackingclub-whitehat-summit.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_29 -> 0x6270-security-team-wechat-archive-202203-202304.md, 0x6270-hvv-vulnerability-threat-intelligence.md
+## [2026-11-15] ingest | 0x6270安全团队-202203-202304_30 -> isc2022-hackingclub-whitehat-summit.md

@@ -453,3 +453,4 @@
 ## [2026-11-15] ingest | 226安全团队-201805-202103_01 -> hvv-blue-team-recruitment-standards.md
 ## [2026-11-15] ingest | 226安全团队-201805-202103_02 -> 226-security-team-wechat-archive-201805-202103.md, 226-security-team-open-source-projects.md
 ## [2026-11-15] ingest | 226安全团队-201805-202103_03 -> redteam-hw-opsec-guidelines.md
+## [2026-11-15] ingest | 226安全团队-201805-202103_04 -> cobalt-strike-ssl-keystore-evasion.md, c2-redirectors-malleable-c2-profiles.md

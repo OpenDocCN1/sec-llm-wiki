@@ -366,3 +366,4 @@
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_12 -> cve-id-application-guide.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_13 -> struts2-memory-shell-injection.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_14 -> cve-2023-23752-joomla-unauthorized-access.md
+## [2026-11-15] ingest | 0x6270安全团队-202203-202304_15 -> cve-2023-24055-keepass-plaintext-transmission.md

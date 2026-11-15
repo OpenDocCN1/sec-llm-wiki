@@ -364,3 +364,4 @@
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_10 -> 0x6270-knowledge-planet-team.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_11 -> cve-2023-21716-word-rtf-heap-overflow-analysis.md, 0x6270-security-team-wechat-archive-202203-202304.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_12 -> cve-id-application-guide.md
+## [2026-11-15] ingest | 0x6270安全团队-202203-202304_13 -> struts2-memory-shell-injection.md

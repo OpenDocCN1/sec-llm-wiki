@@ -388,3 +388,4 @@
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_34 -> cve-2022-0847-dirty-pipe-linux-kernel-privilege-escalation.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_35 -> medical-system-internal-penetration-case-study.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_36 -> dotnet-objectdataprovider-deserialization-gadget.md
+## [2026-11-15] ingest | 0x6270安全团队-202203-202304_37 -> 0x6270-security-team-wechat-archive-202203-202304.md

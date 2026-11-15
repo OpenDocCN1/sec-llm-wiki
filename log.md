@@ -527,3 +527,4 @@
 ## [2026-11-16] ingest | 301在路上-201508-202208_027 -> zhongan-tianxia-wechat-archive-2017.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_028 -> confession-puzzle-multi-layer-cipher-walkthrough.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_029 -> 301-zai-lushang-wechat-archive-201508-202208.md
+## [2026-11-16] ingest | 301在路上-201508-202208_030 -> apache-security-hardening-guide.md

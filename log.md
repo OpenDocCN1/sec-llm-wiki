@@ -395,3 +395,5 @@
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_41 -> ghidra-decompiler-window-guide.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_42 -> cve-2022-23131-zabbix-saml-auth-bypass.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_43 -> 0x6270-security-team-wechat-archive-202203-202304.md, xd-security-pentest-course-curriculum.md
+## [2026-11-15] ingest | 0x6270安全团队-202203-202304_44 -> ghidra-listing-view-guide.md
+## [2026-11-15] ingest | 0x6270安全团队-202203-202304_45 -> ghidra-reverse-engineering-framework-introduction.md, 0x6270-knowledge-planet-team.md

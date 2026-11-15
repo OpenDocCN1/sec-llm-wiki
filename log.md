@@ -446,3 +446,4 @@
 ## [2026-11-15] ingest | 102网络攻防实验室-202102-202203_2 -> codetest-visual-poc-exploitation-tool.md
 ## [2026-11-15] ingest | 102网络攻防实验室-202102-202203_3 -> firekylin-firedog-emergency-response-tool.md
 ## [2026-11-15] ingest | 102网络攻防实验室-202102-202203_4 -> security-tool-update-202104.md
+## [2026-11-15] ingest | 102网络攻防实验室-202102-202203_5 -> ctf-training-platforms-collection.md

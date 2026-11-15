@@ -383,6 +383,7 @@
 - [[ctf-flask-path-traversal-vim-crypto]] `CTF` `Flask` `目录穿越` `Vim加密` `Writeup` `实战复现` — 记录一道 Flask CTF 题目通过 move 接口目录穿越读取 flag、并结合剧集台词破解 Vim 加密文件的完整解题过程
 - [[ctf-misc入门与工具箱]] `CTF` `Misc` `隐写术` `流量分析` `内存取证` `文件修复` `工具箱` — 系统梳理 CTF Misc 方向常见考点：编码转换、隐写术、文件修复、流量/内存取证，以及核心工具链（binwalk、foremost、steghide、Volatility 等）速查表。
 - [[ctfd-whale-docker-swarm-frp-deployment]] `CTF` `CTFd` `CTFd-Whale` `Docker Swarm` `Frp` `动态靶机` `容器编排` `渗透测试环境` — 基于 CTFd-Whale 插件结合 Docker Swarm 与 Frp 实现 CTF 比赛动态靶机自动分发、端口映射及实例隔离的完整部署教程，含环境准备、核心组件配置、网络互联、插件参数调优、题目发放模式及常见报错排查。
+- [[cve-monitoring-dingtalk-script]] `CVE` `漏洞监控` `钉钉机器人` `自动化运维` `安全工具` `Python脚本` `GitHub API` — 介绍一款用于监控最新CVE漏洞并通过钉钉机器人实时推送通知的自动化脚本，脚本每分钟轮询一次GitHub获取最新漏洞信息。
 - [[cybersecurity-training-resources-guide]] `网络安全` `培训课程` `学习资源` `小迪安全` `暗月渗透` `避坑指南` `学习方法论` — 汇总主流网络安全培训课程（小迪安全、暗月渗透等）对比、免费/付费学习资源推荐、学习方法论、行业避坑指南及证书建议，助力零基础入门与进阶。
 - [[data-breach-45billion-chinese-platforms-analysis]] `数据泄露` `隐私保护` `社会工程学` `凭证填充` `OSINT` `网络安全事件分析` — 深度解析2023年曝光的45亿条用户隐私数据泄露事件，涉及京东、淘宝、美团等主流平台。本文梳理泄露数据来源、验证真实性、潜在攻击链路，并提供个人隐私保护的实操缓解措施。
 - [[iot-device-compromise-internal-penetration]] `内网渗透` `IoT安全` `OT安全` `横向移动` `持久化` `弱口令` `未授权访问` `默认配置` `实战案例` — 系统梳理内网渗透中常见 IoT/OT 设备（打印机、UPS、FTP 服务、网络摄像头、数据库等）的未授权访问、弱口令、默认配置漏洞利用手法，结合某房地产公司实战案例说明如何将这些设备作为横向移动跳板或持久化据点。

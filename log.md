@@ -457,3 +457,4 @@
 ## [2026-11-15] ingest | 226安全团队-201805-202103_05 -> jumbo-internal-penetration-cheatsheet.md, xd-security-internal-network-penetration-notes-day67-68.md, xd-security-internal-network-penetration-notes-day69-70.md
 ## [2026-11-15] ingest | 226安全团队-201805-202103_06 -> ctf-training-platforms-collection.md
 ## [2026-11-15] ingest | 226安全团队-201805-202103_07 -> xd-security-code-audit-notes-day50-57.md, xd-security-xss-vulnerability-notes-day25-28.md
+## [2026-11-15] ingest | 226安全团队-201805-202103_08 -> wecenter-v334-phar-deserialization-sqli.md

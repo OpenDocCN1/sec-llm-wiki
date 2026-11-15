@@ -402,3 +402,4 @@
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_48 -> listed-company-penetration-test-case-study.md, iot-device-compromise-internal-penetration.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_49 -> iot-reconnaissance-information-gathering.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_50 -> 0x6270-security-team-wechat-archive-202203-202304.md, 0x6270-penetration-test-case-study-2023.md
+## [2026-11-15] ingest | 0x6270安全团队-202203-202304_51 -> web-cache-poisoning-techniques.md

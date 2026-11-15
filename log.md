@@ -440,3 +440,4 @@
 ## [2026-11-15] ingest | 1024安全团队-202204-202209_3 -> ft232h-spi-flash-firmware-extraction.md, 1024-security-team-wechat-archive-202204-202209.md
 ## [2026-11-15] ingest | 1024安全团队-202204-202209_4 -> 1024-security-team-wechat-archive-202204-202209.md
 ## [2026-11-15] ingest | 1024安全团队-202204-202209_5 -> can-bus-reverse-engineering-icsim-tutorial.md
+## [2026-11-15] ingest | 1024安全团队-202204-202209_6 -> usb-hid-traffic-forensics.md, automotive-protocol-analysis-uart-ble.md, cicv-2022-crypto-forensics-writeup.md

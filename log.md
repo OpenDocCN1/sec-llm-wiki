@@ -352,3 +352,4 @@
 ## [2026-11-15] ingest | 0x536d72-202112-202205_1 -> osint-social-engineering-scam-investigation-case-study.md
 ## [2026-11-15] ingest | 0x536d72-202112-202205_2 -> supply-chain-attack-fundamentals.md, social-engineering-attack-techniques.md
 ## [2026-11-15] ingest | 0x6270安全团队-202203-202304_00 -> 0x6270-security-team-wechat-archive-202203-202304.md
+## [2026-11-15] ingest | 0x6270安全团队-202203-202304_01 -> security-engineer-recruitment-requirements.md

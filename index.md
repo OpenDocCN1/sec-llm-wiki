@@ -513,6 +513,7 @@
 - [[waf-bypass-techniques-case-study-ruijie]] `XSS` `WAF绕过` `反射型XSS` `锐捷` `校园网` `WiseGrid` `HTML标签嵌套` `Data URI` `Base64编码` `注释填充绕过` — 记录从锐捷校园网自助服务系统反射型 XSS 入手，逐步绕过内置过滤、WAF-A 关键词拦截、WAF-B (WiseGrid) 深度检测的完整实战绕过链，涵盖 HTML 标签嵌套逃逸、Data URI Base64 编码绕过、超长注释填充触发检测超时/长度限制等通用 WAF 绕过技巧。
 - [[web-fundamentals-lamp-wordpress-setup]] `LAMP` `Apache` `MySQL` `PHP` `WordPress` `Ubuntu` `Web渗透测试` `HTTP分析` `环境搭建` — 系统梳理基于 Ubuntu 的 LAMP（Apache + MySQL + PHP）环境搭建流程，以及 WordPress CMS 的下载、配置、数据库关联与站点初始化全过程，为后续 HTTP 抓包分析与 Web 渗透测试奠定基础环境。
 - [[wechat-personal-reflection-20210805]] `微信归档` `个人成长` `职业规划` `自我修养` `五年计划` `励志随笔` — 收录某微信公众号 2021 年 8 月 5 日发布的个人励志随笔，记录作者以五年为期（至 2026 年 9 月）的职业规划与内外兼修的自我修养思考。
+- [[white-hat-ethics-industry-trust]] `白帽子` `安全伦理` `行业信任` `漏洞披露` `媒体误读` `企业安全` `SRC` `职业道德` — 探讨白帽子群体面临的媒体误读、企业不信任、身份立场冲突与伦理自律困境，呼吁建立正确的安全价值观与协作文化
 - [[whitehat-wuhan-epidemic-contribution-story]] `白帽黑客` `网络安全保障` `武汉抗疫` `职业成长` `网络安全人才` `微信归档` — 记录一位白帽黑客的成长经历及其在武汉抗疫期间提供网络安全保障的贡献，展现白帽子群体在国家重大公共卫生事件中的网络安全保障价值。
 - [[windows10-telemetry-privacy-concerns]] `Windows 10` `遥测数据` `隐私保护` `CNIL` `Big Brother Watch` `数据跨境传输` `监管执法` `用户画像` — 梳理 Windows 10 发布初期因遥测数据收集引发的隐私争议，重点记录法国 CNIL 与英国 Big Brother Watch 的监管调查、裁决及微软回应，提供用户侧隐私设置缓解措施与合规启示。
 - [[xiaoyang-whitehat-practitioner-profile]] `白帽黑客` `渗透测试` `漏洞挖掘` `职业成长` `安全讲师` `十九大安保` `自学成才` `北漂` — 沉淀白帽黑客小羊同学的完整职业画像：北漂自学、渗透测试实战、漏洞挖掘竞技、重大成果上报公安部、十九大安保先进个人、转型「三尺讲台」安全讲师，形成可被引用的从业者成长案例。

@@ -612,3 +612,4 @@
 ## [2026-11-16] ingest | 301在路上-201508-202208_113 -> code-audit-file-operation-vulnerabilities.md, code-audit-file-upload-vulnerabilities.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_114 -> wifi-security-bypass-techniques.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_115 -> security-practitioner-health-wellbeing.md
+## [2026-11-16] ingest | 301在路上-201508-202208_116 -> 301-zai-lushang-wechat-archive-201508-202208.md, social-engineering-attack-techniques.md, threat-attribution-tracing-techniques.md

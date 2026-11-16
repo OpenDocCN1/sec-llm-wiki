@@ -559,3 +559,4 @@
 ## [2026-11-16] ingest | 301在路上-201508-202208_059 -> 301-zai-lushang-wechat-archive-201508-202208.md, security-consultative-selling-career.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_060 -> security-consultative-selling-career.md, security-career-city-choice.md, security-career-development-guide.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_061 -> security-career-development-guide.md
+## [2026-11-16] ingest | 301在路上-201508-202208_062 -> php-application-security-hardening.md

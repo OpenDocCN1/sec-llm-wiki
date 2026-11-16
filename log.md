@@ -600,3 +600,4 @@
 ## [2026-11-16] ingest | 301在路上-201508-202208_101 -> 301-zai-lushang-wechat-archive-201508-202208.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_102 -> cve-2016-4631-apple-imageio-tiff-rce.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_103 -> 301-zai-lushang-wechat-archive-201508-202208.md, insider-threat-courier-waybill-data-leakage.md, medical-data-security-breaches.md
+## [2026-11-16] ingest | 301在路上-201508-202208_104 -> logic-vulnerability-password-reset-audit.md

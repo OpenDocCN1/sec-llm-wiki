@@ -1,7 +1,7 @@
 ---
-title: 代码审计中全局防护的五大盲点：整型注入、数组键名注入、SERVER变量注入、FILES注入与变量覆盖
-description: 系统梳理代码审计中全局防护机制的五大盲点——整型注入绕过、数组键名注入、SERVER变量注入（X-Forwarded-For等）、FILES注入（$_FILES未被转义导致的SQL注入）与变量覆盖（extract/parse_str/$$
-  变量变量覆盖），结合实战案例深度解析成因、利用链构造及修复方案，形成白盒审计视角的完整知识体系。
+title: 代码审计中全局防护的六大盲点：整型注入、数组键名注入、SERVER变量注入、FILES注入、变量覆盖与字符编码转换绕过
+description: 系统梳理代码审计中全局防护机制的六大盲点——整型注入绕过、数组键名注入、SERVER变量注入（X-Forwarded-For等）、FILES注入（$_FILES未被转义导致的SQL注入）、变量覆盖（extract/parse_str/$$
+  变量变量覆盖）与字符编码转换绕过（iconv/mb_convert_encoding 导致的宽字节注入绕过 addslashes/GPC），结合实战案例深度解析成因、利用链构造及修复方案，形成白盒审计视角的完整知识体系。
 category: program-analysis
 tags:
 - 代码审计
@@ -21,21 +21,29 @@ tags:
 - TipAsk
 - HackBraid
 - 乌云
+- 宽字节注入
+- iconv
+- 字符编码转换
+- GBK
+- UTF-8
+- addslashes绕过
+- GPC绕过
 date: 2016-06-24
 updated: '2026-11-17'
 ---
 
 ## 概述
 
-本页面基于「白帽子分享之代码审计的艺术系列—第五季、第六季」（作者：HackBraid，乌云核心白帽子）整理，系统阐述 **全局防护机制在代码审计中常被忽视的五大盲点**：
+本页面基于「白帽子分享之代码审计的艺术系列—第四季、第五季、第六季」（作者：HackBraid，乌云核心白帽子）整理，系统阐述 **全局防护机制在代码审计中常被忽视的六大盲点**：
 
 1. **整型注入绕过**：数字型参数无需单引号闭合，完全绕过 GPC `addslashes` 转义。
 2. **数组键名注入**：全局防护仅遍历数组 `value` 进行转义，遗漏 `key` 导致键名直接拼接入 SQL。
 3. **SERVER 变量注入**：全局防护仅覆盖 `$_GET/$_POST/$_COOKIE`，遗漏 `$_SERVER` 等超全局数组（如 `X-Forwarded-For`、`CLIENT_IP` 等）。
 4. **FILES 注入**：全局转义遗漏 `$_FILES`，上传文件名、类型等字段未转义直接入库引发 SQL 注入。
 5. **变量覆盖**：`extract()`、`parse_str()`、`$$`（变量变量）等危险函数/语法允许攻击者以任意键名覆盖现有变量，劫持 SQL 拼接、包含路径、鉴权标识等关键逻辑。
+6. **字符编码转换绕过**：`iconv()`、`mb_convert_encoding()` 等编码转换函数在 `addslashes`/GPC 转义**之后**执行，利用 GBK/UTF-8 互转特性“吃掉”反斜杠，导致单引号逃逸，绕过全局防护。
 
-前三类属于 **“全局防护覆盖不全/类型处理缺陷”**，后两类属于 **“危险语法滥用/超全局数组遗漏”**，均是白盒审计中高产出、低门槛的挖掘切入点。
+前三类属于 **“全局防护覆盖不全/类型处理缺陷”**，第四类属于 **“超全局数组遗漏”**，第五类属于 **“危险语法滥用”**，第六类属于 **“编码转换时序缺陷”**，均是白盒审计中高产出、低门槛的挖掘切入点。
 
 ---
 
@@ -367,6 +375,75 @@ $$b = $_GET['val'];  // 等价于 $evil = 'attacker_controlled'
 
 ---
 
+## 盲点六：字符编码转换绕过（iconv/mb_convert_encoding）
+
+### 核心原理
+
+当应用在 **全局防护（GPC/addslashes）之后** 调用 `iconv()`、`mb_convert_encoding()` 等函数进行字符编码转换（GBK ↔ UTF-8），会导致转义反斜杠（`\` / `%5c`）被“吃掉”，使单引号逃逸，形成宽字节注入。
+
+| 转换方向 | 关键机制 | 利用字符示例 | 字节变化 |
+|----------|----------|--------------|----------|
+| **GBK → UTF-8** | GBK 双字节首字节 `0x81-0xFE` + 尾字节 `0x40-0xFE`（含 `0x5c`），转 UTF-8 后合并为一个 Unicode 字符，尾字节 `0x5c` 消失 | `%df%27` → addslashes → `%df%5c%27` → iconv → `運%27`（U+904B + 单引号） | `%df%5c` → `U+904B`，`%27` 保留 |
+| **UTF-8 → GBK** | UTF-8 字符 `錦` (E9 8C A6) 转 GBK 为 `E5 5C`，尾字节恰为 `0x5c`；addslashes 在转换**前**给单引号加反斜杠，转换后形成 `E5 5C 5C 27`，即 `錦` + `\\` + `'`，SQL 解析时 `\\` 变义为单个反斜杠，`'` 闭合字符串 | `錦'` → addslashes → `錦\`'` → iconv → `E5 5C 5C 27` | `E9 8C A6` → `E5 5C`，`5C` 保留，`27` 保留 |
+
+> **审计口诀**：搜索 `iconv(`、`mb_convert_encoding(`、`iconv_set_encoding(`；检查调用位置是否在 **全局转义之后**、**SQL 拼接之前**；重点关注搜索框、标题、评论等文本型输入点。
+
+### 实战案例复现（第四季示例）
+
+#### 场景一：GBK → UTF-8 转换
+```php
+// kuanzifu1.php
+require_once('common.php');  // common.php 中开启 GPC 或手动 addslashes($_GET/$_POST/$_COOKIE)
+$title_tmp = isset($_GET['title']) ? urldecode($_GET['title']) : 'news title';
+// 关键点：转义已发生，这里再做 GBK→UTF-8 转换
+$title = iconv("gbk","utf-8",$title_tmp);
+$sql = "SELECT * FROM news WHERE title = '{$title}'";
+```
+
+**利用构造**：
+- 输入：`title=%df%27 union select 1,2,concat(name,0x23,pass) from admin%23`
+- 过程：
+  1. GPC/addslashes：`%df%27` → `%df%5c%27`
+  2. `iconv("gbk","utf-8")`：`%df%5c` 在 GBK 中合法（汉字“運”），转为 UTF-8 单字符 `U+904B`；`%27` 保持不变。
+  3. 最终 SQL：`SELECT * FROM news WHERE title = '運' union select 1,2,concat(name,0x23,pass) from admin#'`
+- 结果：单引号逃逸，UNION 注入成功。
+
+#### 场景二：UTF-8 → GBK 转换
+```php
+// kuanzifu2.php
+require_once('common.php');
+$title_tmp = isset($_GET['title']) ? urldecode($_GET['title']) : 'news title';
+// 关键点：转义已发生，这里再做 UTF-8→GBK 转换
+$title = iconv("utf-8","gbk",$title_tmp);
+$sql = "SELECT * FROM news WHERE title = '{$title}'";
+```
+
+**利用构造**：
+- 输入：`title=錦' union select 1,2,concat(name,0x23,pass) from admin%23`（`錦` 为 UTF-8 编码 `E9 8C A6`）
+- 过程：
+  1. GPC/addslashes：`錦'` → `錦\`'`（字节：`E9 8C A6 5C 27`）
+  2. `iconv("utf-8","gbk")`：`錦` → `E5 5C`；`5C` → `5C`；`27` → `27`。结果字节：`E5 5C 5C 27`
+  3. MySQL (GBK 连接) 解析：`E5 5C` = 一个汉字；`5C 5C` = 转义后的反斜杠（即字面 `\`）；`27` = 单引号，**闭合字符串**。
+  4. 最终 SQL：`SELECT * FROM news WHERE title = '錦\\' union select ... #'`
+- 结果：单引号逃逸，UNION 注入成功。
+
+### 修复方案
+
+| 方案 | 说明 | 优先级 |
+|------|------|--------|
+| **调整时序：转换在转义前** | 先 `iconv`/`mb_convert_encoding` 统一编码，再 `addslashes`/参数化查询。 | P0 |
+| **数据库连接层指定字符集** | PDO: `charset=utf8mb4`；mysqli: `set_charset('utf8mb4')`；避免 `SET NAMES gbk`。 | P0 |
+| **废弃 `addslashes`，全面参数化** | 使用 PDO Prepared Statements，彻底消除编码相关绕过。 | P0 |
+| **输入编码强制校验** | `mb_check_encoding($input, 'UTF-8')` 失败则拒绝；禁止混合编码输入。 | P1 |
+| **WAF/RASP 规则** | 检测 `iconv`/`mb_convert_encoding` 后紧跟 SQL 拼接的调用链；拦截含 `%df%27`、`%e5%5c%5c%27` 等特征 Payload。 | P1 |
+
+### 关联审计模式
+- [[php-file-inclusion-vulnerability]]：文件包含场景中若存在编码转换，可结合宽字节绕过 `addslashes` 实现 LFI/RFI。
+- [[ssrf-bypass-techniques]]：SSRF Payload 中编码转换导致的绕过（如 URL 编码双重解码、Unicode 规范化）属同类编码时序问题。
+- [[xd-security-code-audit-notes-day50-57]]：代码审计关键字搜索策略中应新增 `iconv`、`mb_convert_encoding`、`charset` 等编码相关函数。
+
+---
+
 ## 统一审计检测清单
 
 | 检测项 | 搜索模式 | 判断标准 | 修复优先级 |
@@ -379,6 +456,8 @@ $$b = $_GET['val'];  // 等价于 $evil = 'attacker_controlled'
 | `parse_str()` 无数组参数 | `parse_str\([^,)]+\)` | PHP < 8.0 环境 | P1 |
 | `$$` 变量变量赋值 | `\$\$[a-zA-Z_]` | 变量名来源可控 | P1 |
 | 覆盖关键变量 | 结合上下文：`$pre`、`$table`、`$path`、`$config`、`$auth` 等 | 被覆盖后用于 SQL 拼接/文件包含/鉴权判断 | P0 |
+| **编码转换在转义后** | `iconv(`/`mb_convert_encoding(` 位于全局 `addslashes`/GPC **之后** | 存在 GBK/UTF-8 互转且结果直接拼接 SQL | P0 |
+| **数据库连接字符集** | `SET NAMES gbk` / `charset=gbk` / `character_set_client=gbk` | 未使用 `utf8mb4`，且应用层有编码转换 | P0 |
 
 ---
 
@@ -387,15 +466,26 @@ $$b = $_GET['val'];  // 等价于 $evil = 'attacker_controlled'
 1. **架构层**：
    - 全面采用 **PDO/Prepared Statements** 消除 SQL 拼接。
    - 模板引擎强制 **沙箱渲染**（如 Blade、Twig `autoescape`），禁止原生 `include`/`extract` 渲染。
+   - **统一字符集**：全栈统一 UTF-8（数据库 `utf8mb4`、连接 `charset=utf8mb4`、页面 `<meta charset="utf-8">`、PHP `default_charset="UTF-8"`），禁用 GBK 等多字节编码。
+
 2. **框架层**：
-   - 入口统一 **输入规范化**（Normalization）：递归转义、类型强制、长度截断、编码统一，**覆盖所有超全局数组**（`$_GET/$_POST/$_COOKIE/$_REQUEST/$_FILES/$_SERVER/$_ENV`）。
+   - 入口统一 **输入规范化**（Normalization）：**先编码统一/转换，再类型强制/长度截断，最后参数化绑定**，覆盖所有超全局数组（`$_GET/$_POST/$_COOKIE/$_REQUEST/$_FILES/$_SERVER/$_ENV`）。
    - 核心配置（表前缀、路径、密钥）定义为 **常量/只读属性**，不可被变量覆盖。
+   - 提供 **安全封装函数**：`safe_intval()`、`safe_encoding_convert()`、`safe_extract($whitelist)` 等，禁止直接使用裸函数。
+
 3. **代码层**：
-   - 代码规范禁用 `extract`、`parse_str`、`$$`、`register_globals` 兼容代码。
-   - CodeReview Checklist 必查项：**“用户输入是否直接作为变量名/键名使用”、“数字型参数是否强制转型”、“所有超全局数组是否均纳入转义/参数化”**。
+   - 代码规范禁用 `extract`、`parse_str`、`$$`、`register_globals` 兼容代码、`SET NAMES gbk`、`iconv` 直接拼接 SQL。
+   - CodeReview Checklist 必查项：
+     - “用户输入是否直接作为变量名/键名使用”
+     - “数字型参数是否强制转型”
+     - “所有超全局数组是否均纳入参数化/转义”
+     - “编码转换是否在参数化/转义**之前**完成”
+     - “数据库连接字符集是否为 `utf8mb4`”
+
 4. **运维层**：
-   - WAF/IDS 规则检测 `filename=`、`name=` 等上传字段、`X-Forwarded-For` 等头部中的 SQL 关键字。
-   - 部署 **RASP/IAST**（如 OpenRASP、洞态）运行时监测 `extract`/`include` 危险调用参数污点传播。
+   - WAF/IDS 规则检测 `filename=`、`name=` 等上传字段、`X-Forwarded-For` 等头部、`iconv` 相关参数中的 SQL 关键字及宽字节特征（`%df%27`、`%e5%5c` 等）。
+   - 部署 **RASP/IAST**（如 OpenRASP、洞态）运行时监测 `extract`/`include`/`iconv` 危险调用参数污点传播。
+   - 定期执行 **编码一致性扫描**：检查数据库、表、列、连接、应用、页面编码是否全链路 UTF-8。
 
 ---
 
@@ -426,8 +516,10 @@ $$b = $_GET['val'];  // 等价于 $evil = 'attacker_controlled'
 | 1.0 | 2016-06-24 | 初稿：基于 HackBraid「代码审计的艺术系列第六季」整理 FILES 注入与变量覆盖两大盲点 |
 | 1.1 | 2025-08-19 | 结构化重写：增加原理表格、利用链标准化、修复方案对比、统一检测清单、防御纵深建议、交叉引用索引 |
 | 2.0 | 2026-11-16 | **重大更新**：融合第五季内容，新增整型注入绕过、数组键名注入、SERVER变量注入三大盲点，形成五大盲点完整知识体系；更新标题、描述、标签、检测清单、防御建议、交叉引用 |
+| 2.1 | 2025-08-20 | **重大更新**：融合第四季内容，新增**字符编码转换绕过（iconv/mb_convert_encoding 宽字节注入）**作为第六大盲点，覆盖 GBK→UTF-8 与 UTF-8→GBK 双向利用链，完善检测清单与防御建议，更新标题、描述、标签、版本历史 |
 
 ## 来源
 
 - [301在路上-201508-202208_121](../sources/301在路上-201508-202208_121.md)
 - [301在路上-201508-202208_132](../sources/301在路上-201508-202208_132.md)
+- [301在路上-201508-202208_142](../sources/301在路上-201508-202208_142.md)

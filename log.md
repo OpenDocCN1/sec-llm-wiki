@@ -583,3 +583,4 @@
 ## [2026-11-16] ingest | 301在路上-201508-202208_083 -> 301-zai-lushang-wechat-archive-201508-202208.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_084 -> whatsapp-e2e-encryption-brazil-legal-case.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_085 -> code-audit-file-operation-vulnerabilities.md, 301-zai-lushang-wechat-archive-201508-202208.md
+## [2026-11-16] ingest | 301在路上-201508-202208_086 -> 301-zai-lushang-wechat-archive-201508-202208.md, qrljacking-qr-code-login-hijacking.md

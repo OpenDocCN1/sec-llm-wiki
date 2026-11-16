@@ -643,3 +643,4 @@
 ## [2026-11-17] ingest | 301在路上-201508-202208_144 -> 301-zai-lushang-wechat-archive-201508-202208.md, white-hat-enterprise-collaboration-guide.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_145 -> code-audit-global-protection-blindspots.md, code-audit-second-order-sqli.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_146 -> webshell-comprehensive-guide.md
+## [2026-11-17] ingest | 301在路上-201508-202208_147 -> code-audit-global-protection-blindspots.md

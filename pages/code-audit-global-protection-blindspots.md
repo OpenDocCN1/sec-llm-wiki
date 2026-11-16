@@ -1,8 +1,8 @@
 ---
-title: 代码审计中全局防护的八大盲点：整型注入、数组键名注入、SERVER变量注入、FILES注入、变量覆盖、字符编码转换绕过、函数误用绕过与二次注入
-description: 系统梳理代码审计中全局防护机制的八大盲点——整型注入绕过、数组键名注入、SERVER变量注入（X-Forwarded-For等）、FILES注入（$_FILES未被转义导致的SQL注入）、变量覆盖（extract/parse_str/$$
+title: 代码审计中全局防护的九大盲点：整型注入、数组键名注入、SERVER变量注入、FILES注入、变量覆盖、字符编码转换绕过、函数误用绕过、二次注入与解码函数二次解码绕过
+description: 系统梳理代码审计中全局防护机制的九大盲点——整型注入绕过、数组键名注入、SERVER变量注入（X-Forwarded-For等）、FILES注入（$_FILES未被转义导致的SQL注入）、变量覆盖（extract/parse_str/$$
   变量变量覆盖）、字符编码转换绕过（iconv/mb_convert_encoding 导致的宽字节注入绕过 addslashes/GPC）、函数误用绕过（str_replace/stripslashes
-  错误使用消解转义）与二次注入（存储与调用时序差异），结合实战案例深度解析成因、利用链构造及修复方案，形成白盒审计视角的完整知识体系。
+  错误使用消解转义）、二次注入（存储与调用时序差异）及解码函数二次解码绕过（urldecode/base64_decode 在 addslashes 后执行导致单引号恢复），结合实战案例深度解析成因、利用链构造及修复方案，形成白盒审计视角的完整知识体系。
 category: program-analysis
 tags:
 - 代码审计
@@ -32,13 +32,17 @@ tags:
 - str_replace
 - stripslashes
 - 二次注入
+- urldecode绕过
+- base64_decode绕过
+- 二次解码
+- 全局防护绕过
 date: 2016-06-24
 updated: '2026-11-17'
 ---
 
 ## 概述
 
-本页面基于「白帽子分享之代码审计的艺术系列—第三季、第四季、第五季、第六季」（作者：HackBraid，乌云核心白帽子）整理，系统阐述 **全局防护机制在代码审计中常被忽视的八大盲点**：
+本页面基于「白帽子分享之代码审计的艺术系列—第三季、第四季、第五季、第六季」（作者：HackBraid，乌云核心白帽子）及 301在路上 微信归档文章《白帽子分享之代码的艺术系列—第二篇》整理，系统阐述 **全局防护机制在代码审计中常被忽视的九大盲点**：
 
 1. **整型注入绕过**：数字型参数无需单引号闭合，完全绕过 GPC `addslashes` 转义。
 2. **数组键名注入**：全局防护仅遍历数组 `value` 进行转义，遗漏 `key` 导致键名直接拼接入 SQL。
@@ -48,8 +52,9 @@ updated: '2026-11-17'
 6. **字符编码转换绕过**：`iconv()`、`mb_convert_encoding()` 等编码转换函数在 `addslashes`/GPC 转义**之后**执行，利用 GBK/UTF-8 互转特性“吃掉”反斜杠，导致单引号逃逸，绕过全局防护。
 7. **函数误用绕过**：`str_replace` 删除单引号导致残留反斜杠转义后续引号、`stripslashes` 直接抹除 `addslashes` 添加的转义字符，消解全局防护效果。
 8. **二次注入**：数据入库时经转义存储，取出时转义字符消失，二次使用时未重新转义直接拼接 SQL，导致注入。
+9. **解码函数二次解码绕过**：`urldecode()`、`base64_decode()` 等解码函数在全局 `addslashes` 防护**之后**执行，将已转义的编码 Payload 还原为含单引号、反斜杠的原始攻击代码，导致防护失效。
 
-前三类属于 **“全局防护覆盖不全/类型处理缺陷”**，第四类属于 **“超全局数组遗漏”**，第五类属于 **“危险语法滥用”**，第六类属于 **“编码转换时序缺陷”**，第七类属于 **“转义后处理不当”**，第八类属于 **“存储与调用上下文割裂”**，均是白盒审计中高产出、低门槛的挖掘切入点。
+前三类属于 **“全局防护覆盖不全/类型处理缺陷”**，第四类属于 **“超全局数组遗漏”**，第五类属于 **“危险语法滥用”**，第六类属于 **“编码转换时序缺陷”**，第七类属于 **“转义后处理不当”**，第八类属于 **“存储与调用上下文割裂”**，第九类属于 **“解码还原时序缺陷”**，均是白盒审计中高产出、低门槛的挖掘切入点。
 
 ---
 
@@ -444,6 +449,7 @@ $sql = "SELECT * FROM news WHERE title = '{$title}'";
 | **WAF/RASP 规则** | 检测 `iconv`/`mb_convert_encoding` 后紧跟 SQL 拼接的调用链；拦截含 `%df%27`、`%e5%5c%5c%27` 等特征 Payload。 | P1 |
 
 ### 关联审计模式
+- [[code-audit-widebyte-sql-injection-iconv]]：深度解析 PHP 中 iconv 函数进行 GBK 与 UTF-8 互转时引发的宽字节 SQL 注入原理、利用条件及两种转换方向的实战 POC 构造。
 - [[php-file-inclusion-vulnerability]]：文件包含场景中若存在编码转换，可结合宽字节绕过 `addslashes` 实现 LFI/RFI。
 - [[ssrf-bypass-techniques]]：SSRF Payload 中编码转换导致的绕过（如 URL 编码双重解码、Unicode 规范化）属同类编码时序问题。
 - [[xd-security-code-audit-notes-day50-57]]：代码审计关键字搜索策略中应新增 `iconv`、`mb_convert_encoding`、`charset` 等编码相关函数。
@@ -574,8 +580,106 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 | **业务逻辑隔离** | 避免将可控业务数据（昵称、评论）直接用于敏感 SQL 操作（权限变更、管理员操作）。 | P1 |
 
 ### 关联审计模式
+- [[code-audit-second-order-sqli]]：系统梳理二次 SQL 注入核心成因：入库时转义单引号存储、出库时直接拼接查询导致转义失效。
 - [[wecenter-v334-phar-deserialization-sqli]]：Cookie 注入 Phar 反序列化载荷经数据库存取触发，属于“存储-反序列化-二次利用”变种。
 - [[xd-security-logic-vulnerability-notes-day33-36]]：逻辑漏洞中“多阶段绕过”常涉及数据存储与后续校验的上下文不一致。
+
+---
+
+## 盲点九：解码函数二次解码绕过（urldecode/base64_decode）
+
+### 核心原理
+
+应用在 **全局防护（GPC/addslashes）之后** 调用 `urldecode()`、`base64_decode()` 等解码函数处理用户输入。全局防护作用于**编码后的字符串**（如 `%27`、`JTI3`），这些字符本身不含单引号、反斜杠等危险字符，故 `addslashes` 不做任何处理。随后解码函数将其还原为原始攻击 Payload（单引号 `'`、反斜杠 `\` 等），导致防护完全失效。
+
+| 解码函数 | 编码示例 | addslashes 处理结果 | 解码后结果 | 绕过关键 |
+|----------|----------|---------------------|------------|----------|
+| `urldecode()` | `%2527` (双重编码单引号) | `%2527` (无特殊字符，不变) | `%27` → `'` (单引号) | PHP `$_GET` 自动解码一次，配合代码二次 `urldecode` 实现双重解码 |
+| `base64_decode()` | `JTI3` (base64编码的 `%27`) | `JTI3` (字母数字，不变) | `%27` → 需配合 `urldecode` 或直接 `'` (若直接编码 `'`) | 直接编码单引号 `JyA=` 解码即得 `'` |
+| `hex2bin()` / `pack()` | `27` (十六进制) | `27` (不变) | `'` | 类似 Base64 |
+
+> **审计口诀**：搜索 `urldecode(`、`rawurldecode(`、`base64_decode(`、`hex2bin(`、`pack(`；检查调用位置是否在 **全局 `addslashes`/GPC 之后**、**SQL 拼接之前**；重点关注**ID 解密、Token 解析、加密参数传递、API 接口解密**等业务场景。
+
+### 实战案例复现（301在路上归档文章：代码审计的艺术系列—第二篇）
+
+#### 缺陷代码
+```php
+<?php
+require_once('common.php');  // common.php 中对 $_GET 执行了 addslashes_deep
+$conn = mysql_connect('localhost', 'root', 'braid') or die('bad!');
+mysql_query("SET NAMES binary");
+mysql_select_db('test', $conn) OR emMsg("数据库连接失败");
+// 关键点：全局转义后，业务代码再次 urldecode
+$id = isset($_GET['id']) ? urldecode($_GET['id']) : 1;
+// SQL 语句有单引号保护
+$sql = "SELECT * FROM news WHERE id='{$id}'";
+$result = mysql_query($sql, $conn) or die(mysql_error()); 
+?>
+```
+
+#### `common.php` 全局防护逻辑
+```php
+if (!empty($_GET)) { $_GET  = addslashes_deep($_GET); }
+if (!empty($_POST)) { $_POST = addslashes_deep($_POST); }
+if (!empty($_COOKIE)) { $_COOKIE = addslashes_deep($_COOKIE); }
+
+function addslashes_deep($value) {
+    if (empty($value)) return $value;
+    if (!get_magic_quotes_gpc()) {
+        $value = is_array($value) ? array_map('addslashes_deep', $value) : addslashes($value);
+    } else {
+        $value = is_array($value) ? array_map('addslashes_deep', $value) : mystrip_tags($value);
+    }
+    return $value;
+}
+```
+
+#### 攻击链复现
+1. **正常测试**：访问 `http://localhost/sqltest/urldecode.php?id=1'`  
+   - PHP 引擎自动 URL 解码一次：`$_GET['id']` = `1'`  
+   - `common.php` `addslashes`：`1\'`  
+   - 业务代码 `urldecode`：无效果（无 `%`）  
+   - SQL：`SELECT * FROM news WHERE id='1\''` → 语法错误，但单引号被转义，注入失败。
+
+2. **双重编码绕过**：访问 `http://localhost/sqltest/urldecode.php?id=1%2527`  
+   - PHP 引擎自动 URL 解码一次：`$_GET['id']` = `1%27` (即 `1'`)  
+   - `common.php` `addslashes`：输入为 `1%27`，无单引号/反斜杠，**不转义**，返回 `1%27`。  
+   - 业务代码 `urldecode($_GET['id'])`：`urldecode('1%27')` → `1'`。  
+   - SQL：`SELECT * FROM news WHERE id='1''` → 单引号闭合，注入成功。
+
+3. **构造 UNION 注入 Payload**：
+   - `http://localhost/sqltest/urldecode.php?id=1%2527%20union%20select%201,2,concat(name,0x23,pass)%20from%20admin%23`
+   - 解码后：`1' union select 1,2,concat(name,0x23,pass) from admin#`
+   - 成功获取管理员账号密码。
+
+#### Base64 变种示例
+```php
+// vuln_base64.php
+require_once('common.php');
+$token = isset($_GET['token']) ? base64_decode($_GET['token']) : '';
+$sql = "SELECT * FROM users WHERE token='{$token}'";
+```
+- 攻击者构造 `token=JyB1bmlvbiBzZWxlY3QgMSwyLDMsNCBmcm9tIGFkbWluIw==` (Base64(`' union select 1,2,3,4 from admin#`))
+- `$_GET['token']` 经 `addslashes` 无变化（字母数字/+ / =）。
+- `base64_decode` 还原为 `' union select 1,2,3,4 from admin#`。
+- SQL 拼接后单引号闭合，注入触发。
+
+### 修复方案
+
+| 方案 | 说明 | 优先级 |
+|------|------|--------|
+| **调整时序：解码在转义/参数化前** | 入口文件统一：**先解码/规范化输入，再强制类型/长度，最后参数化绑定**。 | P0 |
+| **禁止业务层裸用解码函数拼接 SQL** | 若必须解码，解码后立即使用参数化查询，或显式调用 `mysqli_real_escape_string`（不推荐）。 | P0 |
+| **双重编码规范化检测** | WAF/RASP 层面检测 `%2527`、`%255c` 等双重编码特征；应用层 `urldecode` 循环直到无变化后再处理（需谨慎，防死循环）。 | P1 |
+| **Base64/JSON 等结构化数据校验** | 解码后验证数据格式（如 JSON Schema、UUID 格式、长度限制），拒绝含 SQL 关键字的异常数据。 | P1 |
+| **统一输入处理中间件** | 框架层实现 `Input::get('param', 'int')` 等强类型获取器，内部封装解码、转义、参数化，禁止控制器直接操作超全局变量。 | P0 |
+
+### 关联审计模式
+- [[301-zai-lushang-wechat-archive-201508-202208]]：文章来源归档索引，包含「代码审计的艺术系列」第二篇原文。
+- [[code-audit-widebyte-sql-injection-iconv]]：同属“转义后处理导致绕过”类别，编码转换与解码函数均为时序缺陷。
+- [[php-file-inclusion-vulnerability]]：文件包含场景中 `urldecode` 导致的路径遍历绕过（如 `..%252f`）属同类机制。
+- [[ssrf-bypass-techniques]]：SSRF 中 URL 双重编码绕过过滤器（如 `http://example.com/%252f%252f...`）属同类解码时序利用。
+- [[xd-security-code-audit-notes-day50-57]]：代码审计关键字搜索策略中应新增 `urldecode`、`base64_decode`、`rawurldecode` 等解码函数。
 
 ---
 
@@ -596,6 +700,8 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 | **转义后调用 str_replace 删引号/反斜杠** | `addslashes`/`GPC` 后出现 `str_replace("'", ...)` 或 `str_replace('\\', ...)` | 导致残留反斜杠转义后续引号或消解转义 | P0 |
 | **转义后调用 stripslashes** | `addslashes`/`GPC` 后出现 `stripslashes(`/`stripcslashes(` | 直接抵消全局防护 | P0 |
 | **二次注入隐患** | `INSERT`/`UPDATE` 入库点 → `SELECT` 取出 → 直接拼接新 SQL | 读取数据未重新转义/参数化即入库/查询 | P0 |
+| **解码函数在转义后调用** | `addslashes`/`GPC` 后出现 `urldecode(`/`base64_decode(`/`rawurldecode(`/`hex2bin(` | 解码后数据直接拼接 SQL，且输入可控编码 Payload | P0 |
+| **双重编码绕过** | 参数值含 `%2527`、`%255c`、`JTI3` 等特征 | 经 PHP 自动解码 + 业务 `urldecode` 双重解码还原危险字符 | P0 |
 
 ---
 
@@ -607,25 +713,26 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
    - **统一字符集**：全栈统一 UTF-8（数据库 `utf8mb4`、连接 `charset=utf8mb4`、页面 `<meta charset="utf-8">`、PHP `default_charset="UTF-8"`），禁用 GBK 等多字节编码。
 
 2. **框架层**：
-   - 入口统一 **输入规范化**（Normalization）：**先编码统一/转换，再类型强制/长度截断，最后参数化绑定**，覆盖所有超全局数组（`$_GET/$_POST/$_COOKIE/$_REQUEST/$_FILES/$_SERVER/$_ENV`）。
+   - 入口统一 **输入规范化**（Normalization）：**先解码/编码统一/转换，再类型强制/长度截断，最后参数化绑定**，覆盖所有超全局数组（`$_GET/$_POST/$_COOKIE/$_REQUEST/$_FILES/$_SERVER/$_ENV`）。
    - 核心配置（表前缀、路径、密钥）定义为 **常量/只读属性**，不可被变量覆盖。
-   - 提供 **安全封装函数**：`safe_intval()`、`safe_encoding_convert()`、`safe_extract($whitelist)` 等，禁止直接使用裸函数。
+   - 提供 **安全封装函数**：`safe_intval()`、`safe_encoding_convert()`、`safe_extract($whitelist)`、`safe_decode($input, $type)` 等，禁止直接使用裸函数。
    - **禁止在输入处理链路中使用 `str_replace`/`stripslashes` 处理引号/反斜杠**。
 
 3. **代码层**：
-   - 代码规范禁用 `extract`、`parse_str`、`$$`、`register_globals` 兼容代码、`SET NAMES gbk`、`iconv` 直接拼接 SQL、`str_replace` 删引号、`stripslashes`。
+   - 代码规范禁用 `extract`、`parse_str`、`$$`、`register_globals` 兼容代码、`SET NAMES gbk`、`iconv` 直接拼接 SQL、`str_replace` 删引号、`stripslashes`、`urldecode` 后拼接 SQL。
    - CodeReview Checklist 必查项：
      - “用户输入是否直接作为变量名/键名使用”
      - “数字型参数是否强制转型”
      - “所有超全局数组是否均纳入参数化/转义”
-     - “编码转换是否在参数化/转义**之前**完成”
+     - “编码转换/解码操作是否在参数化/转义**之前**完成”
      - “数据库连接字符集是否为 `utf8mb4`”
      - “是否存在转义后再清理转义字符的操作”
      - “从数据库读取的数据再次入库/拼接 SQL 时是否参数化”
+     - “是否存在业务代码直接调用 `urldecode`/`base64_decode` 后拼接 SQL”
 
 4. **运维层**：
-   - WAF/IDS 规则检测 `filename=`、`name=` 等上传字段、`X-Forwarded-For` 等头部、`iconv` 相关参数中的 SQL 关键字及宽字节特征（`%df%27`、`%e5%5c` 等）。
-   - 部署 **RASP/IAST**（如 OpenRASP、洞态）运行时监测 `extract`/`include`/`iconv`/`str_replace`/`stripslashes` 危险调用参数污点传播。
+   - WAF/IDS 规则检测 `filename=`、`name=` 等上传字段、`X-Forwarded-For` 等头部、`iconv` 相关参数中的 SQL 关键字及宽字节特征（`%df%27`、`%e5%5c` 等）、**双重编码特征**（`%2527`、`%255c`、Base64 编码的 SQL 关键字）。
+   - 部署 **RASP/IAST**（如 OpenRASP、洞态）运行时监测 `extract`/`include`/`iconv`/`str_replace`/`stripslashes`/`urldecode`/`base64_decode` 危险调用参数污点传播。
    - 定期执行 **编码一致性扫描**：检查数据库、表、列、连接、应用、页面编码是否全链路 UTF-8。
 
 ---
@@ -651,6 +758,9 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 - XD安全 WAF 绕过技术（Payload 变异）：[[xd-security-waf-bypass-techniques-day46-49]]
 - WeCenter Phar 反序列化二次注入：[[wecenter-v334-phar-deserialization-sqli]]
 - XD安全逻辑漏洞笔记（多阶段绕过）：[[xd-security-logic-vulnerability-notes-day33-36]]
+- 宽字节注入 Iconv 专题：[[code-audit-widebyte-sql-injection-iconv]]
+- 二次注入专题：[[code-audit-second-order-sqli]]
+- 301在路上微信归档索引：[[301-zai-lushang-wechat-archive-201508-202208]]
 
 ---
 
@@ -663,6 +773,7 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 | 2.0 | 2026-11-16 | **重大更新**：融合第五季内容，新增整型注入绕过、数组键名注入、SERVER变量注入三大盲点，形成五大盲点完整知识体系；更新标题、描述、标签、检测清单、防御建议、交叉引用 |
 | 2.1 | 2025-08-20 | **重大更新**：融合第四季内容，新增**字符编码转换绕过（iconv/mb_convert_encoding 宽字节注入）**作为第六大盲点，覆盖 GBK→UTF-8 与 UTF-8→GBK 双向利用链，完善检测清单与防御建议，更新标题、描述、标签、版本历史 |
 | 2.2 | 2026-11-17 | **重大更新**：融合第三季内容，新增**函数误用绕过（str_replace/stripslashes 误用）**与**二次注入**作为第七、八大盲点，完善 PHP 全局防护绕过技术谱系；更新标题、描述、标签、检测清单、防御建议、交叉引用、版本历史 |
+| 2.3 | 2026-11-17 | **重大更新**：融合 301在路上 归档文章《代码审计的艺术系列—第二篇》内容，新增**解码函数二次解码绕过（urldecode/base64_decode 在 addslashes 后执行）**作为第九大盲点，补全全局防护盲点知识体系最后一环；更新标题、描述、标签、检测清单、防御建议、交叉引用、版本历史 |
 
 ## 来源
 
@@ -670,3 +781,4 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 - [301在路上-201508-202208_132](../sources/301在路上-201508-202208_132.md)
 - [301在路上-201508-202208_142](../sources/301在路上-201508-202208_142.md)
 - [301在路上-201508-202208_145](../sources/301在路上-201508-202208_145.md)
+- [301在路上-201508-202208_147](../sources/301在路上-201508-202208_147.md)

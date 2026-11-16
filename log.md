@@ -608,3 +608,4 @@
 ## [2026-11-16] ingest | 301在路上-201508-202208_109 -> code-audit-file-upload-vulnerabilities.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_110 -> 301-zai-lushang-wechat-archive-201508-202208.md, security-career-development-guide.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_111 -> 301-zai-lushang-wechat-archive-201508-202208.md, competitor-cyber-espionage-kumi-case.md, mooncake-gate-security-ethics-analysis.md
+## [2026-11-16] ingest | 301在路上-201508-202208_112 -> 301-zai-lushang-wechat-archive-201508-202208.md

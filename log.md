@@ -574,3 +574,4 @@
 ## [2026-11-16] ingest | 301在路上-201508-202208_074 -> 301-zai-lushang-wechat-archive-201508-202208.md, security-industry-entrepreneurship-reflections.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_075 -> linux-command-injection-octal-printf-bypass.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_076 -> bitfinex-2016-hack-exchange-security.md
+## [2026-11-16] ingest | 301在路上-201508-202208_077 -> 301-zai-lushang-wechat-archive-201508-202208.md, battery-status-api-fingerprinting-privacy.md

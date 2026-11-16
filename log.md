@@ -652,3 +652,4 @@
 ## [2026-11-17] ingest | 301在路上-201508-202208_153 -> 301-zai-lushang-wechat-archive-201508-202208.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_154 -> white-hat-ethics-industry-trust.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_155 -> threat-intelligence-service-enterprise-view.md, 301-zai-lushang-wechat-archive-201508-202208.md
+## [2026-11-17] ingest | 301在路上-201508-202208_156 -> security-team-hc-planning-work-quantification.md

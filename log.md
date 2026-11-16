@@ -629,3 +629,4 @@
 ## [2026-11-17] ingest | 301在路上-201508-202208_130 -> 301-zai-lushang-wechat-archive-201508-202208.md, security-career-city-choice.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_131 -> 301-zai-lushang-wechat-archive-201508-202208.md, security-industry-service-model.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_132 -> code-audit-global-protection-blindspots.md
+## [2026-11-17] ingest | 301在路上-201508-202208_133 -> 301-zai-lushang-wechat-archive-201508-202208.md, security-career-development-guide.md, security-leadership-team-management.md

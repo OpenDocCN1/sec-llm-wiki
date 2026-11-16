@@ -552,3 +552,4 @@
 ## [2026-11-16] ingest | 301在路上-201508-202208_052 -> 301-zai-lushang-wechat-archive-201508-202208.md, mooncake-gate-security-ethics-analysis.md, internal-vulnerability-disclosure-culture.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_053 -> 301-zai-lushang-wechat-archive-201508-202208.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_054 -> 301-zai-lushang-wechat-archive-201508-202208.md, insider-threat-courier-waybill-data-leakage.md
+## [2026-11-16] ingest | 301在路上-201508-202208_055 -> 301-zai-lushang-wechat-archive-201508-202208.md, security-career-city-choice.md

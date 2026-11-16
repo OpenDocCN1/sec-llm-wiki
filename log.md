@@ -576,3 +576,4 @@
 ## [2026-11-16] ingest | 301在路上-201508-202208_076 -> bitfinex-2016-hack-exchange-security.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_077 -> 301-zai-lushang-wechat-archive-201508-202208.md, battery-status-api-fingerprinting-privacy.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_078 -> 301-zai-lushang-wechat-archive-201508-202208.md, us-submarine-cyber-operations-undersea-cables.md
+## [2026-11-16] ingest | 301在路上-201508-202208_079 -> 301-zai-lushang-wechat-archive-201508-202208.md, ourmine-hacking-group-profile.md, credential-stuffing-password-hygiene.md

@@ -1,7 +1,8 @@
 ---
-title: 代码审计中全局防护的六大盲点：整型注入、数组键名注入、SERVER变量注入、FILES注入、变量覆盖与字符编码转换绕过
-description: 系统梳理代码审计中全局防护机制的六大盲点——整型注入绕过、数组键名注入、SERVER变量注入（X-Forwarded-For等）、FILES注入（$_FILES未被转义导致的SQL注入）、变量覆盖（extract/parse_str/$$
-  变量变量覆盖）与字符编码转换绕过（iconv/mb_convert_encoding 导致的宽字节注入绕过 addslashes/GPC），结合实战案例深度解析成因、利用链构造及修复方案，形成白盒审计视角的完整知识体系。
+title: 代码审计中全局防护的八大盲点：整型注入、数组键名注入、SERVER变量注入、FILES注入、变量覆盖、字符编码转换绕过、函数误用绕过与二次注入
+description: 系统梳理代码审计中全局防护机制的八大盲点——整型注入绕过、数组键名注入、SERVER变量注入（X-Forwarded-For等）、FILES注入（$_FILES未被转义导致的SQL注入）、变量覆盖（extract/parse_str/$$
+  变量变量覆盖）、字符编码转换绕过（iconv/mb_convert_encoding 导致的宽字节注入绕过 addslashes/GPC）、函数误用绕过（str_replace/stripslashes
+  错误使用消解转义）与二次注入（存储与调用时序差异），结合实战案例深度解析成因、利用链构造及修复方案，形成白盒审计视角的完整知识体系。
 category: program-analysis
 tags:
 - 代码审计
@@ -28,13 +29,16 @@ tags:
 - UTF-8
 - addslashes绕过
 - GPC绕过
+- str_replace
+- stripslashes
+- 二次注入
 date: 2016-06-24
 updated: '2026-11-17'
 ---
 
 ## 概述
 
-本页面基于「白帽子分享之代码审计的艺术系列—第四季、第五季、第六季」（作者：HackBraid，乌云核心白帽子）整理，系统阐述 **全局防护机制在代码审计中常被忽视的六大盲点**：
+本页面基于「白帽子分享之代码审计的艺术系列—第三季、第四季、第五季、第六季」（作者：HackBraid，乌云核心白帽子）整理，系统阐述 **全局防护机制在代码审计中常被忽视的八大盲点**：
 
 1. **整型注入绕过**：数字型参数无需单引号闭合，完全绕过 GPC `addslashes` 转义。
 2. **数组键名注入**：全局防护仅遍历数组 `value` 进行转义，遗漏 `key` 导致键名直接拼接入 SQL。
@@ -42,8 +46,10 @@ updated: '2026-11-17'
 4. **FILES 注入**：全局转义遗漏 `$_FILES`，上传文件名、类型等字段未转义直接入库引发 SQL 注入。
 5. **变量覆盖**：`extract()`、`parse_str()`、`$$`（变量变量）等危险函数/语法允许攻击者以任意键名覆盖现有变量，劫持 SQL 拼接、包含路径、鉴权标识等关键逻辑。
 6. **字符编码转换绕过**：`iconv()`、`mb_convert_encoding()` 等编码转换函数在 `addslashes`/GPC 转义**之后**执行，利用 GBK/UTF-8 互转特性“吃掉”反斜杠，导致单引号逃逸，绕过全局防护。
+7. **函数误用绕过**：`str_replace` 删除单引号导致残留反斜杠转义后续引号、`stripslashes` 直接抹除 `addslashes` 添加的转义字符，消解全局防护效果。
+8. **二次注入**：数据入库时经转义存储，取出时转义字符消失，二次使用时未重新转义直接拼接 SQL，导致注入。
 
-前三类属于 **“全局防护覆盖不全/类型处理缺陷”**，第四类属于 **“超全局数组遗漏”**，第五类属于 **“危险语法滥用”**，第六类属于 **“编码转换时序缺陷”**，均是白盒审计中高产出、低门槛的挖掘切入点。
+前三类属于 **“全局防护覆盖不全/类型处理缺陷”**，第四类属于 **“超全局数组遗漏”**，第五类属于 **“危险语法滥用”**，第六类属于 **“编码转换时序缺陷”**，第七类属于 **“转义后处理不当”**，第八类属于 **“存储与调用上下文割裂”**，均是白盒审计中高产出、低门槛的挖掘切入点。
 
 ---
 
@@ -444,6 +450,135 @@ $sql = "SELECT * FROM news WHERE title = '{$title}'";
 
 ---
 
+## 盲点七：函数误用绕过（str_replace / stripslashes）
+
+### 核心原理
+
+开发者在全局防护（GPC/`addslashes`）**之后**，使用 `str_replace` 删除特定字符（如单引号），或使用 `stripslashes` 移除反斜杠，导致原本的转义保护失效，甚至制造新的注入点。
+
+| 函数 | 误用模式 | 破坏机制 | 典型后果 |
+|------|----------|----------|----------|
+| `str_replace("'", '', $var)` | 删除单引号 | `addslashes` 将 `'` 转为 `\'`，`str_replace` 删掉 `'` 留下 `\`，该反斜杠转义 SQL 语句中原本的闭合引号，导致后续参数可注入 | 后续拼接参数的单引号被吃掉，实现跨参数注入 |
+| `stripslashes($var)` | 删除反斜杠 | 直接抵消 `addslashes`/`GPC` 添加的所有转义，还原原始 Payload | 完全绕过全局防护，等同于无防护环境 |
+
+> **审计口诀**：全局搜索 `str_replace(`、`stripslashes(`；检查其调用位置是否在 **全局转义之后**、**SQL 拼接之前**；重点关注“先转义，后替换/清理”的代码模式。
+
+### 实战案例复现（第三季示例）
+
+#### `str_replace` 误用导致跨参数注入
+
+**缺陷代码**（`streplace.php`）：
+```php
+<?php
+require_once('common.php');  // common.php 中对 $_GET 执行了 addslashes
+$conn = mysql_connect('localhost', 'root', 'braid') or die('bad!');
+mysql_query("SET NAMES binary");
+mysql_select_db('test', $conn) OR emMsg("数据库连接失败");
+$tmp_id = isset($_GET['id']) ? $_GET['id'] : 1;
+$title = isset($_GET['title']) ? $_GET['title'] : 'news title';
+// 程序编写时直接用 str_replace 去掉 id 里的单引号
+$id = str_replace("'", '', $tmp_id);
+// sql 查询语句通过 id 和 title 两个条件进行查询
+$sql = "SELECT * FROM news WHERE id='{$id}' and title='{$title}'";
+echo $sql;
+$result = mysql_query($sql, $conn) or die(mysql_error());
+?>
+```
+
+**执行流程分析**：
+1. 用户输入：`id=-1'`，`title=news title`
+2. `common.php` 中 `addslashes` 处理：`id` 变为 `-1\'`（即 `-1\\'`）
+3. `str_replace("'", '', $tmp_id)`：删除单引号，`id` 变为 `-1\`（仅剩反斜杠）
+4. SQL 拼接：`SELECT * FROM news WHERE id='-1\' and title='news title'`
+5. **关键点**：`id` 后的反斜杠 `\` 转义了 SQL 语句中硬编码的闭合单引号 `'`，导致 `and title='news title'` 成为字符串内容，`title` 参数闭合单引号后可构造注入。
+
+**利用构造**：
+- 请求：`http://localhost/sqltest/streplace.php?id=-1'&title=union select 1,2,concat(name,0x23,pass) from admin%23`
+- 实际 SQL：`SELECT * FROM news WHERE id='-1\' and title='union select 1,2,concat(name,0x23,pass) from admin#'`
+- 结果：`title` 参数成功注入，获取管理员账号密码。
+
+#### `stripslashes` 误用导致完全绕过
+
+**缺陷代码**（`stripslashes.php`）：
+```php
+<?php
+require_once('common.php');
+$conn = mysql_connect('localhost', 'root', 'braid') or die('bad!');
+mysql_query("SET NAMES binary");
+mysql_select_db('test', $conn) OR emMsg("数据库连接失败");
+$tmp_id = isset($_GET['id']) ? $_GET['id'] : 1;
+// 直接使用 stripslashes 删除反斜杠
+$id = stripslashes($tmp_id);
+$sql = "SELECT * FROM news WHERE id='{$id}'";
+echo $sql.'<br />';
+$result = mysql_query($sql, $conn) or die(mysql_error());
+?>
+```
+
+**执行流程分析**：
+1. 用户输入：`id=-1'`
+2. `common.php` 中 `addslashes` 处理：`id` 变为 `-1\'`
+3. `stripslashes($tmp_id)`：删除反斜杠，`id` 还原为 `-1'`
+3. SQL 拼接：`SELECT * FROM news WHERE id='-1''` → 语法错误，单引号闭合，可直接注入。
+
+**利用构造**：
+- 请求：`http://localhost/sqltest/stripslashes.php?id=-1' union select 1,2,concat(name,0x23,pass) from admin%23`
+- 结果：完全绕过全局防护，直接执行 UNION 注入。
+
+### 修复方案
+
+| 方案 | 说明 | 优先级 |
+|------|------|--------|
+| **禁止在转义后使用 `str_replace` 删除引号/反斜杠** | 若需过滤特定字符，应在 **转义前** 进行，或使用参数化查询彻底避免拼接。 | P0 |
+| **禁用 `stripslashes`** | 除非明确需处理已转义的外部数据（如从数据库读取的已转义字符串），否则不应在输入处理流程中使用。 | P0 |
+| **统一输入处理流程** | 入口文件统一：`编码统一 → 类型强制/长度限制 → 参数化绑定`。禁止业务代码二次处理转义字符。 | P0 |
+| **代码规范检查** | 静态扫描规则：标记 `addslashes`/`GPC` 后紧跟 `str_replace`/`stripslashes`/`stripcslashes` 为高危模式。 | P1 |
+
+### 关联审计模式
+- [[php-webshell-fundamentals-chopper-analysis]]：Webshell 免杀中常利用 `str_replace`/`stripslashes` 对抗特征匹配，审计时需区分“防御绕过”与“攻击利用”语境。
+- [[xd-security-waf-bypass-techniques-day46-49]]：WAF 绕过技术中“Payload 变异”常模拟此类函数误用逻辑构造绕过 Payload。
+
+---
+
+## 盲点八：二次注入
+
+### 核心原理
+
+二次注入利用 **数据入库时转义存储、取出时转义字符消失、二次使用时未重新转义直接拼接 SQL** 的时序差异。
+
+| 阶段 | 处理 | 状态 |
+|------|------|------|
+| **入库** | 用户输入 `braid'` → `addslashes` → `braid\'` → SQL `INSERT ... VALUES ('braid\\'')` → MySQL 存储为 `braid'` | 转义字符 `\` 被 MySQL 消费，实际存储内容含单引号 |
+| **出库/二次使用** | `SELECT nickname FROM users WHERE uid=1` → 取得 `braid'` → 直接拼入新 SQL：`UPDATE profile SET sig='{$nickname}'` | 单引号未被转义，闭合 SQL 语句，触发注入 |
+
+> **审计口诀**：搜索 `INSERT`/`UPDATE` 入库点与后续 `SELECT` 取出后直接拼接 SQL 的点；重点关注**个人资料修改、评论回复、订单备注、日志记录**等“存储-展示/再处理”业务链。
+
+### 实战案例复现（第三季示例）
+
+#### 场景描述
+1. **注册/修改资料**：用户提交昵称 `braid'`，经全局 `addslashes` 转义入库，数据库实际存 `braid'`。
+2. **二次利用点**：某页面展示昵称或将昵称用于其他 SQL 操作（如更新签名、生成推荐链接），代码如下：
+   ```php
+   $nickname = $db->get_one("SELECT nickname FROM users WHERE uid={$uid}"); // 取得 braid'
+   $sql = "UPDATE profile SET signature='{$nickname}' WHERE uid={$uid}"; // 直接拼接
+   ```
+3. **触发**：执行 SQL 变为 `UPDATE profile SET signature='braid'' WHERE uid=1`，单引号闭合，可构造 `braid', sig=(SELECT CONCAT(user,pass) FROM admin)#` 实现注入。
+
+### 修复方案
+
+| 方案 | 说明 | 优先级 |
+|------|------|--------|
+| **全链路参数化查询** | 入库、出库、再拼接均使用 Prepared Statement，彻底消除上下文切换风险。 | P0 |
+| **出库时重新转义** | 若无法参数化，二次拼接前必须对从数据库读取的数据再次执行 `addslashes`/`mysqli_real_escape_string`。 | P1 |
+| **存储原始数据，输出时转义** | 入库存原始输入（参数化），不同输出上下文（HTML/JS/SQL/Shell）分别按需转义（Output Encoding）。 | P0 (最佳实践) |
+| **业务逻辑隔离** | 避免将可控业务数据（昵称、评论）直接用于敏感 SQL 操作（权限变更、管理员操作）。 | P1 |
+
+### 关联审计模式
+- [[wecenter-v334-phar-deserialization-sqli]]：Cookie 注入 Phar 反序列化载荷经数据库存取触发，属于“存储-反序列化-二次利用”变种。
+- [[xd-security-logic-vulnerability-notes-day33-36]]：逻辑漏洞中“多阶段绕过”常涉及数据存储与后续校验的上下文不一致。
+
+---
+
 ## 统一审计检测清单
 
 | 检测项 | 搜索模式 | 判断标准 | 修复优先级 |
@@ -458,6 +593,9 @@ $sql = "SELECT * FROM news WHERE title = '{$title}'";
 | 覆盖关键变量 | 结合上下文：`$pre`、`$table`、`$path`、`$config`、`$auth` 等 | 被覆盖后用于 SQL 拼接/文件包含/鉴权判断 | P0 |
 | **编码转换在转义后** | `iconv(`/`mb_convert_encoding(` 位于全局 `addslashes`/GPC **之后** | 存在 GBK/UTF-8 互转且结果直接拼接 SQL | P0 |
 | **数据库连接字符集** | `SET NAMES gbk` / `charset=gbk` / `character_set_client=gbk` | 未使用 `utf8mb4`，且应用层有编码转换 | P0 |
+| **转义后调用 str_replace 删引号/反斜杠** | `addslashes`/`GPC` 后出现 `str_replace("'", ...)` 或 `str_replace('\\', ...)` | 导致残留反斜杠转义后续引号或消解转义 | P0 |
+| **转义后调用 stripslashes** | `addslashes`/`GPC` 后出现 `stripslashes(`/`stripcslashes(` | 直接抵消全局防护 | P0 |
+| **二次注入隐患** | `INSERT`/`UPDATE` 入库点 → `SELECT` 取出 → 直接拼接新 SQL | 读取数据未重新转义/参数化即入库/查询 | P0 |
 
 ---
 
@@ -472,19 +610,22 @@ $sql = "SELECT * FROM news WHERE title = '{$title}'";
    - 入口统一 **输入规范化**（Normalization）：**先编码统一/转换，再类型强制/长度截断，最后参数化绑定**，覆盖所有超全局数组（`$_GET/$_POST/$_COOKIE/$_REQUEST/$_FILES/$_SERVER/$_ENV`）。
    - 核心配置（表前缀、路径、密钥）定义为 **常量/只读属性**，不可被变量覆盖。
    - 提供 **安全封装函数**：`safe_intval()`、`safe_encoding_convert()`、`safe_extract($whitelist)` 等，禁止直接使用裸函数。
+   - **禁止在输入处理链路中使用 `str_replace`/`stripslashes` 处理引号/反斜杠**。
 
 3. **代码层**：
-   - 代码规范禁用 `extract`、`parse_str`、`$$`、`register_globals` 兼容代码、`SET NAMES gbk`、`iconv` 直接拼接 SQL。
+   - 代码规范禁用 `extract`、`parse_str`、`$$`、`register_globals` 兼容代码、`SET NAMES gbk`、`iconv` 直接拼接 SQL、`str_replace` 删引号、`stripslashes`。
    - CodeReview Checklist 必查项：
      - “用户输入是否直接作为变量名/键名使用”
      - “数字型参数是否强制转型”
      - “所有超全局数组是否均纳入参数化/转义”
      - “编码转换是否在参数化/转义**之前**完成”
      - “数据库连接字符集是否为 `utf8mb4`”
+     - “是否存在转义后再清理转义字符的操作”
+     - “从数据库读取的数据再次入库/拼接 SQL 时是否参数化”
 
 4. **运维层**：
    - WAF/IDS 规则检测 `filename=`、`name=` 等上传字段、`X-Forwarded-For` 等头部、`iconv` 相关参数中的 SQL 关键字及宽字节特征（`%df%27`、`%e5%5c` 等）。
-   - 部署 **RASP/IAST**（如 OpenRASP、洞态）运行时监测 `extract`/`include`/`iconv` 危险调用参数污点传播。
+   - 部署 **RASP/IAST**（如 OpenRASP、洞态）运行时监测 `extract`/`include`/`iconv`/`str_replace`/`stripslashes` 危险调用参数污点传播。
    - 定期执行 **编码一致性扫描**：检查数据库、表、列、连接、应用、页面编码是否全链路 UTF-8。
 
 ---
@@ -506,6 +647,10 @@ $sql = "SELECT * FROM news WHERE title = '{$title}'";
 - Oasys 系统代码审计实战：[[oasys-system-code-audit]]
 - HTTP 头伪造存储型 XSS：[[http-header-forgery-stored-xss]]
 - SSRF 绕过技术：[[ssrf-bypass-techniques]]
+- PHP Webshell 基础与免杀（含 str_replace 免杀对抗）：[[php-webshell-fundamentals-chopper-analysis]]
+- XD安全 WAF 绕过技术（Payload 变异）：[[xd-security-waf-bypass-techniques-day46-49]]
+- WeCenter Phar 反序列化二次注入：[[wecenter-v334-phar-deserialization-sqli]]
+- XD安全逻辑漏洞笔记（多阶段绕过）：[[xd-security-logic-vulnerability-notes-day33-36]]
 
 ---
 
@@ -517,9 +662,11 @@ $sql = "SELECT * FROM news WHERE title = '{$title}'";
 | 1.1 | 2025-08-19 | 结构化重写：增加原理表格、利用链标准化、修复方案对比、统一检测清单、防御纵深建议、交叉引用索引 |
 | 2.0 | 2026-11-16 | **重大更新**：融合第五季内容，新增整型注入绕过、数组键名注入、SERVER变量注入三大盲点，形成五大盲点完整知识体系；更新标题、描述、标签、检测清单、防御建议、交叉引用 |
 | 2.1 | 2025-08-20 | **重大更新**：融合第四季内容，新增**字符编码转换绕过（iconv/mb_convert_encoding 宽字节注入）**作为第六大盲点，覆盖 GBK→UTF-8 与 UTF-8→GBK 双向利用链，完善检测清单与防御建议，更新标题、描述、标签、版本历史 |
+| 2.2 | 2026-11-17 | **重大更新**：融合第三季内容，新增**函数误用绕过（str_replace/stripslashes 误用）**与**二次注入**作为第七、八大盲点，完善 PHP 全局防护绕过技术谱系；更新标题、描述、标签、检测清单、防御建议、交叉引用、版本历史 |
 
 ## 来源
 
 - [301在路上-201508-202208_121](../sources/301在路上-201508-202208_121.md)
 - [301在路上-201508-202208_132](../sources/301在路上-201508-202208_132.md)
 - [301在路上-201508-202208_142](../sources/301在路上-201508-202208_142.md)
+- [301在路上-201508-202208_145](../sources/301在路上-201508-202208_145.md)

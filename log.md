@@ -563,3 +563,4 @@
 ## [2026-11-16] ingest | 301在路上-201508-202208_063 -> 301-zai-lushang-wechat-archive-201508-202208.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_064 -> logic-vulnerability-password-reset-audit.md, 301-zai-lushang-wechat-archive-201508-202208.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_065 -> api-business-logic-phone-enumeration.md
+## [2026-11-16] ingest | 301在路上-201508-202208_066 -> bug-bounty-program-history-evolution.md

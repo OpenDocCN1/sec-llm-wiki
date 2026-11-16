@@ -638,3 +638,4 @@
 ## [2026-11-17] ingest | 301在路上-201508-202208_139 -> 301-zai-lushang-wechat-archive-201508-202208.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_140 -> 301-zai-lushang-wechat-archive-201508-202208.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_141 -> 301-zai-lushang-wechat-archive-201508-202208.md, security-career-development-guide.md
+## [2026-11-17] ingest | 301在路上-201508-202208_142 -> code-audit-global-protection-blindspots.md, code-audit-widebyte-sql-injection-iconv.md

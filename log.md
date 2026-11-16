@@ -646,3 +646,4 @@
 ## [2026-11-17] ingest | 301在路上-201508-202208_147 -> code-audit-global-protection-blindspots.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_148 -> code-audit-art-series-intro.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_149 -> 301-zai-lushang-wechat-archive-201508-202208.md
+## [2026-11-17] ingest | 301在路上-201508-202208_150 -> security-team-communication-art.md, 301-zai-lushang-wechat-archive-201508-202208.md

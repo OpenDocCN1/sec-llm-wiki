@@ -662,3 +662,4 @@
 ## [2026-11-17] ingest | 301在路上-201508-202208_163 -> 301-zai-lushang-wechat-archive-201508-202208.md, security-career-development-guide.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_164 -> 301-zai-lushang-wechat-archive-201508-202208.md, guiyang-1229-telecom-fraud-case-study.md, social-engineering-attack-techniques.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_165 -> supply-chain-attack-fundamentals.md, 301-zai-lushang-wechat-archive-201508-202208.md
+## [2026-11-17] ingest | 301在路上-201508-202208_166 -> 301-zai-lushang-wechat-archive-201508-202208.md

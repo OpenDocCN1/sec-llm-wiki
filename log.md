@@ -632,3 +632,4 @@
 ## [2026-11-17] ingest | 301在路上-201508-202208_133 -> 301-zai-lushang-wechat-archive-201508-202208.md, security-career-development-guide.md, security-leadership-team-management.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_134 -> 301-zai-lushang-wechat-archive-201508-202208.md, security-incident-response-webshell-case-study.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_135 -> security-career-development-guide.md
+## [2026-11-17] ingest | 301在路上-201508-202208_136 -> 301-zai-lushang-wechat-archive-201508-202208.md, security-practitioner-health-wellbeing.md

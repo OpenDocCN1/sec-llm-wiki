@@ -1,11 +1,15 @@
 ---
-title: 代码审计中全局防护的两大盲点：FILES注入与变量覆盖
-description: 系统梳理代码审计中全局防护机制的两大盲点——FILES注入（$_FILES未被转义导致的SQL注入）与变量覆盖（extract/parse_str/$$
-  变量变量覆盖），结合 TipAsk 实战案例深度解析成因、利用链构造及修复方案，形成白盒审计视角的完整知识体系。
+title: 代码审计中全局防护的五大盲点：整型注入、数组键名注入、SERVER变量注入、FILES注入与变量覆盖
+description: 系统梳理代码审计中全局防护机制的五大盲点——整型注入绕过、数组键名注入、SERVER变量注入（X-Forwarded-For等）、FILES注入（$_FILES未被转义导致的SQL注入）与变量覆盖（extract/parse_str/$$
+  变量变量覆盖），结合实战案例深度解析成因、利用链构造及修复方案，形成白盒审计视角的完整知识体系。
 category: program-analysis
 tags:
 - 代码审计
 - 全局防护
+- 整型注入
+- 数组键名注入
+- SERVER变量注入
+- X-Forwarded-For
 - FILES注入
 - 变量覆盖
 - extract
@@ -18,21 +22,220 @@ tags:
 - HackBraid
 - 乌云
 date: 2016-06-24
-updated: '2026-11-16'
+updated: '2026-11-17'
 ---
 
 ## 概述
 
-本页面基于「白帽子分享之代码审计的艺术系列—第六季」（作者：HackBraid，乌云核心白帽子）整理，系统阐述 **全局防护机制在代码审计中常被忽视的两大盲点**：
+本页面基于「白帽子分享之代码审计的艺术系列—第五季、第六季」（作者：HackBraid，乌云核心白帽子）整理，系统阐述 **全局防护机制在代码审计中常被忽视的五大盲点**：
 
-1. **FILES 注入**：全局 `addslashes`/`mysql_real_escape_string` 等转义仅针对 `$_GET`、`$_POST`、`$_REQUEST`、`$_COOKIE` 等超全局数组，遗漏 `$_FILES` 导致上传文件名、类型等字段直接入库引发 SQL 注入。
-2. **变量覆盖**：`extract()`、`parse_str()`、`$$`（变量变量）等危险函数/语法允许攻击者以任意键名覆盖现有变量，进而劫持 SQL 语句拼接、包含路径、鉴权标识等关键逻辑。
+1. **整型注入绕过**：数字型参数无需单引号闭合，完全绕过 GPC `addslashes` 转义。
+2. **数组键名注入**：全局防护仅遍历数组 `value` 进行转义，遗漏 `key` 导致键名直接拼接入 SQL。
+3. **SERVER 变量注入**：全局防护仅覆盖 `$_GET/$_POST/$_COOKIE`，遗漏 `$_SERVER` 等超全局数组（如 `X-Forwarded-For`、`CLIENT_IP` 等）。
+4. **FILES 注入**：全局转义遗漏 `$_FILES`，上传文件名、类型等字段未转义直接入库引发 SQL 注入。
+5. **变量覆盖**：`extract()`、`parse_str()`、`$$`（变量变量）等危险函数/语法允许攻击者以任意键名覆盖现有变量，劫持 SQL 拼接、包含路径、鉴权标识等关键逻辑。
 
-两类盲点均属于 **“全局防护覆盖不全”** 与 **“危险语法滥用”** 的典型代码缺陷模式，是白盒审计中高产出、低门槛的挖掘切入点。
+前三类属于 **“全局防护覆盖不全/类型处理缺陷”**，后两类属于 **“危险语法滥用/超全局数组遗漏”**，均是白盒审计中高产出、低门槛的挖掘切入点。
 
 ---
 
-## 盲点一：FILES 注入
+## 盲点一：整型注入绕过
+
+### 核心原理
+
+| 场景 | 原因 | 绕过关键 |
+|------|------|----------|
+| 参数未做 `intval` 转换、SQL 无单引号保护 | 数字型参数不需要单引号闭合，`addslashes` 仅转义引号、反斜杠、NUL，对数字无效 | 直接拼接 `union select` 等 Payload |
+| PHP 弱类型判断逻辑错误 | `0 < 1` 与 `0 union select 1 < 1` 在弱类型比较下均为 `true` | 利用 `id=0 union select...` 绕过数值范围检查 |
+| 多条 SQL 中后续语句缺失单引号 | 第一条 SQL 有保护，第二条拼接同一变量时忘记加引号 | 同一变量在不同语句中上下文不一致 |
+
+> **审计口诀**：搜索 `id=`、`page=`、`cid=` 等数字型参数；检查是否强制 `intval()`/`(int)`；检查 SQL 拼接是否**始终**包裹单引号；检查弱类型比较（`<` `>` `==`）是否可被数字型 Payload 绕过。
+
+### 实战案例复现（第五季示例）
+
+#### 无转换、无引号保护
+```php
+// int1.php
+$id = $_GET['id'];
+$sql = "SELECT * FROM news WHERE id=$id";  // 无单引号
+```
+**Payload**：`id=-1 union select 1,2,concat(name,0x23,pass) from admin#`
+
+#### 弱类型判断绕过
+```php
+// int2.php
+$id = $_GET['id'];
+if ($id < 1) exit();  // 0 < 1 为 true，但 "0 union select..." < 1 在弱类型下也为 true
+$sql = "SELECT * FROM news WHERE id=$id";
+```
+**Payload**：`id=0 union select 1,2,concat(name,0x23,pass) from admin#`
+
+#### 多语句上下文不一致
+```php
+// int3.php
+$id = $_GET['id'];
+$sql1 = "SELECT * FROM news WHERE id='$id'";  // 有引号
+$sql2 = "UPDATE news SET views=views+1 WHERE id=$id";  // 无引号
+```
+**Payload**：`id=0 union select 1,2,concat(name,0x23,pass) from admin#`（第二条语句触发注入）
+
+### 修复方案
+- **强制类型转换**：`$id = intval($_GET['id']);` 或 `$id = (int)$_GET['id'];`
+- **统一参数化查询**：PDO 预处理语句彻底消除拼接。
+- **白名单校验**：`if (!ctype_digit($id)) exit();`
+- **代码规范**：所有数字型入库字段统一走 `intval` 封装函数，禁止裸用 `$_GET/$_POST`。
+
+---
+
+## 盲点二：数组键名注入
+
+### 核心原理
+
+| 防护代码典型写法 | 遗漏点 | 后果 |
+|------------------|--------|------|
+| `foreach($_POST as $k=>$v) $_POST[$k]=addslashes($v);` | 仅转义 `$v`，`$k`（键名）未转义 | 键名直接拼接入 SQL，单引号未被转义，触发注入 |
+
+> **审计口诀**：全局搜索 `foreach($_POST`、`foreach($_GET`、`foreach($_REQUEST`、`foreach($_COOKIE`，检查循环体是否仅对 `$v` 操作；重点关注业务中使用数组参数的场景（批量删除、排序、多条件筛选）。
+
+### 实战案例复现（第五季示例）
+
+#### 全局防护缺陷
+```php
+// common.inc.php
+foreach($_POST as $k=>$v) $_POST[$k]=addslashes($v);  // 只过滤 value
+foreach($_GET as $k=>$v) $_GET[$k]=addslashes($v);
+foreach($_COOKIE as $k=>$v) $_COOKIE[$k]=addslashes($v);
+```
+
+#### 漏洞触发点
+```php
+// array.php
+foreach($_POST['title'] as $key=>$val) {
+    $sql = "SELECT * FROM news WHERE id='$key' and title='$val'";  // $key 直接拼接，有单引号保护但未转义
+    $result = mysql_query($sql);
+}
+```
+
+#### 利用构造
+- 正常请求：`title[1]=news title` → SQL: `WHERE id='1' and title='news title'`
+- 注入 Payload（POST body）：
+  ```text
+  title[-1' union select 1,2,concat(name,0x23,pass) from admin#]=news title
+  ```
+- 实际 SQL：`WHERE id='-1' union select 1,2,concat(name,0x23,pass) from admin#' and title='news title'`
+
+### 修复方案
+- **键名同步转义**：
+  ```php
+  foreach($_POST as $k=>$v) {
+      $_POST[addslashes($k)] = addslashes($v);  // key 也要转义
+  }
+  ```
+- **更推荐：递归深度转义函数**（兼容多维数组）：
+  ```php
+  function addslashes_deep($value) {
+      if (is_array($value)) {
+          $new = [];
+          foreach($value as $k=>$v) {
+              $new[addslashes_deep($k)] = addslashes_deep($v);
+          }
+          return $new;
+      }
+      return addslashes($value);
+  }
+  $_POST = addslashes_deep($_POST);
+  $_GET  = addslashes_deep($_GET);
+  $_COOKIE = addslashes_deep($_COOKIE);
+  ```
+- **根治**：放弃全局 `addslashes`，全面上 **PDO 预处理语句**，业务层显式绑定参数。
+
+### 关联审计模式
+- [[code-audit-file-upload-vulnerabilities]]：批量上传、多文件处理常涉及数组参数，键名注入可结合文件名可控扩大攻击面。
+- [[upload-labs-file-upload-bypass-writeup]]：第 19 关条件竞争上传中数组参数处理不当可延伸为键名注入。
+
+---
+
+## 盲点三：SERVER 变量注入
+
+### 核心原理
+
+| 全局防护典型覆盖 | 遗漏对象 | 典型注入点 |
+|------------------|----------|------------|
+| `$_GET` `$_POST` `$_COOKIE` `$_REQUEST` | `$_SERVER`、`$_ENV`、`$_FILES` | `X-Forwarded-For`、`CLIENT_IP`、`HTTP_HOST`、`HTTP_REFERER`、`HTTP_USER_AGENT`、`QUERY_STRING` 等 |
+
+> **审计口诀**：搜索 `$_SERVER[`、`getenv(`、`apache_request_headers(`，重点关注 **获取客户端 IP 入库**、**日志记录**、**统计分析**、**防刷限流** 等业务逻辑。
+
+### 常见可控 SERVER 变量
+
+| 变量 | 含义 | 可控性 | 典型场景 |
+|------|------|--------|----------|
+| `HTTP_X_FORWARDED_FOR` | 代理转发 IP | **完全可控**（客户端发送 Header） | 获取真实 IP、访问日志、投票限流 |
+| `HTTP_CLIENT_IP` | 客户端声称 IP | **完全可控** | 同 `XFF` |
+| `HTTP_X_REAL_IP` | Nginx 真实 IP 头 | **完全可控** | 同 `XFF` |
+| `HTTP_HOST` | Host 头 | **可控**（未校验时） | 密码重置链接生成、SSRF 回调地址 |
+| `HTTP_REFERER` | Referer 头 | **完全可控** | 统计分析、防盗链、回跳逻辑 |
+| `HTTP_USER_AGENT` | UA 头 | **完全可控** | 访问日志、UA 统计、设备适配 |
+| `QUERY_STRING` | 原始查询字符串 | **可控** | 日志记录、路由分发 |
+
+### 实战案例复现（第五季示例）
+
+#### 获取 IP 入库函数
+```php
+// common.func.php
+function get_client_ip() {
+    if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+    } elseif (isset($_SERVER['HTTP_CLIENT_IP'])) {
+        $ip = $_SERVER['HTTP_CLIENT_IP'];
+    } else {
+        $ip = $_SERVER['REMOTE_ADDR'];
+    }
+    return $ip;
+}
+```
+
+#### 漏洞触发点
+```php
+// log.php
+$ip = get_client_ip();
+$sql = "INSERT INTO access_log (ip, url) VALUES ('$ip', '$_SERVER[REQUEST_URI]')";
+// $ip 来自 X-Forwarded-For，未转义，单引号保护失效
+```
+
+#### 利用构造
+- 请求头：`X-Forwarded-For: -1' union select 1,2,concat(name,0x23,pass) from admin#`
+- 实际 SQL：`INSERT INTO access_log (ip, url) VALUES ('-1' union select 1,2,concat(name,0x23,pass) from admin#', '/log.php')`
+
+### 修复方案
+- **纳入全局转义**：
+  ```php
+  $_SERVER = addslashes_deep($_SERVER);  // 递归转义
+  ```
+- **IP 获取白名单校验**：
+  ```php
+  function get_client_ip() {
+      $ip = $_SERVER['REMOTE_ADDR'];  // 优先信任 REMOTE_ADDR（TCP 连接源 IP，不可伪造）
+      if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+          $xff = $_SERVER['HTTP_X_FORWARDED_FOR'];
+          // 简单校验：仅取第一个合法 IPv4/IPv6
+          if (preg_match('/^(\d{1,3}\.){3}\d{1,3}$/', $xff)) {
+              $ip = $xff;
+          }
+      }
+      return $ip;
+  }
+  ```
+- **参数化查询**：日志入库统一使用 Prepared Statement。
+- **WAF/RASP 层面**：对 `X-Forwarded-For` 等头部进行 SQL 关键字检测。
+
+### 关联审计模式
+- [[http-header-forgery-stored-xss]]：`X-Forwarded-For`、`Client-IP` 伪造导致存储型 XSS，同源于 SERVER 变量未过滤。
+- [[xd-security-xss-vulnerability-notes-day25-28]]：HTTP 头伪造注入向量导致的存储型 XSS 成因分类与案例复现。
+- [[ssrf-bypass-techniques]]：`X-Forwarded-For` 等头部在 SSRF 绕过中的利用。
+
+---
+
+## 盲点四：FILES 注入
 
 ### 核心原理
 
@@ -45,7 +248,6 @@ updated: '2026-11-16'
 ### 实战案例：TipAsk 问答系统
 
 #### 全局防护代码审计
-
 ```php
 // common.inc.php 或类似入口文件
 foreach($_GET as $k=>$v) $_GET[$k]=addslashes($v);
@@ -55,7 +257,6 @@ foreach($_COOKIE as $k=>$v) $_COOKIE[$k]=addslashes($v);
 ```
 
 #### 漏洞触发点追踪
-
 - **文件**：`/control/attach.php`（上传处理控制器）
 - **关键调用链**：
   ```php
@@ -69,7 +270,6 @@ foreach($_COOKIE as $k=>$v) $_COOKIE[$k]=addslashes($v);
   ```
 
 #### 利用构造
-
 1. 准备一个任意文件（如 `test.jpg`）
 2. 使用 Burp Suite 抓包修改 `filename` 参数为 Payload：
    ```text
@@ -79,7 +279,6 @@ foreach($_COOKIE as $k=>$v) $_COOKIE[$k]=addslashes($v);
 3. 上传后，Payload 被插入 `attach` 表的 `filename` 字段，管理员在后台查看附件列表或前台调用时触发二次注入，或直接通过报错回显获取数据。
 
 #### 修复方案
-
 - **全局层面**：在入口文件统一对 `$_FILES` 递归转义：
   ```php
   function addslashes_deep($value) {
@@ -91,14 +290,13 @@ foreach($_COOKIE as $k=>$v) $_COOKIE[$k]=addslashes($v);
 - **业务层面**：文件名落库前强制重命名（UUID/哈希），仅保留扩展名白名单校验。
 
 ### 关联审计模式
-
 - [[code-audit-file-upload-vulnerabilities]]：文件上传漏洞挖掘方法论中“全局搜索定位 → 路由分析 → 危险函数识别”流程可直接复用于 FILES 注入排查。
 - [[arbitrary-file-download-vulnerability-analysis]]：HDWiki 备份功能审计展示了“用户可控参数入库 → 二次利用”的同构模式。
 - [[upload-labs-file-upload-bypass-writeup]]：第 19 关条件竞争上传结合文件名可控，可延伸为 FILES 注入利用链。
 
 ---
 
-## 盲点二：变量覆盖
+## 盲点五：变量覆盖
 
 ### 危险函数/语法对比
 
@@ -113,7 +311,6 @@ foreach($_COOKIE as $k=>$v) $_COOKIE[$k]=addslashes($v);
 ### 实战利用链构造
 
 #### 覆盖表前缀实现 SQL 注入
-
 ```php
 // config.php
 $pre = "pre_";   // 表前缀
@@ -125,7 +322,6 @@ $sql = "SELECT * FROM {$pre}users WHERE id=1";
 ```
 
 #### 覆盖包含路径实现任意文件包含/代码执行
-
 ```php
 // common.inc.php
 $template_dir = "./templates/default/";
@@ -137,7 +333,6 @@ include $template_dir."header.php";
 ```
 
 #### `$$` 变量变量覆盖示例
-
 ```php
 // vuln.php
 $a = "safe_value";
@@ -147,7 +342,6 @@ $$b = $_GET['val'];  // 等价于 $evil = 'attacker_controlled'
 ```
 
 ### 经典案例：湖湘杯 WillPHP 文件包含
-
 > 详见 [[huxiangbei-willphp-file-inclusion-writeup]]
 
 - **入口**：`assign()/view()` → `Tple::renderTo()`
@@ -166,7 +360,6 @@ $$b = $_GET['val'];  // 等价于 $evil = 'attacker_controlled'
 | **静态分析规则** | CI/CD 集成 | Fortify/FindBugs/自定义规则：标记 `extract(`、`parse_str(`、`\$\$` 为高危 |
 
 ### 关联审计模式
-
 - [[code-audit-installation-reinstallation-vulnerabilities]]：安装/重装逻辑中“变量覆盖劫持”类型直接对应 `extract($_POST)` 覆盖 `$install_lock`、`$db_config` 等关键变量。
 - [[logic-vulnerability-password-reset-audit]]：逻辑漏洞审计中“服务端验证割裂”常配合变量覆盖绕过鉴权。
 - [[oasys-system-code-audit]]：Oasys 审计中拦截器鉴权逻辑缺陷可结合变量覆盖实现垂直越权。
@@ -178,8 +371,11 @@ $$b = $_GET['val'];  // 等价于 $evil = 'attacker_controlled'
 
 | 检测项 | 搜索模式 | 判断标准 | 修复优先级 |
 |--------|----------|----------|------------|
+| 整型参数未强制转换 | `id=`/`page=`/`cid=` 等参数直接入 SQL | 无 `intval()`/`(int)`/`ctype_digit()`，SQL 无单引号包裹 | P0 |
+| 数组键名未转义 | `foreach($_POST as $k=>$v)` 仅处理 `$v` | 业务使用数组参数且键名拼接入 SQL | P0 |
+| SERVER 变量未转义 | 全局转义代码无 `$_SERVER` 遍历 | 存在 IP 获取入库、日志记录、统计分析等场景 | P0 |
 | FILES 未转义 | `addslashes`/`mysql.*escape` 附近无 `$_FILES` 遍历 | 存在上传功能且文件名/类型入库 | P0 |
-| `extract()` 默认覆盖 | `extract\(` 无第二参数或 `EXTR_OVERWRITE` | 变量来源可控（`$_GET/$_POST/$_REQUEST/$_COOKIE/$_FILES`） | P0 |
+| `extract()` 默认覆盖 | `extract\(` 无第二参数或 `EXTR_OVERWRITE` | 变量来源可控（`$_GET/$_POST/$_REQUEST/$_COOKIE/$_FILES/$_SERVER`） | P0 |
 | `parse_str()` 无数组参数 | `parse_str\([^,)]+\)` | PHP < 8.0 环境 | P1 |
 | `$$` 变量变量赋值 | `\$\$[a-zA-Z_]` | 变量名来源可控 | P1 |
 | 覆盖关键变量 | 结合上下文：`$pre`、`$table`、`$path`、`$config`、`$auth` 等 | 被覆盖后用于 SQL 拼接/文件包含/鉴权判断 | P0 |
@@ -192,13 +388,13 @@ $$b = $_GET['val'];  // 等价于 $evil = 'attacker_controlled'
    - 全面采用 **PDO/Prepared Statements** 消除 SQL 拼接。
    - 模板引擎强制 **沙箱渲染**（如 Blade、Twig `autoescape`），禁止原生 `include`/`extract` 渲染。
 2. **框架层**：
-   - 入口统一 **输入规范化**（Normalization）：递归转义、类型强制、长度截断、编码统一。
+   - 入口统一 **输入规范化**（Normalization）：递归转义、类型强制、长度截断、编码统一，**覆盖所有超全局数组**（`$_GET/$_POST/$_COOKIE/$_REQUEST/$_FILES/$_SERVER/$_ENV`）。
    - 核心配置（表前缀、路径、密钥）定义为 **常量/只读属性**，不可被变量覆盖。
 3. **代码层**：
    - 代码规范禁用 `extract`、`parse_str`、`$$`、`register_globals` 兼容代码。
-   - CodeReview Checklist 必查项：**“用户输入是否直接作为变量名/键名使用”**。
+   - CodeReview Checklist 必查项：**“用户输入是否直接作为变量名/键名使用”、“数字型参数是否强制转型”、“所有超全局数组是否均纳入转义/参数化”**。
 4. **运维层**：
-   - WAF/IDS 规则检测 `filename=`、`name=` 等上传字段中的 SQL 关键字。
+   - WAF/IDS 规则检测 `filename=`、`name=` 等上传字段、`X-Forwarded-For` 等头部中的 SQL 关键字。
    - 部署 **RASP/IAST**（如 OpenRASP、洞态）运行时监测 `extract`/`include` 危险调用参数污点传播。
 
 ---
@@ -218,6 +414,8 @@ $$b = $_GET['val'];  // 等价于 $evil = 'attacker_controlled'
 - 逻辑漏洞密码重置审计（含变量覆盖）：[[logic-vulnerability-password-reset-audit]]
 - XD安全代码审计笔记（关键字搜索策略）：[[xd-security-code-audit-notes-day50-57]]
 - Oasys 系统代码审计实战：[[oasys-system-code-audit]]
+- HTTP 头伪造存储型 XSS：[[http-header-forgery-stored-xss]]
+- SSRF 绕过技术：[[ssrf-bypass-techniques]]
 
 ---
 
@@ -227,7 +425,9 @@ $$b = $_GET['val'];  // 等价于 $evil = 'attacker_controlled'
 |------|------|----------|
 | 1.0 | 2016-06-24 | 初稿：基于 HackBraid「代码审计的艺术系列第六季」整理 FILES 注入与变量覆盖两大盲点 |
 | 1.1 | 2025-08-19 | 结构化重写：增加原理表格、利用链标准化、修复方案对比、统一检测清单、防御纵深建议、交叉引用索引 |
+| 2.0 | 2026-11-16 | **重大更新**：融合第五季内容，新增整型注入绕过、数组键名注入、SERVER变量注入三大盲点，形成五大盲点完整知识体系；更新标题、描述、标签、检测清单、防御建议、交叉引用 |
 
 ## 来源
 
 - [301在路上-201508-202208_121](../sources/301在路上-201508-202208_121.md)
+- [301在路上-201508-202208_132](../sources/301在路上-201508-202208_132.md)

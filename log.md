@@ -572,3 +572,4 @@
 ## [2026-11-16] ingest | 301在路上-201508-202208_072 -> code-audit-installation-reinstallation-vulnerabilities.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_073 -> cve-2016-4654-ios-kernel-memory-corruption.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_074 -> 301-zai-lushang-wechat-archive-201508-202208.md, security-industry-entrepreneurship-reflections.md
+## [2026-11-16] ingest | 301在路上-201508-202208_075 -> linux-command-injection-octal-printf-bypass.md

@@ -656,3 +656,4 @@
 ## [2026-11-17] ingest | 301在路上-201508-202208_157 -> 301-zai-lushang-wechat-archive-201508-202208.md, security-practitioner-ethics-values.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_158 -> 301-zai-lushang-wechat-archive-201508-202208.md, bank-card-counterfeit-liability-case-2015.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_159 -> 301-zai-lushang-wechat-archive-201508-202208.md
+## [2026-11-17] ingest | 301在路上-201508-202208_160 -> cve-2016-3081-struts2-s2-032-rce.md, 301-zai-lushang-wechat-archive-201508-202208.md

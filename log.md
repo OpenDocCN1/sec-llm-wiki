@@ -593,3 +593,4 @@
 ## [2026-11-16] ingest | 301在路上-201508-202208_093 -> 301-zai-lushang-wechat-archive-201508-202208.md, ourmine-hacking-group-profile.md, pokemon-go-security-case-study.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_094 -> discuz-x25-path-disclosure-vulnerability-analysis.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_095 -> http-header-forgery-stored-xss.md, xd-security-xss-vulnerability-notes-day25-28.md
+## [2026-11-16] ingest | 301在路上-201508-202208_097 -> windows10-telemetry-privacy-concerns.md

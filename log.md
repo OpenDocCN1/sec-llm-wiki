@@ -549,3 +549,4 @@
 ## [2026-11-16] ingest | 301在路上-201508-202208_049 -> security-practitioner-legal-compliance.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_050 -> 301-zai-lushang-wechat-archive-201508-202208.md
 ## [2026-11-16] ingest | 301在路上-201508-202208_051 -> 301-zai-lushang-wechat-archive-201508-202208.md
+## [2026-11-16] ingest | 301在路上-201508-202208_052 -> 301-zai-lushang-wechat-archive-201508-202208.md, mooncake-gate-security-ethics-analysis.md, internal-vulnerability-disclosure-culture.md

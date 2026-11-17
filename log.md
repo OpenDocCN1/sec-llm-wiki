@@ -698,3 +698,4 @@
 ## [2026-11-17] ingest | 301在路上-201508-202208_199 -> insider-threat-courier-waybill-data-leakage.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_200 -> 301-zai-lushang-wechat-archive-201508-202208.md, supply-chain-attack-fundamentals.md, hotel-pms-security-vulnerabilities.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_201 -> wooyun-2015-annual-security-report.md, supply-chain-attack-fundamentals.md, credential-stuffing-password-hygiene.md
+## [2026-11-17] ingest | 301在路上-201508-202208_202 -> 301-zai-lushang-wechat-archive-201508-202208.md

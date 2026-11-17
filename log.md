@@ -694,3 +694,4 @@
 ## [2026-11-17] ingest | 301在路上-201508-202208_195 -> 301-zai-lushang-wechat-archive-201508-202208.md, supply-chain-attack-fundamentals.md, credential-stuffing-password-hygiene.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_196 -> 301-zai-lushang-wechat-archive-201508-202208.md, boarding-pass-social-media-leakage-risk.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_197 -> automotive-insurance-pii-leakage-case-study.md, automotive-owner-data-underground-market.md
+## [2026-11-17] ingest | 301在路上-201508-202208_198 -> 301-zai-lushang-wechat-archive-201508-202208.md, xinliyuan-p2p-insider-threat-offboarding-case.md

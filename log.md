@@ -700,3 +700,4 @@
 ## [2026-11-17] ingest | 301在路上-201508-202208_201 -> wooyun-2015-annual-security-report.md, supply-chain-attack-fundamentals.md, credential-stuffing-password-hygiene.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_202 -> 301-zai-lushang-wechat-archive-201508-202208.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_203 -> 301-zai-lushang-wechat-archive-201508-202208.md
+## [2026-11-17] ingest | 301在路上-201508-202208_204 -> security-vendor-incident-response-behavior.md, topsec-tos-command-execution-vulnerability.md

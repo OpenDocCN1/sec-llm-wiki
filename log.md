@@ -675,3 +675,4 @@
 ## [2026-11-17] ingest | 301在路上-201508-202208_176 -> security-team-hc-planning-work-quantification.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_177 -> 301-security-team-building-third-season.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_178 -> 301-security-team-building-second-season.md
+## [2026-11-17] ingest | 301在路上-201508-202208_179 -> 301-security-team-building-first-season.md

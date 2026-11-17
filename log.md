@@ -709,3 +709,4 @@
 ## [2026-11-17] ingest | 301在路上-201508-202208_210 -> 263-email-auth-bypass-vulnerability.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_211 -> 301-zai-lushang-wechat-archive-201508-202208.md, hunan-cybersecurity-veterans-profile.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_212 -> 301-zai-lushang-wechat-archive-201508-202208.md, supply-chain-attack-fundamentals.md
+## [2026-11-17] ingest | 301在路上-201508-202208_213 -> 301-zai-lushang-wechat-archive-201508-202208.md, supply-chain-attack-fundamentals.md

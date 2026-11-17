@@ -669,3 +669,4 @@
 ## [2026-11-17] ingest | 301在路上-201508-202208_170 -> sim-swap-attack-case-study-alipay-bank-theft.md, 301-zai-lushang-wechat-archive-201508-202208.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_171 -> 301-zai-lushang-wechat-archive-201508-202208.md, white-hat-enterprise-collaboration-guide.md, white-hat-ethics-industry-trust.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_172 -> xpwn-future-security-summit.md, 301-zai-lushang-wechat-archive-201508-202208.md
+## [2026-11-17] ingest | 301在路上-201508-202208_173 -> 301-zai-lushang-wechat-archive-201508-202208.md

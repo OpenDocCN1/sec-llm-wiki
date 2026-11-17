@@ -704,3 +704,4 @@
 ## [2026-11-17] ingest | 301在路上-201508-202208_205 -> 360-browser-rce-vulnerabilities-2016.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_206 -> wechat-redpacket-photo-bypass-case-study.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_207 -> wooyun-2016-171945-daiqile-sql-injection-waf-bypass.md
+## [2026-11-17] ingest | 301在路上-201508-202208_208 -> wooyun-zone-sql-injection-incident-response-2016.md, security-vendor-incident-response-behavior.md

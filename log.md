@@ -678,3 +678,4 @@
 ## [2026-11-17] ingest | 301在路上-201508-202208_179 -> 301-security-team-building-first-season.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_180 -> 301-zai-lushang-wechat-archive-201508-202208.md, 301-security-team-building-third-season.md, security-leadership-team-management.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_181 -> 301-zai-lushang-wechat-archive-201508-202208.md
+## [2026-11-17] ingest | 301在路上-201508-202208_182 -> security-career-development-guide.md

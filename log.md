@@ -673,3 +673,4 @@
 ## [2026-11-17] ingest | 301在路上-201508-202208_174 -> 301-zai-lushang-wechat-archive-201508-202208.md, supply-chain-attack-fundamentals.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_175 -> security-career-development-guide.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_176 -> security-team-hc-planning-work-quantification.md
+## [2026-11-17] ingest | 301在路上-201508-202208_177 -> 301-security-team-building-third-season.md

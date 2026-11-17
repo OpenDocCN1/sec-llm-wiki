@@ -684,3 +684,4 @@
 ## [2026-11-17] ingest | 301在路上-201508-202208_185 -> 301-zai-lushang-wechat-archive-201508-202208.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_186 -> 301-zai-lushang-wechat-archive-201508-202208.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_187 -> 301-zai-lushang-wechat-archive-201508-202208.md
+## [2026-11-17] ingest | 301在路上-201508-202208_188 -> 301-zai-lushang-wechat-archive-201508-202208.md, security-practitioner-ethics-values.md

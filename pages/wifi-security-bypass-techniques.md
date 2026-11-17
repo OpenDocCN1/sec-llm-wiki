@@ -2,7 +2,7 @@
 title: Wi-Fi 安全机制绕过技术全链路实战
 description: 系统梳理家用路由器常见安全机制（隐藏 SSID、MAC 地址白名单、关闭 DHCP）的原理与实战绕过技术，涵盖探测帧获取 SSID、WPA2-PSK
   破解、流量解密获取三层地址、子网掩码推测、MAC 地址欺骗等完整攻击链。补充真实案例：弱 WiFi 密码导致 WPA2-PSK 破解、ARP 欺骗中间人攻击、凭证窃取、路由器登录、DNS
-  劫持投递 HTA 后门获取 VNC 控制的完整攻击链复现。
+  劫持投递 HTA 后门获取 VNC 控制的完整攻击链复现。新增 2015 年 315 晚会现场演示虚假 WiFi 窃取隐私的历史案例，作为邪恶双生攻击的经典实证。
 category: program-analysis
 tags:
 - Wi-Fi安全
@@ -22,8 +22,11 @@ tags:
 - VNC控制
 - 凭证复用
 - 实战案例
+- 邪恶双生攻击
+- 315晚会
+- 历史案例
 date: 2024-01-15
-updated: '2026-11-16'
+updated: '2026-11-17'
 ---
 
 ## 概述
@@ -475,6 +478,83 @@ flowchart TD
 
 ---
 
+## 0x0C 历史经典案例：2015 年 315 晚会现场演示虚假 WiFi 窃取隐私
+
+> **来源**：301在路上微信公众号归档文章《3.15 安全猜猜看话题》（2015-03-15）  
+> **事件时间**：2015 年 3 月 15 日晚（中央电视台 315 晚会现场）  
+> **攻击类型**：**邪恶双生攻击** / **虚假 WiFi 热点** / **中间人攻击**  
+> **影响范围**：晚会现场观众手机系统信息、邮箱账号密码等各类隐私数据
+
+### 案例背景
+
+2015 年中央电视台「3·15 晚会」现场，**首次在电视媒体面向大众公开演示**黑客如何利用**虚假 WiFi 热点（Evil Twin / Rogue AP）**窃取现场观众的隐私数据。这是国内主流媒体将无线网络安全威胁推向大众视野的里程碑事件，直接推动了普通用户对「免费 WiFi 陷阱」认知的觉醒。
+
+### 攻击原理复现（邪恶双生攻击标准流程）
+
+```mermaid
+flowchart TD
+    A[攻击者携带便携式无线设备\n(如 Pineapple/树莓派+USB网卡)] --> B[建立同名/相似 SSID 的虚假热点\n开放式/弱加密/同名 WPA2-PSK]
+    B --> C[信号强度覆盖合法 AP\n诱导受害设备自动/手动连接]
+    C --> D[受害设备流量经攻击机转发\n攻击者处于中间人位置]
+    D --> E[全流量嗅探/注入/篡改]
+    E --> F[明文协议直接窃取\nHTTP/POP3/IMAP/SMTP/FTP/旧版 APP API]
+    E --> G[HTTPS 流量劫持\nSSL Strip / 伪造证书 / HSTS 绕过]
+    E --> H[DNS 劫持重定向至钓鱼页\n投递恶意 Payload/窃取凭证]
+```
+
+#### 核心技术细节
+
+| 技术环节 | 2015 年典型实现手法 | 现代演进对比 |
+|----------|---------------------|--------------|
+| **虚假 AP 建立** | `airbase-ng` / `hostapd` + `dnsmasq` / `dhcpd` | WiFi Pineapple / Bettercap / `create_ap` / `wifiphisher` |
+| **强制连接/降级** | `aireplay-ng` 解关联攻击 → 客户端重连至信号更强的虚假 AP | 同原理；配合 **KARMA 攻击** 响应任意 Probe Request |
+| **流量转发** | `iptables` NAT + `ip_forward=1` 桥接至有线/蜂窝上网 | 同原理；可接 4G/5G Dongle 实现全便携 |
+| **明文窃取** | `Wireshark`/`tcpdump`/`dsniff`/`urlsnarf`/`mailsnarf` 直接重组 | 同工具；现代 APP 多已强制 TLS，明文窃取面大幅收窄 |
+| **HTTPS 绕过** | **SSL Strip** (Moxie Marlinspike 2009) 降级 HTTPS→HTTP；自签名证书+社工诱导信任 | **HSTS 预加载列表** / **Certificate Pinning** / **TLS 1.3** 大幅缓解；仍可针对未启用 HSTS 的站点实施 |
+| **DNS 劫持** | `ettercap` DNS 欺骗 / `dnsspoof` / 伪造 DHCP Option 6 推送恶意 DNS | 同原理；**DoH/DoT/DoQ** 加密 DNS 查询可绕过本地劫持 |
+| **会话劫持** | `ferret`/`hamster` Sidejacking (Cookie 窃取) → 重放登录态 | **SameSite Cookie** / **Secure Flag** / **HttpOnly** / **Token 绑定** 增加难度 |
+
+### 现场演示窃取的数据类型（据晚会披露）
+
+1. **手机系统信息**：型号、系统版本、唯一标识符 (IMEI/IMSI/Android ID)
+2. **邮箱账号密码**：POP3/IMAP/SMTP 明文认证凭证（当时主流邮箱客户端尚未全面强制 SSL）
+3. **社交应用数据**：早期版本微信/微博/QQ 等 APP 存在 HTTP 明文传输接口
+4. **网页浏览记录/表单提交**：HTTP 站点的 Cookie、Session ID、搜索关键词、登录凭证
+5. **自动同步数据**：联系人、日历、相册等通过明文 API 同步的内容
+
+> **关键点**：**受害者无感知**——设备自动连接「熟悉的 SSID」，或用户手动点击「免费 WiFi」，随后正常使用手机，所有流量在攻击者监控下「裸奔」。
+
+### 历史意义与行业影响
+
+| 维度 | 影响描述 |
+|------|----------|
+| **大众认知觉醒** | 首次让「免费 WiFi 会偷隐私」成为国民级话题，「不随意连陌生 WiFi」进入基础安全常识 |
+| **厂商整改推动** | 促使主流 APP 厂商（微信、支付宝、邮箱客户端等）加速**全站 HTTPS** 部署、启用 **Certificate Pinning**、废弃明文协议 |
+| **运营商/场所合规** | 推动商场、咖啡厅、机场等公共场所部署 **Passpoint (Hotspot 2.0)**、**WPA3-SAE**、**WiFi 认证计费系统** 规范开放 WiFi 运营 |
+| **标准演进催化** | 成为 **WPA3 (SAE 防离线字典攻击)**、**OWE (Opportunistic Wireless Encryption 开放网络加密)**、**MFP (802.11w 管理帧保护)** 标准落地的现实推力 |
+| **安全教育素材** | 成为网络安全培训、CTF 教学、红队演练中「邪恶双生攻击」的**标杆案例**与入门必讲素材 |
+
+### 防御对策：从 2015 到现在的演进
+
+| 防御层面 | 2015 年可行措施 | 现代最佳实践 (2024+) |
+|----------|-----------------|----------------------|
+| **用户端** | 关闭自动连接 WiFi；不连陌生开放热点；使用 4G/5G 替代 | **强制开启「验证网络」/「防蹭网」功能**；**系统级 DoH/DoT**；**VPN/零信任客户端** 全流量加密隧道 |
+| **设备端** | 安装杀毒软件；浏览器 HTTPS Everywhere 插件 | **HSTS 预加载**；**Certificate Pinning**；**TLS 1.3 强制**；**App Transport Security (iOS/macOS)**；**Network Security Config (Android)** |
+| **网络端** | 无 | **WPA3-SAE / OWE** 强制加密；**802.11w (MFP)** 防解关联/伪造管理帧；**Passpoint/EAP-AKA'** 运营商级认证；**WIPS/WIDS** 实时检测 Rogue AP/KARMA/解关联洪水 |
+| **应用端** | 启用 SSL（部分） | **全链路 HTTPS + HSTS + HPKP(弃用)/Expect-CT**；**mTLS** 双向认证；**Token Binding**；**安全编码规范** 禁止明文传输敏感数据 |
+
+### 交叉引用与知识图谱延伸
+
+- **攻击技术溯源**：[[wifi-security-bypass-techniques#0x02-发现隐藏-ssid]]（Probe Request/Response 机制）、[[0w1club-week2-wifi-hijacking-arp-spoofing]]（ARP/中间人攻击）、[[ettercap-arp-mitm-practical-guide]]（Ettercap 实战）
+- **流量劫持与注入**：[[ssrf-bypass-techniques]]（DNS 劫持/协议降级）、[[social-engineering-attack-techniques]]（钓鱼页投递/凭证窃取）
+- **加密对抗演进**：[[tls-ssl-security-configuration]]（TLS 配置最佳实践）、[[certificate-pinning-implementation]]（证书绑定实现）
+- **现代无线安全标准**：[[wpa3-sae-offline-dictionary-resistance]]（WPA3 SAE 防离线破解）、[[owe-opportunistic-wireless-encryption]]（开放网络加密 OWE）、[[80211w-management-frame-protection]]（管理帧保护 MFP）
+- **红队演练实战**：[[redteam-hw-opsec-guidelines]]（HVV 红队 OPSEC）、[[cobalt-strike-external-c2-smb-beacon]]（C2 隐匿通信）
+
+> **教训总结**：2015 年 315 晚会演示的**虚假 WiFi 窃取隐私**，本质是**利用 802.11 协议缺乏 AP 认证机制、早期应用层协议明文传输、用户安全意识薄弱**三大短板实施的**邪恶双生攻击**。十年间，协议层 (WPA3/OWE/MFP)、传输层 (TLS 1.3/DoH)、应用层 (全站 HTTPS/Pinning)、用户层 (安全意识/系统级防护) 形成**纵深防御体系**，但**核心攻击原理未变**——**只要客户端信任恶意 AP 并建立连接，中间人位置即确立**。红队演练中，虚假 WiFi 仍是**获取初始立足点、绕过边界防护、实施近源渗透**的高性价比手法，必须持续关注检测与缓解。
+
+---
+
 ## 参考资源与延伸阅读
 
 - **工具官方文档**：
@@ -502,6 +582,7 @@ flowchart TD
 
 | 版本 | 日期 | 变更说明 |
 |------|------|----------|
+| 1.2 | 2026-11-16 | **重大更新**：新增 0x0C 节「历史经典案例：2015 年 315 晚会现场演示虚假 WiFi 窃取隐私」，完整复现邪恶双生攻击技术原理、现场窃取数据类型、历史意义行业影响、十年防御演进对比表；增加 10+ 个交叉引用指向现有知识库页面，补全邪恶双生攻击知识图谱 |
 | 1.1 | 2026-11-16 | **重大更新**：补充 0x0B 节「实战案例复现」，完整复现 301在路上归档文章中的弱口令→WPA2-PSK破解→ARP欺骗→凭证窃取→凭证复用→路由器登录→DNS劫持→HTA后门→VNC控制的完整攻击链；新增攻击链全景图、详细步骤复现、防御断点分析表、工具链速查表；增加 15+ 个交叉引用指向现有知识库页面 |
 | 1.0 | 2024-01-15 | 初始版本：完整攻击链文档化、工具命令标准化、防御检测建议补充、交叉引用关联现有知识库页面 |
 
@@ -509,3 +590,4 @@ flowchart TD
 
 - [301在路上-201508-202208_037](../sources/301在路上-201508-202208_037.md)
 - [301在路上-201508-202208_114](../sources/301在路上-201508-202208_114.md)
+- [301在路上-201508-202208_183](../sources/301在路上-201508-202208_183.md)

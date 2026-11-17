@@ -692,3 +692,4 @@
 ## [2026-11-17] ingest | 301在路上-201508-202208_193 -> china-cybersecurity-financing-landscape-2015.md, 301-zai-lushang-wechat-archive-201508-202208.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_194 -> smart-lock-vulnerability-analysis.md
 ## [2026-11-17] ingest | 301在路上-201508-202208_195 -> 301-zai-lushang-wechat-archive-201508-202208.md, supply-chain-attack-fundamentals.md, credential-stuffing-password-hygiene.md
+## [2026-11-17] ingest | 301在路上-201508-202208_196 -> 301-zai-lushang-wechat-archive-201508-202208.md, boarding-pass-social-media-leakage-risk.md
